@@ -1,0 +1,42 @@
+#Requires AutoHotkey v2.0
+
+#include ..\JSON.ahk
+
+sROMFolder := "D:\Stand Alone\Arcade Time Capsule\RetroVRArcade\Content\Roms"
+sDestinationFile := "E:\Development\Projects\arcadeVFE\src\Audit\romlist.json"
+a2014RomList := ["batsugun","bbakraid","blazstar","ddp2","ddpdfk","deathsml","dmnfrnt","dogyuun","espgal","espgal2","futari15","gground","ibarablk","indytemp","invaders","ket","kinst","mmpork","moomesa","mslug","mushisam","nibbler","outzone","preisle2","raiden2","roadrunn","xexexj","xmultipl"]
+
+mRoms := Map()
+
+Loop Files sROMFolder "\*.zip"
+{
+    SplitPath(A_LoopFileName,,,,&OutNameNoExt)
+
+    mRoms[OutNameNoExt] := Map()
+    mRoms[OutNameNoExt]["MAMEVersion"] := GetMameVersion(OutNameNoExt)    
+}
+
+WriteROMList()
+
+GetMameVersion(sRom)
+{
+    for i, r in a2014RomList
+    {
+        if (r == sRom)
+            return "2014"
+    }
+
+    return "2010"
+}
+
+WriteROMList()
+{
+
+    sJSON := JSON.stringify(mRoms)
+
+    fDestinationFile := FileOpen(sDestinationFile, "w")
+
+    fDestinationFile.Write(sJSON)
+    fDestinationFile.Close()
+
+}

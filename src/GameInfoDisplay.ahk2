@@ -1,5 +1,5 @@
 /******************************************************************************
- * @description Game information display
+ * @description GameInfo display
  * @file GameInfoDisplay.ahk2
  * @author © 2025 David G. Dahlstrom
  ******************************************************************************/
@@ -40,7 +40,7 @@ class GameInfoDisplay
 		guiGameInfo.Opt("-Caption")
 		guiGameInfo.BackColor := "Black" 
 
-		global gcGameInfoPleaseWait := guiGameInfo.AddText("x" 0 " y" nScreenHeight/3 " w" nScreenWidth " h" 300 " 0x1", "Preparing Game Information.`nPlease wait...")
+		global gcGameInfoPleaseWait := guiGameInfo.AddText("x" 0 " y" nScreenHeight/3 " w" nScreenWidth " h" 300 " 0x1", "Preparing GameInfo.`nPlease wait...")
 		gcGameInfopleaseWait.SetFont("cWhite s50")
 
 		;this.CreateNavTriangles()
@@ -64,7 +64,7 @@ class GameInfoDisplay
 	}
 
 	/**
-	 * Add a game info page. The "info" type is two-column text data; the "native" type is a
+	 * Add a GameInfo page. The "info" type is two-column text data; the "native" type is a
 	 * transparent screen that lets one see through to the native emulator in its paused state.
 	 * All other types are images (such as "highscore" screens, control panel "controls", etc.).
 	 * Additional image types of any kind can be added by adding new types to the [AssetPaths]
@@ -262,7 +262,7 @@ class GameInfoDisplay
 	
 	/**
 	 * ;Creates the actual image and info pages for each asset type
-	 * @param assetType - either "info" or a folder name that is a subfolder of .\assets
+	 * @param assetType - either "info" or a folder name that is a subfolder in .\GameInfo\Assets
 	 * @param romName - the rom name without an extension
 	 * @param {String} sType - file extension of image file (only for images)
 	 */
@@ -326,7 +326,7 @@ class GameInfoDisplay
 			{  
 				ClipSaved := ClipboardAll() ; Save the entire clipboard to a variable.		
 				if (!ClipWait(5)) {
-					AppLog.LogLine("WARNING: Could not save clipboard in CreateGameInfoPage().`n")
+					oLog.LogLine("WARNING: Could not save clipboard in CreateGameInfoPage().`n")
 				}
 
 				;Add the first control
@@ -386,7 +386,7 @@ class GameInfoDisplay
 						ErrorLevel := SendMessage(0xBA,0,0,,"ahk_id " . hwndSrc) ;EM_GETLINECOUNT
 					}
 					catch {
-						AppLog.LogLine("WARNING: SendMessage EM_GETLINECOUNT failed in CreateGameInfoPage().`n")
+						oLog.LogLine("WARNING: SendMessage EM_GETLINECOUNT failed in CreateGameInfoPage().`n")
 					}
 					total_lines := ErrorLevel  ;This is the total line count (including the overflow)
 
@@ -397,30 +397,30 @@ class GameInfoDisplay
 					{
 						ErrorLevel := SendMessage(0xBB, screen_lines-1, 0,,"ahk_id " . hwndSrc)  ; EM_LINEINDEX
 						if (ErrorLevel == "FAIL")
-							AppLog.LogLine("WARNING: SendMessage EM_LINEINDEX failed in CreateGameInfoPage().`n")	
+							oLog.LogLine("WARNING: SendMessage EM_LINEINDEX failed in CreateGameInfoPage().`n")	
 						offset := ErrorLevel ;this is the character # that starts the last displayable line
 						;Sleep 50
 
 						ErrorLevel := SendMessage(0xB1, offset, -1,,"ahk_id " . hwndSrc)  ; EM_SETSEL  Note, the -1 selects to the end of the text
 						if (ErrorLevel == "FAIL")
-							AppLog.LogLine("WARNING: SendMessage EM_SETSEL failed in CreateGameInfoPage().`n")
+							oLog.LogLine("WARNING: SendMessage EM_SETSEL failed in CreateGameInfoPage().`n")
 						success := ErrorLevel ;now select all the overflow text
 						;Sleep 50
 
 						ErrorLevel := SendMessage(0x300,0,0,,"ahk_id " . hwndSrc)   ; WM_CUT    ;Cut overflow text from src edit control
 						if (ErrorLevel == "FAIL")
-							AppLog.LogLine("WARNING: SendMessage EM_CUT failed in CreateGameInfoPage().`n")
+							oLog.LogLine("WARNING: SendMessage EM_CUT failed in CreateGameInfoPage().`n")
 						if !ClipWait(5) 
-							AppLog.LogLine("WARNING: Could not save to clipboard in CreateGameInfoPage().`n")
+							oLog.LogLine("WARNING: Could not save to clipboard in CreateGameInfoPage().`n")
 						Sleep 300 ;required, to avoid side-effects (partial data in screens)
 
 						;ClipWait 5
 						;	if (ErrorLevel == 1)		
-						;		AppLog.LogLine("WARNING: Could not save to clipboard in CreateGameInfoPage().`n")
+						;		oLog.LogLine("WARNING: Could not save to clipboard in CreateGameInfoPage().`n")
 
 						ErrorLevel := SendMessage(0x302,0,0,,"ahk_id " . hwndDest)  ; WM_PASTE  ;Paste this text into the dest edit control
 						if (ErrorLevel == "FAIL")
-							AppLog.LogLine("WARNING: SendMessage EM_PASTE failed in CreateGameInfoPage().`n")
+							oLog.LogLine("WARNING: SendMessage EM_PASTE failed in CreateGameInfoPage().`n")
 						Sleep 100 ;give paste a little extra time (leaving this out can cause partial or no paste issues)
 						clipboard := "" ;clear the clipboard
 
@@ -428,7 +428,7 @@ class GameInfoDisplay
 						;to see if we need to continue.
 						ErrorLevel := SendMessage(0xBA,0,0,,"ahk_id " . hwndDest) ;EM_GETLINECOUNT
 						if (ErrorLevel == "FAIL")
-							AppLog.LogLine("WARNING: SendMessage EM_GETLINECOUNT failed in CreateGameInfoPage().`n")
+							oLog.LogLine("WARNING: SendMessage EM_GETLINECOUNT failed in CreateGameInfoPage().`n")
 						total_lines := ErrorLevel  ;This is the total line count (including any new overflow)
 
 						delta := total_lines - screen_lines ;this is the number of lines of overflow text
@@ -461,7 +461,7 @@ class GameInfoDisplay
 		}
 		else ;assetType not "info", so must be an image type
 		{
-			asset_full_path := A_ScriptDir "\assets\" assetType "\" romName "." sType
+			asset_full_path := A_ScriptDir "\GameInfo\Assets\" assetType "\" romName "." sType
 
 			gGui.guiGameInfo_PauseImage%assetType% := guiGameInfo.AddPicture("BackgroundTrans vPauseImage%" . assetType . "%", asset_full_path)		
 			gGui.guiGameInfo_PauseImage%assetType%.GetPos(&pause_image_posX, &pause_image_posY, &pause_image_posW, &pause_image_posH)

@@ -6,8 +6,13 @@
 ;========================================================================================
 OnMouseEvent(wp, lp, msg, hwnd)
 {
-	if (!gcToolTip_Checkbox.Value)
-		return
+    try {
+        if (!gcToolTip_Checkbox.Value)
+            return
+    }
+    catch {
+        return
+    }
 
     static TME_LEAVE := 0x2, onButtonHover := false
     if msg = WM_MOUSEMOVE && !onButtonHover

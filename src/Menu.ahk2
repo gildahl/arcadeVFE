@@ -54,7 +54,7 @@ class TrayMenu
 
 		Settings.RefreshList()
 
-		AppLog.LogLine("INFO: Showing Settings dialog.`n")
+		oLog.LogLine("INFO: Showing Settings dialog.`n")
 		guiSettings.Show("X" Settings.mMetrics.X " Y" Settings.mMetrics.Y " W" Settings.mMetrics.Width " H" Settings.mMetrics.Height)
 	}
 

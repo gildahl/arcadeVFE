@@ -26,6 +26,7 @@ global CodeVersion := "1.0.1.0"
 #Requires AutoHotkey v2.0
 #SingleInstance Force
 
+#include Setup.ahk2
 #include Menu.ahk2
 #include Voice.ahk2
 #include SDL2.ahk2
@@ -40,14 +41,14 @@ global CodeVersion := "1.0.1.0"
 #include GameInfoDisplay.ahk2
 #include PacDrive.ahk2
 
-TraySetIcon "joystick.ico"
+TraySetIcon A_ScriptDir "\Resources\joystick.ico"
 A_IconTip := "arcadeVFE`nVirtual Front End"
 
 OnMessage(WM_MOUSEMOVE  := 0x0200, OnMouseEvent)
 OnMessage(WM_MOUSELEAVE := 0x02A3, OnMouseEvent)
 
 ;***********************************************************
-;inits for Game information display
+;inits for GameInfo display
 global gGui := {}
 global guiGameInfo := ""
 global sCurrentROM := ""
@@ -55,7 +56,7 @@ global color_edit_bg := "0x1F1F1F"
 global color_edit_text := "0xCCCCCC"
 global nScreenWidth := A_ScreenWidth * 96 // A_ScreenDPI
 global nScreenHeight := A_ScreenHeight * 96 // A_ScreenDPI
-global sMetaFolder := A_ScriptDir "\info"
+global sMetaFolder := A_ScriptDir "\GameInfo"
 global mameinfo_file := sMetaFolder "\mameinfo.dat"
 global mamehistory_file := sMetaFolder "\history.xml"
 global sControlsIniFile := sMetaFolder "\controls.ini"
@@ -63,6 +64,7 @@ global sGamesXMLFile := sMetaFolder "\games.xml"
 global void_file := sMetaFolder "\void.png"
 global oMameData := MAMEData(mameinfo_file, mamehistory_file)
 global oGameInfoDisplay := GameInfoDisplay()
+global iDefaultGameInfoFontSize := 18 
 ;***********************************************************
 
 global SDL2 := SDL2DLL() ;SDL library for game device discovery and polling
@@ -76,14 +78,16 @@ global bActive := false
 global bOnlyMonitorWhenApplicationLoaded := false
 global iRawAccelPID := 0
 global sLastActionKey := ""
-global bSuppressLastAccess := false 
+global bSuppressLastAccess := false
+global sArcadeString := ""             ;Currently may be "Arcade Time Capsule 3.6" or "Other"
 
 ;global inits
 global iRestartDelay := 0              ;Delay in between application close and restart (in ms)
 global iCommandLineDelay := 500        ;Delay in between two consecutive command line calls (in ms)
-global iDefaultGameInfoFontSize := 16  ;Default font size in Game Info screens
 
 global oTemplates                      ;Object used by the JSON parser to hold the Template list
+global oFloors                         ;Object used by the JSON parser to hold the Floors list
+global oVicinities                     ;Array used by the JSON parser to hod the Vicinities list
 global oTweaks                         ;Object used by the JSON parser to hold the Tweaks list
 global oActions	:= Map()		       ;Object used by the JSON parser to hold the Actions list
 global aDevices := Array()             ;Holds the list of devices (a.k.a. Action Sources)
@@ -91,6 +95,8 @@ global mDeviceIndex := Map()           ;Holds the indexes of the devices in the 
 global mDevices := Map()               ;Holds info for all devices in the list
 global mRomsByName := Map()            ;A dictionary allowing a rom to be looked up by its description
 global aDefaultTemplates := Array()    ;The set of default command line templates
+global aDefaultFloors := Array()	   ;The set of default floors
+global aDefaultVicinities := Array()   ;The set of default vicinities
 global mROMVersions := Map()           ;Rom versions from listxml (games.xml)
 
 ;Populate the default command line templates
@@ -101,20 +107,33 @@ aDefaultTemplates.Push('"C:\Program Files (x86)\Ultramap\Ultramap.exe" "[profile
 aDefaultTemplates.Push('Set Ultimarc ServoStik: 4-way')
 aDefaultTemplates.Push('Set Ultimarc ServoStik: 8-way')
 
+;Populate the default floor list
+aDefaultFloors := ["1st Level","4th Level","5th Level","6th Level","Pasedena","2nd Floor"]
+
+;Populate the default vicinities list
+aDefaultVicinities := ["Counter","Pool Table","Entrance","Candy Cab Area"]
+
 global sApplicationName := "RetroVRArcade.exe"
+global sROMMonitorFolder := ""
  
 ;folder defaults
-global sConfigFolder := A_ScriptDir "\config"
-global sUserFolder := A_ScriptDir "\user"
-global sLogFolder := A_ScriptDir "\log"
+global sConfigFolder := A_ScriptDir "\Config"
+global sUserFolder := A_ScriptDir "\User"
+global sLogFolder := A_ScriptDir "\Log"
 global sRawAccelFolder := A_ScriptDir "\RawAccel"
+global sAuditFolder := A_ScriptDir "\Audit"
 
 ;filename defaults
 global sUserFile := sUserFolder "\Arcade Controller.json"
 global sTemplatesFile := sConfigFolder "\templates.json"
+global sFloorsFile := sConfigFolder "\floors.json"
+global sVicinitiesFile := sConfigFolder "\vicinities.json"
 global sTweaksFile := sConfigFolder "\tweaks.json"
 global sIniFile := sConfigFolder "\arcadeVFE.ini"
+global sLocationsIniFile := sConfigFolder "\locations.ini"
 global sRawAccelExe := sRawAccelFolder "\rawaccel.exe"
+global sMame2010 := sAuditFolder "\MAME 0.139\mame64.exe"
+global sMame2014 := sAuditFolder "\MAME 0.159\mame64.exe"
 
 ;group constants
 global TWO_WAY_H :=  "[Group, 2-way horizontal]"
@@ -128,8 +147,11 @@ global ROTARY    :=  "[Group, rotary]"
 global SPINNER   :=  "[Group, spinner]"
 global TRACKBALL :=  "[Group, trackball]"
 
-AppLog.Init(sLogFolder "\log.txt", "arcadeVFE") ;initialize the application log
+global oLog := AppLog()
+oLog.Init(sLogFolder "\log.txt", "arcadeVFE") ;initialize the application log
 OnError LogError ;deal with unhandled exceptions
+
+global oAuditLog := AppLog()
 
 ;Create configuration folder if it doesn't already exist
 CreateDirAndLog(sConfigFolder)
@@ -140,7 +162,7 @@ CreateDirAndLog(sUserFolder)
 ;<Action list>.json files
 if (A_Args.Length > 0)
 {
-	AppLog.LogLine("INFO: Ran with command line parameter: `"" A_Args[1] "`"`n") 
+	oLog.LogLine("INFO: Ran with command line parameter: `"" A_Args[1] "`"`n") 
 	SplitPath(A_Args[1],,,,&sArgNoExt) 
 	loop files sUserFolder "\*.json"
 	{		
@@ -154,7 +176,7 @@ if (A_Args.Length > 0)
 }
 else
 {
-	AppLog.LogLine("INFO: Ran with no command line parameter`n") 
+	oLog.LogLine("INFO: Ran with no command line parameter`n") 
 }
 
 ;==============================
@@ -164,11 +186,15 @@ else
 TrayMenu.BuildMenu()          ;Build tray menu
 LoadInit()				      ;Load custom initializations
 LoadTweaks()				  ;Load custom tweaks
+Setup.CreateSetupDialog()     ;Load initial setup
 Settings.BuildScreen()        ;Build Settings screen
 Settings.InitDevices()        ;Get and populate the list of devices (a.k.a. Action Sources)
 Settings.ReadTemplates()      ;Populate Template list from JSON file if available
+Settings.ReadFloors()		  ;Populate Floor list from JSON if available
+Settings.ReadVicinities()     ;Populate Vicinities list from JSON if available
 Settings.ReadActionList()     ;Populate Action list from JSON file if available
-Settings.FillRomList()        ;Populate the ROM list 
+Settings.FillRomList()        ;Populate the ROM list
+
 StartRomWatcher()             ;Begin monitoring the rom folder    
 Poll()                        ;Start the button and keyboard polling loop
 
@@ -257,7 +283,7 @@ StartRomWatcher()
 	
 	if (attrib)
 	{
-		AppLog.LogLine("INFO: ROM Folder set to: `"" gcROMMonitorFolderEdit.Text ".`n")
+		oLog.LogLine("INFO: ROM Folder set to: `"" gcROMMonitorFolderEdit.Text ".`n")
 
 		;Ensure all rom files have a last-accessed date/time of a week ago.  This is to address
 		;a Windows deficiency in which the last-access date/time of files is not updated if the file
@@ -273,9 +299,9 @@ StartRomWatcher()
 	else
 	{
 		if (gcROMMonitorFolderEdit.Text == "")
-			AppLog.LogLine("INFO: ROM Folder is not configured.`n")
+			oLog.LogLine("INFO: ROM Folder is not configured.`n")
 		else
-			AppLog.LogLine("INFO: ROM Folder: `"" gcROMMonitorFolderEdit.Text "`" is invalid.`n")
+			oLog.LogLine("INFO: ROM Folder: `"" gcROMMonitorFolderEdit.Text "`" is invalid.`n")
 	}
 }
 
@@ -322,7 +348,7 @@ RomAccess_Event(Folder, Changes)
 	if (!bActive)
 		return
 
-	AppLog.LogLine("INFO: ROM file: `"" sNewROMFile "`" was accessed.`n")
+	oLog.LogLine("INFO: ROM file: `"" sNewROMFile "`" was accessed.`n")
 	SplitPath(sNewROMFile,,,,&OutNameNoExt) ;strip off .zip extension
 
 	mIndexer := Map()
@@ -363,24 +389,24 @@ RomAccess_Event(Folder, Changes)
 
 		oAction := GetAction("ROM Monitor", sAction, mIndexer)
 		if (oAction.Key)
-			AppLog.LogLine("INFO: Using the " sAction " action for rom: " OutNameNoExt "`n")
+			oLog.LogLine("INFO: Using the " sAction " action for rom: " OutNameNoExt "`n")
 
 		;no Group, so attempt to apply a [Default] action (if one exists)
 		if (oAction.Key == "")
 		{
 			oAction := GetAction("ROM Monitor", "[Default]", mIndexer)
 			if (oAction.Key)
-				AppLog.LogLine("INFO: Using the [Default] action for rom: " OutNameNoExt "`n")
+				oLog.LogLine("INFO: Using the [Default] action for rom: " OutNameNoExt "`n")
 		}
 
 		;we tried everything, so report it to the log
 		if (oAction.Key == "")
-			AppLog.LogLine("INFO: No action could be found for rom: " OutNameNoExt "`n")
+			oLog.LogLine("INFO: No action could be found for rom: " OutNameNoExt "`n")
 	}
 	
 	RunAction(oAction) ;execute the action
 
-	;Show game info (but only if the option is turned on and the application is running)
+	;Show GameInfo (but only if the option is turned on and the application is running)
 	if (gcShowGameInfo_Checkbox.Value == true && bOnlyMonitorWhenApplicationLoaded && ProcessExist(sApplicationName))
 	{
 		ShowGameInfo(OutNameNoExt)
@@ -410,7 +436,7 @@ ApplicationProcessCheck_Callback()
 	;now loaded, then call Poll() to start/resume monitoring
 	if (bOnlyMonitorWhenApplicationLoaded && ProcessExist(sApplicationName))
 	{
-		AppLog.LogLine("INFO: Application, `"" sApplicationName "`" was detected.`n" )
+		oLog.LogLine("INFO: Application, `"" sApplicationName "`" was detected.`n" )
 
 		;Refresh the sCurrentROM timestamp since it might get replayed
 		if (sCurrentROM) ;sCurrentROM is a global
@@ -424,7 +450,7 @@ ApplicationProcessCheck_Callback()
 		{
 			SplitPath(sRawAccelExe,,&OutDir)
 			Run sRawAccelExe, OutDir, "Min", &iRawAccelPID
-			AppLog.LogLine("INFO: RawAccel started from: " sRawAccelExe ".`n" )
+			oLog.LogLine("INFO: RawAccel started from: " sRawAccelExe ".`n" )
 		}
 
 		;terminate this timer since Poll() will now take up monitoring 
@@ -447,7 +473,7 @@ Poll()
 	global iRawAccelPID
 
 	if (!bCancelPoll)
-		AppLog.LogLine("INFO: Polling started...`n" )
+		oLog.LogLine("INFO: Polling started...`n" )
 
 	;Register plain old AHK hotkeys for keypress handling
 	for device, buttons in oActions
@@ -484,17 +510,17 @@ Poll()
 		;to wait for the application to be loaded.
 		if (bOnlyMonitorWhenApplicationLoaded && !ProcessExist(sApplicationName))
 		{
-			AppLog.LogLine("INFO: Application, `"" sApplicationName "`" not detected.`n" )
+			oLog.LogLine("INFO: Application, `"" sApplicationName "`" not detected.`n" )
 
 			;shutdown RawAccel if it is running
 			if (gcRawAccel_Checkbox.Value && iRawAccelPID)
 			{
 				ProcessClose(iRawAccelPID)
 				iRawAccelPID := 0
-				AppLog.LogLine("INFO: RawAccel Closed.`n" )
+				oLog.LogLine("INFO: RawAccel Closed.`n" )
 			}
 
-			;Turn off the game info display if it is running
+			;Turn off the GameInfo display if it is running
 			if (oGameInfoDisplay.Active)
 				oGameInfoDisplay.Clear()
 
@@ -510,7 +536,7 @@ Poll()
 
 		if (bCancelPoll)
 		{
-			AppLog.LogLine("INFO: Polling disabled.`n" )
+			oLog.LogLine("INFO: Polling disabled.`n" )
 
 			SDL2.SDL_FlushEvent(SDL_EventType.SDL_JOYBUTTONDOWN)
 			SDL2.SDL_FlushEvent(SDL_EventType.SDL_JOYHATMOTION)
@@ -722,8 +748,8 @@ RunAction(oAction)
 		return
 	}
 
-	;if a Game Info navigation action, do the nav action
-	if (InStr(oAction.CommandLine, "Game Info Navigation:"))
+	;if a GameInfo navigation action, do the nav action
+	if (InStr(oAction.CommandLine, "GameInfo Navigation:"))
 	{
 		iStartPos := InStr(oAction.CommandLine, "{") + 1
 		iEndPos := InStr(oAction.CommandLine, "}")
@@ -756,7 +782,7 @@ RunAction(oAction)
 	;if a command line action, don't run the same action twice in a row
 	if (oAction.Key != sLastActionKey) 
 	{
-		AppLog.LogLine("EXECUTING ACTION: Source: " oAction.Device ", Action: " oAction.Action ", Sequence: " oAction.Sequence "`n")
+		oLog.LogLine("EXECUTING ACTION: Source: " oAction.Device ", Action: " oAction.Action ", Sequence: " oAction.Sequence "`n")
 
 		if (oAction.CommandLine)
 		{
@@ -794,14 +820,14 @@ RunCommandLine(cl)
 	if (cl == "Set Ultimarc ServoStik: 4-way")
 	{
 		oPacDrive.PacSetServoStik4Way()
-		AppLog.LogLine("COMMAND: Set Ultimarc ServoStik: 4-way`n")
+		oLog.LogLine("COMMAND: Set Ultimarc ServoStik: 4-way`n")
 		return
 	}
 
 	if (cl == "Set Ultimarc ServoStik: 8-way")
 	{
 		oPacDrive.PacSetServoStik8Way()
-		AppLog.LogLine("COMMAND: Set Ultimarc ServoStik: 8-way`n")
+		oLog.LogLine("COMMAND: Set Ultimarc ServoStik: 8-way`n")
 		return
 	}
 
@@ -832,13 +858,13 @@ RunCommandLine(cl)
 		if (ProcessExist(sExeName))
 		{
 			ProcessClose(sExeName)
-			AppLog.LogLine("COMMAND: Closed: " sExeName "`n")
+			oLog.LogLine("COMMAND: Closed: " sExeName "`n")
 		}
 	
 	Sleep iRestartDelay
 
 	try Run cl, OutDir
-	AppLog.LogLine("COMMAND: Run: " cl "`n")
+	oLog.LogLine("COMMAND: Run: " cl "`n")
 }
 
 /**
@@ -857,11 +883,11 @@ DeleteAndLog(t, f)
 				FileDelete(f)
 			}
 			catch as e {
-				AppLog.LogLine("INFO: File could not be deleted: " f ". Error was: " AppLog.FormatErrorMessage(e) "`n")
+				oLog.LogLine("INFO: File could not be deleted: " f ". Error was: " AppLog.FormatErrorMessage(e) "`n")
 				return 1
 			}
 			else {
-				AppLog.LogLine("INFO: Deleted file: " f "`n")
+				oLog.LogLine("INFO: Deleted file: " f "`n")
 				return 0
 			}
 		}
@@ -874,11 +900,11 @@ DeleteAndLog(t, f)
 				DirDelete(f, true) ;true deletes even if files exist in folder
 			}
 			catch as e {
-				AppLog.LogLine("INFO: Folder could not be deleted: " f ". Error was: " AppLog.FormatErrorMessage(e) "`n")
+				oLog.LogLine("INFO: Folder could not be deleted: " f ". Error was: " AppLog.FormatErrorMessage(e) "`n")
 				return 1
 			}
 			else {
-				AppLog.LogLine("INFO: Deleted folder: " f "`n")
+				oLog.LogLine("INFO: Deleted folder: " f "`n")
 				return 0
 			}
 		}
@@ -902,12 +928,12 @@ CreateDirAndLog(d)
         }
         catch
         {
-            AppLog.LogLine("NOTICE: Failed to create folder, " d "`n")
+            oLog.LogLine("NOTICE: Failed to create folder, " d "`n")
             return false
         }
         else        
         {
-            AppLog.LogLine("INFO: Created folder, " d "`n")  
+            oLog.LogLine("INFO: Created folder, " d "`n")  
             return true
         }         
     }
@@ -916,7 +942,7 @@ CreateDirAndLog(d)
 }
 
 /**
- * Invoke the Game Info display
+ * Invoke the GameInfo display
  * @param sRomName - the rom name with no extension.
  */
 ShowGameInfo(sRomName)
@@ -927,10 +953,10 @@ ShowGameInfo(sRomName)
 	oGameInfoDisplay.Clear()
 	oGameInfoDisplay.CreateGameInfoScreen()
 	oGameInfoDisplay.ShowGameInfoScreen()
-	oGameInfoDisplay.CreateGameInfoPage("info", sRomName) ;create the game info pages
+	oGameInfoDisplay.CreateGameInfoPage("info", sRomName) ;create the GameInfo pages
 
-	;Create image pages for any images in the \assets subfolders
-	Loop Files A_ScriptDir "\assets\*.*", "D"
+	;Create image pages for any images in the \GameInfo\Assets subfolders
+	Loop Files A_ScriptDir "\GameInfo\Assets\*.*", "D"
 	{
 		if (FileExist(A_LoopFileDir "\" A_LoopFileName "\" sRomName ".png"))
 		{
@@ -951,6 +977,6 @@ ShowGameInfo(sRomName)
 ;Log otherwise unhandled errors (spawed by OnError)
 LogError(e, mode)
 {
-    AppLog.LogLine("ERROR: Unhandled exception: " AppLog.FormatErrorMessage(e) "`n")
+    oLog.LogLine("ERROR: Unhandled exception: " oLog.FormatErrorMessage(e) "`n")
     ExitApp
 }

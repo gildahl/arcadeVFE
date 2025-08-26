@@ -2,7 +2,7 @@
 
 sROMFolder := "D:\Stand Alone\Arcade Time Capsule\RetroVRArcade\Content\Roms"
 sSourceImageFolder := "E:\Development\Projects\arcadeVFE\src\Media\pcb"
-sDestinationFolder := "E:\Development\Projects\arcadeVFE\src\assets\pcb"
+sDestinationFolder := "E:\Development\Projects\arcadeVFE\src\Assets\pcb"
 
 Loop Files sROMFolder "\*.zip"
 {

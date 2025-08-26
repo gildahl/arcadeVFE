@@ -14,10 +14,10 @@
 
 class AppLog
 {
-    static _sLogFile := ""
-    static _iStartTick := 0
+    _sLogFile := ""
+    _iStartTick := 0
 
-    static Init(sLogFileName, sAppName)
+    Init(sLogFileName, sAppName)
     {
         this._iStartTick := A_TickCount
         this._sLogFileName := sLogFileName
@@ -55,7 +55,12 @@ class AppLog
             this.LogLine(sLogLine)
     }
 
-    static LogLine(logString, continueLine:=false)
+    ShowLog()
+    {
+        Run "notepad " this._sLogFileName
+    }
+
+    LogLine(logString, continueLine:=false)
     {
         elapsedTime := A_TickCount - this._iStartTick
         lenElapsedTime := StrLen(elapsedTime)
@@ -82,7 +87,7 @@ class AppLog
         return
     }
 
-    static FormatErrorMessage(e)
+    FormatErrorMessage(e)
     {  
         e_file := e.file ? e.file : ""
         e_line := e.line ? ", Line: " . e.line : ""
@@ -95,7 +100,7 @@ class AppLog
         return retValue
     }
 
-    static RepeatChar(val, length)
+    RepeatChar(val, length)
     {
         result := ""
         Loop length

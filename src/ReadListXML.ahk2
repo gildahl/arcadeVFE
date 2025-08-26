@@ -122,7 +122,7 @@ class ReadListXML
 							}							
 						}
 						catch as e {
-							AppLog.LogLine("WARNING: Unexpected XML read error: " AppLog.FormatErrorMessage(e) "`n")
+							oLog.LogLine("WARNING: Unexpected XML read error: " AppLog.FormatErrorMessage(e) "`n")
 							break
 						}
 					}
