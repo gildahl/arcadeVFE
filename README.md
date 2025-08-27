@@ -48,7 +48,7 @@ See the `log.txt` file in the `\Log` subfolder if needed for troubleshooting. Th
 
 Configuration
 =============
-arcadeVFE offers two different modes of operation. The first is a **ROM Monitor** mode that can execute game-specific actions whenever a game using a MAME rom file is played. This mode provides full automated game controller configuration in MAME environments like Arcade Time Capsule. 
+arcadeVFE offers two different modes of operation. The first is a **ROM Monitor** mode that can execute game-specific actions whenever a game using a MAME rom file is played. This mode can provide fully automated game controller configuration in MAME environments like Arcade Time Capsule. 
 
 The second mode provides the option to trigger actions manually when a game controller button or keyboard key is pressed. Both **ROM Monitor** and keyboard/button actions can be added to the action list in any combination and are simultaneously active whenever the virtual arcade is running. 
 
