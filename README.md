@@ -82,20 +82,20 @@ If you would like arcadeVFE to verbally announce an action when it is executed, 
 
 How to Configure Command-Line Actions
 =====================================
-"Profiles", as defined in this document, are files containing specific game controller configurations created by game controller configuration software. Examples of such files might be `Ikari.vcd` for Virtual Controller, or `4-way.ugc` for UltraMap. To make command creation easier, you may specify the file name of a profile separately in the "Profile" field, and then choose a Command template in the "Command" field, which will get filled in with the profile's file name when the "Assign" button is pressed.  This template will typically contain one of the following field tags:
+"Profiles", as defined in this document, are files containing specific game controller configurations created by game controller configuration software. Examples of such files might be `Ikari.vcd` for Virtual Controller, or `4-way.ugc` for UltraMap. To make command creation easier, you may specify the file name of a profile separately in the "Profile" field, and then choose a command template in the **Command** field, which will get filled in with the profile's file name when the **Assign** button is pressed.  This template will typically contain one of the following field tags:
 
-- `[profile_name]`        - will be replaced by the filename or contents of "Profile" field
-- `[profile_full_name]`   - will be replaced by the full path/file or contents of "Profile" field
+- `[profile_name]`        - will be replaced by the filename or contents of **Profile** field
+- `[profile_full_name]`   - will be replaced by the full path/file or contents of **Profile** field
 
 For example, if the profile is `C:\Ultrastik\Profiles\qbert.ugc` and the command line template is `C:\UltraMap\UltraMap.exe [profile_name]`, then upon pressing the "Assign" button, the command line that will be assigned to the action will be `C:\UltraMap\UltraMap.exe qbert.ugc`. If the full path to the profile is needed, then the command line template should be changed to `C:\UltraMap\UltraMap.exe [profile_full_name]`. If the command line template has no field tags, then the command line will be used verbatim with no insertions. 
 
 Additional Notes:
 -----------------
-* To test a command line while still in the Settings screen, press the "Test" button next to the Command field. Hovering over the "Test" button with the Show Tooltips option turned on, will show the actual command line that will be executed.
+* To test a command line while still in the Settings screen, press the **Test** button next to the Command field. Hovering over the **Test** button with the **Show Tooltips** option turned on, will show the actual command line that will be executed.
 
 * If your profile filename needs quotes around it, then simply add quotes around the field tag in the template, such as `[profile_name]` or `[profile_full_name]`.
  
-* If you wish to trigger two or up to three Commands in a single action, click on the checkbox next to "Profile 2" and/or "Profile 3" and you can configure a second and/or third command line using a completely different profile and command line template.
+* If you wish to trigger two or up to three Commands in a single action, click on the checkbox next to **Profile 2** and/or **Profile 3** and you can configure a second and/or third command line using a completely different profile and command line template.
 
 * If you want to add a new template to VFE that will persist across sessions, you can edit any of the built-in ones and then use the **Add** button. You may also delete any template you no longer want to see in the list.  Note that whenever you do this, all three **Command** lists will be synchronized to contain the same list of templates.
 
