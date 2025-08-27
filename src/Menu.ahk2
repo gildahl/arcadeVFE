@@ -37,7 +37,7 @@ class TrayMenu
 
 	static Help(*)
 	{
-		Run("notepad readme.txt", A_ScriptDir)
+		Run("https://github.com/gildahl/arcadeVFE")
 	}
 
 	static ActionList(*)

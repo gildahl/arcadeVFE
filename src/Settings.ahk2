@@ -249,7 +249,7 @@ class Settings
 		global sUserFile := sUserFolder "\" gcActionListNameEdit.Text ".json"
 		TrayMenu.SetMenuName("New", Settings.sActionListName)  
 
-		gcListView := guiSettings.AddListView("-Multi" " r" 10 " x" 30 " y" 380 " w" Settings.mMetrics.Width - 30*2 " Grid", ["Device", "Action", "Sequence", "Annunciation", "", "Command", "", "Command 2", "", "", "", "", "Command 3"])
+		gcListView := guiSettings.AddListView("-Multi" " r" 10 " x" 30 " y" 380 " w" Settings.mMetrics.Width - 30*2 " Grid", ["Device", "Action", "Sequence", "Voice Phrase", "", "Command", "", "Command 2", "", "", "", "", "Command 3"])
 		fListView_ItemSelect := Settings.ListView_ItemSelect.Bind()
 		gcListView.OnEvent("ItemSelect", fListView_ItemSelect)
 		Settings.ResizeColumns()
@@ -291,7 +291,7 @@ class Settings
 
 		gcApplication_Checkbox := guiSettings.AddCheckbox("x" 45 " y" 653 " w" 220, "Operate only when the arcade is running")
 		gcApplication_Checkbox.OnEvent("Click", (*) => Settings.Application_Checkbox_Click())
-		gcApplication_Checkbox.TT := "Keep arcadeVFE dormant when the arcade emulator system`nsoftware is not running (recommended)."
+		gcApplication_Checkbox.TT := "Keep arcadeVFE dormant when the arcade emulator system`nsoftware is not running (recommended).`n`nTurning this off is primarily intended for testing."
 
 		try gcApplication_Checkbox.Value := IniRead(sIniFile, "General", "MonitorApplication", 1)
 		
@@ -591,7 +591,6 @@ class Settings
 	 */
 	static FillRomList()
 	{
-		oFilteredRomList := Map() ;a list of ATC roms only used if arcade type is ATC
 		aGameList := Array()      ;the gamelist to be assigned to the list control
 		sGameList := ""           ;used to sort the list
 		gcROMDropDown.Delete()    ;make sure dropdown control is empty
@@ -607,14 +606,6 @@ class Settings
 		mRomsByName[SPINNER] := SPINNER
 		mRomsByName[TRACKBALL] := TRACKBALL
 
-		;See if there is a filtered rom audit file for the currently selected arcade
-		;If so, read it.
-		if (FileExist(sAuditFolder "\" sArcadeString ".json"))
-		{
-			sJSON := FileRead(sAuditFolder "\" sArcadeString ".json")
-			oFilteredRomList := JSON.parse(sJSON)
-		}
-
 		;Loop through all the rom files. These must have a *.zip extension
 		Loop Files gcROMMonitorFolderEdit.Text "\*.zip"
 		{
@@ -622,9 +613,9 @@ class Settings
 
 			;Filter using the current arcade's audit list if available,
 			;otherwise, assume all roms in the folder are potentially valid
-			if (oFilteredRomList.Count)
+			if (oArcadeRomList.Count)
 			{
-				if (!oFilteredRomList.Has(OutNameNoExt))
+				if (!oArcadeRomList.Has(OutNameNoExt))
 					continue
 			}
 

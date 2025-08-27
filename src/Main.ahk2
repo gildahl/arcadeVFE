@@ -79,7 +79,6 @@ global bOnlyMonitorWhenApplicationLoaded := false
 global iRawAccelPID := 0
 global sLastActionKey := ""
 global bSuppressLastAccess := false
-global sArcadeString := ""             ;Currently may be "Arcade Time Capsule 3.6" or "Other"
 
 ;global inits
 global iRestartDelay := 0              ;Delay in between application close and restart (in ms)
@@ -93,6 +92,7 @@ global oActions	:= Map()		       ;Object used by the JSON parser to hold the Act
 global aDevices := Array()             ;Holds the list of devices (a.k.a. Action Sources)
 global mDeviceIndex := Map()           ;Holds the indexes of the devices in the list
 global mDevices := Map()               ;Holds info for all devices in the list
+global oArcadeRomList := Map()         ;Holds the curated arcade rom list including rom versions               ;
 global mRomsByName := Map()            ;A dictionary allowing a rom to be looked up by its description
 global aDefaultTemplates := Array()    ;The set of default command line templates
 global aDefaultFloors := Array()	   ;The set of default floors
@@ -132,9 +132,9 @@ global sVicinitiesFile := sConfigFolder "\vicinities.json"
 global sTweaksFile := sConfigFolder "\tweaks.json"
 global sIniFile := sConfigFolder "\arcadeVFE.ini"
 global sRawAccelExe := sRawAccelFolder "\rawaccel.exe"
-global sMame2010 := sAuditFolder "\MAME 0.139\mame64.exe" ;For MAME 2010 rom file audits
-global sMame2014 := sAuditFolder "\MAME 0.159\mame64.exe" ;For MAME 2014 rom file audits
-global sRomListFile := ""      ;gets initialized in Setup.PopulateFields()
+global sMame2010 := sAuditFolder "\mame2010\mame64.exe" ;For MAME 2010 / 0.139 rom file audits
+global sMame2014 := sAuditFolder "\mame2014\mame64.exe" ;For MAME 2014 / 0.159 rom file audits
+global sArcadeString := ""     ;gets initialized in Setup.PopulateFields(). Currently may be "Arcade Time Capsule 3.6" or "Other"
 global sLocationsIniFile := "" ;gets initialized in Setup.PopulateFields()
 
 ;group constants

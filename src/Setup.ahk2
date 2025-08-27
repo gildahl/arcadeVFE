@@ -39,8 +39,8 @@ class Setup
 
         guiSetup.OnEvent("Close", (*) => Setup.Setup_CloseButton_Click())
 
-        gcArcadeLabel := guiSetup.AddText("x" 30 " y" 10 " w" 250, "Choose your arcade software")
-        gcArcadeDropDown := guiSetup.AddDropDownList("x" 30 " y" 25 " w" 320 " +BackgroundWhite",)
+        gcArcadeLabel := guiSetup.AddText("x" 25 " y" 10 " w" 250, "Choose your arcade software.")
+        gcArcadeDropDown := guiSetup.AddDropDownList("x" 25 " y" 25 " w" 320 " +BackgroundWhite",)
         gcArcadeDropDown.OnEvent("Change", (*) => Setup.ArcadeDropDown_Change())
         gcArcadeDropDown.TT := "Select the arcade software you will be using.`nUse `"Other`" if not using ATC or a version of ATC not listed."
         
@@ -57,7 +57,7 @@ class Setup
         gcApplicationEditLabel := guiSetup.AddText("x" 25 " y" 55 " w" 350, "Application Name")
         gcApplicationEdit := guiSetup.AddEdit("x" 25 " y" 70 " w" 155 " +BackgroundWhite",)
 		gcApplicationEdit.OnEvent("Change", (*) => Setup.ApplicationEdit_Change())
-		gcApplicationEdit.TT := "Enter the name of the executable for this arcade.`nDo not include the path. For example, RetroVRArcade.exe"
+		gcApplicationEdit.TT := "Enter the name of the executable for this arcade.`nDo not include the path. For example, RetroVRArcade.exe."
 
 		gcApplicationBrowseButton := guiSetup.AddButton("x" 183 " y" 69 " w" nIconButtonWidth)
 		gcApplicationBrowseButton.OnEvent("Click", (*) => Setup.ApplicationBrowseButton_Click())
@@ -66,7 +66,7 @@ class Setup
         gcROMMonitorFolderLabel := guiSetup.AddText("x" 25 " y" 100 " w" 350, "ROM folder to monitor")
         gcROMMonitorFolderEdit := guiSetup.AddEdit("x" 25 " y" 115 " w" 462 " +BackgroundWhite",)
         gcROMMonitorFolderEdit.OnEvent("Change", (*) => Setup.ROMMonitorFolderEdit_Change())
-        gcROMMonitorFolderEdit.TT := "Enter the full path to the folder containing this arcade's MAME roms.`nThe files in this folder must have an extension of *.zip"
+        gcROMMonitorFolderEdit.TT := "Enter the full path to the folder containing this arcade's MAME roms.`nThe files in this folder must have an extension of *.zip."
 
         gcROMMonitorFolderBrowseButton := guiSetup.AddButton("x" 490 " y" 114 " w" nIconButtonWidth)
 		gcROMMonitorFolderBrowseButton.OnEvent("Click", (*) => Setup.ROMMonitorFolderBrowseButton_Click())
@@ -78,7 +78,7 @@ class Setup
 
         gcCopyRomsButton := guiSetup.AddButton("x" 25 " y" Setup.mSetup.Height - 40 " w" 80 " h" 25, "Copy Roms...")
         gcCopyRomsButton.OnEvent("Click", (*) => Setup.CopyRomsButton_Click())
-        gcCopyRomsButton.TT := "Copy roms from a designated source folder to this rom folder."
+        gcCopyRomsButton.TT := "Copy roms from a source`nfolder to this rom folder."
 
         gcSetupAuditProgress := guiSetup.AddProgress("x" 210 " y" Setup.mSetup.Height - 35 " w" 130 " h" 15 " cBlue BackgroundSilver vAuditProgress") 
         gcSetupAuditProgress.Visible := false
@@ -103,7 +103,7 @@ class Setup
         }
 
         ;****************************  Create the Copy Roms dialog ********************************
-        guiCopyRoms := Gui("-MaximizeBox -MinimizeBox", "Copy Roms")
+        guiCopyRoms := Gui("-MaximizeBox -MinimizeBox", "Copy Roms into ROM folder")
 
         guiCopyRoms.OnEvent("Close", (*) => Setup.CopyRomsCloseButton_Click())
 
@@ -113,10 +113,48 @@ class Setup
         gcRomVersionLabel := guiCopyRoms.AddText("x" 40 " y" 10 " w" 250, "Rom version")
         gcRomVersionDropDown := guiCopyRoms.AddDropDownList("x" 40 " y" 25 " w" 100 " +BackgroundWhite",)
         gcRomVersionDropDown.OnEvent("Change", (*) => Setup.RomVersionDropDown_Change())
-        gcRomVersionDropDown.TT := "Select the arcade software you will be using.`nChoose `"Other`" if not using ATC or if using a version of ATC not listed."
+        gcRomVersionDropDown.TT := "Select the version of the roms you would like to copy,`nThen use the Browse button to select the folder`nthat you would like to copy them from."
 
         gcCopyRomsBrowseButton := guiCopyRoms.AddButton("x" 160 " y" 22 " w" 80 " h" 25, "Browse...")
         gcCopyRomsBrowseButton.OnEvent("Click", (*) => Setup.CopyRomsBrowseButton_Click())
+    }
+
+    static PopulateFields()
+    {
+        global oArcadeRomList
+
+        if (!gcArcadeDropDown.Text)
+            try gcArcadeDropDown.Text := IniRead(sIniFile, "General", "Arcade", "Arcade Time Capsule 3.6")
+
+        try gcApplicationEdit.Text := IniRead(sIniFile, "General", "Application")
+        if (gcArcadeDropDown.Text != "Other")
+            gcApplicationEdit.Text := "RetroVRArcade.exe"        
+
+        try gcROMMonitorFolderEdit.Text := IniRead(sIniFile, "General", "ROMFolder")
+
+        ;Initialize these globals
+        global sArcadeString := gcArcadeDropDown.Text
+        global sLocationsIniFile := sArcadeFolder "\" sArcadeString ".Locations.ini"
+        
+        sRomListFile := sArcadeFolder "\" sArcadeString ".RomList.json"
+
+        ;Initialize the global oArcadeRomList
+        if (FileExist(sRomListFile))
+        {
+            sJSON := FileRead(sRomListFile)
+            oArcadeRomList := JSON.parse(sJSON)
+        }
+        else {
+            oLog.LogLine("ERROR: Could not find rom list file: " sRomListFile "`n")
+        }
+
+        iCount := oArcadeRomList.Count
+        if (iCount == 0)
+            oLog.LogLine("ERROR: Arcade rom list is empty!`n")
+
+        gcCopyRomsButton.Enabled := gcAuditButton.Enabled := sArcadeString == "Other" ? false : true
+
+        Setup.UpdateApplyButton()
     }
 
     static CopyRomsBrowseButton_Click()
@@ -139,27 +177,10 @@ class Setup
             ;As a future convenience, remember the folder that had been selected for this version of the roms
             try IniWrite(sFolder, sIniFile, "General", gcRomVersionDropDown.Text "RomVersionFolder")
 
-            oFilteredRomList := Map()
-
-            ;Open the rom list file for the selected arcade
-            if (FileExist(sRomListFile))
-            {
-                sJSON := FileRead(sRomListFile)
-                oFilteredRomList := JSON.parse(sJSON)
-            }
-            else
-            {
-                oLog.LogLine("ERROR: Could not find rom list file: " sRomListFile "`n")
-            }
-
-            iCount := oFilteredRomList.Count
-            if (iCount == 0)
-                return
-
             ;Copy each file in the rom list having the specified version
-            for sRom, mInfo in oFilteredRomList
+            for sRom, mInfo in oArcadeRomList
             {
-                gcSetupAuditProgress.Value := A_Index / iCount * 100 ;increment progress bar
+                gcSetupAuditProgress.Value := A_Index / oArcadeRomList.Count * 100 ;increment progress bar
 
                 if (mInfo["MAMEVersion"] == gcRomVersionDropDown.Text)
                     try FileCopy(sFolder "\" sRom ".zip", gcROMMonitorFolderEdit.Text, 1)
@@ -182,34 +203,15 @@ class Setup
         ;Delete contents of the list since user may have changed arcades
         gcRomVersionDropDown.Delete()
 
-        ;Open the rom list file
-        oFilteredRomList := Map()
-
-        if (FileExist(sRomListFile))
-		{
-			sJSON := FileRead(sRomListFile)
-			oFilteredRomList := JSON.parse(sJSON)
-		}
-        else
-        {
-            oLog.LogLine("ERROR: Could not find rom list file: " sRomListFile "`n")
-        }
-
-        iCount := oFilteredRomList.Count
-        if (iCount == 0)
-            return
-
         ;Pull all unique MAME versions used by the rom list and
         ;populate the version list with these.
         oVersions := Map()
-        for sRom, mInfo in oFilteredRomList
-        {
-            oVersions[mInfo["MAMEVersion"]] := 1
+        for sRom, mInfo in oArcadeRomList {
+            oVersions[mInfo["MAMEVersion"]] := 1 ;1 is just a dummy value; we're storing the versions in the index.
         }
 
         aVersions := Array()
-        for ver, j in oVersions
-        {
+        for ver, j in oVersions {
             aVersions.Push(ver)
         }
 
@@ -225,9 +227,8 @@ class Setup
         guiCopyRoms.Hide()
     }
     
-    static RomVersionDropDown_Change()
+    static RomVersionDropDown_Change() 
     {
-
     }
 
     /**
@@ -240,23 +241,6 @@ class Setup
         gcSetup_CloseButton.Enabled := false
         gcSetupAuditProgress.Visible := true
         oAuditLog.Init(sAuditFolder "\audit.txt", "arcadeVFE ROM File Audit")
-
-        ;Open the rom list file
-        oFilteredRomList := Map()
-
-        if (FileExist(sRomListFile))
-		{
-			sJSON := FileRead(sRomListFile)
-			oFilteredRomList := JSON.parse(sJSON)
-		}
-        else
-        {
-            oLog.LogLine("ERROR: Could not fine rom list file: " sRomListFile "`n")
-        }
-
-        iCount := oFilteredRomList.Count
-        if (iCount == 0)
-            return
 
         sROMFolder := gcROMMonitorFolderEdit.Text
         oAuditLog.LogLine("INFO: Start auditing ROM files in folder: " sROMFolder "\*.zip`n")
@@ -281,9 +265,9 @@ class Setup
         }
 
         ;Loop through each file in the rom list for this arcade, doing a version-specific validation of each.
-        for sRom, mInfo in oFilteredRomList
+        for sRom, mInfo in oArcadeRomList
         {
-            gcSetupAuditProgress.Value := A_Index / iCount * 100
+            gcSetupAuditProgress.Value := A_Index / oArcadeRomList.Count * 100
 
             ;Missing file check
             if (!FileExist(sROMFolder "\" sRom ".zip"))
@@ -340,7 +324,7 @@ class Setup
             sAnomalyPhrase := "anomaly was found."        
 
         oAuditLog.LogLine("`n")
-        oAuditLog.LogLine("INFO: Completed audit of " iCount " rom files. " iErrorCount " " sAnomalyPhrase "`n")
+        oAuditLog.LogLine("INFO: Completed audit of " oArcadeRomList.Count " rom files. " iErrorCount " " sAnomalyPhrase "`n")
         oAuditLog.LogLine("INFO: Please note that ROMs reporting anomalies may still work, but they should be tested.`n")
 
         gcSetupAuditProgress.Visible := false
@@ -474,26 +458,6 @@ class Setup
             SplitPath(sApplicationPath,,,&OutExt, &OutNameNoExt)
             gcApplicationEdit.Text := OutNameNoExt "." OutExt
         }
-
-        Setup.UpdateApplyButton()
-    }
-
-    static PopulateFields()
-    {
-        if (!gcArcadeDropDown.Text)
-            try gcArcadeDropDown.Text := IniRead(sIniFile, "General", "Arcade", "Arcade Time Capsule 3.6")
-
-        try gcApplicationEdit.Text := IniRead(sIniFile, "General", "Application")
-        if (gcArcadeDropDown.Text != "Other")
-            gcApplicationEdit.Text := "RetroVRArcade.exe"        
-
-        try gcROMMonitorFolderEdit.Text := IniRead(sIniFile, "General", "ROMFolder")
-
-        global sArcadeString := gcArcadeDropDown.Text
-        global sLocationsIniFile := sArcadeFolder "\" sArcadeString ".Locations.ini"
-        global sRomListFile := sArcadeFolder "\" sArcadeString ".RomList.json"
-
-        gcCopyRomsButton.Enabled := gcAuditButton.Enabled := sArcadeString == "Other" ? false : true
 
         Setup.UpdateApplyButton()
     }
