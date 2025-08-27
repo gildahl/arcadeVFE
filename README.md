@@ -13,7 +13,7 @@ To this end, arcadeVFE includes these features:
 * Voice notification of game control layout changes.
 * Mapping of keyboard keys to controller buttons in order to, for example, better facilitate access to the MAME tab configuration menus while in VR.
 * A detailed game information overlay that can be viewed in VR using one's favorite desktop viewport. This information comes from MAME gameinfo.dat and history.xml files, and can also include pictures of your choice--for example, flyers, pcbs, or pictures of real cab control panels (which can be very handy as a reference in the Candy Cab rooms of ATC).
-* Rom management functions such as rom file auditing and curation.
+* Rom management functions such as rom file auditing and curation features.
 * A machine location editor to more easily locate your favorite machine in the virtual arcade.
 
 Resources
