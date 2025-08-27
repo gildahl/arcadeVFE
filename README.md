@@ -174,7 +174,7 @@ This feature will display a desktop overlay on the primary monitor showing detai
 
 To navigate through the Game Info screens, you will want to assign at least the "Right" action in the game controller button configuration (and optionally, the "Left", "Start", and "Exit" options), using the **Game Info Navigation** radio switch at the top of the screen. If you would like custom pictures to be displayed along with the text information, you may create additional folders within the `..\GameInfo\Assets` subfolder of arcadeVFE, and fill it with `*.jpg` or `*.png` files having root names that are the same as the roms you would like to associate them with. Examples are provided in the `..\GameInfo\Assets\cpanels` and `..\assets\flyers folders`. Feel free to add additional folders as you like.
 
-**Note**: Be aware that this feature is NOT compatible with spinner and trackball games **IF** you use mouse clicks as input. To address this, either do not use this feature or use XInput for your fire button instead. See the [Issues/Limitations](#Issues/Limitations) section at the bottom of this document for more information about this potential issue.
+**Note**: Be aware that this feature is NOT compatible with spinner and trackball games **IF** you use mouse clicks as input. To address this, either do not use this feature or use XInput for your fire button instead. See the [Issues and Limitations](#Issues-and-Limitations) section at the bottom of this document for more information about this potential issue.
 
 ### Always voice annunciate
 If you have configured voice annunciation phrases for your actions, then this switch can control when these are heard. This checkbox has three states. When checked (the default), the voice will be heard every time a game referenced in the action table is run. When unchecked, voice annunciation is effectively turned off. Finally, if the checkbox is configured with the minus sign (-), then voice annunciation will only occur if an action was actually executed (see the **Note 2** in the [ROM Monitor](#ROM-Monitor) section above).
@@ -188,8 +188,8 @@ This option will display edit controls under the Choose ROM list containing the 
 ### Show Tooltips
 In addition to this documentation file, the **Settings** screen implements tooltips on all controls to explain their operation. If you no longer need the tooltips, you can turn them off by unchecking the **Show Tooltips** checkbox.
 
-Issues/Limitations
-==================
+Issues and Limitations
+======================
 Because this software is not code-integrated with the host emulator, but relies on external automation techniques, there are a few limitations that should be noted. These may never be noticed, but they are good to be aware of.
 
 1. arcadeVFE can only tell when a new game is loaded, but not when it is exited. It can only surmise that you have exited a game when it detects that you have started a new and different game. Consequently, if you exit a game and re-enter the SAME game, arcadeVFE will be oblivious that you did this. This should not affect gameplay at all since whatever profiles were run while you were first playing will still be in effect. However, arcadeVFE will not be able to provide feedback (such as a beep or voice annunciation) when restarting the game. Only upon starting a new game.
