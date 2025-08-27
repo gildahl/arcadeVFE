@@ -73,7 +73,7 @@ To setup a manual action that will run upon a particular button or key press, Ch
 
 **Note 1**: In addition to command line actions, game controller buttons can also be configured to send virtual keyboard key presses or perform game information screen navigation actions. These options can be configured by choosing the appropriate radio button at the top of the screen whenever a game controller is selected in the "Devices" list.
 
-**Note 2**: It is possible to assign multiple actions to the same button or key press, in which case the actions will be invoked sequentially upon each press. See the "Sequence" section below for more informationa about how this works.
+**Note 2**: It is possible to assign multiple actions to the same button or key press, in which case the actions will be invoked sequentially upon each press. See the "Sequence" section below for more information about how this works.
 
 Voice Annunciation
 ==================
