@@ -102,7 +102,7 @@ Additional Notes:
 
 * If you want to add a new template to VFE that will persist across sessions, you can edit any of the built-in ones and then use the Add button. You may also delete any template you no longer want to see in the list.  Note that whenever you do this, all three Command lists will be synchronized to contain the same list of templates.
 
-* As an FYI, these templates are saved in a file called templates.json in the root VFE folder. You may delete this file to restore the original shipping defaults.
+* As an FYI, these templates are saved in a file called templates.json in the root VFE folder. You may delete this file to restore the original defaults.
 
 * IMPORTANT: Be aware that VFE pauses active operation while the Settings screen is open, so be sure to close it when done with configuration.
 
