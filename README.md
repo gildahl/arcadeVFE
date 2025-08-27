@@ -127,8 +127,8 @@ For `Keyboard` and game controller actions, it is possible to assign multiple ac
 
 Sequence numbers are assigned to each action automatically when you add the action. To change the auto-assigned sequence of an action, just use the **Move Up** and **Move Down** buttons and you will see the sequence number for that action adjust according to its position in the list. Note that for `ROM Monitor` actions, the sequence number will always be 1 (since these are fully automated actions that have no need for sequencing).
 
-### Annunciation
-This is the annunciation phrase you assigned to the action.
+### Voice Phrase
+This is the voice annunciation phrase you assigned to the action.
 
 ### Command
 This is the command line template with field tags replaced (i.e. the actual command line that will be executed).
