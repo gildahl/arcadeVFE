@@ -44,7 +44,7 @@ Just remember to close the Settings screen when you use your virtual arcade sinc
 
 Log
 ===
-See the log.txt file in the \Log subfolder if needed for troubleshooting. This log is overwritten at the start of every run. Two beeps will be sounded whenever an error is written to the file. When reporting any issues, be sure to include the most recent log with your description of the problem. You may report errors on the Discord.
+See the `log.txt` file in the `\Log` subfolder if needed for troubleshooting. This log is overwritten at the start of every run. Two beeps will be sounded whenever an error is written to the file. When reporting any issues, be sure to include the most recent log with your description of the problem. You may report errors on the Discord.
 
 Configuration
 =============
@@ -56,13 +56,13 @@ ROM Monitor:
 ------------
 To setup a new rom to be monitored, choose "ROM Monitor" from the "Device List" list in the Settings screen. Next, choose a rom from the "Choose ROM" list and then use the "Profile" and "Command" fields to configure the specific commands that should execute when that game is loaded. Finally, press the "Assign ROM" button to add your defined command(s) to the "Action List". 
 
-**Note 1**: If you choose one of the "[Group...]" options in the ROM list, you can conveniently assign an action set to a whole group of similarly controlled games. If any of the games in that group need an alternate configuration on an exception basis, simply create another action for that specific rom, which will override the group setting. There is also a "[Default]" action which can be configured for cases where there is neither a rom-specific action nor group action to otherwise handle it.  The following are some examples of Groups.
+**Note 1**: If you choose one of the `[Group...]` options in the ROM list, you can conveniently assign an action set to a whole group of similarly controlled games. If any of the games in that group need an alternate configuration on an exception basis, simply create another action for that specific rom, which will override the group setting. There is also a `[Default]` action which can be configured for cases where there is neither a rom-specific action nor group action to otherwise handle it.  The following are some examples of Groups.
 
-- [Group, 4-way] : assigns the defined action to any game whose native controller
+- `[Group, 4-way]` : assigns the defined action to any game whose native controller
                     is a 4-way joystick.
-- [Group, 8-way] : assigns the defined action to any game whose native controller
+- `[Group, 8-way]` : assigns the defined action to any game whose native controller
                     is a 8-way joystick.
-- [Group, rotary]: assigns the defined action to any game whose native controller
+- `[Group, rotary]`: assigns the defined action to any game whose native controller
                     is a rotary joystick.
 
 **Note 2**: Be aware that arcadeVFE is "smart" enough to not execute the same action twice in a row. For example, if you switch between two games that use the same commands (such as two 4-way joystick games that use the same profiles), or exit a game and then restart the same one, profile loading will be suppressed since that configuration should still be in effect.
@@ -85,24 +85,24 @@ If you would like arcadeVFE to verbally announce an action when it is executed, 
 
 How to Configure Command-Line Actions
 =====================================
-"Profiles", as defined in this document, are files containing specific game controller configurations created by game controller configuration software. Examples of such files might be "Ikari.vcd" for Virtual Controller, or "4-way.ugc" for UltraMap. To make command creation easier, you may specify the file name of a profile separately in the "Profile" field, and then choose a Command template in the "Command" field, which will get filled in with the profile's file name when the "Assign" button is pressed.  This template will typically contain one of the following field tags:
+"Profiles", as defined in this document, are files containing specific game controller configurations created by game controller configuration software. Examples of such files might be `Ikari.vcd` for Virtual Controller, or `4-way.ugc` for UltraMap. To make command creation easier, you may specify the file name of a profile separately in the "Profile" field, and then choose a Command template in the "Command" field, which will get filled in with the profile's file name when the "Assign" button is pressed.  This template will typically contain one of the following field tags:
 
-- [profile_name]        - will be replaced by the filename or contents of "Profile" field
-- [profile_full_name]   - will be replaced by the full path/file or contents of "Profile" field
+- `[profile_name]`        - will be replaced by the filename or contents of "Profile" field
+- `[profile_full_name]`   - will be replaced by the full path/file or contents of "Profile" field
 
-For example, if the profile is "C:\Ultrastik\Profiles\qbert.ugc" and the command line template is "C:\UltraMap\UltraMap.exe [profile_name]", then upon pressing the "Assign" button, the command line that will be assigned to the action will be "C:\UltraMap\UltraMap.exe qbert.ugc". If the full path to the profile is needed, then the command line template should be changed to "C:\UltraMap\UltraMap.exe [profile_full_name]. If the command line template has no field tags, then the command line will be used verbatim with no insertions. 
+For example, if the profile is `C:\Ultrastik\Profiles\qbert.ugc` and the command line template is `C:\UltraMap\UltraMap.exe [profile_name]`, then upon pressing the "Assign" button, the command line that will be assigned to the action will be `C:\UltraMap\UltraMap.exe qbert.ugc`. If the full path to the profile is needed, then the command line template should be changed to `C:\UltraMap\UltraMap.exe [profile_full_name]`. If the command line template has no field tags, then the command line will be used verbatim with no insertions. 
 
 Additional Notes:
 -----------------
 * To test a command line while still in the Settings screen, press the "Test" button next to the Command field. Hovering over the "Test" button with the Show Tooltips option turned on, will show the actual command line that will be executed.
 
-* If your profile filename needs quotes around it, then simply add quotes around the field tag in the template, such as "[profile_name]" or "[profile_full_name]".
+* If your profile filename needs quotes around it, then simply add quotes around the field tag in the template, such as `[profile_name]` or `[profile_full_name]`.
  
 * If you wish to trigger two or up to three Commands in a single action, click on the checkbox next to "Profile 2" and/or "Profile 3" and you can configure a second and/or third command line using a completely different profile and command line template.
 
 * If you want to add a new template to VFE that will persist across sessions, you can edit any of the built-in ones and then use the Add button. You may also delete any template you no longer want to see in the list.  Note that whenever you do this, all three Command lists will be synchronized to contain the same list of templates.
 
-* As an FYI, these templates are saved in a file called templates.json in the root VFE folder. You may delete this file to restore the original defaults.
+* As an FYI, these templates are saved in a file called `templates.json` in the root VFE folder. You may delete this file to restore the original defaults.
 
 * IMPORTANT: Be aware that VFE pauses active operation while the Settings screen is open, so be sure to close it when done with configuration.
 
@@ -110,102 +110,82 @@ Understanding the Action List Table
 ===================================
 Each time you use the "Assign" button to create a new action, that action will be added to the Action List table. If you get a warning saying "Duplicate", arcadeVFE will highlight the duplicate action in the list at which point you may keep it or delete it.
 
-When you complete the table, press the "Save list" button to save it.  It will be saved in the \User folder as a *.json file having the name specified in the "Activity list name" field above the table. By default this name is "Arcade Controller" (saved as "Arcade Controller.json"). If you switch between multiple controllers for use with your emulator, you could save different action lists under different names. These can then be loaded in the future by creating a shortcut that provides the name as a command line parameter when launching VFE.  For example,
+When you complete the table, press the "Save list" button to save it.  It will be saved in the `\User` folder as a `*.json` file having the name specified in the "Activity list name" field above the table. By default this name is "Arcade Controller" (saved as `Arcade Controller.json`). If you switch between multiple controllers for use with your emulator, you could save different action lists under different names. These can then be loaded in the future by creating a shortcut that provides the name as a command line parameter when launching VFE.  For example,
 
-vfe.exe "Arcade Controller" or
-vfe.exe "Gamepad"
+* `>vfe.exe "Arcade Controller"` or
+* `>vfe.exe "Gamepad"`
 
-The Action list table contains the following columns:
+## The Action list table contains the following columns:
 
-Device List
--------------
+### Device List
 The device or method that was chosen to trigger the action.
 
-Action
-------
-* For the "ROM Monitor" Device List, this column shows the rom you chose to monitor.
-* For the "Keyboard" Device List, it shows the keyboard key or key combo you assigned.
+### Action
+* For the "ROM Monitor" Device List option, this column shows the rom you chose to monitor.
+* For the "Keyboard" Device List option, it shows the keyboard key or key combo you assigned.
 * For a game controller, it shows the button number you assigned.
 
-Sequence
---------
+### Sequence
 For "Keyboard" and game controller actions, it is possible to assign multiple actions to the same key or button. The effect of this is that when you press that key or button the first time, the action with a sequence number of 1 will be triggered. When you press that same key or button a second time, the action with a sequence number of 2 will be triggered, and so forth (with each action being verbally annunciated if you provided an annunciation phrase with each). This provides a means to manually switch between multiple profiles using a single key or button. 
 
 Sequence numbers are assigned to each action automatically when you add the action. To change the auto-assigned sequence of an action, just use the "Move Up" and "Move Down" buttons and you will see the sequence number for that action adjust according to its position in the list. Note that for "ROM Monitor" actions, the sequence number will always be 1 (since these are fully automated actions that have no need for sequencing).
 
-Annunciation
-------------
+### Annunciation
 This is the annunciation phrase you assigned to the action.
 
-Command
--------
+### Command
 This is the command line template with field tags replaced (i.e. the actual command line that will be executed).
 
-Command 2 and Command 3
------------------------
+### Command 2 and Command 3
 These are the second and third optional command line templates with field tags replaced (i.e. the actual command lines that will be executed).
 
-
-Managing the Action List table
-==============================
+## Managing the Action List table
 Below the Action List table are several additional buttons with the following functions:
 
-Move Up / Move Down
--------------------
+### Move Up / Move Down
 These buttons are intended for use in changing the sequence order of actions assigned to a single button or key press as described above under "Sequence". 
 
-Clear all
----------
+### Clear all
 This clears the entire table (if you press this by mistake, just close the screen without saving and re-open it).
 
-Copy action
------------
+### Copy action
 Copies fields from the selected row back into the editor fields to ease the creation of similar entries.
 
-Delete action
--------------
+### Delete action
 Removes the selected row from the table.
 
-Save actions
-------------
-Saves all actions in the table to the <action list name>.vfe file. 
+### Save actions
+Saves all actions in the table to the `User\<action list name>.json` file. 
 
 User Preferences
 ================
-These options allow the user to make a adjustments to the operation of arcadeVFE.
+These options allow the user to make adjustments to certain features.
 
-Operate only when the arcade is running
----------------------------------------
-This is a recommended setting for most use cases (and required for the RawAccel and Game Information Display options). 
+### Operate only when the arcade is running
+This is a recommended setting for most use cases (and required for the RawAccel and Game Info Display options). Turning this off is mainly intended for testing.
 
-Run RawAccel
-------------
-RawAccel is a utility that can be found on GitHub at https://github.com/RawAccelOfficial/rawaccel. This software may be needed to tune some trackballs to have additional sensitivity. For example, I need it to make my Ultimarc U-Trak trackball work correctly in Arcade Time Capsule. To integrate RawAccel with arcadeVFE, simply install it to a subfolder of VFE called ..\RawAccel.
+### Run RawAccel
+RawAccel is a utility that can be found on GitHub at https://github.com/RawAccelOfficial/rawaccel. This software may be needed to tune some trackballs to have additional sensitivity. For example, I need it to make my Ultimarc U-Trak trackball work correctly in Arcade Time Capsule. To integrate RawAccel with arcadeVFE, simply install it to a subfolder of VFE called `..\RawAccel`.
 
-This option is only available when the "Operate only when the arcade is running" setting is configured. When this option is turned on VFE will automatically load RawAccel when the application runs, and will close RawAccel when the application closes. It is up to the user to configure RawAccel properly for their trackball before use. 
+This option is only available when the **Operate only when the arcade is running** above setting is configured. When this option is turned on VFE will automatically load RawAccel when the arcade is running, and will close RawAccel when the arcade is closed. It is up to the user to configure RawAccel properly for their trackball before use. 
 
-Use Game Info Overlay
----------------------
-This feature will display a desktop overlay on the primary monitor showing detailed game information, including pictures, associated with the game currently running in the emulator. This information may be easily viewed while you are in VR by using your favorite desktop viewport (third party, or one provided with your headset). The text information comes from the mameinfo.dat and history.xml files in the arcadeVFE root folder. This display will automatically unload when the emulator is closed (which is why this feature is also only available when the "Operate only when the arcade is running" setting is configured).
+### Use Game Info Overlay
+This feature will display a desktop overlay on the primary monitor showing detailed game information, including pictures, associated with the game currently running in the emulator. This information may be easily viewed while you are in VR by using your favorite desktop viewport (third party, or one provided with your headset). The text information comes from the `mameinfo.dat` and `history.xml` files in the `\GameInfo` folder. This display will automatically unload when the arcade is closed (which is why this feature is also only available when the **Operate only when the arcade is running** setting is configured).
 
-To navigate through the Game Info screens, you will want to assign at least the "Right" action in the game controller button configuration (and optionally, the "Left", "Start", and "Exit" options), using the "Game Info Navigation" radio switch at the top of the screen. If you would like custom pictures to be displayed along with the text information, just create a folder within the ..\GameInfo\Assets subfolder of arcadeVFE, and fill it with *.jpg or *.png files having root names that are the same as the roms you would like to associate them with. Examples are provided in the ..\GameInfo\Assets\cpanels and ..\assets\flyers folders. Feel free to add additional folders as you like.
+To navigate through the Game Info screens, you will want to assign at least the "Right" action in the game controller button configuration (and optionally, the "Left", "Start", and "Exit" options), using the **Game Info Navigation** radio switch at the top of the screen. If you would like custom pictures to be displayed along with the text information, you may create additional folders within the `..\GameInfo\Assets` subfolder of arcadeVFE, and fill it with `*.jpg` or `*.png` files having root names that are the same as the roms you would like to associate them with. Examples are provided in the `..\GameInfo\Assets\cpanels` and `..\assets\flyers folders`. Feel free to add additional folders as you like.
 
-**Note** Be aware that this feature is NOT compatible with spinner and trackball games IF you use mouse clicks as input. Use XInput instead. See the Limitations section at the bottom of this document for more information about this potential issue.
+**Note**: Be aware that this feature is NOT compatible with spinner and trackball games **IF** you use mouse clicks as input. To address this, either do not use this feature or use XInput for your fire button instead. See the Limitations section at the bottom of this document for more information about this potential issue.
 
-Always voice annunciate
------------------------
-If you have configured voice annunciation phrases to your actions, then this switch can control when these are heard. This checkbox has three states. When checked (the default), the voice will be heard every time a game in the action table is loaded (including default games). When unchecked, voice annunciation is effectively turned off. Finally, if the checkbox is configured with the minus sign (-), then voice annunciation will only occur if an actual profile switch is conducted (see the **Note** in the ROM Monitor section above).
+### Always voice annunciate
+If you have configured voice annunciation phrases for your actions, then this switch can control when these are heard. This checkbox has three states. When checked (the default), the voice will be heard every time a game referenced in the action table is run. When unchecked, voice annunciation is effectively turned off. Finally, if the checkbox is configured with the minus sign (-), then voice annunciation will only occur if an action was actually executed (see the **Note 2** in the [ROM Monitor](#ROM-Monitor) section above).
 
-Beep on action
---------------
+### Beep on action
 This option will sound a beep whenever a command action happens. This can be useful as a debugging tool by asserting profile changes independent of the voice option.
 
-Machine Locations
------------------
+### Machine Locations
 This option will display edit controls under the Choose ROM list containing the locations of arcade machines in the virtual arcade. You may edit these as you please. 
 
-Show Tooltips
--------------
+### Show Tooltips
 In addition to this documentation file, the Settings screen implements tooltips on all controls to explain their operation. If you no longer need the tooltips, you can turn them off by unchecking the "Show Tooltips" checkbox.
 
 Issues/Limitations
