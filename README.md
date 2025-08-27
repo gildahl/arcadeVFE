@@ -26,11 +26,11 @@ Tested Software
 ===============
 arcadeVFE has been tested successfully with the following software:
 
-* Arcade Time Capsule - fantastic MAME-based VR arcade and main tested target of arcadeVFE
-* Virtual Controller - software to create virtual XInput controllers
-* Ultimarc UltraMap - software to modify behavior of Ultimarc's UltraStik 360 joysticks
-* Ultimarc JoyTray - software to control ServoStik sticks, including U360 with ServoStik upgrade
-* RawAccel - software to adjust sensitivity of mouse/trackball controllers
+* [Arcade Time Capsule](https://x.com/ArcadeHalf?ref_src=twsrc%5Egoogle%7Ctwcamp%5Eserp%7Ctwgr%5Eauthor) - fantastic MAME-based VR arcade and main tested target of arcadeVFE
+* [Virtual Controller](https://sourceforge.net/projects/vjoy-controller/) - software to create virtual XInput controllers
+* [Ultimarc UltraMap](https://www.ultimarc.com/arcade-controls/joysticks/ultrastik-360-oval-top-clone/) - software to modify behavior of Ultimarc's UltraStik 360 joysticks
+* [Ultimarc JoyTray](https://www.ultimarc.com/arcade-controls/joysticks/servostik/) - software to control ServoStik sticks, including U360 with ServoStik upgrade
+* [RawAccel](https://github.com/RawAccelOfficial/rawaccel) - software to adjust sensitivity of mouse/trackball controllers
 
 Installation
 ============
