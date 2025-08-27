@@ -26,17 +26,17 @@ Tested Software
 ===============
 arcadeVFE has been tested successfully with the following software:
 
-* Arcade Time Capsule (fantastic MAME-based VR arcade and main tested target of arcadeVFE)
-* Virtual Controller  (software to create virtual XInput controllers)
-* Ultimarc UltraMap   (software to modify behavior of Ultimarc's UltraStik 360 joysticks)
-* Ultimarc JoyTray    (software to control ServoStik sticks, including U360 with ServoStik upgrade)
-* RawAccel            (software to adjust sensitivity of mouse/trackball controllers)
+* Arcade Time Capsule - fantastic MAME-based VR arcade and main tested target of arcadeVFE
+* Virtual Controller - software to create virtual XInput controllers
+* Ultimarc UltraMap - software to modify behavior of Ultimarc's UltraStik 360 joysticks
+* Ultimarc JoyTray - software to control ServoStik sticks, including U360 with ServoStik upgrade
+* RawAccel - software to adjust sensitivity of mouse/trackball controllers
 
 Installation
 ============
-After downloading the distribution zip file, you MUST first right click on it, choose Properties, and check the "Unblock" checkbox at the bottom and click Apply. After doing this, simply extract the zip into an empty folder on your PC that has read/write access.
+After downloading the distribution zip file, you must first right click on it, choose Properties, and check the "Unblock" checkbox at the bottom and click Apply. After doing this, simply extract the zip into an empty folder on your PC that has read/write access.
 
-When you first the executable (vfe.exe) for the first time, it will create a few subfolders and extract some additional files into them. It will also display a small "Initial Setup" dialog in which you should choose your virtual arcade, the virtual arcade's executable, and the virtual arcade's rom folder. Once you've set the rom folder, you can also do a quick audit of the roms there by pressing the "Audit ROMs..." button.  
+When you launch the executable (vfe.exe) for the first time, it will create a few subfolders and extract some additional files into them. It will also display a small "Initial Setup" dialog in which you will choose your virtual arcade, the virtual arcade's executable, and the virtual arcade's rom folder. Once you've set the rom folder, you can also do a quick audit of the roms by pressing the "Audit ROMs..." button.  
 
 Once you apply these settings and close the dialog, you will be taken directly to the "Settings" screen where you can begin configuration. Note that in the future, whenever you start arcadeVFE, you will not see anything on the screen, but rather it will create a joystick icon in the Windows Tray indicating normal background mode is active. If you need to return to the Settings dialog, just right-click on this icon and choose "Settings...". You can also click on the "Initial Setup" button in the "Settings" screen to re-invoke the "Initial Setup" dialog.
 
@@ -48,28 +48,28 @@ Configuration
 =============
 arcadeVFE offers two different modes of operation. The first is a "ROM Monitor" mode that can execute game-specific actions whenever a MAME rom file is accessed. This mode provides full automated game controller configuration in MAME environments like Arcade Time Capsule. 
 
-The second mode provides the option to trigger actions manually when a game controller button or keyboard key is pressed. Both "ROM Monitor" and keyboard/button actions can be added to the action list in any combination and are simultaneously active. 
+The second mode provides the option to trigger actions manually when a game controller button or keyboard key is pressed. Both "ROM Monitor" and keyboard/button actions can be added to the action list in any combination and are simultaneously active whenever the virtual arcade is running. 
 
 ROM Monitor:
 ------------
-To setup a new rom to be monitored, choose "ROM Monitor" from the "Device List" list in the Settings screen, then ensure that the "ROM folder to monitor" field contains the name of the folder containing MAME rom files for your emulator. These must be in *.zip file format. Next, choose a rom from the "Choose ROM" list that you want to trigger an action and use the "Profile" and "Command" fields to configure the specific command line that should execute when that game is loaded. Finally, press the "Assign ROM" button to add your defined command(s) to the "Action List". 
+To setup a new rom to be monitored, choose "ROM Monitor" from the "Device List" list in the Settings screen. Next, choose a rom from the "Choose ROM" list and then use the "Profile" and "Command" fields to configure the specific commands that should execute when that game is loaded. Finally, press the "Assign ROM" button to add your defined command(s) to the "Action List". 
 
-**Note 1** If you choose one of the "[Group...]" options in the ROM list, you can conveniently assign an action set to a whole group of similarly controlled games. If any of the games in that group are need an alternate configuration on an exception basis, you can simply create another action for that specific rom, which will override the group setting.  There is also a "[Default]" action which can be configured for cases where there is neither a rom-specific action nor group action to otherwise handle it.  The following are some examples of Groups.
+**Note 1** If you choose one of the "[Group...]" options in the ROM list, you can conveniently assign an action set to a whole group of similarly controlled games. If any of the games in that group need an alternate configuration on an exception basis, simply create another action for that specific rom, which will override the group setting. There is also a "[Default]" action which can be configured for cases where there is neither a rom-specific action nor group action to otherwise handle it.  The following are some examples of Groups.
 
 - [Group, 4-way] : assigns the defined action to any game whose native controller
-                    is a 4-way joystick and does not have a game-specific action.
+                    is a 4-way joystick.
 - [Group, 8-way] : assigns the defined action to any game whose native controller
-                    is a 8-way joystick and does not have a game-specific action.
+                    is a 8-way joystick.
 - [Group, rotary]: assigns the defined action to any game whose native controller
-                    is a rotary joystick and does not have a game-specific action.
+                    is a rotary joystick.
 
 **Note 2** Be aware that arcadeVFE is "smart" enough to not execute the same command line twice in a row. For example, if you switch between two games that use the same commands (such as two 4-way joystick games that use the same profiles), or exit a game and then restart the same one, profile loading will be suppressed since that configuration should still be loaded.
 
 Buttons and Key Presses:
 ------------------------
-To setup a manual action that will run upon a particular button or key press, Choose "Keyboard" or one of the game controllers from the Device List in the Settings screen. Next, use the "Profile name" and "Command line template" fields to configure the command line that will execute when the button or key is pressed. Finally, press the "Assign" button to choose the actual button or key you want to assign to the action and add it to the Actions list.
+To setup a manual action that will run upon a particular button or key press, Choose "Keyboard" or one of the game controllers from the Device List in the Settings screen. Next, use the "Profile" and "Command" fields to configure the command line that will execute when the button or key is pressed. Finally, press the "Assign" button to choose the actual button or key you want to assign to the action and add it to the Actions list.
 
-**Note** In addition to command line actions, game controller buttons can also be configured to act send virtual keyboard key presses or perform game information screen navigation actions. These options can be configured by choosing the appropriate radio button at the top of the screen whenever a game controller is selected in the "Devices" list.
+**Note** In addition to command line actions, game controller buttons can also be configured to send virtual keyboard key presses or perform game information screen navigation actions. These options can be configured by choosing the appropriate radio button at the top of the screen whenever a game controller is selected in the "Devices" list.
 
 Voice Annunciation
 ==================
@@ -81,10 +81,10 @@ If you would like arcadeVFE to verbally announce an action when it is executed, 
 
 How to Configure Command-Line Actions
 =====================================
-"Profiles" are the files containing specific game controller configurations created by game controller configuration software such as Ikari.vcd for Virtual Controller, or 4-way.ugc for UltraMap. To make command creation easier, you may specify the name of a profile separately in the "Profile" field, and then choose a Command template in the "Command" field, which will get filled in with the profile when the "Assign" button is pressed.  This template will typically contain one of the following field tags:
+"Profiles" are files containing specific game controller configurations created by game controller configuration software such as Ikari.vcd for Virtual Controller, or 4-way.ugc for UltraMap. To make command creation easier, you may specify the name of a profile separately in the "Profile" field, and then choose a Command template in the "Command" field, which will get filled in with the profile when the "Assign" button is pressed.  This template will typically contain one of the following field tags:
 
-[profile_name]        - will be replaced by the filename or contents of "Profile" field
-[profile_full_name]   - will be replaced by the full path/file or contents of "Profile" field
+- [profile_name]        - will be replaced by the filename or contents of "Profile" field
+- [profile_full_name]   - will be replaced by the full path/file or contents of "Profile" field
 
 For example, if the profile is "C:\Ultrastik\Profiles\qbert.ugc" and the command line template is "C:\UltraMap\UltraMap.exe [profile_name]", then upon pressing the "Assign" button, the command line that will be assigned to the action will be "C:\UltraMap\UltraMap.exe qbert.ugc". If the full path to the profile is needed, then the command line template should be changed to "C:\UltraMap\UltraMap.exe [profile_full_name]. If the command line template has no field tags, then the command line will be used verbatim with no insertions. 
 
@@ -106,7 +106,7 @@ Understanding the Action List Table
 ===================================
 Each time you use the "Assign" button to create a new action, that action will be added to the Action List table. If you get a warning saying "Duplicate", arcadeVFE will highlight the duplicate action in the list at which point you may keep it or delete it.
 
-When you complete the table, press the "Save list" button to save it.  It will be saved in the \User folder as a *.vfe file having the name specified in the "Activity list name" field above the table. By default this name is "Arcade Controller" (saved as "Arcade Controller.vfe"). If you switch between multiple controllers for use with your emulator, you could save different action lists under different names. These can then be loaded in the future by creating a shortcut that provides the name as a command line parameter when launching VFE.  For example,
+When you complete the table, press the "Save list" button to save it.  It will be saved in the \User folder as a *.json file having the name specified in the "Activity list name" field above the table. By default this name is "Arcade Controller" (saved as "Arcade Controller.json"). If you switch between multiple controllers for use with your emulator, you could save different action lists under different names. These can then be loaded in the future by creating a shortcut that provides the name as a command line parameter when launching VFE.  For example,
 
 vfe.exe "Arcade Controller" or
 vfe.exe "Gamepad"
@@ -206,10 +206,10 @@ In addition to this documentation file, the Settings screen implements tooltips 
 
 Issues/Limitations
 ==================
-Because this software is not code-integrated with the host emulator, but relies on external automation techniques, there are a few limitations that should be noted. Neither may ever be noticed, but they are good to be aware of.
+Because this software is not code-integrated with the host emulator, but relies on external automation techniques, there are a few limitations that should be noted. These may ever be noticed, but they are good to be aware of.
 
 1. arcadeVFE can only tell when a new game is loaded, but not when it is exited. It can only surmise that you have exited a game when it detects that you have started a new and different game. Consequently, if you exit a game and re-enter the SAME game, arcadeVFE will be oblivious that you did this. This should not affect gameplay at all since whatever profiles were loaded while you were first playing will still be loaded. However, arcadeVFE will not be able to provide feedback (such as a beep or voice annunciation) when restarting the game. Only upon starting a new game.
 
-2. Trackball and spinner games rely on the arcade emulator (such as ATC) to have the focus. The game information window that arcadeVFE overlays over the emulator is therefore designed to not take the focus.  However, any mouse clicks made by the user that occur while the game information is displayed (whether or not you are actually viewing it), will cause the overlay to steal the focus. This means that it is not possible to use mouse buttons as input for trackball and spinner games (such as for a fire button), otherwise focus will be taken away from the emulator and mouse input will stop working. The solution to this is to simply ensure that you are using a (non-mouse) XInput device (or virtual device) button as your fire button, in which case, everything should work as intended. Note that non-trackball and spinner games should be generally immune from this issue, unless you click your mouse while playing, or click on your desktop window with your motion controller.   
+2. Trackball and spinner games rely on the arcade software having the focus. The game information window that arcadeVFE overlays over the emulator is therefore designed to not take the focus.  However, any mouse clicks made by the user that occur while the game information is displayed (whether or not you are actually viewing it), will cause the overlay to steal the focus. This means that it is not possible to use mouse buttons as input for trackball and spinner games (such as for a fire button), otherwise focus will be taken away from the emulator and mouse input will stop working. The solution to this is to either keep this feature turned off, or to ensure that you are using a (non-mouse) XInput device (or virtual device) button as your fire button, in which case, everything should work as intended. Note that non-trackball and spinner games should be generally immune from this issue, unless you click your mouse while playing, or click on your desktop window with your motion controller.   
 
-3. arcadeVFE pauses operation while its Settings screen is displayed. Therefore, if you attempt to use your Virtual Arcade while the Setting screen is open, arcadeVFE may lose its state and be unable to return to normal operation. If this happens, just close your arcade software, exit arcadeVFE completely, then restart it.
+3. arcadeVFE pauses operation while its Settings screen is displayed. Therefore, if you attempt to use your Virtual Arcade while the Setting screen is open, arcadeVFE may lose its state and be unable to return to normal operation. If this happens, just close your arcade software, exit arcadeVFE completely, then restart them.
