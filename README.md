@@ -24,7 +24,7 @@ Resources
 
 Tested Software
 ===============
-arcadeVFE has been tested successfully with the following software:
+arcadeVFE has been tested successfully with the following software, and is likely able to work with many others:
 
 * [Arcade Time Capsule](https://x.com/ArcadeHalf?ref_src=twsrc%5Egoogle%7Ctwcamp%5Eserp%7Ctwgr%5Eauthor) - fantastic MAME-based VR arcade and main tested target of arcadeVFE
 * [Virtual Controller](https://sourceforge.net/projects/vjoy-controller/) - software to create virtual XInput controllers
