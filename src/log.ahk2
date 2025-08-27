@@ -45,7 +45,7 @@ class AppLog
         if (FileExist(sLogFileName))
             FileDelete(sLogFileName)
 
-        sLogEntry := "INFO: " sAppName " started on: " FormatTime(,"LongDate") ", at " FormatTime(,"Time") "`n"
+        sLogEntry := "LOG: " sAppName " started on: " FormatTime(,"LongDate") ", at " FormatTime(,"Time") "`n"
         iEntryLen := StrLen(sLogEntry)
         this.LogLine(sLogEntry)
         sSep := this.RepeatChar("=", iEntryLen)

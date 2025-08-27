@@ -444,7 +444,8 @@
     "MAMEVersion":"2014"
   },
   "kinst2":{
-    "MAMEVersion":"2010"
+    "MAMEVersion":"2010",
+	"Checksum":"2563b089b316f2c8636d78af661ac656"
   },
   "knights":{
     "MAMEVersion":"2010"

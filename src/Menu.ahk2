@@ -72,7 +72,7 @@ class TrayMenu
 		mAbout.Y := Round((A_ScreenHeight / 2) - (mAbout.Height / 2))
 
 		guiAbout := Gui("-MaximizeBox -MinimizeBox", sAboutTitle) 
-		guiAbout.Add("Text",, "arcadeVFE`nA virtual front end for ATC`nVersion " CodeVersion "`n`n© 2025 David G. Dahlstrom")
+		guiAbout.Add("Text",, "arcadeVFE`nThe Arcade Virtual Front End`nVersion " CodeVersion "`n`n© 2025 David G. Dahlstrom")
 		gcAboutExitButton := guiAbout.AddButton("Default W" 50, "OK")
 		gcAboutExitButton.OnEvent("Click", About_Close)
 

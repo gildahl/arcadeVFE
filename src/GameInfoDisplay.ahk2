@@ -19,7 +19,7 @@ SetAssetFullPath(assetType, romName, assetFolder, systemAsset)
     return true
 }
 
-;This class supports the display of images and information on pause.
+;This class supports the display of a game image and information overlay.
 class GameInfoDisplay
 {
 	__New()
@@ -40,7 +40,7 @@ class GameInfoDisplay
 		guiGameInfo.Opt("-Caption")
 		guiGameInfo.BackColor := "Black" 
 
-		global gcGameInfoPleaseWait := guiGameInfo.AddText("x" 0 " y" nScreenHeight/3 " w" nScreenWidth " h" 300 " 0x1", "Preparing GameInfo.`nPlease wait...")
+		global gcGameInfoPleaseWait := guiGameInfo.AddText("x" 0 " y" nScreenHeight/3 " w" nScreenWidth " h" 300 " 0x1", "Preparing Game Information.`nPlease wait...")
 		gcGameInfopleaseWait.SetFont("cWhite s50")
 
 		;this.CreateNavTriangles()
@@ -48,7 +48,7 @@ class GameInfoDisplay
 		;Create Overlay (used by oFadeAlphaOverlay to dim the screen)
 		;This is basically a pictureless picture control    
 		;gGui.guiGameInfo_Overlay := guiGameInfo.AddPicture("BackgroundTrans x0 y0 h" . nScreenHeight . " w" . nScreenWidth . " vAlphaOverlay")
-		;gGui.guiGameInfo_Overlay.Visible := false  ;this breaks fading of pause screen when select screen is invoked.
+		;gGui.guiGameInfo_Overlay.Visible := false  ;this breaks fading screen when select screen is invoked.
 	}
 
 	ShowGameInfoScreen()
@@ -288,20 +288,20 @@ class GameInfoDisplay
 			;-Hdr removes column header
 			iGameInfoFontSize := IniRead(sIniFile, "General", "GameInfoFontSize", iDefaultGameInfoFontSize)
 			guiGameInfo.SetFont("s" iGameInfoFontSize, "Tahoma")
-			gGui.guiGameInfo_PauseTest1 := guiGameInfo.AddEdit("x0 y0 -VScroll -HScroll -E0x200 vPauseTest1 R1")
-			Tst1 := gGui.guiGameInfo_PauseTest1.Hwnd
+			gGui.guiGameInfo_Test1 := guiGameInfo.AddEdit("x0 y0 -VScroll -HScroll -E0x200 vTest1 R1")
+			Tst1 := gGui.guiGameInfo_Test1.Hwnd
 
-			;GuiControlGet, sz1, Pos, PauseTest1
-			gGui.guiGameInfo_PauseTest1.GetPos(&sz1X, &sz1Y, &sz1sW, &sz1H)
-			gGui.guiGameInfo_PauseTest2 := guiGameInfo.AddEdit("x0 y0 -VScroll -HScroll -E0x200 vPauseTest2 R2")
-			Tst2 := gGui.guiGameInfo_PauseTest2.Hwnd
+			;GuiControlGet, sz1, Pos, Test1
+			gGui.guiGameInfo_Test1.GetPos(&sz1X, &sz1Y, &sz1sW, &sz1H)
+			gGui.guiGameInfo_Test2 := guiGameInfo.AddEdit("x0 y0 -VScroll -HScroll -E0x200 vTest2 R2")
+			Tst2 := gGui.guiGameInfo_Test2.Hwnd
 
-			gGui.guiGameInfo_PauseTest2.GetPos(&sz2X, &sz2Y, &sz2sW, &sz2H)
+			gGui.guiGameInfo_Test2.GetPos(&sz2X, &sz2Y, &sz2sW, &sz2H)
 			ht := sz2H - sz1H
 
 			;I don't think ahk has a way of destroying these controls, so let's just hide them
-			gGui.guiGameInfo_PauseTest1.Visible := false
-			gGui.guiGameInfo_PauseTest2.Visible := false
+			gGui.guiGameInfo_Test1.Visible := false
+			gGui.guiGameInfo_Test2.Visible := false
 
 			screen_lines := nScreenHeight // ht ;number of lines available on the screen
 
@@ -330,17 +330,17 @@ class GameInfoDisplay
 				}
 
 				;Add the first control
-				gGui.guiGameInfo_PauseInfo1 := guiGameInfo.AddEdit("x" edit_margin " y0 h" . edit_height . " w" . edit_width . " c0xCCCCCC Background0x1F1F1F -VScroll -HScroll -E0x200 vPauseInfo1")
-				hwndInfo1 := gGui.guiGameInfo_PauseInfo1.Hwnd
+				gGui.guiGameInfo_GameInfo1 := guiGameInfo.AddEdit("x" edit_margin " y0 h" . edit_height . " w" . edit_width . " c0xCCCCCC Background0x1F1F1F -VScroll -HScroll -E0x200 vGameInfo1")
+				hwndInfo1 := gGui.guiGameInfo_GameInfo1.Hwnd
 				
-				gGui.guiGameInfo_PauseInfo1.Visible := false
+				gGui.guiGameInfo_GameInfo1.Visible := false
 
 				;These pages are just strings that will be double-deref'ed when called. 
-				this.AddPage("info", true, "guiGameInfo_PauseInfo1", "guiGameInfo_PauseInfo2")
+				this.AddPage("info", true, "guiGameInfo_GameInfo1", "guiGameInfo_GameInfo2")
 
 				;add history to first edit control. The number of lines can't be determined until
 				;after this text is added due to word wrapping.
-				gGui.guiGameInfo_PauseInfo1.Text := info_text
+				gGui.guiGameInfo_GameInfo1.Text := info_text
 
 				;Each loop populates a single edit control; every two edit controls form a page.
 				;(basically, each edit control is one column of a two column text display)
@@ -355,25 +355,25 @@ class GameInfoDisplay
 					;if odd, margin is 0; if even, margin is at the middle (edit_width)
 					x_pos := ((A_Index & 1) != 0) ? edit_width + edit_margin : edit_margin
 
-					;Add page to oPauseControl manager every time we create a new odd (left) edit control
+					;Add page to oGameControl manager every time we create a new odd (left) edit control
 					if (x_pos == edit_margin)
-						this.AddPage("info", true, "guiGameInfo_PauseInfo" . destIdx, "guiGameInfo_PauseInfo" . destIdx+1)
+						this.AddPage("info", true, "guiGameInfo_GameInfo" . destIdx, "guiGameInfo_GameInfo" . destIdx+1)
 
 					;Create new dest control to accept the overflow
-					gGui.guiGameInfo_PauseInfo%destIdx% := guiGameInfo.AddEdit("x" . x_pos . " y0 h" . edit_height . " w" edit_width . " c0xCCCCCC Background0x1F1F1F -VScroll -HScroll -E0x200 vPauseInfo%" . destIdx . "%")
-					gGui.hwndInfo%destIdx% := gGui.guiGameInfo_PauseInfo%destIdx%.Hwnd
-					gGui.guiGameInfo_PauseInfo%destIdx%.Visible := false
+					gGui.guiGameInfo_GameInfo%destIdx% := guiGameInfo.AddEdit("x" . x_pos . " y0 h" . edit_height . " w" edit_width . " c0xCCCCCC Background0x1F1F1F -VScroll -HScroll -E0x200 vGameInfo%" . destIdx . "%")
+					gGui.hwndInfo%destIdx% := gGui.guiGameInfo_GameInfo%destIdx%.Hwnd
+					gGui.guiGameInfo_GameInfo%destIdx%.Visible := false
 
 					;SendMessage commands need the hwnd
 					try {
-						hwndSrc := gGui.guiGameInfo_PauseInfo%srcIdx%.Hwnd
+						hwndSrc := gGui.guiGameInfo_GameInfo%srcIdx%.Hwnd
 					}
 					catch {
 						hwndSrc := ""
 					}
 
 					try {
-						hwndDest := gGui.guiGameInfo_PauseInfo%destIdx%.Hwnd
+						hwndDest := gGui.guiGameInfo_GameInfo%destIdx%.Hwnd
 					}
 					catch {
 						hwndDest := ""
@@ -441,9 +441,9 @@ class GameInfoDisplay
 							{
 								destIdx++
 
-								gGui.guiGameInfo_PauseInfo%destIdx% := guiGameInfo.AddEdit("x" . edit_width . " y0 h" . edit_height . " w" . edit_width . " c0xCCCCCC Background0x1F1F1F -VScroll -HScroll -E0x200 vPauseInfo%" . destIdx . "%")
-								gGui.hwndInfo%destIdx% := gGui.guiGameInfo_PauseInfo%destIdx%.Hwnd
-								gGui.guiGameInfo_PauseInfo%destIdx%.Visible := false
+								gGui.guiGameInfo_GameInfo%destIdx% := guiGameInfo.AddEdit("x" . edit_width . " y0 h" . edit_height . " w" . edit_width . " c0xCCCCCC Background0x1F1F1F -VScroll -HScroll -E0x200 vGameInfo%" . destIdx . "%")
+								gGui.hwndInfo%destIdx% := gGui.guiGameInfo_GameInfo%destIdx%.Hwnd
+								gGui.guiGameInfo_GameInfo%destIdx%.Visible := false
 							}
 							
 							break
@@ -463,28 +463,28 @@ class GameInfoDisplay
 		{
 			asset_full_path := A_ScriptDir "\GameInfo\Assets\" assetType "\" romName "." sType
 
-			gGui.guiGameInfo_PauseImage%assetType% := guiGameInfo.AddPicture("BackgroundTrans vPauseImage%" . assetType . "%", asset_full_path)		
-			gGui.guiGameInfo_PauseImage%assetType%.GetPos(&pause_image_posX, &pause_image_posY, &pause_image_posW, &pause_image_posH)
+			gGui.guiGameInfo_GameImage%assetType% := guiGameInfo.AddPicture("BackgroundTrans vGameImage%" . assetType . "%", asset_full_path)		
+			gGui.guiGameInfo_GameImage%assetType%.GetPos(&game_image_posX, &game_image_posY, &game_image_posW, &game_image_posH)
 	
 			;Resize the image to fit on the screen while preserving aspect ratio
 			image_width := nScreenWidth
-			image_height := image_width * pause_image_posH / pause_image_posW
+			image_height := image_width * game_image_posH / game_image_posW
 	
 			if (image_height > nScreenHeight)
 			{
 				image_height := nScreenHeight
-				image_width := image_height * pause_image_posW / pause_image_posH
+				image_width := image_height * game_image_posW / game_image_posH
 			}
 			
 			;center image
 			image_x := Floor(nScreenWidth / 2 - image_width / 2)
 			image_y := Floor(nScreenHeight / 2 - image_height / 2)
 	
-			gGui.guiGameInfo_PauseImage%assetType%.Move(image_x, image_y, image_width, image_height)
-			gGui.guiGameInfo_PauseImage%assetType%.Visible := false ;hide this for now (PauseKey function will show/hide)
+			gGui.guiGameInfo_GameImage%assetType%.Move(image_x, image_y, image_width, image_height)
+			gGui.guiGameInfo_GameImage%assetType%.Visible := false ;hide this for now (GameKey function will show/hide)
 	
-			;Add this control to the oPauseControl collection manager
-			this.AddPage(assetType, bPageVisible, "guiGameInfo_PauseImage" . assetType)
+			;Add this control to the oGameControl collection manager
+			this.AddPage(assetType, bPageVisible, "guiGameInfo_GameImage" . assetType)
 		}
 	}
 
@@ -503,12 +503,12 @@ class GameInfoDisplay
 	 * @param sType - the type of image ("highscore", "controls", etc.)
 	 * @param hBitmap - bitmap of the image
 	 */
-	SetHighscorePauseImage(hBitmap)
+	SetHighscoreGameImage(hBitmap)
 	{
 		static sType := "highscore"
 
-		gGui.guiGameInfo_PauseImage%sType%.Value := hBitmap
-	    gGui.guiGameInfo_PauseImage%sType%.Move(0, 0, nScreenWidth, nScreenHeight)
+		gGui.guiGameInfo_GameImage%sType%.Value := hBitmap
+	    gGui.guiGameInfo_GameImage%sType%.Move(0, 0, nScreenWidth, nScreenHeight)
 
 		for i, page in this._pages
 		{
@@ -520,7 +520,7 @@ class GameInfoDisplay
 	/**
 	 * Set visibility of any highscore images to false
 	 */
-	DisableHighscorePauseImage()
+	DisableHighscoreGameImage()
 	{
 		static sType := "highscore"
 
@@ -529,7 +529,7 @@ class GameInfoDisplay
 			if (page["type"] == sType)
 			{
 				this._pages[i]["visible"] :=  false
-				gGui.guiGameInfo_PauseImage%sType%.Value := void_file
+				gGui.guiGameInfo_GameImage%sType%.Value := void_file
 			}
 		}  
 	}

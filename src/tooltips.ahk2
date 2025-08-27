@@ -6,6 +6,10 @@
 ;========================================================================================
 OnMouseEvent(wp, lp, msg, hwnd)
 {
+    ;increase this delay if there is flicker, which can happen on long tip text due to it
+    ;taking longer to load the text than the time delay between mouse events
+    static iDelay := 2
+
     try {
         if (!gcToolTip_Checkbox.Value)
             return
@@ -14,7 +18,18 @@ OnMouseEvent(wp, lp, msg, hwnd)
         return
     }
 
+
+    static iCount := 0
+    if (iCount < iDelay && msg != WM_MOUSELEAVE)
+    {
+        iCount++
+        return
+    }
+    
+    iCount := 0
+
     static TME_LEAVE := 0x2, onButtonHover := false
+
     if msg = WM_MOUSEMOVE && !onButtonHover
     {
         TRACKMOUSEEVENT := Buffer(8 + A_PtrSize * 2)
@@ -22,11 +37,12 @@ OnMouseEvent(wp, lp, msg, hwnd)
                'UInt', TME_LEAVE,
                'Ptr', hwnd,
                'Ptr', 10, TRACKMOUSEEVENT)
+
         DllCall('TrackMouseEvent', 'Ptr', TRACKMOUSEEVENT)
-        try
-            ToolTipContents:=GuiCtrlFromHwnd(hwnd).TT, ToolTip(ToolTipContents)
-        catch
-            ToolTipContents:=""
+        
+        try ToolTipContents := GuiCtrlFromHwnd(hwnd).TT, ToolTip(ToolTipContents)
+        ;catch
+        ;    ToolTipContents:=""
     }
 
     if msg = WM_MOUSELEAVE

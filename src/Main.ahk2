@@ -1,5 +1,5 @@
 /*****************************************************************************
- * @description arcadeVFE
+ * @description arcadeVFE - The Arcade Virtual Front End
  * @file Main.ahk2
  * @author © 2025 David G. Dahlstrom
   ****************************************************************************/
@@ -15,7 +15,7 @@
 /***********************************************************************
 * Compiler directives
 ************************************************************************/
-global CodeVersion := "1.0.1.0"
+global CodeVersion := "1.1.0"
 ;@Ahk2Exe-Let version = %A_PriorLine~U)^(.+"){1}(.+)".*$~$2%
 ;@Ahk2Exe-SetCopyright © 2025 David G. Dahlstrom
 ;@Ahk2Exe-SetProductName arcadeVFE
@@ -122,6 +122,7 @@ global sUserFolder := A_ScriptDir "\User"
 global sLogFolder := A_ScriptDir "\Log"
 global sRawAccelFolder := A_ScriptDir "\RawAccel"
 global sAuditFolder := A_ScriptDir "\Audit"
+global sArcadeFolder := A_ScriptDir "\Arcade"
 
 ;filename defaults
 global sUserFile := sUserFolder "\Arcade Controller.json"
@@ -130,10 +131,11 @@ global sFloorsFile := sConfigFolder "\floors.json"
 global sVicinitiesFile := sConfigFolder "\vicinities.json"
 global sTweaksFile := sConfigFolder "\tweaks.json"
 global sIniFile := sConfigFolder "\arcadeVFE.ini"
-global sLocationsIniFile := sConfigFolder "\locations.ini"
 global sRawAccelExe := sRawAccelFolder "\rawaccel.exe"
-global sMame2010 := sAuditFolder "\MAME 0.139\mame64.exe"
-global sMame2014 := sAuditFolder "\MAME 0.159\mame64.exe"
+global sMame2010 := sAuditFolder "\MAME 0.139\mame64.exe" ;For MAME 2010 rom file audits
+global sMame2014 := sAuditFolder "\MAME 0.159\mame64.exe" ;For MAME 2014 rom file audits
+global sRomListFile := ""      ;gets initialized in Setup.PopulateFields()
+global sLocationsIniFile := "" ;gets initialized in Setup.PopulateFields()
 
 ;group constants
 global TWO_WAY_H :=  "[Group, 2-way horizontal]"
