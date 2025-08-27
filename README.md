@@ -65,7 +65,7 @@ To setup a new rom to be monitored, choose "ROM Monitor" from the "Device List" 
 - [Group, rotary]: assigns the defined action to any game whose native controller
                     is a rotary joystick.
 
-**Note 2**: Be aware that arcadeVFE is "smart" enough to not execute the same command line twice in a row. For example, if you switch between two games that use the same commands (such as two 4-way joystick games that use the same profiles), or exit a game and then restart the same one, profile loading will be suppressed since that configuration should still be loaded.
+**Note 2**: Be aware that arcadeVFE is "smart" enough to not execute the same action twice in a row. For example, if you switch between two games that use the same commands (such as two 4-way joystick games that use the same profiles), or exit a game and then restart the same one, profile loading will be suppressed since that configuration should still be loaded.
 
 Buttons and Key Presses:
 ------------------------
