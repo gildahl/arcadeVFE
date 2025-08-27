@@ -87,7 +87,7 @@ How to Configure Command-Line Actions
 - `[profile_name]`        - will be replaced by the filename or contents of **Profile** field
 - `[profile_full_name]`   - will be replaced by the full path/file or contents of **Profile** field
 
-For example, if the profile is `C:\Ultrastik\Profiles\qbert.ugc` and the command line template is `C:\UltraMap\UltraMap.exe [profile_name]`, then upon pressing the "Assign" button, the command line that will be assigned to the action will be `C:\UltraMap\UltraMap.exe qbert.ugc`. If the full path to the profile is needed, then the command line template should be changed to `C:\UltraMap\UltraMap.exe [profile_full_name]`. If the command line template has no field tags, then the command line will be used verbatim with no insertions. 
+For example, if the profile is `C:\Ultrastik\Profiles\qbert.ugc` and the command line template is `C:\UltraMap\UltraMap.exe [profile_name]`, then upon pressing the **Assign** button, the command line that will be assigned to the action will be `C:\UltraMap\UltraMap.exe qbert.ugc`. If the full path to the profile is needed, then the command line template should be changed to `C:\UltraMap\UltraMap.exe [profile_full_name]`. If the command line template has no field tags, then the command line will be used verbatim with no insertions. 
 
 Additional Notes:
 -----------------
