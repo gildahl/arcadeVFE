@@ -4,16 +4,17 @@ By David Dahlstrom
 
 Summary
 =======
-Virtual Reality arcades based on MAME, such as Arcade Time Capsule, do not work with traditional front ends since the player walks the floors of the virtual arcade, choosing games just as in real life. So there's no need for game selection menus, pictures and videos of machines and screens, or background ambiance sounds since that's already right in front of the player. However, there are still a few missing functions often performed by front-ends that I felt could still be beneficial to have available.
+Virtual Reality arcades based on MAME, such as Arcade Time Capsule, do not need conventional front ends since the player walks the floor of the virtual arcade, choosing games just as in real life. So there's no need for game selection menus, pictures and videos of gameplay, or background ambiance sounds since that's already right in front of the player. However, there are still a few important front-end functions that could be of benefit to VR arcades, if they could be made to work. This is the gap that arcadeVFE seeks to fill.
 
 To this end, arcadeVFE includes these features: 
 
-* Ability to execute one or more command line application calls when a game is started, such as to reconfigure programmable game controllers on a game-by-game basis. 
-* Manual execution of custom command line driven software whenever a particular keyboard key or game controller button is pressed.
-* Customizable voice annunciation of controller layout for any game.
-* Mapping of keyboard keys such as Tab and Enter to controller buttons to, for example, better facilitate access to the MAME Tab configuration menus.
-* A detailed game information overlay that can be viewed and navigated in VR using one's favorite desktop viewport. This information comes from MAME gameinfo.dat and history.xml files, and can also include pictures of your choice--for example, flyers, pcbs, or pictures of real cab control panels (which can be very handy as a reference in the Candy Cab rooms of ATC).
+* Ability to execute one or more command line application calls when a game is started. This can be used to call applications like Virtual Controller or other programmable game controller software to create game-specific custom configurations and advanced composite control panels. The ATC Monster Control Panel Guide below provides a detailed example of how this can be done.   
+* Manual execution of commands whenever a particular keyboard key or game controller button is pressed.
+* Voice notification of game control layout changes.
+* Mapping of keyboard keys, such as Tab and Enter, to controller buttons in order to, for example, better facilitate access to the MAME Tab configuration menus while in VR.
+* A detailed game information overlay that can be viewed in VR using one's favorite desktop viewport. This information comes from MAME gameinfo.dat and history.xml files, and can also include pictures of your choice--for example, flyers, pcbs, or pictures of real cab control panels (which can be very handy as a reference in the Candy Cab rooms of ATC).
 * Rom file auditing and rom copy features.
+* A machine location editor to more easily locate your favorite machine in the virtual arcade.
 
 Resources
 =========
