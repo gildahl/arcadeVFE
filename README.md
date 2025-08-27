@@ -56,14 +56,11 @@ ROM Monitor:
 ------------
 To setup a new rom to be monitored, choose `ROM Monitor` from the **Device List** list in the Settings screen. Next, choose a rom from the **Choose ROM** list and then use the **Profile** and **Command** fields to configure the specific commands that should execute when that game is loaded. Finally, press the **Assign ROM** button to add your defined command(s) to the **Action List**. 
 
-**Note 1**: If you choose one of the `[Group...]` options in the ROM list, you can conveniently assign an action set to a whole group of similarly controlled games. If any of the games in that group need an alternate configuration on an exception basis, simply create another action for that specific rom, which will override the group setting. There is also a `[Default]` action which can be configured for cases where there is neither a rom-specific action nor group action to otherwise handle it.  The following are some examples of Groups.
+**Note 1**: If you choose one of the `[Group...]` options in the **Choose ROM** list, you can conveniently assign an action set to a whole group of similarly controlled games. If any of the games in that group need an alternate configuration on an exception basis, simply create another action for that specific rom, which will override the group setting. There is also a `[Default]` action which can be configured for cases where there is neither a rom-specific action nor group action to otherwise handle it.  The following are some examples of Groups.
 
-- `[Group, 4-way]` : assigns the defined action to any game whose native controller
-                    is a 4-way joystick.
-- `[Group, 8-way]` : assigns the defined action to any game whose native controller
-                    is a 8-way joystick.
-- `[Group, rotary]`: assigns the defined action to any game whose native controller
-                    is a rotary joystick.
+- `[Group, 4-way]` : assigns the defined action to any game whose native controller is a 4-way joystick.
+- `[Group, 8-way]` : assigns the defined action to any game whose native controller is a 8-way joystick.
+- `[Group, rotary]`: assigns the defined action to any game whose native controller is a rotary joystick.
 
 **Note 2**: Be aware that arcadeVFE is "smart" enough to not execute the same action twice in a row. For example, if you switch between two games that use the same commands (such as two 4-way joystick games that use the same profiles), or exit a game and then restart the same one, profile loading will be suppressed since that configuration should still be in effect.
 
