@@ -4,7 +4,7 @@ By David Dahlstrom
 
 Summary
 =======
-Virtual Reality arcades based on MAME (such as Arcade Time Capsule and others), do not need conventional front ends since players walk the floor of a virtual arcade, choosing games just as in real life. So there's no need for game selection menus, pictures and videos of gameplay, or background ambiance sounds since that's already right in front of the player. However, there are still a few important front end file management, game controller, and extended information features that could still be of benefit to VR arcade players--if they could be made to work. This is the gap that arcadeVFE seeks to fill.
+Virtual Reality arcades based on MAME (such as Arcade Time Capsule and others), do not need conventional front ends since players walk the floor of a virtual arcade, choosing games just as in real life. So there's no need for game selection menus, pictures and videos of gameplay, or background ambiance sounds since that's already right in front of the player. However, there are still a few important front end game controller, rom management, and information features that could still be of benefit to VR arcade players--if they could be made to work. This is the gap that arcadeVFE seeks to fill.
 
 To this end, arcadeVFE includes these features: 
 
