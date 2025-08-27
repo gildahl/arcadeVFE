@@ -40,6 +40,8 @@ When you launch the executable (vfe.exe) for the first time, it will create a fe
 
 Once you apply these settings and close the dialog, you will be taken directly to the "Settings" screen where you can begin configuration. Note that in the future, whenever you start arcadeVFE, you will not see anything on the screen, but rather it will create a joystick icon in the Windows Tray indicating normal background mode is active. If you need to return to the Settings dialog, just right-click on this icon and choose "Settings...". You can also click on the "Initial Setup" button in the "Settings" screen to re-invoke the "Initial Setup" dialog.
 
+Just remember to close the Settings screen when you use your virtual arcade since arcadeVFE pauses normal operation while the Settings screen is open.
+
 Log
 ===
 See the log.txt file in the \Log subfolder if needed for troubleshooting. This log is overwritten at the start of every run. Two beeps will be sounded whenever an error is written to the file. When reporting any issues, be sure to include the most recent log with your description of the problem. You may report errors on the Discord.
