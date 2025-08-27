@@ -34,13 +34,13 @@ arcadeVFE has been tested successfully with the following software:
 
 Installation
 ============
-After downloading the distribution zip file, you must first right click on it, choose Properties, and check the "Unblock" checkbox at the bottom and click Apply. After doing this, simply extract the zip into an empty folder on your PC that has read/write access.
+After downloading the distribution zip file, you must first right click on it, choose Properties, and check the **Unblock** checkbox at the bottom and click Apply. After doing this, simply extract the zip into an empty folder on your PC that has read/write access.
 
-When you launch the executable (vfe.exe) for the first time, it will create a few subfolders and extract some additional files into them. It will also display a small "Initial Setup" dialog in which you will choose your virtual arcade, the virtual arcade's executable, and the virtual arcade's rom folder. Once you've set the rom folder, you can also do a quick audit of the roms by pressing the "Audit ROMs..." button.  
+When you launch the executable (`vfe.exe`) for the first time, it will create a few subfolders and extract some additional files into them. It will also display a small **Initial Setup** dialog in which you will choose your virtual arcade, the virtual arcade's executable, and the virtual arcade's rom folder. Once you've set the rom folder, you can also do a quick audit of the roms by pressing the **Audit ROMs...** button.  
 
-Once you apply these settings and close the dialog, you will be taken directly to the "Settings" screen where you can begin configuration. Note that in the future, whenever you start arcadeVFE, you will not see anything on the screen, but rather it will create a joystick icon in the Windows Tray indicating normal background mode is active. If you need to return to the Settings dialog, just right-click on this icon and choose "Settings...". You can also click on the "Initial Setup" button in the "Settings" screen to re-invoke the "Initial Setup" dialog.
+Once you apply these settings and close the dialog, you will be taken directly to the **Settings** screen where you can begin configuration. Note that in the future, whenever you start arcadeVFE, you will not see anything on the screen, but rather it will create a joystick icon in the Windows Tray indicating normal background mode is active. If you need to return to the Settings dialog, just right-click on this icon and choose **Settings...**. You can also click on the **Initial Setup** button in the "Settings" screen to re-invoke the **Initial Setup** dialog.
 
-Just remember to close the Settings screen when you use your virtual arcade since arcadeVFE pauses normal operation while the Settings screen is open.
+Just remember to close the **Settings** screen when you use your virtual arcade since arcadeVFE pauses normal operation while the **Settings** screen is open.
 
 Log
 ===
@@ -48,13 +48,13 @@ See the `log.txt` file in the `\Log` subfolder if needed for troubleshooting. Th
 
 Configuration
 =============
-arcadeVFE offers two different modes of operation. The first is a "ROM Monitor" mode that can execute game-specific actions whenever a MAME rom file is played. This mode provides full automated game controller configuration in MAME environments like Arcade Time Capsule. 
+arcadeVFE offers two different modes of operation. The first is a **ROM Monitor** mode that can execute game-specific actions whenever a MAME rom file is played. This mode provides full automated game controller configuration in MAME environments like Arcade Time Capsule. 
 
-The second mode provides the option to trigger actions manually when a game controller button or keyboard key is pressed. Both "ROM Monitor" and keyboard/button actions can be added to the action list in any combination and are simultaneously active whenever the virtual arcade is running. 
+The second mode provides the option to trigger actions manually when a game controller button or keyboard key is pressed. Both **ROM Monitor** and keyboard/button actions can be added to the action list in any combination and are simultaneously active whenever the virtual arcade is running. 
 
 ROM Monitor:
 ------------
-To setup a new rom to be monitored, choose "ROM Monitor" from the "Device List" list in the Settings screen. Next, choose a rom from the "Choose ROM" list and then use the "Profile" and "Command" fields to configure the specific commands that should execute when that game is loaded. Finally, press the "Assign ROM" button to add your defined command(s) to the "Action List". 
+To setup a new rom to be monitored, choose `ROM Monitor` from the **Device List** list in the Settings screen. Next, choose a rom from the **Choose ROM** list and then use the **Profile** and **Command** fields to configure the specific commands that should execute when that game is loaded. Finally, press the **Assign ROM** button to add your defined command(s) to the **Action List**. 
 
 **Note 1**: If you choose one of the `[Group...]` options in the ROM list, you can conveniently assign an action set to a whole group of similarly controlled games. If any of the games in that group need an alternate configuration on an exception basis, simply create another action for that specific rom, which will override the group setting. There is also a `[Default]` action which can be configured for cases where there is neither a rom-specific action nor group action to otherwise handle it.  The following are some examples of Groups.
 
@@ -69,15 +69,15 @@ To setup a new rom to be monitored, choose "ROM Monitor" from the "Device List" 
 
 Buttons and Key Presses:
 ------------------------
-To setup a manual action that will run upon a particular button or key press, Choose "Keyboard" or one of the game controllers from the Device List in the Settings screen. Next, use the "Profile" and "Command" fields to configure the command line that will execute when the button or key is pressed. Finally, press the "Assign" button to choose the actual button or key you want to assign to the action and add it to the Actions list.
+To setup a manual action that will run upon a particular button or key press, Choose `Keyboard` or one of the game controllers from the Device List in the Settings screen. Next, use the **Profile** and **Command** fields to configure the command line that will execute when the button or key is pressed. Finally, press the **Assign** button to choose the actual button or key you want to assign to the action and add it to the Actions list.
 
-**Note 1**: In addition to command line actions, game controller buttons can also be configured to send virtual keyboard key presses or perform game information screen navigation actions. These options can be configured by choosing the appropriate radio button at the top of the screen whenever a game controller is selected in the "Devices" list.
+**Note 1**: In addition to command line actions, game controller buttons can also be configured to send virtual keyboard key presses or perform game information screen navigation actions. These options can be configured by choosing the appropriate radio button at the top of the screen whenever a game controller is selected in the **Devices List**.
 
 **Note 2**: It is possible to assign multiple actions to the same button or key press, in which case the actions will be invoked sequentially upon each press. See the [Sequence](#Sequence) section below for more information about how this works.
 
 Voice Annunciation
 ==================
-If you would like arcadeVFE to verbally announce an action when it is executed, you may add a phrase to the optional "Voice annunciation phrase" field. This is highly recommended as it both provides active feedback that the software is working, and can provide the player with reminders about the control configuration for that game. You can test the phrase to see what it will sound like by pressing the "Voice Test" button. These phrases can provide reminders about how a game is configured. Some example might be:
+If you would like arcadeVFE to verbally announce an action when it is executed, you may add a phrase to the optional **Voice annunciation phrase** field. This is highly recommended as it both provides active feedback that the software is working, and can provide the player with reminders about the control configuration for that game. You can test the phrase to see what it will sound like by pressing the **Voice Test** button. These phrases can provide reminders about how a game is configured. Some example might be:
 
 * "Use left 8 way rotary joystick"
 * "Use right 4 way joystick"
@@ -100,17 +100,17 @@ Additional Notes:
  
 * If you wish to trigger two or up to three Commands in a single action, click on the checkbox next to "Profile 2" and/or "Profile 3" and you can configure a second and/or third command line using a completely different profile and command line template.
 
-* If you want to add a new template to VFE that will persist across sessions, you can edit any of the built-in ones and then use the Add button. You may also delete any template you no longer want to see in the list.  Note that whenever you do this, all three Command lists will be synchronized to contain the same list of templates.
+* If you want to add a new template to VFE that will persist across sessions, you can edit any of the built-in ones and then use the **Add** button. You may also delete any template you no longer want to see in the list.  Note that whenever you do this, all three **Command** lists will be synchronized to contain the same list of templates.
 
 * As an FYI, these templates are saved in a file called `templates.json` in the root VFE folder. You may delete this file to restore the original defaults.
 
-* IMPORTANT: Be aware that VFE pauses active operation while the Settings screen is open, so be sure to close it when done with configuration.
+* IMPORTANT: Be aware that VFE pauses active operation while the **Settings** screen is open, so be sure to close it when done with configuration.
 
 Understanding the Action List Table
 ===================================
-Each time you use the "Assign" button to create a new action, that action will be added to the Action List table. If you get a warning saying "Duplicate", arcadeVFE will highlight the duplicate action in the list at which point you may keep it or delete it.
+Each time you use the **Assign** button to create a new action, that action will be added to the **Action List** table. If you get a warning saying "Duplicate", arcadeVFE will highlight the duplicate action in the list at which point you may delete it and try again or keep it.
 
-When you complete the table, press the "Save list" button to save it.  It will be saved in the `\User` folder as a `*.json` file having the name specified in the "Activity list name" field above the table. By default this name is "Arcade Controller" (saved as `Arcade Controller.json`). If you switch between multiple controllers for use with your emulator, you could save different action lists under different names. These can then be loaded in the future by creating a shortcut that provides the name as a command line parameter when launching VFE.  For example,
+When you complete the table, press the **Save list** button to save it.  It will be saved in the `\User` folder as a `*.json` file having the name specified in the **Activity list name** field above the table. By default this name is "Arcade Controller" (saved as `Arcade Controller.json`). If you switch between multiple controllers for use with your emulator, you could save different action lists under different names. These can then be loaded in the future by creating a shortcut that provides the name as a command line parameter when launching VFE.  For example,
 
 * `>vfe.exe "Arcade Controller"` or
 * `>vfe.exe "Gamepad"`
@@ -121,14 +121,14 @@ When you complete the table, press the "Save list" button to save it.  It will b
 The device or method that was chosen to trigger the action.
 
 ### Action
-* For the "ROM Monitor" Device List option, this column shows the rom you chose to monitor.
-* For the "Keyboard" Device List option, it shows the keyboard key or key combo you assigned.
+* For the `ROM Monitor` Device List option, this column shows the rom you chose to monitor.
+* For the `Keyboard` Device List option, it shows the keyboard key or key combo you assigned.
 * For a game controller, it shows the button number you assigned.
 
 ### Sequence
-For "Keyboard" and game controller actions, it is possible to assign multiple actions to the same key or button. The effect of this is that when you press that key or button the first time, the action with a sequence number of 1 will be triggered. When you press that same key or button a second time, the action with a sequence number of 2 will be triggered, and so forth (with each action being verbally annunciated if you provided an annunciation phrase with each). This provides a means to manually switch between multiple profiles using a single key or button. 
+For `Keyboard` and game controller actions, it is possible to assign multiple actions to the same key or button. The effect of this is that when you press that key or button the first time, the action with a sequence number of 1 will be triggered. When you press that same key or button a second time, the action with a sequence number of 2 will be triggered, and so forth (with each action being verbally annunciated if you provided an annunciation phrase with each). This provides a means to manually switch between multiple profiles using a single key or button. 
 
-Sequence numbers are assigned to each action automatically when you add the action. To change the auto-assigned sequence of an action, just use the "Move Up" and "Move Down" buttons and you will see the sequence number for that action adjust according to its position in the list. Note that for "ROM Monitor" actions, the sequence number will always be 1 (since these are fully automated actions that have no need for sequencing).
+Sequence numbers are assigned to each action automatically when you add the action. To change the auto-assigned sequence of an action, just use the **Move Up** and **Move Down** buttons and you will see the sequence number for that action adjust according to its position in the list. Note that for `ROM Monitor` actions, the sequence number will always be 1 (since these are fully automated actions that have no need for sequencing).
 
 ### Annunciation
 This is the annunciation phrase you assigned to the action.
@@ -140,10 +140,10 @@ This is the command line template with field tags replaced (i.e. the actual comm
 These are the second and third optional command line templates with field tags replaced (i.e. the actual command lines that will be executed).
 
 ## Managing the Action List table
-Below the Action List table are several additional buttons with the following functions:
+Below the **Action List** table are several additional buttons with the following functions:
 
 ### Move Up / Move Down
-These buttons are intended for use in changing the sequence order of actions assigned to a single button or key press as described above under "Sequence". 
+These buttons are intended for use in changing the sequence order of actions assigned to a single button or key press as described above under [Sequence](#Sequence). 
 
 ### Clear all
 This clears the entire table (if you press this by mistake, just close the screen without saving and re-open it).
@@ -162,7 +162,7 @@ User Preferences
 These options allow the user to make adjustments to certain features.
 
 ### Operate only when the arcade is running
-This is a recommended setting for most use cases (and required for the RawAccel and Game Info Display options). Turning this off is mainly intended for testing.
+This is a recommended setting for most use cases (and required for the **Run RawAccel** and **Use Game Info Overlay** options). Turning this off is mainly intended for testing.
 
 ### Run RawAccel
 RawAccel is a utility that can be found on GitHub at https://github.com/RawAccelOfficial/rawaccel. This software may be needed to tune some trackballs to have additional sensitivity. For example, I need it to make my Ultimarc U-Trak trackball work correctly in Arcade Time Capsule. To integrate RawAccel with arcadeVFE, simply install it to a subfolder of VFE called `..\RawAccel`.
@@ -174,7 +174,7 @@ This feature will display a desktop overlay on the primary monitor showing detai
 
 To navigate through the Game Info screens, you will want to assign at least the "Right" action in the game controller button configuration (and optionally, the "Left", "Start", and "Exit" options), using the **Game Info Navigation** radio switch at the top of the screen. If you would like custom pictures to be displayed along with the text information, you may create additional folders within the `..\GameInfo\Assets` subfolder of arcadeVFE, and fill it with `*.jpg` or `*.png` files having root names that are the same as the roms you would like to associate them with. Examples are provided in the `..\GameInfo\Assets\cpanels` and `..\assets\flyers folders`. Feel free to add additional folders as you like.
 
-**Note**: Be aware that this feature is NOT compatible with spinner and trackball games **IF** you use mouse clicks as input. To address this, either do not use this feature or use XInput for your fire button instead. See the Limitations section at the bottom of this document for more information about this potential issue.
+**Note**: Be aware that this feature is NOT compatible with spinner and trackball games **IF** you use mouse clicks as input. To address this, either do not use this feature or use XInput for your fire button instead. See the [Issues/Limitations](#Issues/Limitations) section at the bottom of this document for more information about this potential issue.
 
 ### Always voice annunciate
 If you have configured voice annunciation phrases for your actions, then this switch can control when these are heard. This checkbox has three states. When checked (the default), the voice will be heard every time a game referenced in the action table is run. When unchecked, voice annunciation is effectively turned off. Finally, if the checkbox is configured with the minus sign (-), then voice annunciation will only occur if an action was actually executed (see the **Note 2** in the [ROM Monitor](#ROM-Monitor) section above).
