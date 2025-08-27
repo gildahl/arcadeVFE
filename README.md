@@ -95,7 +95,7 @@ Additional Notes:
 
 * If your profile filename needs quotes around it, then simply add quotes around the field tag in the template, such as `[profile_name]` or `[profile_full_name]`.
  
-* If you wish to trigger two or up to three Commands in a single action, click on the checkbox next to **Profile 2** and/or **Profile 3** and you can configure a second and/or third command line using a completely different profile and command line template.
+* If you wish to trigger two or up to three commands in a single action, click on the checkbox next to **Profile 2** and/or **Profile 3** and you can configure a second and/or third command line using a completely different profile and command line template.
 
 * If you want to add a new template to VFE that will persist across sessions, you can edit any of the built-in ones and then use the **Add** button. You may also delete any template you no longer want to see in the list.  Note that whenever you do this, all three **Command** lists will be synchronized to contain the same list of templates.
 
