@@ -194,3 +194,7 @@ Because this software is not code-integrated with the host emulator, but relies 
 2. Trackball and spinner games rely on the arcade software having the focus. The game information window that arcadeVFE overlays over the emulator is therefore designed to not take the focus.  However, any mouse clicks made by the user that occur while the game information is displayed (whether or not you are actually viewing it), will cause the overlay to steal the focus. This means that it is not possible to use mouse buttons as input for trackball and spinner games (such as for a fire button), otherwise focus will be taken away from the emulator and mouse input will stop working. The solution to this is to either keep this feature turned off or ensure that you are using a (non-mouse) XInput device (or XInput virtual device) button as your fire button, in which case, everything should work as intended. Note that non-trackball and spinner games should be generally immune from this issue unless you happen to click your mouse while playing or click on your desktop window with your motion controller.   
 
 3. arcadeVFE pauses operation while its Settings screen is displayed. Therefore, if you attempt to use your Virtual Arcade while the Setting screen is open, arcadeVFE will not function, and may also lose track of the arcade software's state. If this happens, simply close both your arcade software and arcadeVFE completely, then restart them.
+
+Voice notification
+Profile names (U360 instead of right)
+"Other" arcade
