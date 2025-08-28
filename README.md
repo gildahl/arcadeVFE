@@ -93,7 +93,7 @@ Additional Notes:
 -----------------
 * To test a command line while still in the Settings screen, press the **Test** button next to the Command field. Hovering over the **Test** button with the **Show Tooltips** option turned on, will show the actual command line that will be executed.
 
-* If your profile filename needs quotes around it, then simply add quotes around the field tag in the template, such as `[profile_name]` or `[profile_full_name]`.
+* If your profile filename needs quotes around it, then simply add quotes around the field tag in the template, such as `"[profile_name]"` or `"[profile_full_name]"`.
  
 * If you wish to trigger two or up to three commands in a single action, click on the checkbox next to **Profile 2** and/or **Profile 3** and you can configure a second and/or third command line using a completely different profile and command line template.
 
