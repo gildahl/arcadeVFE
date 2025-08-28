@@ -72,9 +72,9 @@ To setup a manual action that will run upon a particular button or key press, Ch
 
 **Note 2**: It is possible to assign multiple actions to the same button or key press, in which case the actions will be invoked sequentially upon each press. See the [Sequence](#Sequence) section below for more information about how this works.
 
-Voice Annunciation
+Voice Notification 
 ==================
-If you would like arcadeVFE to verbally announce an action when it is executed, you may add a phrase to the optional **Voice annunciation phrase** field. This is highly recommended as it both provides active feedback that the software is working, and can provide the player with reminders about the control configuration for that game. You can test the phrase to see what it will sound like by pressing the **Voice Test** button. These phrases can provide reminders about how a game is configured. Some example might be:
+If you would like arcadeVFE to verbally announce an action when it is executed, you may add a phrase to the optional **Voice notification phrase** field. This is highly recommended as it both provides active feedback that the software is working, and can provide the player with reminders about the control configuration for that game. You can test the phrase to see what it will sound like by pressing the **Voice Test** button. These phrases can provide reminders about how a game is configured. Some example might be:
 
 * "Use left 8 way rotary joystick"
 * "Use right 4 way joystick"
@@ -128,7 +128,7 @@ For `Keyboard` and game controller actions, it is possible to assign multiple ac
 Sequence numbers are assigned to each action automatically when you add the action. To change the auto-assigned sequence of an action, just use the **Move Up** and **Move Down** buttons and you will see the sequence number for that action adjust according to its position in the list. Note that for `ROM Monitor` actions, the sequence number will always be 1 (since these are fully automated actions that have no need for sequencing).
 
 ### Voice Phrase
-This is the voice annunciation phrase you assigned to the action.
+This is the voice notification phrase you assigned to the action.
 
 ### Command
 This is the command line template with field tags replaced (i.e. the actual command line that will be executed).
@@ -173,8 +173,8 @@ To navigate through the Game Info screens, you will want to assign at least the 
 
 **Note**: Be aware that the Game Info overlay feature is NOT compatible with spinner and trackball games **IF** you use mouse clicks for game input (such as for your fire button). To address this, either turn off this feature or use a game controller button for your fire button instead. See the [Issues and Limitations](#Issues-and-Limitations) section at the bottom of this document for more information about this potential issue.
 
-### Always voice annunciate
-If you have configured voice annunciation phrases for your actions, then this switch can control when these are heard. This checkbox has three states. When checked (the default), the voice will be heard every time a game referenced in the action table is run. When unchecked, voice annunciation is effectively turned off. Finally, if the checkbox is configured with the minus sign (-), then voice annunciation will only occur if an action was actually executed (see the **Note 2** in the [ROM Monitor](#ROM-Monitor) section above).
+### Always voice notify
+If you have configured voice notification phrases for your actions, then this switch can control when these are heard. This checkbox has three states. When checked (the default), the voice will be heard every time a game referenced in the action table is run. When unchecked, voice notification is effectively turned off. Finally, if the checkbox is configured with the minus sign (-), then voice notification will only occur if an action was actually executed (see the **Note 2** in the [ROM Monitor](#ROM-Monitor) section above).
 
 ### Beep on action
 This option will sound a beep whenever a command action happens. This can be useful as a debugging tool by asserting profile changes independent of the voice option.
@@ -187,13 +187,13 @@ In addition to this documentation file, the **Settings** screen implements toolt
 
 Issues and Limitations
 ======================
-Because this software is not code-integrated with the host emulator, but relies on external automation techniques, there are a few limitations that should be noted. These may never be noticed, but they are good to be aware of.
+Because this software is not code-integrated with the host emulator, but relies on external automation techniques, there are a few limitations that should be noted. These may rarely be noticed, but they are good to be aware of.
 
-1. arcadeVFE can only tell when a new game is loaded, but not when it is exited. It can only surmise that you have exited a game when it detects that you have started a new and different game. Consequently, if you exit a game and re-enter the SAME game, arcadeVFE will be oblivious that you did this. This should not affect gameplay at all since whatever profiles were run while you were first playing will still be in effect. However, arcadeVFE will not be able to provide feedback (such as a beep or voice annunciation) when restarting the game. Only upon starting a new game.
+1. arcadeVFE can only tell when a new game is loaded, but not when it is exited. Therefore, it can only surmise that you have exited a game when it detects that you have started a new and different game. Consequently, if you exit a game and re-enter the SAME game, arcadeVFE will not know that you did this. This should not affect gameplay at all since whatever state was loaded when you originally started the game will still be in effect. However, arcadeVFE will not be able to provide feedback (such as a beep or voice notification) when restarting the game. Only upon starting a new game.
 
-2. Trackball and spinner games rely on the arcade software having the focus. The game information window that arcadeVFE overlays over the emulator is therefore designed to not take the focus.  However, any mouse clicks made by the user that occur while the game information is displayed (whether or not you are actually viewing it), will cause the overlay to steal the focus. This means that it is not possible to use mouse buttons as input for trackball and spinner games (such as for a fire button), otherwise focus will be taken away from the emulator and mouse input will stop working. The solution to this is to either keep this feature turned off or ensure that you are using a (non-mouse) XInput device (or XInput virtual device) button as your fire button, in which case, everything should work as intended. Note that non-trackball and spinner games should be generally immune from this issue unless you happen to click your mouse while playing or click on your desktop window with your motion controller.   
+2. Trackball and spinner games rely on the arcade software having the focus. The game information window that arcadeVFE overlays over the emulator is therefore specifically designed to not take the focus. However, any mouse clicks made by the user that occur while the game information is displayed (whether or not you are actually viewing it), will cause the overlay to steal the focus. This means that the GameInfo feature will not work if you use mouse buttons as game input for trackball and spinner games (such as for a fire button), since it will cause focus to be taken away from the emulator causing mouse input to stop working. The solution to this is to either keep the GameInfo feature turned off, or ensure that you are using a (non-mouse) game controller button as your fire button, in which case, everything should work as intended. Note that non-trackball and spinner games should be generally immune from this issue unless you happen to click your mouse while playing or click on your desktop window with your motion controller.   
 
-3. arcadeVFE pauses operation while its Settings screen is displayed. Therefore, if you attempt to use your Virtual Arcade while the Setting screen is open, arcadeVFE will not function, and may also lose track of the arcade software's state. If this happens, simply close both your arcade software and arcadeVFE completely, then restart them.
+3. arcadeVFE pauses operation while its Settings screen is displayed. Therefore, if you open your arcade software while the Setting screen is open, arcadeVFE will not function. If this happens, simply close both your arcade software and arcadeVFE completely, then restart them.
 
 4. arcadeVFE does not actively monitor for new game controllers while running. So be sure that any game controller(s) you intend to use with it are plugged in before you start the software. If you plug in a controller while the software is running, the controller will not be recognized until you restart the program.
 
