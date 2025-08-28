@@ -82,7 +82,7 @@ If you would like arcadeVFE to verbally announce an action when it is executed, 
 
 How to Configure Command-Line Actions
 =====================================
-"Profiles", as defined in this document, are files containing specific game controller configurations created by game controller configuration software. Examples of such files might be `U360.vcd` for Virtual Controller, or `4-way.ugc` for UltraMap. To make command creation easier, you may specify the file name of a profile separately in the **Profile** field, and then choose a command template in the **Command** field, which will get filled in with the profile's file name when the **Assign** button is pressed.  This template will typically contain one of the following field tags:
+"Profiles", as defined in this document, are files containing specific game controller configurations created by game controller configuration software. Examples of such files might be `U360.vcd` for Virtual Controller, or `4-way.ugc` for UltraMap. To make command creation easier, you may specify the file name of a profile separately in the **Profile** field, and then choose a command template in the **Command** field, into which the profile will be inserted when the **Assign** button is pressed. This template will typically contain one of the following field tags:
 
 - `[profile_name]`        - will be replaced by the filename or contents of **Profile** field
 - `[profile_full_name]`   - will be replaced by the full path/file or contents of **Profile** field
