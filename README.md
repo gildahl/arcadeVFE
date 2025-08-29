@@ -196,7 +196,3 @@ Because this software is not code-integrated with the host emulator, but relies 
 3. arcadeVFE pauses operation while its Settings screen is displayed. Therefore, if you open your arcade software while the Setting screen is open, arcadeVFE will not function. If this happens, simply close both your arcade software and arcadeVFE completely, then restart them.
 
 4. arcadeVFE does not actively monitor for new game controllers while running. So be sure that any game controller(s) you intend to use with it are plugged in before you start the software. If you plug in a controller while the software is running, the controller will not be recognized until you restart the program.
-
-Voice notification
-Profile names (U360 instead of right)
-"Other" arcade
