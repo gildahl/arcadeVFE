@@ -48,7 +48,7 @@ OnMessage(WM_MOUSEMOVE  := 0x0200, OnMouseEvent)
 OnMessage(WM_MOUSELEAVE := 0x02A3, OnMouseEvent)
 
 ;***********************************************************
-;inits for GameInfo display
+;globals for GameInfo display
 global gGui := {}
 global guiGameInfo := ""
 global sCurrentROM := ""
@@ -69,7 +69,6 @@ global iDefaultGameInfoFontSize := 18
 
 global SDL2 := SDL2DLL() ;SDL library for game device discovery and polling
 global oPacDrive := PacDriveDLL() ;Support for Ultimarc ServoStik rotation
-global oVoice := voice_class() ;initialize speech support
 
 ;global flags
 global bCancelAssign := false
@@ -80,23 +79,20 @@ global iRawAccelPID := 0
 global sLastActionKey := ""
 global bSuppressLastAccess := false
 
-;global inits
+;global delays
 global iRestartDelay := 0              ;Delay in between application close and restart (in ms)
 global iCommandLineDelay := 500        ;Delay in between two consecutive command line calls (in ms)
 
+;global objects
+global oVoice := voice_class()         ;initialize speech support
 global oTemplates                      ;Object used by the JSON parser to hold the Template list
-global oFloors                         ;Object used by the JSON parser to hold the Floors list
-global oVicinities                     ;Array used by the JSON parser to hod the Vicinities list
 global oTweaks                         ;Object used by the JSON parser to hold the Tweaks list
 global oActions	:= Map()		       ;Object used by the JSON parser to hold the Actions list
 global aDevices := Array()             ;Holds the list of devices (a.k.a. Action Sources)
 global mDeviceIndex := Map()           ;Holds the indexes of the devices in the list
-global mDevices := Map()               ;Holds info for all devices in the list
-global oArcadeRomList := Map()         ;Holds the curated arcade rom list including rom versions               ;
+global mDevices := Map()               ;Holds info for all devices in the list              ;
 global mRomsByName := Map()            ;A dictionary allowing a rom to be looked up by its description
 global aDefaultTemplates := Array()    ;The set of default command line templates
-global aDefaultFloors := Array()	   ;The set of default floors
-global aDefaultVicinities := Array()   ;The set of default vicinities
 global mROMVersions := Map()           ;Rom versions from listxml (games.xml)
 
 ;Populate the default command line templates
@@ -107,15 +103,6 @@ aDefaultTemplates.Push('"C:\Program Files (x86)\Ultramap\Ultramap.exe" "[profile
 aDefaultTemplates.Push('Set Ultimarc ServoStik: 4-way')
 aDefaultTemplates.Push('Set Ultimarc ServoStik: 8-way')
 
-;Populate the default floor list
-aDefaultFloors := ["1st Level","4th Level","5th Level","6th Level","Pasedena","2nd Floor"]
-
-;Populate the default vicinities list
-aDefaultVicinities := ["Counter","Pool Table","Entrance","Candy Cab Area"]
-
-global sApplicationName := "RetroVRArcade.exe"
-global sROMMonitorFolder := ""
- 
 ;folder defaults
 global sConfigFolder := A_ScriptDir "\Config"
 global sUserFolder := A_ScriptDir "\User"
@@ -127,15 +114,23 @@ global sArcadeFolder := A_ScriptDir "\Arcade"
 ;filename defaults
 global sUserFile := sUserFolder "\Arcade Controller.json"
 global sTemplatesFile := sConfigFolder "\templates.json"
-global sFloorsFile := sConfigFolder "\floors.json"
-global sVicinitiesFile := sConfigFolder "\vicinities.json"
 global sTweaksFile := sConfigFolder "\tweaks.json"
 global sIniFile := sConfigFolder "\arcadeVFE.ini"
 global sRawAccelExe := sRawAccelFolder "\rawaccel.exe"
 global sMame2010 := sAuditFolder "\mame2010\mame64.exe" ;For MAME 2010 / 0.139 rom file audits
 global sMame2014 := sAuditFolder "\mame2014\mame64.exe" ;For MAME 2014 / 0.159 rom file audits
-global sArcadeString := ""     ;gets initialized in Setup.PopulateFields(). Currently may be "Arcade Time Capsule 3.6" or "Other"
-global sLocationsIniFile := "" ;gets initialized in Setup.PopulateFields()
+
+;arcade globals
+;get initialized and set in Setup.PopulateFields() and Setup_ApplyButton_Click()
+global sArcadeString := ""            ;Currently may be "Arcade Time Capsule 3.6" or "Other"
+global sDirectoryFile := ""
+global sFloorsFile := ""   
+global sVicinitiesFile := ""
+global sApplicationName := ""
+global sROMMonitorFolder := ""
+global oArcadeRomList := Map()         ;Holds the curated arcade rom list including rom versions 
+global oFloors                         ;initialized in Settings.ReadFloors()
+global oVicinities                     ;initialized in Settings.ReadVicinities()
 
 ;group constants
 global TWO_WAY_H :=  "[Group, 2-way horizontal]"
@@ -185,17 +180,17 @@ else
 ;  Main Application Startup
 ;==============================
 
-TrayMenu.BuildMenu()          ;Build tray menu
-LoadInit()				      ;Load custom initializations
-LoadTweaks()				  ;Load custom tweaks
-Setup.CreateSetupDialog()     ;Load initial setup
-Settings.BuildScreen()        ;Build Settings screen
-Settings.InitDevices()        ;Get and populate the list of devices (a.k.a. Action Sources)
-Settings.ReadTemplates()      ;Populate Template list from JSON file if available
-Settings.ReadFloors()		  ;Populate Floor list from JSON if available
-Settings.ReadVicinities()     ;Populate Vicinities list from JSON if available
-Settings.ReadActionList()     ;Populate Action list from JSON file if available
-Settings.FillRomList()        ;Populate the ROM list
+TrayMenu.BuildMenu()              ;Build tray menu
+LoadInit()				          ;Load custom initializations
+LoadTweaks()				      ;Load custom tweaks
+Setup.CreateSetupDialog()         ;Load initial setup
+Settings.CreateSettingsDialog()   ;Build Settings screen
+Settings.InitDevices()            ;Get and populate the list of devices (a.k.a. Action Sources)
+Settings.ReadTemplates()          ;Populate Template list from JSON file if available
+Settings.ReadFloors()		      ;Populate Floor list from JSON if available
+Settings.ReadVicinities()         ;Populate Vicinities list from JSON if available
+Settings.ReadActionList()         ;Populate Action list from JSON file if available
+Settings.FillRomList()            ;Populate the ROM list
 
 StartRomWatcher()             ;Begin monitoring the rom folder    
 Poll()                        ;Start the button and keyboard polling loop
@@ -281,29 +276,29 @@ LoadTweaks()
 StartRomWatcher()
 {
 	attrib := ""
-	try	attrib := DirExist(gcROMMonitorFolderEdit.Text)  
+	try	attrib := DirExist(sROMMonitorFolder)  
 	
 	if (attrib)
 	{
-		oLog.LogLine("INFO: ROM Folder set to: `"" gcROMMonitorFolderEdit.Text ".`n")
+		oLog.LogLine("INFO: ROM Folder set to: `"" sROMMonitorFolder ".`n")
 
 		;Ensure all rom files have a last-accessed date/time of a week ago.  This is to address
 		;a Windows deficiency in which the last-access date/time of files is not updated if the file
 		;was previously accessed within the last hour or so (or sometimes since the last boot), so
 		;we want them to look sufficiently old to force Windows to set the access timestamp that will
 		;trigger our notification.
-		FileSetTime DateAdd(A_Now, -7, "days"), gcROMMonitorFolderEdit.Text "\*.zip", "A"
+		FileSetTime DateAdd(A_Now, -7, "days"), sROMMonitorFolder "\*.zip", "A"
 
 		;Register the folder whose files will be monitored for being accessed. 32 watches for changes
 		;to the file access timestamp, and will notify RomAccess_Event() when such detections are made.
-		WatchFolder(gcROMMonitorFolderEdit.Text, RomAccess_Event, False, 32)
+		WatchFolder(sROMMonitorFolder, RomAccess_Event, False, 32)
 	}
 	else
 	{
-		if (gcROMMonitorFolderEdit.Text == "")
+		if (sROMMonitorFolder == "")
 			oLog.LogLine("INFO: ROM Folder is not configured.`n")
 		else
-			oLog.LogLine("INFO: ROM Folder: `"" gcROMMonitorFolderEdit.Text "`" is invalid.`n")
+			oLog.LogLine("INFO: ROM Folder: `"" sROMMonitorFolder "`" is invalid.`n")
 	}
 }
 
@@ -409,7 +404,7 @@ RomAccess_Event(Folder, Changes)
 	RunAction(oAction) ;execute the action
 
 	;Show GameInfo (but only if the option is turned on and the application is running)
-	if (gcShowGameInfo_Checkbox.Value == true && bOnlyMonitorWhenApplicationLoaded && ProcessExist(sApplicationName))
+	if ((gcShowGameInfo_Checkbox.Value && gcShowGameInfo_Checkbox.Enabled) && bOnlyMonitorWhenApplicationLoaded && ProcessExist(sApplicationName))
 	{
 		ShowGameInfo(OutNameNoExt)
 	}
@@ -885,7 +880,7 @@ DeleteAndLog(t, f)
 				FileDelete(f)
 			}
 			catch as e {
-				oLog.LogLine("INFO: File could not be deleted: " f ". Error was: " AppLog.FormatErrorMessage(e) "`n")
+				oLog.LogLine("INFO: File could not be deleted: " f ". Error was: " oLog.FormatErrorMessage(e) "`n")
 				return 1
 			}
 			else {
@@ -902,7 +897,7 @@ DeleteAndLog(t, f)
 				DirDelete(f, true) ;true deletes even if files exist in folder
 			}
 			catch as e {
-				oLog.LogLine("INFO: Folder could not be deleted: " f ". Error was: " AppLog.FormatErrorMessage(e) "`n")
+				oLog.LogLine("INFO: Folder could not be deleted: " f ". Error was: " oLog.FormatErrorMessage(e) "`n")
 				return 1
 			}
 			else {

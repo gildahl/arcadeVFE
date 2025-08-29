@@ -40,9 +40,12 @@ OnMouseEvent(wp, lp, msg, hwnd)
 
         DllCall('TrackMouseEvent', 'Ptr', TRACKMOUSEEVENT)
         
-        try ToolTipContents := GuiCtrlFromHwnd(hwnd).TT, ToolTip(ToolTipContents)
-        ;catch
-        ;    ToolTipContents:=""
+        try ToolTipContents := GuiCtrlFromHwnd(hwnd).TT,ToolTip(ToolTipContents)
+
+        ;catch {
+        ;   ToolTipContents:=""
+        ;    ToolTip()
+        ;}
     }
 
     if msg = WM_MOUSELEAVE

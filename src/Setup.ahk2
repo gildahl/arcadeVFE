@@ -42,13 +42,13 @@ class Setup
         gcArcadeLabel := guiSetup.AddText("x" 25 " y" 10 " w" 250, "Choose your arcade software.")
         gcArcadeDropDown := guiSetup.AddDropDownList("x" 25 " y" 25 " w" 320 " +BackgroundWhite",)
         gcArcadeDropDown.OnEvent("Change", (*) => Setup.ArcadeDropDown_Change())
-        gcArcadeDropDown.TT := "Select the arcade software you will be using.`nUse `"Other`" if not using ATC or a version of ATC not listed."
+        gcArcadeDropDown.TT := "Select the arcade software you will be using. Choose `"Other`" if`nnot using ATC or a version of ATC not listed. Some features`nare disabled when selecting `"Other`"."
         
         ;Add supported arcades to the list
         ;Arcades are supported via arcade-specific files in the \Arcade subfolder (minimally *.RomList.json)
         loop files sArcadeFolder "\*.RomList.json"
         {
-            sArcade := SubStr(A_LoopFileName, 1, InStr(A_LoopFileName, ".") + 1)
+            local sArcade := SubStr(A_LoopFileName, 1, InStr(A_LoopFileName, ".") + 1)
             gcArcadeDropDown.Add([sArcade])
         }        
         
@@ -57,10 +57,11 @@ class Setup
         gcApplicationEditLabel := guiSetup.AddText("x" 25 " y" 55 " w" 350, "Application Name")
         gcApplicationEdit := guiSetup.AddEdit("x" 25 " y" 70 " w" 155 " +BackgroundWhite",)
 		gcApplicationEdit.OnEvent("Change", (*) => Setup.ApplicationEdit_Change())
-		gcApplicationEdit.TT := "Enter the name of the executable for this arcade.`nDo not include the path. For example, RetroVRArcade.exe."
+		gcApplicationEdit.TT := "Enter the name of the executable for this arcade. Do not`ninclude the path. For example, `"RetroVRArcade.exe`"."
 
 		gcApplicationBrowseButton := guiSetup.AddButton("x" 183 " y" 69 " w" nIconButtonWidth)
 		gcApplicationBrowseButton.OnEvent("Click", (*) => Setup.ApplicationBrowseButton_Click())
+        gcApplicationBrowseButton.TT := "Browse for the arcade system executable file."
         GuiButtonIcon(gcApplicationBrowseButton, 'imageres.dll', 206, 's16')
 
         gcROMMonitorFolderLabel := guiSetup.AddText("x" 25 " y" 100 " w" 350, "ROM folder to monitor")
@@ -70,7 +71,8 @@ class Setup
 
         gcROMMonitorFolderBrowseButton := guiSetup.AddButton("x" 490 " y" 114 " w" nIconButtonWidth)
 		gcROMMonitorFolderBrowseButton.OnEvent("Click", (*) => Setup.ROMMonitorFolderBrowseButton_Click())
-		GuiButtonIcon(gcROMMonitorFolderBrowseButton, 'imageres.dll', 206, 's16')
+		gcROMMonitorFolderBrowseButton.TT := "Browse for the folder containing this arcade's MAME roms.`nThe files in this folder must have an extension of *.zip."
+        GuiButtonIcon(gcROMMonitorFolderBrowseButton, 'imageres.dll', 206, 's16')
 
         gcAuditButton := guiSetup.AddButton("x" 110 " y" Setup.mSetup.Height - 40 " w" 80 " h" 25, "Audit Roms...")
         gcAuditButton.OnEvent("Click", (*) => Setup.AuditButton_Click())
@@ -84,14 +86,12 @@ class Setup
         gcSetupAuditProgress.Visible := false
 
         gcSetup_ApplyButton := guiSetup.AddButton("x" 365 " y" Setup.mSetup.Height - 40 " w" 80 " h" 25, "Apply")
-        fSetup_ApplyButton_Click := Setup.Setup_ApplyButton_Click.Bind()
-        gcSetup_ApplyButton.OnEvent("Click", fSetup_ApplyButton_Click)
+        gcSetup_ApplyButton.OnEvent("Click", (*) => Setup.Setup_ApplyButton_Click())
         gcSetup_ApplyButton.TT := "Press to save these settings."
 
         gcSetup_CloseButton := guiSetup.AddButton("x" 450 " y" Setup.mSetup.Height - 40 " w" 80 " h" 25, "Close")
-        fSetup_CloseButton_Click := Setup.Setup_CloseButton_Click.Bind()
-        gcSetup_CloseButton.OnEvent("Click", fSetup_CloseButton_Click)
-
+        gcSetup_CloseButton.OnEvent("Click", (*) => Setup.Setup_CloseButton_Click())
+ 
         Setup.PopulateFields()
 
         ;Force display the Setup dialog if any or all of its fields are empty after attempting to populate its
@@ -107,16 +107,17 @@ class Setup
 
         guiCopyRoms.OnEvent("Close", (*) => Setup.CopyRomsCloseButton_Click())
 
-        gcCopyRomsCloseButton := guiCopyRoms.AddButton("x" 110 " y" 100 - 35 " w" 80 " h" 25, "Close")
-        gcCopyRomsCloseButton.OnEvent("Click", (*) => Setup.CopyRomsCloseButton_Click())
-
-        gcRomVersionLabel := guiCopyRoms.AddText("x" 40 " y" 10 " w" 250, "Rom version")
-        gcRomVersionDropDown := guiCopyRoms.AddDropDownList("x" 40 " y" 25 " w" 100 " +BackgroundWhite",)
+        gcRomVersionLabel := guiCopyRoms.AddText("x" 30 " y" 10 " w" 250, "Rom version")
+        gcRomVersionDropDown := guiCopyRoms.AddDropDownList("x" 30 " y" 25 " w" 100 " +BackgroundWhite",)
         gcRomVersionDropDown.OnEvent("Change", (*) => Setup.RomVersionDropDown_Change())
-        gcRomVersionDropDown.TT := "Select the version of the roms you would like to copy,`nThen use the Browse button to select the folder`nthat you would like to copy them from."
+        gcRomVersionDropDown.TT := "Select the version of the roms you would like to copy,`nthen use the Browse button to select the folder that`nyou would like to copy them from."
 
-        gcCopyRomsBrowseButton := guiCopyRoms.AddButton("x" 160 " y" 22 " w" 80 " h" 25, "Browse...")
+        gcCopyRomsBrowseButton := guiCopyRoms.AddButton("x" 140 " y" 22 " w" 80 " h" 22, "Browse...")
         gcCopyRomsBrowseButton.OnEvent("Click", (*) => Setup.CopyRomsBrowseButton_Click())
+        gcCopyRomsBrowseButton.TT := "Browse for the source folder from which you would like to copy`nthe roms of the selected version. These roms will be copied into`nthe arcade's rom folder, overwriting any existing files."
+
+        gcCopyRomsCloseButton := guiCopyRoms.AddButton("x" 85 " y" 100 - 35 " w" 80 " h" 25, "Close")
+        gcCopyRomsCloseButton.OnEvent("Click", (*) => Setup.CopyRomsCloseButton_Click())
     }
 
     static PopulateFields()
@@ -126,33 +127,40 @@ class Setup
         if (!gcArcadeDropDown.Text)
             try gcArcadeDropDown.Text := IniRead(sIniFile, "General", "Arcade", "Arcade Time Capsule 3.6")
 
-        try gcApplicationEdit.Text := IniRead(sIniFile, "General", "Application")
-        if (gcArcadeDropDown.Text != "Other")
-            gcApplicationEdit.Text := "RetroVRArcade.exe"        
+        try gcApplicationEdit.Text := IniRead(sIniFile, gcArcadeDropDown.Text, "Application")
+        try gcROMMonitorFolderEdit.Text := IniRead(sIniFile, gcArcadeDropDown.Text, "ROMFolder")            
 
-        try gcROMMonitorFolderEdit.Text := IniRead(sIniFile, "General", "ROMFolder")
+        if (!gcApplicationEdit.Text && InStr(gcArcadeDropDown.Text, "Arcade Time Capsule"))
+            gcApplicationEdit.Text := "RetroVRArcade.exe"      
 
-        ;Initialize these globals
+        ;Set globals
         global sArcadeString := gcArcadeDropDown.Text
-        global sLocationsIniFile := sArcadeFolder "\" sArcadeString ".Locations.ini"
+        global sApplicationName := gcApplicationEdit.Text
+        global sROMMonitorFolder := gcROMMonitorFolderEdit.Text 
+        global sDirectoryFile := sArcadeFolder "\" sArcadeString ".Locations.ini"
+        global sFloorsFile := sArcadeFolder "\" sArcadeString ".Floors.json"
+        global sVicinitiesFile := sArcadeFolder "\" sArcadeString ".Vicinities.json"
         
-        sRomListFile := sArcadeFolder "\" sArcadeString ".RomList.json"
+        local sRomListFile := sArcadeFolder "\" sArcadeString ".RomList.json"
 
         ;Initialize the global oArcadeRomList
-        if (FileExist(sRomListFile))
+        if (sArcadeString != "Other") ;skip if "Other"
         {
-            sJSON := FileRead(sRomListFile)
-            oArcadeRomList := JSON.parse(sJSON)
-        }
-        else {
-            oLog.LogLine("ERROR: Could not find rom list file: " sRomListFile "`n")
+            if (FileExist(sRomListFile))
+            {
+                sJSON := FileRead(sRomListFile)
+                oArcadeRomList := JSON.parse(sJSON)
+            }
+            else {
+                oLog.LogLine("ERROR: Could not find rom list file: " sRomListFile "`n")
+            }
+
+            iCount := oArcadeRomList.Count
+            if (iCount == 0)
+                oLog.LogLine("ERROR: Arcade rom list is empty!`n")
         }
 
-        iCount := oArcadeRomList.Count
-        if (iCount == 0)
-            oLog.LogLine("ERROR: Arcade rom list is empty!`n")
-
-        gcCopyRomsButton.Enabled := gcAuditButton.Enabled := sArcadeString == "Other" ? false : true
+        gcCopyRomsButton.Enabled := gcAuditButton.Enabled := sArcadeString != "Other" && DirExist(gcROMMonitorFolderEdit.Text) ? true : false
 
         Setup.UpdateApplyButton()
     }
@@ -160,9 +168,20 @@ class Setup
     static CopyRomsBrowseButton_Click()
     {
         sSourceFolder := ""
+
         try sSourceFolder := IniRead(sIniFile, "General", gcRomVersionDropDown.Text "RomVersionFolder")
 
+        ;Must force dismisal of ToolTip over browse window
+		tempTT := gcCopyRomsBrowseButton.TT
+		gcCopyRomsBrowseButton.TT := ""
+		ToolTip()
+
 		sFolder := FileSelect("D", sSourceFolder)
+
+        gcCopyRomsBrowseButton.TT := tempTT
+
+        if (!sFolder) ;User cancelled
+            return
 		
         result := "Yes"
         result := MsgBox("Begin copy of " gcRomVersionDropDown.Text " roms from folder:`n   " sFolder "`n`nTo folder:`n   " gcROMMonitorFolderEdit.Text "`n`nDuplicate files will be overwritten. Are you sure you would like to proceed?", "Begin Copy", 36)
@@ -197,7 +216,7 @@ class Setup
     {
         try guiSetup.Opt("+Disabled")
 
-        guiCopyRoms.Show("W" 300 " H" 100 " X" A_ScreenWidth / 2 - 300 / 2 " Y" A_ScreenHeight / 2 - 100 / 2 - 75)
+        guiCopyRoms.Show("W" 250 " H" 100 " X" A_ScreenWidth / 2 - 250 / 2 " Y" A_ScreenHeight / 2 - 100 / 2 - 75)
         guiCopyRoms.Opt("+Owner" guiSetup.Hwnd)
 
         ;Delete contents of the list since user may have changed arcades
@@ -302,14 +321,18 @@ class Setup
                 ; - results containing the text "good"
                 ; - results containing a checksum matching the one in the rom list
                 ; - results containing the text "<rom name> is best available"
-                if (!InStr(stdout, "good") && !InStr(stdout, sChecksum) && !InStr(stdout, sRom " is best available"))
+                if (stdout && !InStr(stdout, "good") && !InStr(stdout, sChecksum) && !InStr(stdout, sRom " is best available"))
                 {
+                    ;if a blank was returned, presumably, this rom can't be audited by this version of mame.
+                    if (!stdout)
+                        stdout := " " PadString(sRom, 8) "  : Rom file is not supported in this version of MAME."
+
                     iErrorCount++
                     oAuditLog.LogLine("AUDIT " mInfo["MAMEVersion"] " ROM: " stdout "`n")
                 }
 
                 if (stderr)
-                    oAuditLog.LogLine("AUDIT WARNING: " stderr "`n")
+                    oAuditLog.LogLine("AUDIT " mInfo["MAMEVersion"] " ROM: " stderr " (stderr)`n")
             }
             catch as e {
                 oAuditLog.LogLine("ERROR: Calling -verifyroms: " oAuditLog.FormatErrorMessage(e) "`n")
@@ -325,7 +348,7 @@ class Setup
 
         oAuditLog.LogLine("`n")
         oAuditLog.LogLine("INFO: Completed audit of " oArcadeRomList.Count " rom files. " iErrorCount " " sAnomalyPhrase "`n")
-        oAuditLog.LogLine("INFO: Please note that ROMs reporting anomalies may still work, but they should be tested.`n")
+        oAuditLog.LogLine("INFO: Please note that ROMs reporting anomalies may still work, but should be tested.`n")
 
         gcSetupAuditProgress.Visible := false
         gcSetupAuditProgress.Value := 0
@@ -370,9 +393,9 @@ class Setup
     {
         ;get saved values
         sArcade := sApplication := sROMFolder := ""
-        try sArcade := IniRead(sIniFile, "General", "Arcade", "Arcade Time Capsule (ATC)")
-        try sApplication := IniRead(sIniFile, "General", "Application")
-        try sROMFolder := IniRead(sIniFile, "General", "ROMFolder")
+        try sArcade := IniRead(sIniFile, "General", "Arcade")
+        try sApplication := IniRead(sIniFile, sArcade, "Application")
+        try sROMFolder := IniRead(sIniFile, sArcade, "ROMFolder")
 
         ;handle case where settings haven't been applied
         if(sArcade != gcArcadeDropDown.Text || sApplication != gcApplicationEdit.Text || sROMFolder != gcROMMonitorFolderEdit.Text)
@@ -382,6 +405,11 @@ class Setup
             if (result == "No")
                 return
         }
+
+        ;restore the settings
+        try gcArcadeDropDown.Text := sArcade
+        try gcApplicationEdit.Text := sApplication
+        try gcROMMonitorFolderEdit.Text := sROMFolder
 
         ;Go directly to Settings dialog if settings saved/good and Setup dialog had been automatically shown
         if (Setup.bAutoshow && sArcade && sApplication && DirExist(sROMFolder))
@@ -406,7 +434,6 @@ class Setup
         if (gcArcadeDropDown.Text && gcApplicationEdit.Text && DirExist(gcROMMonitorFolderEdit.Text))
         {
             IniWrite(gcArcadeDropDown.Text, sIniFile, "General", "Arcade")
-            IniWrite(gcApplicationEdit.Text, sIniFile, "General", "Application")
 
             ;if the rom folder was changed, reset the access dates
             sOGROMFolder := ""
@@ -414,16 +441,35 @@ class Setup
             if (gcROMMonitorFolderEdit.Text != sOGROMFolder)
                 StartRomWatcher()
 
-            IniWrite(gcROMMonitorFolderEdit.Text, sIniFile, "General", "ROMFolder")         
+            ;Also index these settings in their own section
+            IniWrite(gcArcadeDropDown.Text, sIniFile, gcArcadeDropDown.Text, "Arcade")
+            IniWrite(gcApplicationEdit.Text, sIniFile, gcArcadeDropDown.Text, "Application")
+            IniWrite(gcROMMonitorFolderEdit.Text, sIniFile, gcArcadeDropDown.Text, "ROMFolder")
+
+            ;Set globals
+            global sArcadeString := gcArcadeDropDown.Text
+            global sApplicationName := gcApplicationEdit.Text
+            global sROMMonitorFolder := gcROMMonitorFolderEdit.Text 
+            global sDirectoryFile := sArcadeFolder "\" sArcadeString ".Locations.ini"
+            global sFloorsFile := sArcadeFolder "\" sArcadeString ".Floors.json"
+            global sVicinitiesFile := sArcadeFolder "\" sArcadeString ".Vicinities.json"
 
             Settings.FillRomList()
+            Settings.SetRomInfo()
             gcSetup_ApplyButton.Enabled := false
+
+            if (!Setup.bAutoShow)
+                guiSettings.Title := sSettingsTitle " - " sArcadeString " - " gcActionListNameEdit.Text
+
+            ;Machine location editor is not supported for "Other" arcade
+            ;Use try since this may be called before Settings is created
+            try gcShowLocations_Checkbox.Enabled := sArcadeString == "Other" ? false : true
         }
     }
 
     static ROMMonitorFolderEdit_Change(*)
     {
-        gcCopyRomsButton.Enabled := gcAuditButton.Enabled := DirExist(gcROMMonitorFolderEdit.Text) ? true : false
+        gcCopyRomsButton.Enabled := gcAuditButton.Enabled := sArcadeString != "Other" && DirExist(gcROMMonitorFolderEdit.Text) ? true : false
 
         Setup.UpdateApplyButton()
     }
@@ -432,10 +478,21 @@ class Setup
     {
 		global gcROMMonitorFolderEdit, gcAssignButton
 
-		sFolder := FileSelect("D", gcROMMonitorFolderEdit.Value)
-		gcROMMonitorFolderEdit.Value := sFolder
+        ;Must force dismisal of ToolTip over browse window
+		tempTT := gcROMMonitorFolderBrowseButton.TT
+		gcROMMonitorFolderBrowseButton.TT := ""
+		ToolTip()
 
-        gcCopyRomsButton.Enabled := gcAuditButton.Enabled := DirExist(gcROMMonitorFolderEdit.Text) ? true : false
+		sFolder := FileSelect("D", gcROMMonitorFolderEdit.Value)
+        
+        gcROMMonitorFolderBrowseButton.TT := tempTT
+
+        if (!sFolder) ;User cancelled
+            return	
+        
+        gcROMMonitorFolderEdit.Value := sFolder
+
+        gcCopyRomsButton.Enabled := gcAuditButton.Enabled := sArcadeString != "Other" && DirExist(gcROMMonitorFolderEdit.Text) ? true : false
 
         Setup.UpdateApplyButton()
     }
@@ -452,7 +509,18 @@ class Setup
 
     static ApplicationBrowseButton_Click()
     {
+        ;Must force dismisal of ToolTip over browse window
+		tempTT := gcApplicationBrowseButton.TT
+		gcApplicationBrowseButton.TT := ""
+		ToolTip()
+        
 		sApplicationPath := FileSelect("S",,, "Executables (*.exe)")
+
+        gcApplicationBrowseButton.TT := tempTT
+
+        if (!sApplicationPath) ;User cancelled
+            return	
+
         if (sApplicationPath)
         {
             SplitPath(sApplicationPath,,,&OutExt, &OutNameNoExt)

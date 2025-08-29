@@ -37,7 +37,7 @@ class Settings
 	static PROFILE_3 := 12
 	static COMMAND_3 := 13
 
-	static BuildScreen()
+	static CreateSettingsDialog()
 	{
 		global
 
@@ -84,15 +84,15 @@ class Settings
 		gcGameInfo_ComboBox := guiSettings.AddComboBox("x" 655 " y" 62 " w" 100 " +BackgroundWhite",)
 		gcGameInfo_ComboBox.OnEvent("Change", (*) => Settings.GameInfo_ComboBox_Change())
 
-		gcSendKey_ComboBox.Add(Settings.FillKeysArray())
+		gcSendKey_ComboBox.Add(Settings.GetKeysArray())
 		gcGameInfo_ComboBox.Add(["Right","Left","Home","Exit"])
 
 		gcButtonOptionsGroupBox.Visible := gcSendKey_Radio.Visible := gcCommandLine_Radio.Visible := gcSendKey_ComboBox.Visible := gcGameInfo_Radio.Visible := gcGameInfo_ComboBox.Visible := false
 
-		gcAnnunciationLabel := guiSettings.AddText("x" 30 " y" 55 " w" 250, "Voice annunciation phrase (optional)")
+		gcAnnunciationLabel := guiSettings.AddText("x" 30 " y" 55 " w" 250, "Voice notification phrase (optional)")
 		gcAnnunciationEdit := guiSettings.AddEdit("x" 30 " y" 70 " w" 277 " +BackgroundWhite",)
 		gcAnnunciationEdit.OnEvent("Change", (*) => Settings.AnnunciationEdit_Change())
-		gcAnnunciationEdit.TT := "Word or phrase that will be`nspoken upon execution of the action."
+		gcAnnunciationEdit.TT := "Word or phrase that will be spoken`nupon execution of the action."
 
 		gcAnnunciationTestButton := guiSettings.AddButton("x" 310 " y" 69 " w" nIconButtonWidth)
 		gcAnnunciationTestButton.OnEvent("Click", (*) => Settings.AnnunciationTestButton_Click())
@@ -103,7 +103,7 @@ class Settings
 		gcROMDropDownLabel := guiSettings.AddText("x" 370 " y" 10 " w" 300, "Choose ROM")
 		gcROMDropDown := guiSettings.AddDropDownList("x" 370 " y" 25 " w" 500 " +BackgroundWhite",)
 		gcROMDropDown.OnEvent("Change", (*) => Settings.ROMDropDown_Change())
-		gcROMDropDown.TT := "Select a MAME game to monitor for activity. If this list has no items,`nmake sure the `"ROM folder to monitor`" field above contains a`nvalid path to a folder containing MAME roms."
+		gcROMDropDown.TT := "Select a group or game to monitor for activity."
 
 		cBGColor := PixelGetColor(370, 90)
 		WinSetTransColor(cBGColor)
@@ -143,7 +143,7 @@ class Settings
 		gcProfileLabel := guiSettings.AddText("x" 60 " y" 123 " w" 80 " 0x2", "Profile")
 		gcProfileEdit := guiSettings.AddEdit("x" 150 " y" 120 " w" 602 " +BackgroundWhite",)
 		gcProfileEdit.OnEvent("Change", (*) => Settings.ProfileEdit_Change())
-		gcProfileEdit.TT := "Enter a profile file and/or path to insert into the [profile_name] or`n[profile_full_name] field tag(s) of a command. If there are`nno tags in the Command, you may leave this field blank."
+		gcProfileEdit.TT := "Enter a profile file and/or path to insert into the [profile_name] or`n[profile_full_name] field tag(s) of a command. If there are no field`ntags in the Command, you may leave this field blank."
 		
 		gcProfileBrowseButton := guiSettings.AddButton("x" Settings.mMetrics.Width - nIconButtonWidth*3 - 30 - 4 " y" 119 " w" nIconButtonWidth)
 		gcProfileBrowseButton.OnEvent("Click", (*) => Settings.ProfileBrowseButton_Click())
@@ -248,6 +248,7 @@ class Settings
 		Settings.sActionListName := gcActionListNameEdit.Text
 		global sUserFile := sUserFolder "\" gcActionListNameEdit.Text ".json"
 		TrayMenu.SetMenuName("New", Settings.sActionListName)  
+		guiSettings.Title := sSettingsTitle " - " sArcadeString " - " gcActionListNameEdit.Text
 
 		gcListView := guiSettings.AddListView("-Multi" " r" 10 " x" 30 " y" 380 " w" Settings.mMetrics.Width - 30*2 " Grid", ["Device", "Action", "Sequence", "Voice Phrase", "", "Command", "", "Command 2", "", "", "", "", "Command 3"])
 		fListView_ItemSelect := Settings.ListView_ItemSelect.Bind()
@@ -287,7 +288,7 @@ class Settings
 		;********************************************************************************************************
 		;  User Preferences
 		;********************************************************************************************************
-		gcUserPreferencesGroupBox := guiSettings.AddGroupBox("x" 30 " y" 630 " w" 540 " h" 95, "User Preferences")
+		gcUserPreferencesGroupBox := guiSettings.AddGroupBox("x" 30 " y" 630 " w" 530 " h" 95, "User Preferences")
 
 		gcApplication_Checkbox := guiSettings.AddCheckbox("x" 45 " y" 653 " w" 220, "Operate only when the arcade is running")
 		gcApplication_Checkbox.OnEvent("Click", (*) => Settings.Application_Checkbox_Click())
@@ -298,10 +299,10 @@ class Settings
 		gcApplication_Checkbox.Enabled := gcApplicationEdit.Text ? true : false
 		global bOnlyMonitorWhenApplicationLoaded := gcApplication_Checkbox.Enabled && gcApplication_Checkbox.Value == 1
 
-		gcAlwaysAnnunciate_Checkbox := guiSettings.AddCheckbox("x" 45 " y" 677 " Check3", "Always voice annunciate")
+		gcAlwaysAnnunciate_Checkbox := guiSettings.AddCheckbox("x" 45 " y" 677 " Check3", "Always voice notify")
 		gcAlwaysAnnunciate_Checkbox.OnEvent("Click", (*) => Settings.AlwaysAnnunciate_Checkbox_Click())
 		try gcAlwaysAnnunciate_Checkbox.Value := IniRead(sIniFile, "General", "AlwaysAnnunciate", 1)	
-		gcAlwaysAnnunciate_Checkbox.TT := "Adjust when voice annunciation is used.`n`nChecked:      Always annunciate upon new game start.`nUnchecked:  Never annunciate (off).`nMinus:          Only annunciate when an action is performed."
+		gcAlwaysAnnunciate_Checkbox.TT := "Adjust when voice notification is used.`n`nChecked:      Always notify upon new game start.`nUnchecked:  Never notify (off).`nMinus:          Only notify when an action is performed."
 
 		gcBeep_Checkbox := guiSettings.AddCheckbox("x" 45 " y" 700, "Beep on action")
 		gcBeep_Checkbox.OnEvent("Click", (*) => Settings.Beep_Checkbox_Click())
@@ -321,7 +322,7 @@ class Settings
 		gcShowGameInfo_Checkbox := guiSettings.AddCheckbox("x" 280 " y" 653, "Use Game Info Overlay")
 		gcShowGameInfo_Checkbox.OnEvent("Click", (*) => Settings.ShowGameInfo_Checkbox_Click())
 		try gcShowGameInfo_Checkbox.Value := IniRead(sIniFile, "General", "ShowGameInfo", 0)	
-		gcShowGameInfo_Checkbox.TT := "Show GameInfo overlay on the desktop when the arcade application`nstarts and close it when the application terminates.`n`nNote that it is is advised that you DO NOT use this feature if you`nuse mouse clicks as your fire button, since any mouse clicks in a`ntrackball or spinner game will cause the GameInfo screen`nto take the focus, and, thus mouse input will be lost. To avoid this,`nuse XInput button input for fire instead."
+		gcShowGameInfo_Checkbox.TT := "Show GameInfo overlay on the desktop when the arcade application`nstarts and close it when the application terminates.`n`nNote that it is is advised that you DO NOT use this feature if you`nuse mouse clicks as your fire button, since any mouse clicks in a`ntrackball or spinner game will cause the GameInfo screen to take`nthe focus, and, thus mouse input will be lost. To avoid this, use`nXInput button input for fire instead."
 
 		if (gcApplication_Checkbox.Value == 0)
 			gcShowGameInfo_Checkbox.Enabled := false
@@ -334,10 +335,12 @@ class Settings
 		gcGameInfoFontSizeEdit.OnEvent("Change", (*) => Settings.GameInfoFontSizeEdit_Change())
 		gcGameInfoFontSizeEdit.TT := "Enter the font size to be used`nfor the GameInfo screen."
 
-		gcShowLocations_Checkbox := guiSettings.AddCheckbox("x" 440 " y" 653, "Machine Locations")
+		gcShowLocations_Checkbox := guiSettings.AddCheckbox("x" 440 " y" 653, "Show Directory")
 		gcShowLocations_Checkbox.OnEvent("Click", (*) => Settings.ShowLocations_Checkbox_Click())
 		gcShowLocations_Checkbox.Value := IniRead(sIniFile, "General", "ShowLocations", 0)	
-		gcShowLocations_Checkbox.TT := "Show/hide machine location editor under the ROM list on`nthis screen whenever a game rom is selected."
+		gcShowLocations_Checkbox.TT := "Show/hide machine directory/editor under the ROM list on`nthis screen whenever a game rom is selected."
+
+		gcShowLocations_Checkbox.Enabled := sArcadeString == "Other" ? false : true
 
 		gcToolTip_Checkbox := guiSettings.AddCheckbox("x" 440 " y" 700, "Show Tooltips")
 		gcToolTip_Checkbox.OnEvent("Click", (*) => Settings.ToolTip_Checkbox_Click())
@@ -464,16 +467,6 @@ class Settings
 
 	static ReadFloors()
 	{
-		if (!FileExist(sFloorsFile))
-		{
-			sJSON := JSON.stringify(aDefaultFloors)
-
-			fFloorsFile := FileOpen(sFloorsFile, "w")
-			fFloorsFile.Write(sJSON)
-			fFloorsFile.Close()
-		}
-
-		;Now rebuild the global oTemplates object
 		sJSON := FileRead(sFloorsFile)
 		global oFloors := JSON.parse(sJSON)
 
@@ -482,16 +475,6 @@ class Settings
 
 	static ReadVicinities()
 	{
-		if (!FileExist(sVicinitiesFile))
-		{
-			sJSON := JSON.stringify(aDefaultVicinities)
-
-			fVicinitiesFile := FileOpen(sVicinitiesFile, "w")
-			fVicinitiesFile.Write(sJSON)
-			fVicinitiesFile.Close()
-		}
-
-		;Now rebuild the global oTemplates object
 		sJSON := FileRead(sVicinitiesFile)
 		global oVicinities := JSON.parse(sJSON)
 
@@ -566,13 +549,12 @@ class Settings
 				Settings.sActionListName := gcActionListNameEdit.Text
 				global sUserFile := sUserFolder "\" Settings.sActionListName ".json"
 				IniWrite(Settings.sActionListName, sIniFile, "General", "ActionListName")
+				guiSettings.Title := sSettingsTitle " - " sArcadeString " - " gcActionListNameEdit.Text
 			}
 		}
 
 		if (result == "Yes")
 		{
-
-
 			gcSaveButton.Enabled := false
 			guiSettings.Hide()
 			oLog.LogLine("INFO: Closed Settings dialog.`n")
@@ -591,6 +573,7 @@ class Settings
 	 */
 	static FillRomList()
 	{
+		global mRomsByName := Map()
 		aGameList := Array()      ;the gamelist to be assigned to the list control
 		sGameList := ""           ;used to sort the list
 		gcROMDropDown.Delete()    ;make sure dropdown control is empty
@@ -607,13 +590,13 @@ class Settings
 		mRomsByName[TRACKBALL] := TRACKBALL
 
 		;Loop through all the rom files. These must have a *.zip extension
-		Loop Files gcROMMonitorFolderEdit.Text "\*.zip"
+		Loop Files sROMMonitorFolder "\*.zip"
 		{
 			SplitPath(A_LoopFileName,,,, &OutNameNoExt)
 
 			;Filter using the current arcade's audit list if available,
 			;otherwise, assume all roms in the folder are potentially valid
-			if (oArcadeRomList.Count)
+			if (oArcadeRomList.Count && sArcadeString != "Other")
 			{
 				if (!oArcadeRomList.Has(OutNameNoExt))
 					continue
@@ -684,6 +667,7 @@ class Settings
 			Settings.sActionListName := gcActionListNameEdit.Text
 			global sUserFile := sUserFolder "\" Settings.sActionListName ".json"
 			IniWrite(Settings.sActionListName, sIniFile, "General", "ActionListName")
+			guiSettings.Title := sSettingsTitle " - " sArcadeString " - " gcActionListNameEdit.Text
 		}
 
 		mConfig := Map()
@@ -796,7 +780,7 @@ class Settings
 	static SetLocationInfoVisiblity(bState)
 	{
 		bShowLocations := false
-		try bShowLocations := gcShowLocations_Checkbox.Value
+		try bShowLocations := (gcShowLocations_Checkbox.Value && gcShowLocations_Checkbox.Enabled)
 
 		if (!bShowLocations)
 			bState := false
@@ -959,7 +943,7 @@ class Settings
 
 		if (sRom && !InStr(sRom, "["))
 		{
-			IniWrite(gcFloorDropDown.Text, sLocationsIniFile, sRom, "Floor")
+			IniWrite(gcFloorDropDown.Text, sDirectoryFile, sRom, "Floor")
 		}
 	}
 
@@ -991,9 +975,9 @@ class Settings
 		;Disable Add button and enable remove button if vicinity already exists
 		aVicinities := Array()
 		aVicinities := ControlGetItems(gcVicinityComboBox)
-		for i, j in aVicinities
+		for i, sVicinity in aVicinities
 		{
-			if (j == gcVicinityComboBox.Text)
+			if (sVicinity == gcVicinityComboBox.Text)
 			{
 				gcAddVicinityButton.Enabled := false
 				gcRemoveVicinityButton.Enabled := true
@@ -1038,7 +1022,7 @@ class Settings
 
 		if (sRom && !InStr(sRom, "["))
 		{
-			IniWrite(gcVicinityComboBox.Text, sLocationsIniFile, sRom, "Vicinity")
+			IniWrite(gcVicinityComboBox.Text, sDirectoryFile, sRom, "Vicinity")
 		}
 	}
 
@@ -1248,23 +1232,6 @@ class Settings
 		gcTestTemplateButton_3.TT := "Test the command line:`n" Settings.GetFormattedCommandLine(gcProfileEdit_3.Text, gcTemplateEdit_3.Text)
 	}
 
-	static ROMMonitorFolderEdit_Change(*)
-	{
-		IniWrite(gcROMMonitorFolderEdit.Text, sIniFile, "General", "ROMFolder")
-		Settings.FillRomList()
-	}
-
-	static ROMMonitorFolderBrowseButton_Click(*)
-	{
-		global gcROMMonitorFolderEdit, gcAssignButton
-
-		sFolder := FileSelect("D", gcROMMonitorFolderEdit.Value)
-		gcROMMonitorFolderEdit.Value := sFolder
-
-		IniWrite(gcROMMonitorFolderEdit.Text, sIniFile, "General", "ROMFolder")
-		Settings.FillRomList()
-	}
-
 	static ROMDropDown_Change(*)
 	{
 		Settings.SetRomInfo()
@@ -1301,7 +1268,19 @@ class Settings
 	{	
 		global gcProfileEdit, gcAssignButton
 
-		gcProfileEdit.Value := FileSelect("S",	gcProfileEdit.Value)
+		;Must force dismisal of ToolTip over browse window
+		tempTT := gcProfileBrowseButton.TT
+		gcProfileBrowseButton.TT := ""
+		ToolTip()
+
+		sTempProfile := FileSelect("S",	gcProfileEdit.Value)
+
+		gcProfileBrowseButton.TT := tempTT
+
+		if (!sTempProfile) ;user cancelled
+			return
+
+		gcProfileEdit.Value := sTempProfile
 
 		if (gcProfileEdit.Value != "")
 		{
@@ -1314,7 +1293,19 @@ class Settings
 	{
 		global gcProfileEdit_2, gcAssignButton
 
-		gcProfileEdit_2.Value := FileSelect("S",	gcProfileEdit_2.Value)
+		;Must force dismisal of ToolTip over browse window
+		tempTT := gcProfileBrowseButton_2.TT
+		gcProfileBrowseButton_2.TT := ""
+		ToolTip()
+
+		sTempProfile := FileSelect("S",	gcProfileEdit_2.Value)
+
+		gcProfileEdit_2.TT := tempTT
+
+		if (!sTempProfile) ;user cancelled
+			return
+
+		gcProfileEdit_2.Value := sTempProfile
 
 		if (gcProfileEdit.Value != "")
 		{
@@ -1327,7 +1318,19 @@ class Settings
 	{
 		global gcProfileEdit_3, gcAssignButton
 
-		gcProfileEdit_3.Value := FileSelect("S",	gcProfileEdit_3.Value)
+		;Must force dismisal of ToolTip over browse window
+		tempTT := gcProfileBrowseButton_3.TT
+		gcProfileBrowseButton_3.TT := ""
+		ToolTip()
+
+		sTempProfile := FileSelect("S",	gcProfileEdit_3.Value)
+
+		gcProfileBrowseButton_3.TT := tempTT
+
+		if (!sTempProfile) ;user cancelled
+			return
+
+		gcProfileEdit_3.Value := sTempProfile
 
 		if (gcProfileEdit.Value != "")
 		{
@@ -1600,46 +1603,6 @@ class Settings
 		cl := StrReplace(cl, "[profile_full_name]", profile_full_name)
 
 		return cl
-	}
-
-	/**
-	 * Activate hotkeys on all common keystrokes including Ctrl/Alt/Shift/Win combos
-	 */
-	static ActivateKeyboardHotkeys()
-	{
-		Loop 94 ;33-126
-		{
-			;ObjBindMethod() is needed here, rather than just specifying a function, since the callback is 
-			;a method and not a function 
-			Hotkey(Chr(A_Index + 32), ObjBindMethod(Settings.Key_Callback,,Chr(A_Index + 32)), "On")
-			Hotkey("+" Chr(A_Index + 32), ObjBindMethod(Settings.Key_Callback,,"+" Chr(A_Index + 32)), "On")
-			Hotkey("^" Chr(A_Index + 32), ObjBindMethod(Settings.Key_Callback,,"^" Chr(A_Index + 32)), "On")
-			Hotkey("!" Chr(A_Index + 32), ObjBindMethod(Settings.Key_Callback,,"!" Chr(A_Index + 32)), "On")
-			Hotkey("#" Chr(A_Index + 32), ObjBindMethod(Settings.Key_Callback,,"#" Chr(A_Index + 32)), "On")
-			Hotkey("^!" Chr(A_Index + 32), ObjBindMethod(Settings.Key_Callback,,"^!" Chr(A_Index + 32)), "On")
-			Hotkey("^+" Chr(A_Index + 32), ObjBindMethod(Settings.Key_Callback,,"^+" Chr(A_Index + 32)), "On")
-			Hotkey("!+" Chr(A_Index + 32), ObjBindMethod(Settings.Key_Callback,,"!+" Chr(A_Index + 32)), "On")
-			Hotkey("^!+" Chr(A_Index + 32), ObjBindMethod(Settings.Key_Callback,,"^!+" Chr(A_Index + 32)), "On")
-		}
-	}
-
-	/**
-	 * Disable all hotkeys
-	 */
-	static DisableKeyboardHotkeys()
-	{
-		Loop 94 ;33-126
-		{
-			Hotkey(Chr(A_Index + 32), ObjBindMethod(Settings.Key_Callback), "Off")
-			Hotkey("+" Chr(A_Index + 32), ObjBindMethod(Settings.Key_Callback), "Off")
-			Hotkey("^" Chr(A_Index + 32), ObjBindMethod(Settings.Key_Callback), "Off")
-			Hotkey("!" Chr(A_Index + 32), ObjBindMethod(Settings.Key_Callback), "Off")
-			Hotkey("#" Chr(A_Index + 32), ObjBindMethod(Settings.Key_Callback), "Off")
-			Hotkey("^!" Chr(A_Index + 32), ObjBindMethod(Settings.Key_Callback), "Off")
-			Hotkey("^+" Chr(A_Index + 32), ObjBindMethod(Settings.Key_Callback), "Off")
-			Hotkey("!+" Chr(A_Index + 32), ObjBindMethod(Settings.Key_Callback), "Off")
-			Hotkey("^!+" Chr(A_Index + 32), ObjBindMethod(Settings.Key_Callback), "Off")
-		}
 	}
 
 	static SetAssignButtonState(bState)
@@ -1956,17 +1919,14 @@ class Settings
 		Settings.SetLocationInfoVisiblity(!InStr(sRom,"["))
 
 		sFloor := ""
-		try sFloor := IniRead(sLocationsIniFile, sRom, "Floor")
+		try sFloor := IniRead(sDirectoryFile, sRom, "Floor")
 		gcFloorDropDown.Text := sFloor ? sFloor : ""
 
 		sVicinity := ""
-		try sVicinity := IniRead(sLocationsIniFile, sRom, "Vicinity")
+		try sVicinity := IniRead(sDirectoryFile, sRom, "Vicinity")
 		gcVicinityComboBox.Text := sVicinity ? sVicinity : ""
 
-		if (gcVicinityComboBox.Text || gcFloorDropDown.Text)
-			gcRemoveVicinityButton.Enabled := true
-		else
-			gcRemoveVicinityButton.Enabled := false
+		Settings.VicinityComboBox_Change() ;update enabled state of add/remove buttons
 	}
 
 	/**
@@ -2013,11 +1973,37 @@ class Settings
 		gcListView.Redraw()
 	}
 
-	static FillKeysArray()
+	/**
+	 * Activate hotkeys on all common keystrokes including Ctrl/Alt/Shift/Win combos
+	 */
+	static ActivateKeyboardHotkeys()
 	{
-		aKeys := Array()
-			Loop 94 ;33-126
-				aKeys.Push(Chr(A_Index + 32))
+		aKeys := Settings.GetKeysArray()
+
+		for i, sKey in aKeys
+			Hotkey(sKey, ObjBindMethod(Settings.Key_Callback,,sKey), "On")
+	}
+
+	/**
+	 * Disable all hotkeys
+	 */
+	static DisableKeyboardHotkeys()
+	{
+		aKeys := Settings.GetKeysArray()
+
+		for i, sKey in aKeys
+			Hotkey(sKey, ObjBindMethod(Settings.Key_Callback), "Off")
+	}
+
+	static GetKeysArray()
+	{
+		static aKeys := Array()
+
+		if (aKeys.Length > 0)
+			return aKeys
+
+		Loop 94 ;33-126
+			aKeys.Push(Chr(A_Index + 32))
 
 		aKeys.Push("F1")
 		aKeys.Push("F2")
@@ -2048,6 +2034,9 @@ class Settings
 		aKeys.Push("PgUp")
 		aKeys.Push("PgDn")
 
+		aKeys.Push("Ctrl")
+		aKeys.Push("RCtrl")
+		aKeys.Push("LCtrl")
 		aKeys.Push("Alt")
 		aKeys.Push("LAlt")
 		aKeys.Push("RAlt")

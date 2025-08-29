@@ -312,7 +312,13 @@ class GameInfoDisplay
 			mame_history_text := oMameData.GetHistory(romName)
 			mame_info_text := oMameData.GetInfo(romName)
 
-			info_text := mame_history_text . mame_info_text
+			if (!mame_history_text && !mame_info_text)
+			{
+				oGameInfo := ReadListXML.GetXMLMetaInfo(sGamesXMLFile, romName)
+				info_text := "There is no information available for the game: " oGameInfo["description"] " (" romName ")"
+			}
+			else
+				info_text := mame_history_text . mame_info_text
 
 			ChangeEncoding(&info_text, "CP0", "UTF-8")
 

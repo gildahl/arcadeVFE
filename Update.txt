@@ -15,4 +15,4 @@ v1.1.0
 * Raised pitch of error double-beep (was hard to hear).
 * Beep on profile change off by default.
 * Error message enhancements.
-* Many minor bug fixes.
+* Many bug fixes.
