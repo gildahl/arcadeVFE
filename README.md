@@ -187,7 +187,7 @@ In addition to this documentation file, the **Settings** screen implements toolt
 
 Issues and Limitations
 ======================
-Because this software is not code-integrated with the host emulator, but relies on external automation techniques, there are a few limitations that should be noted. These may rarely be noticed, but they are good to be aware of.
+Because this software is not code-integrated with the host emulator, but relies on external interop techniques, there are a few limitations that should be noted. These may rarely be noticed, but they are good to be aware of.
 
 1. arcadeVFE can only tell when a new game is loaded, but not when it is exited. Therefore, it can only surmise that you have exited a game when it detects that you have started a new and different game. Consequently, if you exit a game and re-enter the SAME game, arcadeVFE will not know that you did this. This should not affect gameplay at all since whatever state was loaded when you originally started the game will still be in effect. However, arcadeVFE will not be able to provide feedback (such as a beep or voice notification) when restarting the game. Only upon starting a new game.
 
