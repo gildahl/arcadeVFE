@@ -1980,8 +1980,23 @@ class Settings
 	{
 		aKeys := Settings.GetKeysArray()
 
+		;ObjBindMethod() is needed here, rather than just specifying a function, since the callback is 
+		;a method and not a function 
 		for i, sKey in aKeys
 			Hotkey(sKey, ObjBindMethod(Settings.Key_Callback,,sKey), "On")
+
+		;Add support for control/Alt/Shift/Win combos to keys
+		Loop 94 ;33-126
+		{
+			Hotkey("+" Chr(A_Index + 32), ObjBindMethod(Settings.Key_Callback,,"+" Chr(A_Index + 32)), "On")
+			Hotkey("^" Chr(A_Index + 32), ObjBindMethod(Settings.Key_Callback,,"^" Chr(A_Index + 32)), "On")
+			Hotkey("!" Chr(A_Index + 32), ObjBindMethod(Settings.Key_Callback,,"!" Chr(A_Index + 32)), "On")
+			Hotkey("#" Chr(A_Index + 32), ObjBindMethod(Settings.Key_Callback,,"#" Chr(A_Index + 32)), "On")
+			Hotkey("^!" Chr(A_Index + 32), ObjBindMethod(Settings.Key_Callback,,"^!" Chr(A_Index + 32)), "On")
+			Hotkey("^+" Chr(A_Index + 32), ObjBindMethod(Settings.Key_Callback,,"^+" Chr(A_Index + 32)), "On")
+			Hotkey("!+" Chr(A_Index + 32), ObjBindMethod(Settings.Key_Callback,,"!+" Chr(A_Index + 32)), "On")
+			Hotkey("^!+" Chr(A_Index + 32), ObjBindMethod(Settings.Key_Callback,,"^!+" Chr(A_Index + 32)), "On")
+		}
 	}
 
 	/**
@@ -1993,6 +2008,18 @@ class Settings
 
 		for i, sKey in aKeys
 			Hotkey(sKey, ObjBindMethod(Settings.Key_Callback), "Off")
+
+		Loop 94 ;33-126
+		{
+			Hotkey("+" Chr(A_Index + 32), ObjBindMethod(Settings.Key_Callback), "Off")
+			Hotkey("^" Chr(A_Index + 32), ObjBindMethod(Settings.Key_Callback), "Off")
+			Hotkey("!" Chr(A_Index + 32), ObjBindMethod(Settings.Key_Callback), "Off")
+			Hotkey("#" Chr(A_Index + 32), ObjBindMethod(Settings.Key_Callback), "Off")
+			Hotkey("^!" Chr(A_Index + 32), ObjBindMethod(Settings.Key_Callback), "Off")
+			Hotkey("^+" Chr(A_Index + 32), ObjBindMethod(Settings.Key_Callback), "Off")
+			Hotkey("!+" Chr(A_Index + 32), ObjBindMethod(Settings.Key_Callback), "Off")
+			Hotkey("^!+" Chr(A_Index + 32), ObjBindMethod(Settings.Key_Callback), "Off")
+		}
 	}
 
 	static GetKeysArray()
