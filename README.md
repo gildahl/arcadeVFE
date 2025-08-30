@@ -14,7 +14,7 @@ To this end, arcadeVFE includes these features:
 * Mapping of keyboard keys to controller buttons in order to, for example, better facilitate access to the MAME tab configuration menus while in VR.
 * A detailed game information overlay that can be viewed in VR using one's favorite desktop viewport. This information comes from MAME gameinfo.dat and history.xml files, and can also include pictures of your choice--for example, flyers, pcbs, or pictures of real cab control panels (which can be very handy as a reference in the Candy Cab rooms of ATC).
 * Rom management functions such as rom file auditing and curation features.
-* A machine location editor to more easily locate your favorite machines in the virtual arcade.
+* A machine directory editor to more easily locate your favorite machines in the virtual arcade.
 
 Resources
 =========
@@ -59,7 +59,7 @@ To setup a new rom to be monitored, choose `ROM Monitor` from the **Device List*
 **Note 1**: If you choose one of the `[Group...]` options in the **Choose ROM** list, you can conveniently assign an action set to a whole group of similarly controlled games. If any of the games in that group need an alternate configuration on an exception basis, simply create another action for that specific rom, which will override the group setting. There is also a `[Default]` action which can be configured for cases where there is neither a rom-specific action nor group action to otherwise handle it.  The following are some examples of Groups.
 
 - `[Group, 4-way]` : assigns the defined action to any game whose native controller is a 4-way joystick.
-- `[Group, 8-way]` : assigns the defined action to any game whose native controller is a 8-way joystick.
+- `[Group, 8-way]` : assigns the defined action to any game whose native controller is an 8-way joystick.
 - `[Group, rotary]`: assigns the defined action to any game whose native controller is a rotary joystick.
 
 **Note 2**: Be aware that arcadeVFE is "smart" enough to not execute the same action twice in a row. For example, if you switch between two games that use the same commands (such as two 4-way joystick games that use the same profiles), or exit a game and then restart the same one, profile loading will be suppressed since that configuration should still be in effect.
@@ -120,7 +120,7 @@ The device or method that was chosen to trigger the action.
 ### Action
 * For the `ROM Monitor` Device List option, this column shows the rom you chose to monitor.
 * For the `Keyboard` Device List option, it shows the keyboard key or key combo you assigned.
-* For a game controller, it shows the button number you assigned.
+* For a game controller, it shows the button number or other control input you assigned.
 
 ### Sequence
 For `Keyboard` and game controller actions, it is possible to assign multiple actions to the same key or button. The effect of this is that when you press that key or button the first time, the action with a sequence number of 1 will be triggered. When you press that same key or button a second time, the action with a sequence number of 2 will be triggered, and so forth (with each action being verbally announced if you provided notification phrases with each). This provides a means to manually switch between multiple profiles using a single key or button. 
@@ -169,7 +169,7 @@ This option is only available when the **Operate only when the arcade is running
 ### Use Game Info Overlay
 This feature will display a desktop overlay on the primary monitor showing detailed game information, including pictures, associated with the game currently running in the emulator. This information may be easily viewed while you are in VR by using your favorite desktop viewport (third party, or one provided with your headset). The text information comes from the `mameinfo.dat` and `history.xml` files in the `\GameInfo` folder. This display will automatically unload when the arcade is closed (which is why this feature is also only available when the **Operate only when the arcade is running** setting is configured).
 
-To navigate through the Game Info screens, you will want to assign at least the "Right" action in the game controller button configuration (and optionally, the "Left", "Start", and "Exit" options), using the **Game Info Navigation** radio switch at the top of the screen. If you would like custom pictures to be displayed along with the text information, you may create additional folders within the `..\GameInfo\Assets` subfolder of arcadeVFE, and fill it with `*.jpg` or `*.png` files having root names that are the same as the roms you would like to associate them with. Examples are provided in the `..\GameInfo\Assets\cpanels` and `..\assets\flyers folders`. Feel free to add additional folders as you like.
+To navigate through the Game Info screens, you will want to assign at least the "Right" action in the game controller button configuration (and optionally, the "Left", "Start", and "Exit" options), using the **Game Info Navigation** radio switch at the top of the screen. If you would like custom pictures to be displayed along with the text information, you may create additional folders within the `..\GameInfo\Assets` subfolder of arcadeVFE, and fill it with `*.jpg` or `*.png` files having root names that are the same as the roms you would like to associate them with. Examples are provided in the `..\GameInfo\Assets\cpanels` and `..GameInfo\Assets\flyers` folders. Feel free to add additional folders as you like.
 
 **Note**: Be aware that the Game Info overlay feature is NOT compatible with spinner and trackball games **IF** you use mouse clicks for game input (such as for your fire button). To address this, either turn off this feature or use a game controller button for your fire button instead. See the [Issues and Limitations](#Issues-and-Limitations) section at the bottom of this document for more information about this potential issue.
 
@@ -179,7 +179,7 @@ If you have configured voice notification phrases for your actions, then this sw
 ### Beep on action
 This option will sound a beep whenever a command action happens. This can be useful as a debugging tool by asserting profile changes independent of the voice option.
 
-### Machine Locations
+### Show Directory
 This option will display edit controls under the Choose ROM list containing the locations of arcade machines in the virtual arcade. You may edit these as you please. 
 
 ### Show Tooltips
@@ -187,7 +187,7 @@ In addition to this documentation file, the **Settings** screen implements toolt
 
 Issues and Limitations
 ======================
-Because this software is not code-integrated with the host emulator, but relies on external automation techniques, there are a few limitations that should be noted. These may rarely be noticed, but they are good to be aware of.
+Because this software is not code-integrated with the host emulator, but relies on external interop techniques, there are a few limitations that should be noted. These may rarely be noticed, but they are good to be aware of.
 
 1. arcadeVFE can only tell when a new game is loaded, but not when it is exited. Therefore, it can only surmise that you have exited a game when it detects that you have started a new and different game. Consequently, if you exit a game and re-enter the SAME game, arcadeVFE will not know that you did this. This should not affect gameplay at all since whatever state was loaded when you originally started the game will still be in effect. However, arcadeVFE will not be able to provide feedback (such as a beep or voice notification) when restarting the game. Only upon starting a new game.
 
