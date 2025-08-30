@@ -179,7 +179,7 @@ If you have configured voice notification phrases for your actions, then this sw
 ### Beep on action
 This option will sound a beep whenever a command action happens. This can be useful as a debugging tool by asserting profile changes independent of the voice option.
 
-### Machine Locations
+### Show Directory
 This option will display edit controls under the Choose ROM list containing the locations of arcade machines in the virtual arcade. You may edit these as you please. 
 
 ### Show Tooltips
