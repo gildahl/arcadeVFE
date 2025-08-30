@@ -120,7 +120,7 @@ The device or method that was chosen to trigger the action.
 ### Action
 * For the `ROM Monitor` Device List option, this column shows the rom you chose to monitor.
 * For the `Keyboard` Device List option, it shows the keyboard key or key combo you assigned.
-* For a game controller, it shows the button number or other command you assigned.
+* For a game controller, it shows the button number or other control input you assigned.
 
 ### Sequence
 For `Keyboard` and game controller actions, it is possible to assign multiple actions to the same key or button. The effect of this is that when you press that key or button the first time, the action with a sequence number of 1 will be triggered. When you press that same key or button a second time, the action with a sequence number of 2 will be triggered, and so forth (with each action being verbally announced if you provided notification phrases with each). This provides a means to manually switch between multiple profiles using a single key or button. 
