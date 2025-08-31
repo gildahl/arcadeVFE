@@ -30704,7 +30704,7 @@
 		<driver status="imperfect" emulation="good" savestate="unsupported"/>
 	</machine>
 	<machine name="rayforce" sourcefile="taito/taito_f3.cpp" cloneof="gunlock" romof="gunlock">
-		<description>Ray Force (Ver 2.3A 1994/01/20)</description>
+		<description>RayForce / Gunlock (Ver 2.3A 1994/01/20)</description>
 		<year>1993</year>
 		<manufacturer>Taito America Corporation</manufacturer>
 		<driver status="imperfect" emulation="good" savestate="unsupported"/>

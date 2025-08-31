@@ -1,11 +1,41 @@
 #Requires AutoHotkey v2.0
 
+#include ..\ReadListXML.ahk2
+
+sAsset := "pcb"
+
 sROMFolder := "D:\Stand Alone\Arcade Time Capsule\RetroVRArcade\Content\Roms"
-sSourceImageFolder := "E:\Development\Projects\arcadeVFE\src\Media\cabinets"
-sDestinationFolder := "E:\Development\Projects\arcadeVFE\src\GameInfo\Assets\cabinets"
+sSourceImageFolder := "E:\Development\Projects\arcadeVFE\src\Media\" sAsset
+sDestinationFolder := "E:\Development\Projects\arcadeVFE\src\GameInfo\Assets\" sAsset
+sGamesXMLFile := "E:\Development\Projects\arcadeVFE\src\GameInfo\games.xml"
+
+
+;MoveImages
+Loop Files sROMFolder "\*.zip"
+{
+    SplitPath(A_LoopFileName,,,,&OutNameNoExt)
+    try FileCopy(sSourceImageFolder "\" OutNameNoExt ".*", sDestinationFolder)
+}
+
+
+;List missing images
+try FileDelete(sDestinationFolder "\!missing.txt")
+iMissing := 0 
+global oLog := []
 
 Loop Files sROMFolder "\*.zip"
 {
     SplitPath(A_LoopFileName,,,,&OutNameNoExt)
-    FileCopy(sSourceImageFolder "\" OutNameNoExt ".*", sDestinationFolder)
+ 
+    if (!FileExist(sDestinationFolder "\" OutNameNoExt ".png") && !FileExist(sDestinationFolder "\" OutNameNoExt ".jpg"))
+    {
+        oGameInfo := ReadListXML.GetXMLMetaInfo(sGamesXMLFile, OutNameNoExt)
+        sDescription := ""
+        try sDescription := oGameInfo["description"]
+        FileAppend(OutNameNoExt " - " sDescription "`n", sDestinationFolder "\!missing.txt")
+        iMissing++
+    }
 }
+
+ FileAppend("Total Missing: " iMissing "`n", sDestinationFolder "\!missing.txt")
+
