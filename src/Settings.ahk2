@@ -105,9 +105,7 @@ class Settings
 		gcROMDropDown.OnEvent("Change", (*) => Settings.ROMDropDown_Change())
 		gcROMDropDown.TT := "Select a group or game to monitor for activity."
 
-		;cBGColor := PixelGetColor(370, 90)
-		;WinSetTransColor(cBGColor)
-
+		gcROMDropDownMAMEVersion := guiSettings.AddText("BackgroundTrans x" 370 " y" 10 " w" 480 " 0x1", "")   ;0x1 is for center justification
 		gcROMDropDownController := guiSettings.AddText("BackgroundTrans x" 370 " y" 10 " w" 480 " 0x2", "") ;0x2 is for right justification
 		gcROMDropDownGameRom := guiSettings.AddText("BackgroundTrans x" 373 " y" 45 " w" 480, "")
 		gcROMDropDownGameInfo := guiSettings.AddText("BackgroundTrans x" 370 " y" 47 " w" 480 " 0x1", "")   ;0x1 is for center justification
@@ -765,6 +763,7 @@ class Settings
 		gcROMDropDownGameVersion.Visible := bROMControlVisible
 		gcROMDropDownGameRom.Visible := bROMControlVisible
 		gcROMDropDownController.Visible := bROMControlVisible
+		gcROMDropDownMAMEVersion.Visible := bRomControlVisible
 		
 		Settings.SetLocationInfoVisiblity(bROMControlVisible && !InStr(gcROMDropDown.Text,"["))
 
@@ -1849,6 +1848,11 @@ class Settings
 	{
 		sYear := sManufacturer := sRom := sVersion := ""
 
+		for sRom, mInfo in oArcadeRomList {
+			if (sRom == mRomsByName[gcROMDropDown.Text])
+            	gcROMDropDownMAMEVersion.Text := "Uses mame " mInfo["MAMEVersion"]
+        }
+
 		Switch gcROMDropDown.Text
 		{
 			Case "[Default]", TWO_WAY_H, TWO_WAY_V, FOUR_WAY, EIGHT_WAY, ANALOG, DUAL, DIAGONAL, ROTARY, SPINNER, TRACKBALL:
@@ -1859,7 +1863,7 @@ class Settings
 		try sManufacturer := ReadListXML.GetXMLMetaInfo(sGamesXMLFile, mRomsByName[gcROMDropDown.Text])["manufacturer"]
 		try sVersion := ReadListXML.GetXMLMetaInfo(sGamesXMLFile, mRomsByName[gcROMDropDown.Text])["version"]
 
-		;A couple exceptions
+		;Truncate a couple rom descriptions due to length
 		if (gcROMDropDown.Text == "Aero Fighters" || gcROMDropDown.Text == "Gain Ground")
 			sVersion := SubStr(sVersion, 1, 30)
 

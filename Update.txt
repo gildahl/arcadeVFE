@@ -3,6 +3,7 @@ v1.1.1
 * Game data updates and added many missing images.
 * Added game logo to GameInfo startup.
 * Send discrete up/down events when mapping buttons to keypresses.
+* Add rom's MAME version to rom list.
 
 v1.1.0
 * Added a third command line config option.
