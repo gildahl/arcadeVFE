@@ -82,12 +82,12 @@ class Setup
         gcCopyRomsButton.OnEvent("Click", (*) => Setup.CopyRomsButton_Click())
         gcCopyRomsButton.TT := "Copy roms from a source`nfolder to this rom folder."
 
-        gcSetupAuditProgress := guiSetup.AddProgress("x" 210 " y" Setup.mSetup.Height - 35 " w" 130 " h" 15 " cBlue BackgroundSilver vAuditProgress") 
-        gcSetupAuditProgress.Visible := false
+        gcAuditProgress := guiSetup.AddProgress("x" 210 " y" Setup.mSetup.Height - 35 " w" 130 " h" 15 " cBlue BackgroundSilver vAuditProgress") 
+        gcAuditProgress.Visible := false
 
-        gcSetup_ApplyButton := guiSetup.AddButton("x" 365 " y" Setup.mSetup.Height - 40 " w" 80 " h" 25, "Apply")
-        gcSetup_ApplyButton.OnEvent("Click", (*) => Setup.Setup_ApplyButton_Click())
-        gcSetup_ApplyButton.TT := "Press to save these settings."
+        gcApplyButton := guiSetup.AddButton("x" 365 " y" Setup.mSetup.Height - 40 " w" 80 " h" 25, "Apply")
+        gcApplyButton.OnEvent("Click", (*) => Setup.Setup_ApplyButton_Click())
+        gcApplyButton.TT := "Press to save these settings."
 
         gcSetup_CloseButton := guiSetup.AddButton("x" 450 " y" Setup.mSetup.Height - 40 " w" 80 " h" 25, "Close")
         gcSetup_CloseButton.OnEvent("Click", (*) => Setup.Setup_CloseButton_Click())
@@ -191,7 +191,7 @@ class Setup
             try guiSetup.Opt("-Disabled")
             guiCopyRoms.Hide()
 
-            gcSetupAuditProgress.Visible := true
+            gcAuditProgress.Visible := true
 
             ;As a future convenience, remember the folder that had been selected for this version of the roms
             try IniWrite(sFolder, sIniFile, "General", gcRomVersionDropDown.Text "RomVersionFolder")
@@ -199,14 +199,14 @@ class Setup
             ;Copy each file in the rom list having the specified version
             for sRom, mInfo in oArcadeRomList
             {
-                gcSetupAuditProgress.Value := A_Index / oArcadeRomList.Count * 100 ;increment progress bar
+                gcAuditProgress.Value := A_Index / oArcadeRomList.Count * 100 ;increment progress bar
 
                 if (mInfo["MAMEVersion"] == gcRomVersionDropDown.Text)
                     try FileCopy(sFolder "\" sRom ".zip", gcROMMonitorFolderEdit.Text, 1)
             }
 
-            gcSetupAuditProgress.Visible := false
-            gcSetupAuditProgress.Value := 0
+            gcAuditProgress.Visible := false
+            gcAuditProgress.Value := 0
         }
 
         return
@@ -258,7 +258,7 @@ class Setup
         iErrorCount := 0
         gcAuditButton.Enabled := false
         gcSetup_CloseButton.Enabled := false
-        gcSetupAuditProgress.Visible := true
+        gcAuditProgress.Visible := true
         oAuditLog.Init(sAuditFolder "\audit.txt", "arcadeVFE ROM File Audit")
 
         sROMFolder := gcROMMonitorFolderEdit.Text
@@ -286,7 +286,7 @@ class Setup
         ;Loop through each file in the rom list for this arcade, doing a version-specific validation of each.
         for sRom, mInfo in oArcadeRomList
         {
-            gcSetupAuditProgress.Value := A_Index / oArcadeRomList.Count * 100
+            gcAuditProgress.Value := A_Index / oArcadeRomList.Count * 100
 
             ;Missing file check
             if (!FileExist(sROMFolder "\" sRom ".zip"))
@@ -350,8 +350,8 @@ class Setup
         oAuditLog.LogLine("INFO: Completed audit of " oArcadeRomList.Count " rom files. " iErrorCount " " sAnomalyPhrase "`n")
         oAuditLog.LogLine("INFO: Please note that ROMs reporting anomalies may still work, but should be tested.`n")
 
-        gcSetupAuditProgress.Visible := false
-        gcSetupAuditProgress.Value := 0
+        gcAuditProgress.Visible := false
+        gcAuditProgress.Value := 0
 
         oAuditLog.ShowLog()    
 
@@ -456,7 +456,7 @@ class Setup
 
             Settings.FillRomList()
             Settings.SetRomInfo()
-            gcSetup_ApplyButton.Enabled := false
+            gcApplyButton.Enabled := false
 
             if (!Setup.bAutoShow)
                 guiSettings.Title := sSettingsTitle " - " sArcadeString " - " gcActionListNameEdit.Text
@@ -533,8 +533,8 @@ class Setup
     static UpdateApplyButton()
     {
         if (gcArcadeDropDown.Text && gcApplicationEdit.Text && DirExist(gcROMMonitorFolderEdit.Text))
-            gcSetup_ApplyButton.Enabled := true
+            gcApplyButton.Enabled := true
         else 
-            gcSetup_ApplyButton.Enabled := false            
+            gcApplyButton.Enabled := false            
     }
 }

@@ -1,5 +1,8 @@
 v1.1.1
 * Added support for ctrl, alt, shift, win key combos.
+* Game data updates and added many missing images.
+* Added game logo to GameInfo startup.
+* Send discrete up/down events when mapping buttons to keypresses.
 
 v1.1.0
 * Added a third command line config option.

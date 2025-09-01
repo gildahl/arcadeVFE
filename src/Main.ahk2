@@ -486,6 +486,8 @@ Poll()
 	;purge the buffer
 	SDL2.SDL_PumpEvents()
 	SDL2.SDL_FlushEvent(SDL_EventType.SDL_JOYBUTTONDOWN)
+	SDL2.SDL_FlushEvent(SDL_EventType.SDL_JOYBUTTONUP)
+	SDL2.SDL_FlushEvent(SDL_EventType.SDL_JOYHATMOTION)
    
 	mIndexer := Map() ;Used to keep track of button/key sequences
 
@@ -529,6 +531,7 @@ Poll()
 			oLog.LogLine("INFO: Polling disabled.`n" )
 
 			SDL2.SDL_FlushEvent(SDL_EventType.SDL_JOYBUTTONDOWN)
+			SDL2.SDL_FlushEvent(SDL_EventType.SDL_JOYBUTTONUP)
 			SDL2.SDL_FlushEvent(SDL_EventType.SDL_JOYHATMOTION)
 
 			;disable hotkeys too
@@ -554,14 +557,23 @@ Poll()
 			{
 				SDL2.SDL_Quit()		 
 			}
-			else if (evt.type == SDL_EventType.SDL_JOYBUTTONDOWN) ;, SDL_EventType.SDL_JOYBUTTONUP: ; Joy button evt
+			else if (evt.type == SDL_EventType.SDL_JOYBUTTONDOWN) 
 			{
 				;Get the next logical action from the action list based on the button press, then run it
 				oAction := GetAction(aDevices[mDeviceIndex[evt.jbutton.which]], evt.jbutton.button, mIndexer)
 				SDL2.SDL_FlushEvent(SDL_EventType.SDL_JOYBUTTONDOWN)				
 				
 				if (oAction.Key) ;Don't run null actions
-					RunAction(oAction)				
+					RunAction(oAction, "Down")				
+			}
+			else if (evt.type == SDL_EventType.SDL_JOYBUTTONUP) 
+			{
+				;Get the next logical action from the action list based on the button press, then run it
+				oAction := GetAction(aDevices[mDeviceIndex[evt.jbutton.which]], evt.jbutton.button, mIndexer)
+				SDL2.SDL_FlushEvent(SDL_EventType.SDL_JOYBUTTONUP)				
+				
+				if (oAction.Key) ;Don't run null actions
+					RunAction(oAction, "Up")				
 			}
 			else if (evt.type == SDL_EventType.SDL_JOYHATMOTION)
 			{
@@ -714,16 +726,14 @@ GetAction(sDevice, sAction, mIndexer)
  * Runs the action defined in oAction.  The action consists of an (optional) verbal annunciation
  * and up to two command lines.
  * @param oAction 
+ * @param sModifier : "Down" or "Up" for button/key presses
  */
-RunAction(oAction)
+RunAction(oAction, sModifier:="")
 {
 	global sLastActionKey
 
-	if (gcAlwaysAnnunciate_Checkbox.Value == 1)
-		oVoice.Speak(oAction.Annunciation)
-
 	;if a keypress action, send the key
-	if (InStr(oAction.CommandLine, "Send Keypress:"))
+	if (InStr(oAction.CommandLine, "Send Keypress:") && sModifier == "Down")
 	{
 		iStartPos := InStr(oAction.CommandLine, "{")
 		iEndPos := InStr(oAction.CommandLine, "}")
@@ -732,11 +742,26 @@ RunAction(oAction)
 		;separate down/up actions needed for MAME
 		sKey := SubStr(oAction.CommandLine, iStartPos, iLength)
 		Send sKey " down}"
-		Sleep 30
-		Send sKey " up}"
+
+		if (gcAlwaysAnnunciate_Checkbox.Value == 1 && oAction.Annunciation)
+			oVoice.Speak(oAction.Annunciation)
 
 		return
 	}
+	if (InStr(oAction.CommandLine, "Send Keypress:") && sModifier == "Up")
+	{
+		iStartPos := InStr(oAction.CommandLine, "{")
+		iEndPos := InStr(oAction.CommandLine, "}")
+		iLength := iEndPos - iStartPos
+
+		;separate down/up actions needed for MAME
+		sKey := SubStr(oAction.CommandLine, iStartPos, iLength)
+		Send sKey " up}"
+		return
+	}
+
+	if (gcAlwaysAnnunciate_Checkbox.Value == 1 && oAction.Annunciation)
+		oVoice.Speak(oAction.Annunciation)
 
 	;if a GameInfo navigation action, do the nav action
 	if (InStr(oAction.CommandLine, "GameInfo Navigation:"))
@@ -749,7 +774,6 @@ RunAction(oAction)
 		sNavAction := SubStr(oAction.CommandLine, iStartPos, iLength)
 
 		Sleep 0
-		;Critical
 
 		Switch sNavAction
 		{
