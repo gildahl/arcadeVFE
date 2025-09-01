@@ -76,7 +76,7 @@ class Setup
 
         gcAuditButton := guiSetup.AddButton("x" 110 " y" Setup.mSetup.Height - 40 " w" 80 " h" 25, "Audit Roms...")
         gcAuditButton.OnEvent("Click", (*) => Setup.AuditButton_Click())
-        gcAuditButton.TT := "Press to perform an audit for missing and bad roms.`nA report will display when complete."
+        gcAuditButton.TT := "Press to perform an audit for missing and bad roms.`nA report will display when complete.`n`nIf you need a list of all Arcade Time Capsule roms and`ntheir MAME versions, run this audit on an empty folder."
 
         gcCopyRomsButton := guiSetup.AddButton("x" 25 " y" Setup.mSetup.Height - 40 " w" 80 " h" 25, "Copy Roms...")
         gcCopyRomsButton.OnEvent("Click", (*) => Setup.CopyRomsButton_Click())
