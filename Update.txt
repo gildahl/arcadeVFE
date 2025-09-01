@@ -1,10 +1,10 @@
-v1.1.1
+v1.2.0
 To update from version 1.1, right click on the zip file, choose Properties, 
 check the Unblock checkbox at the bottom, then click Apply. After doing this,
 extract all files and folders from the zip into your 1.1 folder and allow
 Windows to overwrite all files. 
 
-If you had made any changes to the machine directory, backup the file
+Note: If you had made any changes to the machine directory, backup the file
 .\Arcade\Arcade Time Capsule 3.6.Locations.ini prior to overwriting files, 
 and restore when completed.
 
@@ -17,6 +17,7 @@ and restore when completed.
 * Added WS_EX_NOACTIVATE to GameInfo to protect from mouse clicks.
 * Remove lower case letters from "Map a keypress" list since they're redundant.
 * Tooltip help updates.
+* Added additional startup logging and auditing.
 * Documentation updates.
 * Some general code clean-up.
 

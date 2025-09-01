@@ -15,7 +15,7 @@
 /***********************************************************************
 * Compiler directives
 ************************************************************************/
-global CodeVersion := "1.1.1"
+global CodeVersion := "1.2.0"
 ;@Ahk2Exe-Let version = %A_PriorLine~U)^(.+"){1}(.+)".*$~$2%
 ;@Ahk2Exe-SetCopyright © 2025 David G. Dahlstrom
 ;@Ahk2Exe-SetProductName arcadeVFE
@@ -181,6 +181,7 @@ else
 ;  Main Application Startup
 ;==============================
 
+DoFileAudit()                     ;Confirm that all required runtime files are present
 TrayMenu.BuildMenu()              ;Build tray menu
 LoadInit()				          ;Load custom initializations
 LoadTweaks()				      ;Load custom tweaks
@@ -195,6 +196,68 @@ Settings.FillRomList()            ;Populate the ROM list
 
 StartRomWatcher()             ;Begin monitoring the rom folder    
 Poll()                        ;Start the button and keyboard polling loop
+
+
+/**
+ * Audit to ensure all required files are present
+ */
+DoFileAudit()
+{
+	bAuditSuccessful := true
+
+	;Root folder files
+	if (!FileExist(A_ScriptDir "\icons.dll"))
+		bAuditSuccessful := false, oLog.LogLine("ERROR: Required file missing: " A_ScriptDir "\icons.dll" "`n")
+	if (!FileExist(A_ScriptDir "\PacDrive64.dll"))
+		bAuditSuccessful := false, oLog.LogLine("ERROR: Required file missing: " A_ScriptDir "\PacDrive64.dll" "`n")
+	if (!FileExist(A_ScriptDir "\SDL2.dll"))
+		bAuditSuccessful := false, oLog.LogLine("ERROR: Required file missing: " A_ScriptDir "\SDL2.dll" "`n")
+	if (!FileExist(A_ScriptDir "\UltraStik64.dll"))
+		bAuditSuccessful := false, oLog.LogLine("ERROR: Required file missing: " A_ScriptDir "\UltraStik64.dll" "`n")
+
+	;.\GameInfo folder files
+	if (!FileExist(mameinfo_file))
+		bAuditSuccessful := false, oLog.LogLine("ERROR: Required file missing: " mameinfo_file "`n")
+	if (!FileExist(mamehistory_file))
+		bAuditSuccessful := false, oLog.LogLine("ERROR: Required file missing: " mamehistory_file "`n")
+	if (!FileExist(sControlsIniFile))
+		bAuditSuccessful := false, oLog.LogLine("ERROR: Required file missing: " sControlsIniFile "`n")
+	if (!FileExist(sGamesXMLFile))
+		bAuditSuccessful := false, oLog.LogLine("ERROR: Required file missing: " sGamesXMLFile "`n")
+
+	;.\Audit folder files
+	if (!FileExist(sMame2010))
+		bAuditSuccessful := false, oLog.LogLine("ERROR: Required file missing: " sMame2010 "`n")
+	if (!FileExist(sMame2014))
+		bAuditSuccessful := false, oLog.LogLine("ERROR: Required file missing: " sMame2014 "`n")
+
+	;.\Resources folder file
+	if (!FileExist(A_ScriptDir "\Resources\joystick.ico"))
+		bAuditSuccessful := false, oLog.LogLine("ERROR: Required file missing: " sMame2014 "`n")
+
+	;.\Arcade folder files
+	if (!FileExist(A_ScriptDir "\Arcade\Arcade Time Capsule 3.6.Floors.json"))
+		bAuditSuccessful := false, oLog.LogLine("ERROR: Required file missing: " A_ScriptDir "\Arcade\Arcade Time Capsule 3.6.Floors.json" "`n")
+	if (!FileExist(A_ScriptDir "\Arcade\Arcade Time Capsule 3.6.Locations.ini"))
+		bAuditSuccessful := false, oLog.LogLine("ERROR: Required file missing: " A_ScriptDir "\Arcade\Arcade Time Capsule 3.6.Locations.ini" "`n")
+	if (!FileExist(A_ScriptDir "\Arcade\Arcade Time Capsule 3.6.RomList.json"))
+		bAuditSuccessful := false, oLog.LogLine("ERROR: Required file missing: " A_ScriptDir "\Arcade\Arcade Time Capsule 3.6.RomList.json" "`n")
+	if (!FileExist(A_ScriptDir "\Arcade\Arcade Time Capsule 3.6.Vicinities.json"))
+		bAuditSuccessful := false, oLog.LogLine("ERROR: Required file missing: " A_ScriptDir "\Arcade\Arcade Time Capsule 3.6.Vicinities.json" "`n")
+
+	if (bAuditSuccessful)
+		oLog.LogLine("INFO: All required runtime files confirmed to exist.`n")
+
+	;Also audit optional files
+	Loop Files A_ScriptDir "\User\*.json" {
+		oLog.LogLine("INFO: Found action list file(s): " A_LoopFileName "`n")
+	}
+
+	if (FileExist(A_ScriptDir "\RawAccel\rawaccel.exe"))
+		oLog.LogLine("INFO: RawAccel is present.`n")
+	else
+		oLog.LogLine("INFO: RawAccel is not present.`n")
+}
 
 /**
  * Load general application settings from arcadeVFE.ini.

@@ -247,6 +247,8 @@ class Settings
 		global sUserFile := sUserFolder "\" gcActionListNameEdit.Text ".json"
 		TrayMenu.SetMenuName("New", Settings.sActionListName)  
 		guiSettings.Title := sSettingsTitle " - " sArcadeString " - " gcActionListNameEdit.Text
+		oLog.LogLine("INFO: Loaded Arcade is: `"" sArcadeString "`"`n")
+		oLog.LogLine("INFO: Loaded Action List is: `"" gcActionListNameEdit.Text "`"`n")
 
 		gcListView := guiSettings.AddListView("-Multi" " r" 10 " x" 30 " y" 380 " w" Settings.mMetrics.Width - 30*2 " Grid", ["Device", "Action", "Sequence", "Voice Phrase", "", "Command", "", "Command 2", "", "", "", "", "Command 3"])
 		fListView_ItemSelect := Settings.ListView_ItemSelect.Bind()
