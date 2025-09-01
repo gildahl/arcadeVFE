@@ -14,11 +14,6 @@
 
 #Requires AutoHotkey v2.0
 
-SetAssetFullPath(assetType, romName, assetFolder, systemAsset)
-{
-    return true
-}
-
 ;This class supports the display of a game image and information overlay.
 class GameInfoDisplay
 {
@@ -30,25 +25,72 @@ class GameInfoDisplay
 		this._hideNavTriangles := false
 		this._stopFlash := false
 		this._active := false
-
-		this.CreateNavTriangles()
+		this._rom := ""
 	}
 
-	CreateGameInfoScreen()
+	CreateGameInfoScreen(sRom)
 	{
+		global gcGameInfoLogo
 		global guiGameInfo := Gui(, "eipGui - guiGameInfo")
 		guiGameInfo.Opt("-Caption")
 		guiGameInfo.BackColor := "Black" 
 
-		global gcGameInfoPleaseWait := guiGameInfo.AddText("x" 0 " y" nScreenHeight/3 " w" nScreenWidth " h" 300 " 0x1", "Preparing Game Information.`nPlease wait...")
-		gcGameInfopleaseWait.SetFont("cWhite s50")
+		guiGameInfo.SetFont("cWhite s50")
+		global gcGameInfoPleaseWait := guiGameInfo.AddText("w" nScreenWidth " Center", "Preparing Game Information.`nPlease wait...")
 
-		;this.CreateNavTriangles()
+		gcGameInfoPleaseWait.GetPos(&label_posX, &label_posY, &label_posW, &label_posH)
+        label_xpos := nScreenWidth / 2 - label_posW / 2 ;center label horizontally
 
-		;Create Overlay (used by oFadeAlphaOverlay to dim the screen)
-		;This is basically a pictureless picture control    
-		;gGui.guiGameInfo_Overlay := guiGameInfo.AddPicture("BackgroundTrans x0 y0 h" . nScreenHeight . " w" . nScreenWidth . " vAlphaOverlay")
-		;gGui.guiGameInfo_Overlay.Visible := false  ;this breaks fading screen when select screen is invoked.
+		this._rom := sRom
+		sLogoFile := ""
+		if (FileExist(sLogoFolder "\" sRom ".png"))
+			sLogoFile := sLogoFolder "\" sRom ".png"
+		else if (FileExist(sLogoFolder "\" sRom ".jpg"))
+			(FileExist(sLogoFolder "\" sRom ".jpg"))
+
+		if (sLogoFile)
+		{
+			gcGameInfoLogo := guiGameInfo.AddPicture("BackgroundTrans", sLogoFile)
+
+			;Display logo
+            gcGameInfoLogo.GetPos(&logo_posX, &logo_posY, &logo_posW, &logo_posH)
+
+            ;The following code ensures that the logo fits in its designated position
+            ;on the screen and keeps its aspect ratio
+            if (logo_posH > nScreenHeight / 4) ;keep logo to no more than 1/4 the screen height
+            {
+                logoH := nScreenHeight / 4
+                logoW := Floor(logo_posW * logoH/logo_posH)
+            }
+            else
+            {
+                logoH := logo_posH
+                logoW := logo_posW
+            }
+
+            if (logoW > nScreenWidth / 2) ;keep logo to no more than 1/2 the screen width
+            {
+                origLogoW := logoW
+                logoW := nScreenWidth / 2
+                logoH := Floor(logoW * logoH/origLogoW)
+            }        
+            
+			;Position the label and logo on the screen
+            screen_topThird := nScreenHeight * (1/3)
+			screen_centerH := nScreenHeight / 2
+            screen_centerW := nScreenWidth / 2
+
+			label_ypos := screen_topThird - label_posH / 2
+			label_xpos := screen_centerW - label_posW / 2
+
+			logo_ypos := screen_centerH
+			logo_xpos := screen_centerW - logoW / 2
+            
+            gcGameInfoPleaseWait.Move(label_xpos, label_ypos)
+            gcGameInfoLogo.Move(logo_xpos, logo_ypos, logoW, logoH)
+
+			this.ShowGameInfoScreen()
+		}
 	}
 
 	ShowGameInfoScreen()
@@ -263,10 +305,9 @@ class GameInfoDisplay
 	/**
 	 * ;Creates the actual image and info pages for each asset type
 	 * @param assetType - either "info" or a folder name that is a subfolder in .\GameInfo\Assets
-	 * @param romName - the rom name without an extension
 	 * @param {String} sType - file extension of image file (only for images)
 	 */
-	CreateGameInfoPage(assetType, romName, sType:="")
+	CreateGameInfoPage(assetType, sType:="")
 	{
 		global oMameData
 
@@ -309,13 +350,13 @@ class GameInfoDisplay
 			if (!IsObject(oMameData))
 				oMameData := MAMEData(mameinfo_file, mamehistory_file)
 
-			mame_history_text := oMameData.GetHistory(romName)
-			mame_info_text := oMameData.GetInfo(romName)
+			mame_history_text := oMameData.GetHistory(this._rom)
+			mame_info_text := oMameData.GetInfo(this._rom)
 
 			if (!mame_history_text && !mame_info_text)
 			{
-				oGameInfo := ReadListXML.GetXMLMetaInfo(sGamesXMLFile, romName)
-				info_text := "There is no information available for the game: " oGameInfo["description"] " (" romName ")"
+				oGameInfo := ReadListXML.GetXMLMetaInfo(sGamesXMLFile, this._rom)
+				info_text := "There is no information available for the game: " oGameInfo["description"] " (" this._rom ")"
 			}
 			else
 				info_text := mame_history_text . mame_info_text
@@ -462,12 +503,13 @@ class GameInfoDisplay
 				Clipboard := ClipSaved 	; Restore the original clipboard.
 				Sleep 100
 
-				gcGameInfoPleaseWait.SetFont("cBlack")
+				gcGameInfoPleaseWait.Visible := false
+				gcGameInfoLogo.Visible := false
 			}
 		}
 		else ;assetType not "info", so must be an image type
 		{
-			asset_full_path := A_ScriptDir "\GameInfo\Assets\" assetType "\" romName "." sType
+			asset_full_path := A_ScriptDir "\GameInfo\Assets\" assetType "\" this._rom "." sType
 
 			gGui.guiGameInfo_GameImage%assetType% := guiGameInfo.AddPicture("BackgroundTrans vGameImage%" . assetType . "%", asset_full_path)		
 			gGui.guiGameInfo_GameImage%assetType%.GetPos(&game_image_posX, &game_image_posY, &game_image_posW, &game_image_posH)
@@ -503,152 +545,6 @@ class GameInfoDisplay
 		return false
 	}
 
-	/**
-	 * Dynamically update the image associated with a particular image type
-	 * 
-	 * @param sType - the type of image ("highscore", "controls", etc.)
-	 * @param hBitmap - bitmap of the image
-	 */
-	SetHighscoreGameImage(hBitmap)
-	{
-		static sType := "highscore"
-
-		gGui.guiGameInfo_GameImage%sType%.Value := hBitmap
-	    gGui.guiGameInfo_GameImage%sType%.Move(0, 0, nScreenWidth, nScreenHeight)
-
-		for i, page in this._pages
-		{
-			if (page["type"] == sType)
-				this._pages[i]["visible"] :=  true
-		}  
-	}
-
-	/**
-	 * Set visibility of any highscore images to false
-	 */
-	DisableHighscoreGameImage()
-	{
-		static sType := "highscore"
-
-		for i, page in this._pages
-		{
-			if (page["type"] == sType)
-			{
-				this._pages[i]["visible"] :=  false
-				gGui.guiGameInfo_GameImage%sType%.Value := void_file
-			}
-		}  
-	}
-
-	CreateNavTriangles()
-	{		
-		global gGui
-
-		dpi:=96/A_ScreenDPI
-
-		verticalCenter := Round(nScreenHeight / 2)
-		topExtent := Round(nScreenHeight * 0.45)
-		bottomExtent := Round(nScreenHeight - (topExtent))
-
-		;**********************************************************************
-		; Draw left triangle
-		;**********************************************************************
-
-		gGui.guiNavLeft := Gui(, "eipGui - guiNavLeft")
-		gGui.guiNavLeft.Opt("-Caption +ToolWindow +LastFound +AlwaysOnTop")
-		gGui.guiNavLeft.BackColor := color_edit_text
-
-		x1 := 40
-		y1 := topExtent
-
-		x2 := 0
-		y2 := verticalCenter
-
-		x3 := 40
-		y3 := bottomExtent
-
-		navRegion := x1/dpi . "-" . y1/dpi . " " . x2/dpi . "-" . y2/dpi . " " . x3/dpi . "-" y3/dpi
-	
-		WinSetRegion navRegion
-
-		;**********************************************************************
-		; Draw right triangle
-		;**********************************************************************
-
-		gGui.guiNavRight := Gui(, "eipGui - guiNavRight")
-		gGui.guiNavRight.Opt("-Caption +ToolWindow +LastFound +AlwaysOnTop")
-		gGui.guiNavRight.BackColor := color_edit_text
-
-		x1 := nScreenWidth - 40
-		y1 := topExtent
-
-		x2 := nScreenWidth
-		y2 := verticalCenter
-
-		x3 := x1
-		y3 := bottomExtent
-		
-		navRegion := x1/dpi . "-" . y1/dpi . " " . x2/dpi . "-" . y2/dpi . " " . x3/dpi . "-" y3/dpi
-		
-		WinSetRegion navRegion
-	}
-
-	ShowNavTriangles()
-	{
-		;gGui.guiNavLeft.Show("NA w" . nScreenWidth . " h" nScreenHeight)
-		;gGui.guiNavRight.Show("NA w" . nScreenWidth . " h" nScreenHeight)
-		
-		SetTimer ShowNow, -1
-
-		ShowNow()
-		{		
-			this._hideNavTriangles := false
-			this._stopFlash := false
-
-			try 
-			{
-				;if (this._totalPages > 1)
-				;{					
-					gGui.guiNavLeft.Show("NA w" . nScreenWidth . " h" nScreenHeight)
-					gGui.guiNavRight.Show("NA w" . nScreenWidth . " h" nScreenHeight)
-
-					WinSetTransparent 200, "ahk_id " gGui.guiNavLeft.Hwnd
-					WinSetTransparent 200, "ahk_id " gGui.guiNavRight.Hwnd
-
-					loop 3
-					{
-						;use transparency to flash since Show() and Hide() mess with the window order
-						Sleep(700)
-						WinSetTransparent 0, "ahk_id " gGui.guiNavRight.Hwnd
-						Sleep(-1)
-
-						if (this._hideNavTriangles)
-							break
-
-						Sleep(400)
-						WinSetTransparent 200, "ahk_id " gGui.guiNavRight.Hwnd
-						Sleep(-1)
-
-						;Used when changing pages
-						if (this._stopFlash)
-							break
-					}
-				;}
-			}
-		}
-	}
-
-	HideNavTriangles()
-	{
-		this._hideNavTriangles := true
-		
-		;if (this._totalPages > 1)
-		;{
-			gGui.guiNavLeft.Hide()
-			gGui.guiNavRight.Hide()
-		;}
-	}
-	
 	CurrentPage
 	{
 		get => this._currentPage
@@ -671,63 +567,3 @@ ChangeEncoding(&sStr, sFrom, sTo)
     StrPut(sStr, buf, sFrom)
     sStr := StrGet(buf, sTo)
 }
-
-/*
-;Sample code
-global gGui := {}
-
-;Support DPI scaling
-global nScreenWidth := A_ScreenWidth * 96 // A_ScreenDPI
-global nScreenHeight := A_ScreenHeight * 96 // A_ScreenDPI
-
-global color_edit_bg := "0x1F1F1F"
-global color_edit_text := "0xCCCCCC"
-global asset_name := ""
-
-mameinfo_file := A_ScriptDir "\mameinfo.dat"
-mamehistory_file := A_ScriptDir "\history.xml"
-void_file := A_ScriptDir "\void.png"
-
-oMameData := MAMEData(A_ScriptDir)
-
-global rom_name := "asteroid"
-
-global guiGameInfo
-
-CreateGameInfoScreen()
-
-assetTypes := "info"
-oGameInfoDisplay := GameInfoDisplay()
-
-r::
-{
-    Sleep 0
-    Critical
-    oGameInfoDisplay.GoPage("r")
-    Sleep 300
-}
-
-l::
-{
-    Sleep 0
-    Critical
-    oGameInfoDisplay.GoPage("l")
-    Sleep 300
-}
-
-h::
-{
-    Sleep 0
-    Critical
-    oGameInfoDisplay.GoPage("hide")
-    Sleep 300
-}
-
-s::
-{
-    Sleep 0
-    Critical
-    oGameInfoDisplay.GoPage("start")
-    Sleep 300
-}
-*/

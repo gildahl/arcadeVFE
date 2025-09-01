@@ -62,6 +62,7 @@ global mamehistory_file := sMetaFolder "\history.xml"
 global sControlsIniFile := sMetaFolder "\controls.ini"
 global sGamesXMLFile := sMetaFolder "\games.xml"
 global void_file := sMetaFolder "\void.png"
+global sLogoFolder := A_ScriptDir "\GameInfo\Logo"
 global oMameData := MAMEData(mameinfo_file, mamehistory_file)
 global oGameInfoDisplay := GameInfoDisplay()
 global iDefaultGameInfoFontSize := 18 
@@ -335,7 +336,6 @@ RomAccess_Event(Folder, Changes)
 	if (sCurrentROM) ;sCurrentROM is a global
 		FileSetTime DateAdd(A_Now, -7, "days"), sCurrentRom, "A"
 
-	;tLastFileName := sNewROMFile
 	tLastFileName := sCurrentRom
 
 	;Return if the application is in an inactive state (such when in the Settings screen)
@@ -421,13 +421,6 @@ ApplicationProcessCheck_Callback()
 {
 	global bCancelPoll
 	global iRawAccelPID
-
-	;Terminate this timer if bCancelPoll gets set
-	;if (bCancelPoll)
-	;{
-	;	bCancelPoll := false
-	;	SetTimer(ApplicationProcessCheck_Callback, 0)
-	;}
 
 	;if we are only supposed to monitor when an application is loaded and it is
 	;now loaded, then call Poll() to start/resume monitoring
@@ -948,22 +941,21 @@ ShowGameInfo(sRomName)
 		return
 
 	oGameInfoDisplay.Clear()
-	oGameInfoDisplay.CreateGameInfoScreen()
-	oGameInfoDisplay.ShowGameInfoScreen()
-	oGameInfoDisplay.CreateGameInfoPage("info", sRomName) ;create the GameInfo pages
+	oGameInfoDisplay.CreateGameInfoScreen(sRomName)
+	oGameInfoDisplay.CreateGameInfoPage("info") ;create the GameInfo pages
 
 	;Create image pages for any images in the \GameInfo\Assets subfolders
 	Loop Files A_ScriptDir "\GameInfo\Assets\*.*", "D"
 	{
 		if (FileExist(A_LoopFileDir "\" A_LoopFileName "\" sRomName ".png"))
 		{
-			oGameInfoDisplay.CreateGameInfoPage(A_LoopFileName, sRomName, "png")
+			oGameInfoDisplay.CreateGameInfoPage(A_LoopFileName, "png")
 			continue
 		}
 
 		if (FileExist(A_LoopFileDir "\" A_LoopFileName "\" sRomName ".jpg"))
 		{
-			oGameInfoDisplay.CreateGameInfoPage(A_LoopFileName, sRomName, "jpg")
+			oGameInfoDisplay.CreateGameInfoPage(A_LoopFileName, "jpg")
 			continue
 		}
 	}

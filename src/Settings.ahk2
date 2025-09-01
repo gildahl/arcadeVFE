@@ -105,8 +105,8 @@ class Settings
 		gcROMDropDown.OnEvent("Change", (*) => Settings.ROMDropDown_Change())
 		gcROMDropDown.TT := "Select a group or game to monitor for activity."
 
-		cBGColor := PixelGetColor(370, 90)
-		WinSetTransColor(cBGColor)
+		;cBGColor := PixelGetColor(370, 90)
+		;WinSetTransColor(cBGColor)
 
 		gcROMDropDownController := guiSettings.AddText("BackgroundTrans x" 370 " y" 10 " w" 480 " 0x2", "") ;0x2 is for right justification
 		gcROMDropDownGameRom := guiSettings.AddText("BackgroundTrans x" 373 " y" 45 " w" 480, "")
