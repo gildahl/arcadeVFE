@@ -320,7 +320,7 @@ class Settings
 		gcShowGameInfo_Checkbox := guiSettings.AddCheckbox("x" 280 " y" 653, "Use Game Info Overlay")
 		gcShowGameInfo_Checkbox.OnEvent("Click", (*) => Settings.ShowGameInfo_Checkbox_Click())
 		try gcShowGameInfo_Checkbox.Value := IniRead(sIniFile, "General", "ShowGameInfo", 0)	
-		gcShowGameInfo_Checkbox.TT := "Show GameInfo overlay on the desktop when the arcade application`nstarts and close it when the application terminates.`n`nNote that it is is advised that you DO NOT use this feature if you`nuse mouse clicks as your fire button, since any mouse clicks in a`ntrackball or spinner game will cause the GameInfo screen to take`nthe focus, and, thus mouse input will be lost. To avoid this, use`nXInput button input for fire instead."
+		gcShowGameInfo_Checkbox.TT := "Show GameInfo overlay on the desktop when the arcade application`nstarts and close it when the application terminates.`n`nNote that it is is advised that you DO NOT use this feature if you`nuse mouse clicks as your fire button, since any mouse clicks are`nsuppressed to prevent mouse clicks from taking the focus. To`navoid this, use game controller button input for fire instead."
 
 		if (gcApplication_Checkbox.Value == 0)
 			gcShowGameInfo_Checkbox.Enabled := false
@@ -404,6 +404,15 @@ class Settings
 			mDeviceInfo["name"] := "Keyboard"
 			mDeviceInfo["index"] := 1
 			mDevices["001"].Push(mDeviceInfo)
+
+			/*
+			;Add "Mouse" device
+			mDevices["002"] := Array()
+			mDeviceInfo := Map()
+			mDeviceInfo["name"] := "Mouse"
+			mDeviceInfo["index"] := 1
+			mDevices["002"].Push(mDeviceInfo)
+			*/
 
 			;Create the list to display in the devices list
 			for guid, j in mDevices
@@ -743,6 +752,14 @@ class Settings
 			{
 				gcAssignButton.Text := "Assign Key"
 				gcAssignButton.TT := "Press to assign a key or key combination,`nas the trigger for the commands defined above."
+			}
+			else if (gcDevices.Text == "Mouse")
+			{
+				gcAssignButton.Text := "Assign Button"
+				gcAssignButton.TT := "Press to assign a mouse button,`nas the trigger for the commands defined above."
+				bGameControlVisible := true
+
+				Settings.RadioButtonStateUpdate()
 			}
 			else ;must be a game controller
 			{
@@ -1394,6 +1411,17 @@ class Settings
 		}
 	}
 
+	static Mouse_Callback(Hotkey)
+	{
+
+		OutputDebug Hotkey
+		if (Settings.WriteActionToList("Mouse", Hotkey))
+		{
+			Settings.DisableMouseHotkeys()
+			Settings.SetAssignButtonState(true)
+		}
+	}
+
 	/**
 	 * Process input for game controller button presses or Keyboard key presses during the 
 	 * Assign process. Adds the button or key press to the ListView control along with the
@@ -1423,6 +1451,12 @@ class Settings
 		if (gcDevices.Text == "Keyboard")
 		{
 			Settings.ActivateKeyboardHotkeys()
+			return
+		}
+
+		if (gcDevices.Text == "Mouse")
+		{
+			Settings.ActivateMouseHotkeys()
 			return
 		}
 	
@@ -1509,7 +1543,7 @@ class Settings
 	/**
 	 * Write an action to the ListView list.
 	 * 
-	 * @param sDevice - "ROM Monitor", "Keyboard" or game device name
+	 * @param sDevice - "ROM Monitor", "Keyboard", "Mouse" or game device name
 	 * @param sAction - rom name (no extension), button number, or keyboard key
 	 * @returns {Integer} - 1 is a success, 0 is a duplicate
 	 */
@@ -1638,6 +1672,11 @@ class Settings
 		if (gcDevices.Text == "Keyboard")
 		{
 			Settings.DisableKeyboardHotkeys()
+			Settings.SetAssignButtonState(true)
+		}
+		else if (gcDevices.Text == "Mouse")
+		{
+			Settings.DisableMouseHotkeys()
 			Settings.SetAssignButtonState(true)
 		}
 		else
@@ -1984,6 +2023,32 @@ class Settings
 		gcListView.Redraw()
 	}
 
+	static ActivateMouseHotKeys()
+	{
+		Hotkey("~LButton", ObjBindMethod(Settings.Mouse_Callback,,"~LButton"), "On")
+		Hotkey("~RButton", ObjBindMethod(Settings.Mouse_Callback,,"~RButton"), "On")
+		Hotkey("~MButton", ObjBindMethod(Settings.Mouse_Callback,,"~MButton"), "On")
+		Hotkey("~XButton1", ObjBindMethod(Settings.Mouse_Callback,,"~XButton1"), "On")
+		Hotkey("~XButton2", ObjBindMethod(Settings.Mouse_Callback,,"~XButton2"), "On")
+		Hotkey("WheelDown", ObjBindMethod(Settings.Mouse_Callback,,"WheelDown"), "On")
+		Hotkey("WheelUp", ObjBindMethod(Settings.Mouse_Callback,,"WheelUp"), "On")
+		Hotkey("WheelLeft", ObjBindMethod(Settings.Mouse_Callback,,"WheelLeft"), "On")
+		Hotkey("WheelRight", ObjBindMethod(Settings.Mouse_Callback,,"WheelRight"), "On")
+	}
+
+	static DisableMouseHotKeys()
+	{
+		Hotkey("~LButton", ObjBindMethod(Settings.Mouse_Callback), "Off")
+		Hotkey("~RButton", ObjBindMethod(Settings.Mouse_Callback), "Off")
+		Hotkey("~MButton", ObjBindMethod(Settings.Mouse_Callback), "Off")
+		Hotkey("~XButton1", ObjBindMethod(Settings.Mouse_Callback), "Off")
+		Hotkey("~XButton2", ObjBindMethod(Settings.Mouse_Callback), "Off")
+		Hotkey("WheelDown", ObjBindMethod(Settings.Mouse_Callback), "Off")
+		Hotkey("WheelUp", ObjBindMethod(Settings.Mouse_Callback), "Off")
+		Hotkey("WheelLeft", ObjBindMethod(Settings.Mouse_Callback), "Off")
+		Hotkey("WheelRight", ObjBindMethod(Settings.Mouse_Callback), "Off")
+	}
+
 	/**
 	 * Activate hotkeys on all common keystrokes including Ctrl/Alt/Shift/Win combos
 	 */
@@ -1999,6 +2064,10 @@ class Settings
 		;Add support for control/Alt/Shift/Win combos to keys
 		Loop 94 ;33-126
 		{
+			;skip lower case letters
+			if (A_Index + 32 >= 97 && A_Index + 32 <= 122)
+				continue
+
 			Hotkey("+" Chr(A_Index + 32), ObjBindMethod(Settings.Key_Callback,,"+" Chr(A_Index + 32)), "On")
 			Hotkey("^" Chr(A_Index + 32), ObjBindMethod(Settings.Key_Callback,,"^" Chr(A_Index + 32)), "On")
 			Hotkey("!" Chr(A_Index + 32), ObjBindMethod(Settings.Key_Callback,,"!" Chr(A_Index + 32)), "On")
@@ -2022,6 +2091,10 @@ class Settings
 
 		Loop 94 ;33-126
 		{
+			;skip lower case letters
+			if (A_Index + 32 >= 97 && A_Index + 32 <= 122)
+				continue
+
 			Hotkey("+" Chr(A_Index + 32), ObjBindMethod(Settings.Key_Callback), "Off")
 			Hotkey("^" Chr(A_Index + 32), ObjBindMethod(Settings.Key_Callback), "Off")
 			Hotkey("!" Chr(A_Index + 32), ObjBindMethod(Settings.Key_Callback), "Off")
@@ -2041,7 +2114,13 @@ class Settings
 			return aKeys
 
 		Loop 94 ;33-126
+		{
+			;skip lower case letters
+			if (A_Index + 32 >= 97 && A_Index + 32 <= 122)
+				continue
+
 			aKeys.Push(Chr(A_Index + 32))
+		}
 
 		aKeys.Push("F1")
 		aKeys.Push("F2")

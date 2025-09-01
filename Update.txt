@@ -9,11 +9,13 @@ If you had made any changes to the machine directory, backup the file
 and restore when completed.
 
 * Added support for ctrl, alt, shift, win key combos.
-* Game data updates and added many missing images.
+* Game data and image updates.
 * Added game logo to GameInfo startup.
 * Send discrete up/down events when mapping buttons to keypresses.
-* Add rom's MAME version to rom list.
+* Add MAME rom version to rom list.
 * Suggest restart after changing arcade running setting.
+* Added WS_EX_NOACTIVATE to GameInfo to protect from mouse clicks.
+* Remove lower case letters from "Map a keypress" list since they're redundant.
 * Tooltip help updates.
 * Documentation updates.
 * Some general code clean-up.

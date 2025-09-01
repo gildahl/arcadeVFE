@@ -470,8 +470,11 @@ Poll()
 	{
 		for button, sequences in buttons
 		{
-			if (device == "Keyboard")
+			if (device == "Keyboard" || device == "Mouse")
 				Hotkey(button, PressedKey_Callback, "On")
+
+			if (device == "Mouse" && !InStr(button, "Wheel"))
+			    Hotkey(button " Up", PressedKey_Callback, "On")
 		}
 	}
 
@@ -539,8 +542,11 @@ Poll()
 			{
 				for button, sequences in buttons
 				{
-					if (device == "Keyboard")
+					if (device == "Keyboard" || device == "Mouse")
 						Hotkey(button, PressedKey_Callback, "Off")
+
+					if (device == "Mouse" && !InStr(button, "Wheel"))
+			    		Hotkey(button " Up", PressedKey_Callback, "Off")
 				}
 			}
 
@@ -636,25 +642,82 @@ Poll()
 }
 
 /**
- * Handler for the "Keyboard" device types.
- * Performs the action defined by a keyboard hotkey press.
- * @param HotkeyName 
+ * Handler for the "Keyboard" and "Mouse" device types.
+ * Performs the action defined by a keyboard or mouse hotkey press.
+ * @param HotkeyName - A keyboard or mouse hotkey
  */
 PressedKey_Callback(HotkeyName)
 {
 	static mIndexer := Map()
+	sDev := "Mouse"
+
+	;For mouse actions, even though we will be sending an action, we still want
+	;to send the original mouse click, to not break normal mouse functions
+	Switch HotkeyName
+	{
+		case "~LButton":
+			oAction := GetAction(sDev, "~LButton", mIndexer)
+			RunAction(oAction, "Down")
+			return
+		case "~LButton Up":
+			oAction := GetAction(sDev, "~LButton", mIndexer)
+			RunAction(oAction, "Up")
+			return
+		case "~RButton":
+			oAction := GetAction(sDev, "~RButton", mIndexer)
+			RunAction(oAction, "Down")
+			return
+		case "~RButton Up":
+			oAction := GetAction(sDev, "~RButton", mIndexer)
+			RunAction(oAction, "Up")
+			return
+		case "~MButton":
+			oAction := GetAction(sDev, "~MButton", mIndexer)
+			RunAction(oAction, "Down")
+			return
+		case "~MButton Up":
+			oAction := GetAction(sDev, "~MButton", mIndexer)
+			RunAction(oAction, "Up")
+			return
+		case "~X1":
+			oAction := GetAction(sDev, "~X1", mIndexer)
+			RunAction(oAction, "Down")
+			return
+		case "~X1 Up":
+			oAction := GetAction(sDev, "~X1", mIndexer)
+			RunAction(oAction, "Up")
+			return
+		case "~X2":
+			oAction := GetAction(sDev, "~X2", mIndexer)
+			RunAction(oAction, "Down")
+			return
+		case "~X2 Up":
+			oAction := GetAction(sDev, "~X2", mIndexer)
+			RunAction(oAction, "Up")
+			return
+		case "WheelUp":
+			MouseClick("WheelUp")
+		case "WheelDown":
+			MouseClick("WheelDown")
+		case "WheelRight":
+			MouseClick("WheelRight")
+		case "WheelLeft":
+			MouseClick("WheelLeft")
+		default:
+			sDev := "Keyboard"
+	}
 
 	;Get the next logical action from the action list based on the key press, then run it
-	oAction := GetAction("Keyboard", HotkeyName, mIndexer)
+	oAction := GetAction(sDev, HotkeyName, mIndexer)
 	RunAction(oAction)
 }
 
 /**
- * Get the next logical action. For button presses (keyboard and game controllers) more than one action
+ * Get the next logical action. For button presses (keyboard, mouse, and game controllers) more than one action
  * can be assigned to a button. In these cases, the action changes sequentially with each button press. This
  * function returns that next sequential action. 
- * @param sDevice - Can be a game controller name, "Keyboard", or "ROM Monitor"
- * @param sAction - Can be the index of a game controller button, a keyboard key (or combo), or a rom name (with no extension)
+ * @param sDevice - Can be a game controller name, "Keyboard", "Mouse", or "ROM Monitor"
+ * @param sAction - Can be the index of a game controller button, a keyboard key (or combo), mouse button, or a rom name (with no extension)
  * @param mIndexer - A static Map() provided by the caller to keep track of the sequence.
  * @returns {Map} - Returns a map containing an action consisting of a verbal annunciation and up to two command lines.
  */
@@ -732,39 +795,44 @@ RunAction(oAction, sModifier:="")
 {
 	global sLastActionKey
 
-	;if a keypress action, send the key
-	if (InStr(oAction.CommandLine, "Send Keypress:") && sModifier == "Down")
-	{
-		iStartPos := InStr(oAction.CommandLine, "{")
-		iEndPos := InStr(oAction.CommandLine, "}")
-		iLength := iEndPos - iStartPos
-
-		;separate down/up actions needed for MAME
-		sKey := SubStr(oAction.CommandLine, iStartPos, iLength)
-		Send sKey " down}"
-
-		if (gcAlwaysAnnunciate_Checkbox.Value == 1 && oAction.Annunciation)
-			oVoice.Speak(oAction.Annunciation)
-
-		return
-	}
-	if (InStr(oAction.CommandLine, "Send Keypress:") && sModifier == "Up")
-	{
-		iStartPos := InStr(oAction.CommandLine, "{")
-		iEndPos := InStr(oAction.CommandLine, "}")
-		iLength := iEndPos - iStartPos
-
-		;separate down/up actions needed for MAME
-		sKey := SubStr(oAction.CommandLine, iStartPos, iLength)
-		Send sKey " up}"
-		return
-	}
-
-	if (gcAlwaysAnnunciate_Checkbox.Value == 1 && oAction.Annunciation)
+	if (gcAlwaysAnnunciate_Checkbox.Value == 1 && oAction.Annunciation && sModifier != "Up")
 		oVoice.Speak(oAction.Annunciation)
 
+	;if a keypress action, send the key
+	if (InStr(oAction.CommandLine, "Send Keypress:"))
+	{
+		if (!sModifier || sModifier == "Down")
+		{
+			iStartPos := InStr(oAction.CommandLine, "{")
+			iEndPos := InStr(oAction.CommandLine, "}")
+			iLength := iEndPos - iStartPos
+
+			;separate down/up actions needed for MAME
+			sKey := SubStr(oAction.CommandLine, iStartPos, iLength)
+			Send sKey " down}"
+
+			if (!sModifier) {
+				Sleep 30
+				Send sKey " up}"
+			}
+
+			return
+		}	
+		else if (sModifier == "Up")
+		{
+			iStartPos := InStr(oAction.CommandLine, "{")
+			iEndPos := InStr(oAction.CommandLine, "}")
+			iLength := iEndPos - iStartPos
+
+			;separate down/up actions needed for MAME
+			sKey := SubStr(oAction.CommandLine, iStartPos, iLength)
+			Send sKey " up}"
+			return
+		}
+	}
+
 	;if a GameInfo navigation action, do the nav action
-	if (InStr(oAction.CommandLine, "GameInfo Navigation:"))
+	if (InStr(oAction.CommandLine, "GameInfo Navigation:") && sModifier != "Up")
 	{
 		iStartPos := InStr(oAction.CommandLine, "{") + 1
 		iEndPos := InStr(oAction.CommandLine, "}")
