@@ -98,8 +98,9 @@ class GameInfoDisplay
 		;The "AlwaysOnTop and NA options here are critical to ensuring that the game information window
 		;sits on top of the emulator (such as ATC), but does not take the focus (otherwise trackball and
 		;spinner games will stop seeing the mouse). User mouse clicks or motion controller clicks can also
-		;do this.
-		guiGameInfo.Opt("AlwaysOnTop")
+		;do this. 0x08000000 (WS_EX_NOACTIVATE), prevents mouse clicks from re-activating the screen and
+		;the +E prefix indicates that extended styles are being applied.
+		guiGameInfo.Opt("+AlwaysOnTop +E0x08000000") 
 		guiGameInfo.Show("W" nScreenWidth " H" nScreenHeight " X0 Y0 NA")
 
 		this._active := true
