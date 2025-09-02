@@ -1092,10 +1092,15 @@ CreateDirAndLog(d)
  */
 ShowGameInfo(sRomName)
 {
+    static bFirstTime := true
+
 	if (!sRomName)
 		return
 
-	oGameInfoDisplay.Clear()
+	if (!bFirstTime)
+		oGameInfoDisplay.Clear()
+	
+	bFirstTime := false
 	oGameInfoDisplay.CreateGameInfoScreen(sRomName)
 	oGameInfoDisplay.CreateGameInfoPage("info") ;create the GameInfo pages
 

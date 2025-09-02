@@ -43,10 +43,8 @@ class GameInfoDisplay
 
 		this._rom := sRom
 		sLogoFile := ""
-		if (FileExist(sLogoFolder "\" sRom ".png"))
+		if (FileExist(sLogoFolder "\" sRom ".png")) ;logos are only in .png format
 			sLogoFile := sLogoFolder "\" sRom ".png"
-		else if (FileExist(sLogoFolder "\" sRom ".jpg"))
-			(FileExist(sLogoFolder "\" sRom ".jpg"))
 
 		if (sLogoFile)
 		{
