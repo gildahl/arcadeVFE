@@ -485,6 +485,14 @@ ApplicationProcessCheck_Callback()
 	global bCancelPoll
 	global iRawAccelPID
 
+	;Terminate this timer if bCancelPoll gets set
+	;Needed to support toggling of "Operate only when Arcade running" option
+	if (bCancelPoll)
+	{
+		bCancelPoll := false
+		SetTimer(ApplicationProcessCheck_Callback, 0)
+	}
+
 	;if we are only supposed to monitor when an application is loaded and it is
 	;now loaded, then call Poll() to start/resume monitoring
 	if (bOnlyMonitorWhenApplicationLoaded && ProcessExist(sApplicationName))
