@@ -16,6 +16,7 @@ and restore when completed.
 * Suggest restart after changing arcade running setting.
 * Added WS_EX_NOACTIVATE to GameInfo to protect from mouse clicks.
 * Remove lower case letters from "Map a keypress" list since they're redundant.
+* Copy roms function now copies chd folders as well.
 * Tooltip help updates.
 * Added additional startup logging and auditing.
 * Documentation updates.

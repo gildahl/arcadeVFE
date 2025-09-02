@@ -13,7 +13,18 @@ Loop Files sROMFolder "\*.zip"
     SplitPath(A_LoopFileName,,,,&OutNameNoExt)
 
     mRoms[OutNameNoExt] := Map()
-    mRoms[OutNameNoExt]["MAMEVersion"] := GetMameVersion(OutNameNoExt)    
+    mRoms[OutNameNoExt]["MAMEVersion"] := GetMameVersion(OutNameNoExt)  
+    mRoms[OutNameNoExt]["HasFolder"] := 0
+    
+    ;exceptions (important that only roms with checksums have this attribute)
+    if (OutNameNoExt == "kinst2")
+        mRoms[OutNameNoExt]["Checksum"] := "2563b089b316f2c8636d78af661ac656"
+}
+
+Loop Files sROMFolder "\*", "D"
+{ 
+    SplitPath(A_LoopFileName,,,,&OutNameNoExt)
+    mRoms[OutNameNoExt]["HasFolder"] := "1"
 }
 
 WriteROMList()

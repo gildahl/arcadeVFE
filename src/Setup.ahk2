@@ -201,8 +201,13 @@ class Setup
             {
                 gcAuditProgress.Value := A_Index / oArcadeRomList.Count * 100 ;increment progress bar
 
+                ;copy the rom
                 if (mInfo["MAMEVersion"] == gcRomVersionDropDown.Text)
                     try FileCopy(sFolder "\" sRom ".zip", gcROMMonitorFolderEdit.Text, 1)
+
+                ;copy folder (accompanying chd folder, for example)
+                if (mInfo["HasFolder"] == "1" && mInfo["MAMEVersion"] == gcRomVersionDropDown.Text)
+                    try DirCopy(sFolder "\" sRom, gcROMMonitorFolderEdit.Text "\" sRom, 1)
             }
 
             gcAuditProgress.Visible := false
@@ -286,6 +291,8 @@ class Setup
         ;Loop through each file in the rom list for this arcade, doing a version-specific validation of each.
         for sRom, mInfo in oArcadeRomList
         {
+            if (sRom == "ghostb")
+                test:=1
             gcAuditProgress.Value := A_Index / oArcadeRomList.Count * 100
 
             ;Missing file check
@@ -335,7 +342,7 @@ class Setup
                     oAuditLog.LogLine("AUDIT " mInfo["MAMEVersion"] " ROM: " stderr " (stderr)`n")
             }
             catch as e {
-                oAuditLog.LogLine("ERROR: Calling -verifyroms: " oAuditLog.FormatErrorMessage(e) "`n")
+                oAuditLog.LogLine("ERROR: Calling -verifyroms, Rom: " sRom ", Message: " oAuditLog.FormatErrorMessage(e) "`n")
             }
         }
 
