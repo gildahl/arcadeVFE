@@ -1,12 +1,17 @@
-v1.2.0
+arcadeVFE v.1.2.0
 To update from version 1.1, right click on the zip file, choose Properties, 
 check the Unblock checkbox at the bottom, then click Apply. After doing this,
 extract all files and folders from the zip into your 1.1 folder and allow
-Windows to overwrite all files. 
+Windows to overwrite all files. No user files should be overwritten in the
+process with the following two possible exceptions.
 
-Note: If you had made any changes to the machine directory, backup the file
+Note 1: If you made any changes to the machine directory, backup the file
 .\Arcade\Arcade Time Capsule 3.6.Locations.ini prior to overwriting files, 
 and restore when completed.
+
+Note 2: If you made any changes to the Command template list, backup the
+file .\Config\templates.json prior to overwriting files, and restore when 
+completed.
 
 * Added support for ctrl, alt, shift, win key combos.
 * Game data and image updates.
@@ -15,7 +20,7 @@ and restore when completed.
 * Add MAME rom version to rom list.
 * Suggest restart after changing arcade running setting.
 * Added WS_EX_NOACTIVATE to GameInfo to protect from mouse clicks.
-* Remove lower case letters from "Map a keypress" list since they're redundant.
+* Removed lower case letters from "Map a keypress" since they're redundant.
 * Copy roms function now copies chd folders as well.
 * Limit image scaling in GameInfo to improve quality
 * Tooltip help updates.
@@ -23,7 +28,7 @@ and restore when completed.
 * Documentation updates.
 * Some general code clean-up.
 
-v1.1.0
+arcadeVFE v.1.1.0
 * Added a third command line config option.
 * Added game information overlay
 * Added initial setup dialog
@@ -41,3 +46,6 @@ v1.1.0
 * Beep on profile change off by default.
 * Error message enhancements.
 * Many bug fixes.
+
+Background Profile Switcher v.1.0.0
+* Initial preview release.

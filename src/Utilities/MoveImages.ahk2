@@ -1,3 +1,7 @@
+;Moves images from an image library source folder into
+;a curated folder based on the rom list.
+;Also creates a !missing.txt file in the folder.
+
 #Requires AutoHotkey v2.0
 
 #include ..\ReadListXML.ahk2

@@ -513,7 +513,7 @@ class GameInfoDisplay
 			gGui.guiGameInfo_GameImage%assetType% := guiGameInfo.AddPicture("BackgroundTrans vGameImage%" . assetType . "%", asset_full_path)		
 			gGui.guiGameInfo_GameImage%assetType%.GetPos(&game_image_posX, &game_image_posY, &game_image_posW, &game_image_posH)
 	
-			;This is the enlargement limit to keep low quality images from
+			;This is the enlargement limit to keep low res images from
 			;becoming unreasonably pixelated
 			nMaxEnlarge := 1.5
 

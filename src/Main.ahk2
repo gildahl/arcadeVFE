@@ -468,9 +468,7 @@ RomAccess_Event(Folder, Changes)
 
 	;Show GameInfo (but only if the option is turned on and the application is running)
 	if ((gcShowGameInfo_Checkbox.Value && gcShowGameInfo_Checkbox.Enabled) && bOnlyMonitorWhenApplicationLoaded && ProcessExist(sApplicationName))
-	{
-		ShowGameInfo(OutNameNoExt)
-	}
+		ShowGameInfo(OutNameNoExt)	
 
 	global sCurrentROM := sNewROMFile
 }
@@ -608,7 +606,7 @@ Poll()
 			SDL2.SDL_FlushEvent(SDL_EventType.SDL_JOYBUTTONUP)
 			SDL2.SDL_FlushEvent(SDL_EventType.SDL_JOYHATMOTION)
 
-			;disable hotkeys too
+			;disable hotkeys
 			for device, buttons in oActions
 			{
 				for button, sequences in buttons
@@ -621,7 +619,7 @@ Poll()
 				}
 			}
 
-			;set our global flags
+			;set global flags
 			bCancelPoll := false 
 			bActive := false
 			break
@@ -676,7 +674,7 @@ Poll()
 				SDL2.SDL_FlushEvent(SDL_EventType.SDL_JOYHATMOTION)				
 			}
 
-			/* ;Omit axis handling since it will conflict with gaming
+			/* ;Omit axis handling for now
 			else if (evt.type == SDL_EventType.SDL_JOYAXISMOTION)
 			{
 				if (Abs(evt.jaxis.axisValue) >= 32767)

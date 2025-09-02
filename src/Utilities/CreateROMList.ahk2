@@ -1,9 +1,17 @@
+/*****************************************************************************
+ * @description Utility script to generate a rom list from a rom folder
+ * @file CreateROMList.ahk2
+ * @author © 2025 David G. Dahlstrom
+  ****************************************************************************/
+
+;Target:  "Arcade Time Capsule 3.6.Romlist.json"
+
 #Requires AutoHotkey v2.0
 
 #include ..\JSON.ahk
 
 sROMFolder := "D:\Stand Alone\Arcade Time Capsule\RetroVRArcade\Content\Roms"
-sDestinationFile := "E:\Development\Projects\arcadeVFE\src\Audit\romlist.json"
+sDestinationFile := "E:\Development\Projects\arcadeVFE\src\Audit\!Arcade Time Capsule 3.6.Romlist.json.json"
 a2014RomList := ["batsugun","bbakraid","blazstar","ddp2","ddpdfk","deathsml","dmnfrnt","dogyuun","espgal","espgal2","futari15","gground","ibarablk","indytemp","invaders","ket","kinst","mmpork","moomesa","mslug","mushisam","nibbler","outzone","preisle2","raiden2","roadrunn","xexexj","xmultipl"]
 
 mRoms := Map()

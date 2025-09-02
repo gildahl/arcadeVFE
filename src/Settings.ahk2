@@ -559,6 +559,7 @@ class Settings
 				;change the name and make that the new default.
 				if (FileExist(sUserFile))
 					try FileMove(sUserFile, sUserFolder "\" gcActionListNameEdit.Text ".json")
+
 				TrayMenu.SetMenuName(Settings.sActionListName, gcActionListNameEdit.Text)
 				Settings.sActionListName := gcActionListNameEdit.Text
 				global sUserFile := sUserFolder "\" Settings.sActionListName ".json"
@@ -1519,7 +1520,7 @@ class Settings
 							break
 						}	
 						
-					/* ;Omit axis handling since it will conflict with
+					/* ;Omit axis handling for now
 					case SDL_EventType.SDL_JOYAXISMOTION:
 						if (Abs(evt.jaxis.axisValue) >= 32767)
 						{  
@@ -1871,10 +1872,7 @@ class Settings
 			Loop gcListView.GetCount()
 			{
 				if (gcListView.GetText(A_Index, 1) == device && gcListView.GetText(A_Index, 2) == button)
-				{
 					gcListView.Modify(A_Index,,,,iSeq++)
-					;break
-				}
 			}
 		}
 
