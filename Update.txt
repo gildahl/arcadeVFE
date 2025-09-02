@@ -17,6 +17,7 @@ and restore when completed.
 * Added WS_EX_NOACTIVATE to GameInfo to protect from mouse clicks.
 * Remove lower case letters from "Map a keypress" list since they're redundant.
 * Copy roms function now copies chd folders as well.
+* Limit image scaling in GameInfo to improve quality
 * Tooltip help updates.
 * Added additional startup logging and auditing.
 * Documentation updates.

@@ -55,14 +55,15 @@ class Settings
 
 		guiSettings.OnEvent("Close", (*) => Settings.Settings_Close())
 
-		;********************************************************************************************************
-		;  Device options
-		;********************************************************************************************************
 		gcDevicesLabel := guiSettings.AddText("x" 30 " y" 10 " w" 250, "Device List")
 
 		gcDevices := guiSettings.AddDropDownList("x" 30 " y" 25 " w" 320 " +BackgroundWhite",)
 		gcDevices.OnEvent("Change", (*) => Settings.Devices_Change())
 		gcDevices.TT := "Select a device or method that will trigger an action."
+
+		;********************************************************************************************************
+		;  Keyboard and Controller Device options
+		;********************************************************************************************************
 		
         gcButtonOptionsGroupBox := guiSettings.AddGroupBox("x" 380 " y" 10 " w" 410 " h" 88, "Action Type")
 
@@ -88,6 +89,10 @@ class Settings
 		gcGameInfo_ComboBox.Add(["Right","Left","Home","Exit"])
 
 		gcButtonOptionsGroupBox.Visible := gcSendKey_Radio.Visible := gcCommandLine_Radio.Visible := gcSendKey_ComboBox.Visible := gcGameInfo_Radio.Visible := gcGameInfo_ComboBox.Visible := false
+
+		;********************************************************************************************************
+		;  General Device options
+		;********************************************************************************************************
 
 		gcAnnunciationLabel := guiSettings.AddText("x" 30 " y" 55 " w" 250, "Voice notification phrase (optional)")
 		gcAnnunciationEdit := guiSettings.AddEdit("x" 30 " y" 70 " w" 277 " +BackgroundWhite",)
