@@ -295,7 +295,7 @@ class Settings
 		;********************************************************************************************************
 		gcUserPreferencesGroupBox := guiSettings.AddGroupBox("x" 30 " y" 630 " w" 530 " h" 95, "User Preferences")
 
-		gcApplication_Checkbox := guiSettings.AddCheckbox("x" 45 " y" 653 " w" 220, "Operate only when the arcade is running")
+		gcApplication_Checkbox := guiSettings.AddCheckbox("x" 45 " y" 653 " w" 220, "Monitor only when the arcade is running")
 		gcApplication_Checkbox.OnEvent("Click", (*) => Settings.Application_Checkbox_Click())
 		gcApplication_Checkbox.TT := "Keep arcadeVFE dormant when the arcade emulator system`nsoftware is not running (recommended).`n`nTurning this off is primarily intended for testing."
 
@@ -324,7 +324,7 @@ class Settings
         
 		try global sRawAccelExe := IniRead(sIniFile, "General", "RawAccelExe", sRawAccelExe)
 
-		gcShowGameInfo_Checkbox := guiSettings.AddCheckbox("x" 280 " y" 653, "Use Game Info Overlay")
+		gcShowGameInfo_Checkbox := guiSettings.AddCheckbox("x" 280 " y" 653, "Use GameInfo Overlay")
 		gcShowGameInfo_Checkbox.OnEvent("Click", (*) => Settings.ShowGameInfo_Checkbox_Click())
 		try gcShowGameInfo_Checkbox.Value := IniRead(sIniFile, "General", "ShowGameInfo", 0)	
 		gcShowGameInfo_Checkbox.TT := "Show GameInfo overlay on the desktop when the arcade application`nstarts and close it when the application terminates.`n`nNote that it is is advised that you DO NOT use this feature if you`nuse mouse clicks as your fire button, since any mouse clicks are`nsuppressed to prevent mouse clicks from taking the focus. To`navoid this, use game controller button input for fire instead."

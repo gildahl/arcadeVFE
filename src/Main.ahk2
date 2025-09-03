@@ -519,7 +519,7 @@ ApplicationProcessCheck_Callback()
 	global iRawAccelPID
 
 	;Terminate this timer if bCancelPoll gets set
-	;Needed to support toggling of "Operate only when Arcade running" option
+	;Needed to support toggling of "Monitor only when Arcade running" option
 	if (bCancelPoll)
 	{
 		bCancelPoll := false
