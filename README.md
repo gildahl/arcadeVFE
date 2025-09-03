@@ -9,11 +9,11 @@ Virtual Reality arcades based on MAME (such as Arcade Time Capsule and others), 
 To this end, arcadeVFE includes these features: 
 
 * Ability to automatically execute one or more command line application calls upon the start of each game in the arcade. This can be used to call applications like Virtual Controller or other programmable game controller software to create game-specific custom configurations. This makes possible the ability to do anything from tweaking the button layout on a gamepad for a single game, combining two controllers into one, or building an advanced composite control panel that adjusts to every game in the virtual arcade, just like the sophisticated panels in conventional multicade arcade machines.
+* Rom copy feature that can greatly simplify installation of the correct roms into Arcade Time Capsule.
 * Manual execution of commands whenever a particular keyboard key or game controller button is pressed.
 * Voice notification of game control layout changes.
 * Mapping of keyboard keys to controller buttons in order to, for example, better facilitate access to the MAME tab configuration menus while in VR.
 * A detailed game information overlay that can be viewed in VR using one's favorite desktop viewport. This information comes from MAME gameinfo.dat and history.xml files, and can also include pictures of your choice--for example, flyers, pcbs, or pictures of real cab control panels (which can be very handy as a reference in the Candy Cab rooms of ATC).
-* Rom management functions such as rom file auditing and curation features.
 * A machine directory editor to more easily locate your favorite machines in the virtual arcade.
 
 Resources
@@ -41,6 +41,26 @@ When you launch the executable (`vfe.exe`) for the first time, it will create a 
 Once you apply these settings and close the dialog, you will be taken directly to the **Settings** screen where you can begin configuration. Note that in the future, whenever you start arcadeVFE, you will not see anything on the screen, but rather it will create a joystick icon in the Windows Tray indicating normal background mode is active. If you need to return to the **Settings** dialog, just right-click on this icon and choose **Settings...**. You can also click on the **Initial Setup** button in the **Settings** screen to re-invoke the **Initial Setup** dialog.
 
 Just remember to close the **Settings** screen when you use your virtual arcade since arcadeVFE pauses normal operation while the **Settings** screen is open. To fully close arcadeVFE, right-click on its icon in the Windows Tray and select **Exit**.
+
+Quick ATC Install
+=================
+Use arcadeVFE to streamline installation of the correct roms into Arcade Time Capsule, and verify them. 
+
+**Preparation:**
+1. Ensure ATC's rom folder is empty: `Arcade Time Capsule\Retro\VRArcade\Content\Roms`.
+2. Fill two source folders with _non-merged_ rom sets. One with roms for mame2010 (0.139) and one with roms for mame2014 (0.159). Don't forget to include the chd subfolders \kinst is in your 2014 roms folder and \kinst2 is in your 2010 folder.
+
+**Copy:**
+1. Run arcadeVFE and go to the **Initial Setup** dialog.
+ <img width="500" alt="Initial Setup" src="https://github.com/user-attachments/assets/61cc18f0-f2f9-4f76-890e-0013a257179e" /> 
+
+2. Ensure the **ROM folder to monitor** field contains a path to the ATC roms folder on your PC.  (_Suggestion: Consider pressing the Audit ROMs button now, while the folder is still empty, if you would like a list of all roms required by ATC and their mame versions._)
+3. Press the **Copy Roms** button.
+<img width="200" height="165" alt="Copy Roms" src="https://github.com/user-attachments/assets/f18ad5f6-8d6b-4573-8d55-2adb496d7a57" />
+
+4. Choose `2010` as the **ROM version**, and press the **Browse...** button. Browse to the folder containing your 2010 roms, select it, and accept the copy operation when prompted. 
+5. Choose `2014` as the **ROM version**, and press the **Browse...** button. Browse to the folder containing your 2014 roms, select it, and accept the copy operation when prompted.
+6. Finally, close the **Copy Roms** dialog and press the **Audit Roms** button on the **Initial Setup** dialog to confirm that your rom set is good.
 
 Log
 ===
