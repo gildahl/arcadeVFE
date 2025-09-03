@@ -58,8 +58,8 @@ Use arcadeVFE to streamline installation of the correct roms into Arcade Time Ca
 3. Press the **Copy Roms** button.
 <img width="200" height="165" alt="Copy Roms" src="https://github.com/user-attachments/assets/f18ad5f6-8d6b-4573-8d55-2adb496d7a57" />
 
-4. Choose `2010` as the **ROM version**, and press the **Browse...** button. Browse to the folder containing your 2010 roms, select it, and accept the copy operation when prompted. 
-5. Choose `2014` as the **ROM version**, and press the **Browse...** button. Browse to the folder containing your 2014 roms, select it, and accept the copy operation when prompted.
+4. Choose `2010` as the **ROM version**, and press the **Browse...** button. Browse to the folder containing your 2010 roms, select it, and perform the copy operation when prompted. 
+5. Choose `2014` as the **ROM version**, and press the **Browse...** button. Browse to the folder containing your 2014 roms, select it, and perform the copy operation when prompted.
 6. Finally, close the **Copy Roms** dialog and press the **Audit Roms** button on the **Initial Setup** dialog to confirm that your rom set is good.
 
 Log
