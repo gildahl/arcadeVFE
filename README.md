@@ -178,16 +178,16 @@ User Preferences
 ================
 These options allow the user to make adjustments to certain features.
 
-### Operate only when the arcade is running
-This is a recommended setting for most use cases (and required for the **Run RawAccel** and **Use Game Info Overlay** options). Turning this off is mainly intended for testing.
+### Monitor only when the arcade is running
+This is a recommended setting for most use cases (and required for the **Run RawAccel** and **Use GameInfo Overlay** options). Turning this off is mainly intended for testing.
 
 ### Run RawAccel
 RawAccel is a utility that can be found on GitHub at https://github.com/RawAccelOfficial/rawaccel. This software may be needed to tune some trackballs to have additional sensitivity. For example, I need it to make my Ultimarc U-Trak trackball work correctly in Arcade Time Capsule. To integrate RawAccel with arcadeVFE, simply install it to a subfolder of VFE called `..\RawAccel`.
 
-This option is only available when the **Operate only when the arcade is running** above setting is configured. When this option is turned on VFE will automatically load RawAccel when the arcade is running, and will close RawAccel when the arcade is closed. It is up to the user to configure RawAccel properly for their trackball before use. 
+This option is only available when the **Monitor only when the arcade is running** above setting is configured. When this option is turned on VFE will automatically load RawAccel when the arcade is running, and will close RawAccel when the arcade is closed. It is up to the user to configure RawAccel properly for their trackball before use. 
 
-### Use Game Info Overlay
-This feature will display a desktop overlay on the primary monitor showing detailed game information, including pictures, associated with the game currently running in the emulator. This information may be easily viewed while you are in VR by using your favorite desktop viewport (third party, or one provided with your headset). The text information comes from the `mameinfo.dat` and `history.xml` files in the `\GameInfo` folder. This display will automatically unload when the arcade is closed (which is why this feature is also only available when the **Operate only when the arcade is running** setting is configured).
+### Use GameInfo Overlay
+This feature will display a desktop overlay on the primary monitor showing detailed game information, including pictures, associated with the game currently running in the emulator. This information may be easily viewed while you are in VR by using your favorite desktop viewport (third party, or one provided with your headset). The text information comes from the `mameinfo.dat` and `history.xml` files in the `\GameInfo` folder. This display will automatically unload when the arcade is closed (which is why this feature is also only available when the **Monitor only when the arcade is running** setting is configured).
 
 To navigate through the Game Info screens, you will want to assign at least the "Right" action in the game controller button configuration (and optionally, the "Left", "Start", and "Exit" options), using the **Game Info Navigation** radio switch at the top of the screen. If you would like custom pictures to be displayed along with the text information, you may create additional folders within the `..\GameInfo\Assets` subfolder of arcadeVFE, and fill it with `*.jpg` or `*.png` files having root names that are the same as the roms you would like to associate them with. Examples are provided in the `..\GameInfo\Assets\cpanels` and `..GameInfo\Assets\flyers` folders. Feel free to add additional folders as you like.
 
