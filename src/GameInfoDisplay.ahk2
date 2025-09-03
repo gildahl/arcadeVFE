@@ -508,7 +508,7 @@ class GameInfoDisplay
 		}
 		else ;assetType not "info", so must be an image type
 		{
-			asset_full_path := A_ScriptDir "\GameInfo\Assets\" assetType "\" this._rom "." sType
+			asset_full_path := sAssetsFolder "\" assetType "\" this._rom "." sType
 
 			gGui.guiGameInfo_GameImage%assetType% := guiGameInfo.AddPicture("BackgroundTrans vGameImage%" . assetType . "%", asset_full_path)		
 			gGui.guiGameInfo_GameImage%assetType%.GetPos(&game_image_posX, &game_image_posY, &game_image_posW, &game_image_posH)

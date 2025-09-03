@@ -13,16 +13,20 @@ Note 2: If you made any changes to the Command template list, backup the
 file .\Config\templates.json prior to overwriting files, and restore when 
 completed.
 
-* Added support for ctrl, alt, shift, win key combos.
-* Game data and image updates.
-* Added game logo to GameInfo startup.
+* Improved algorithm to deal with a case where quickly moving between machines
+  with GameInfo enabled can cause loss of state.
+* Provide a method to specify image order in GameInfo.
+* Added support for ctrl, alt, shift, win keypress combos.
+* Game data updates and added a large number of images.
+* Added a game logo to GameInfo startup.
 * Send discrete up/down events when mapping buttons to keypresses.
-* Add MAME rom version to rom list.
-* Suggest restart after changing arcade running setting.
-* Added WS_EX_NOACTIVATE to GameInfo to protect from mouse clicks.
+* Add rom's MAME version above the rom list.
+* Fixed (I think) an issue that was causing a restart to be needed when
+  toggling the "Operate only when the arcade is running" setting.
+* Added WS_EX_NOACTIVATE to GameInfo to better protect from mouse clicks.
 * Removed lower case letters from "Map a keypress" since they're redundant.
-* Copy roms function now copies chd folders as well.
-* Limit image scaling in GameInfo to improve quality
+* "Copy ROMs" function now copies chd folders as well.
+* Limit image scaling for low res images in GameInfo to improve quality
 * Tooltip help updates.
 * Added additional startup logging and auditing.
 * Documentation updates.

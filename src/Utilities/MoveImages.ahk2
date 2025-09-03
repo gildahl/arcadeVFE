@@ -21,7 +21,6 @@ Loop Files sROMFolder "\*.zip"
     try FileCopy(sSourceImageFolder "\" OutNameNoExt ".*", sDestinationFolder)
 }
 
-
 ;List missing images
 try FileDelete(sDestinationFolder "\!missing.txt")
 iMissing := 0 

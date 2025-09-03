@@ -56,16 +56,19 @@ global color_edit_bg := "0x1F1F1F"
 global color_edit_text := "0xCCCCCC"
 global nScreenWidth := A_ScreenWidth * 96 // A_ScreenDPI
 global nScreenHeight := A_ScreenHeight * 96 // A_ScreenDPI
-global sMetaFolder := A_ScriptDir "\GameInfo"
-global mameinfo_file := sMetaFolder "\mameinfo.dat"
-global mamehistory_file := sMetaFolder "\history.xml"
-global sControlsIniFile := sMetaFolder "\controls.ini"
-global sGamesXMLFile := sMetaFolder "\games.xml"
-global void_file := sMetaFolder "\void.png"
+global sGameInfoFolder := A_ScriptDir "\GameInfo"
+global sAssetsFolder := sGameInfoFolder "\Assets"
+global mameinfo_file := sGameInfoFolder "\mameinfo.dat"
+global mamehistory_file := sGameInfoFolder "\history.xml"
+global sControlsIniFile := sGameInfoFolder "\controls.ini"
+global sGamesXMLFile := sGameInfoFolder "\games.xml"
+global void_file := sGameInfoFolder "\void.png"
 global sLogoFolder := A_ScriptDir "\GameInfo\Logo"
 global oMameData := MAMEData(mameinfo_file, mamehistory_file)
 global oGameInfoDisplay := GameInfoDisplay()
 global iDefaultGameInfoFontSize := 18 
+global aImageOrder := Array()     
+global sImageOrder := "cabinets,cpanel,instructions,instructions_2,flyers,flyers_back,pcb"  
 ;***********************************************************
 
 global SDL2 := SDL2DLL() ;SDL library for game device discovery and polling
@@ -265,6 +268,31 @@ DoFileAudit()
  */
 LoadInit()
 {
+    ;Initialize GameInfo image order
+	try {
+		global sImageOrder := IniRead(sIniFile, "General", "ImageOrder")
+	}
+	catch {
+		IniWrite(sImageOrder, sIniFile, "General", "ImageOrder")
+	}
+
+	;Create the fully validated aImageOrder array accounting for possible
+	;additional folders or deleted folders
+	global aImageOrder := StrSplit(sImageOrder,",", " ") 
+	aTempImageOrder := aImageOrder
+	Loop Files A_ScriptDir "\GameInfo\Assets\*.*", "D"
+	{
+		if (!IsValueInArray(aImageOrder, A_LoopFileName))
+			aTempImageOrder.Push(A_LoopFileName)
+	}
+	aImageOrder := aTempImageOrder
+	for i, sImageFolder in aImageOrder
+	{
+		if (!DirExist(A_ScriptDir "\GameInfo\Assets\" sImageFolder))
+			RemoveValueFromArray(&aTempImageOrder, sImageFolder)
+	}
+	aImageOrder := aTempImageOrder
+
 	;Initialize delay between closing an app and restarting it to 500ms
 	try {
 		global iRestartDelay := IniRead(sIniFile, "General", "RestartDelay")
@@ -369,10 +397,11 @@ StartRomWatcher()
 /**
  * Function called by the WatchFolder folder/file monitor whenever the access
  * timestamp on a file is changed.
- * @param Folder - The folder in which a change was detected
- * @param Changes - The specific changes detected, including the name of the file accessed.
+ * @param sFolder - The folder in which a change was detected
+ * @param aChanges - The specific changes detected, including the name of the file accessed.
+ * @param bIgnore - if true, update the timestamp only and don't perform the action
  */
-RomAccess_Event(Folder, Changes) 
+RomAccess_Event(sFolder, aChanges, bIgnore:=false) 
 {
     static tLastFileName := ""
 
@@ -383,7 +412,7 @@ RomAccess_Event(Folder, Changes)
 	}
 
 	;get the name of the rom file that was accessed
-	For Key, Change In Changes {
+	For Key, Change In aChanges {
 		sNewROMFile := Change.HasOwnProp("Name") ? Change.Name : ""
 	}
 
@@ -394,12 +423,17 @@ RomAccess_Event(Folder, Changes)
 		return
 	}
 
-	;Force last-access timestamp of game we're about to exit to a week ago. This is to overcome an issue in which
-	;Windows does not natively update this timestamp if it is too recent, so lets make it look old so it does.	
-	if (sCurrentROM) ;sCurrentROM is a global
+	;Force last-access timestamp of the **game we're about to exit** to a week ago. This is to overcome an issue in
+	;which Windows does not natively update this timestamp if it is too recent, so lets make it look old so it does.	
+	if (bIgnore && sFolder) ;RomAccess_Event() was called manually just to update the access timestamp
+		FileSetTime DateAdd(A_Now, -7, "days"), sFolder, "A"
+	else if (sCurrentROM) ;RomAccess_Event() was called by WatchFolder (note: sCurrentROM is a global)
 		FileSetTime DateAdd(A_Now, -7, "days"), sCurrentRom, "A"
 
 	tLastFileName := sCurrentRom
+
+	if (bIgnore)
+		return
 
 	;Return if the application is in an inactive state (such when in the Settings screen)
 	;It's important that we don't leave earlier than this point since any file activity can happen in
@@ -409,6 +443,7 @@ RomAccess_Event(Folder, Changes)
 		return
 
 	oLog.LogLine("INFO: ROM file: `"" sNewROMFile "`" was accessed.`n")
+	
 	SplitPath(sNewROMFile,,,,&OutNameNoExt) ;strip off .zip extension
 
 	mIndexer := Map()
@@ -466,11 +501,11 @@ RomAccess_Event(Folder, Changes)
 	
 	RunAction(oAction) ;execute the action
 
+	global sCurrentROM := sNewROMFile ;this *must* be above the call to ShowGameInfo()
+
 	;Show GameInfo (but only if the option is turned on and the application is running)
 	if ((gcShowGameInfo_Checkbox.Value && gcShowGameInfo_Checkbox.Enabled) && bOnlyMonitorWhenApplicationLoaded && ProcessExist(sApplicationName))
 		ShowGameInfo(OutNameNoExt)	
-
-	global sCurrentROM := sNewROMFile
 }
 
 /**
@@ -1111,22 +1146,43 @@ ShowGameInfo(sRomName)
 	oGameInfoDisplay.CreateGameInfoPage("info") ;create the GameInfo pages
 
 	;Create image pages for any images in the \GameInfo\Assets subfolders
-	Loop Files A_ScriptDir "\GameInfo\Assets\*.*", "D"
+	for i, sFolder in aImageOrder
 	{
-		if (FileExist(A_LoopFileDir "\" A_LoopFileName "\" sRomName ".png"))
+		if (FileExist(sAssetsFolder "\" sFolder "\" sRomName ".png"))
 		{
-			oGameInfoDisplay.CreateGameInfoPage(A_LoopFileName, "png")
+			oGameInfoDisplay.CreateGameInfoPage(sFolder, "png")
 			continue
 		}
 
-		if (FileExist(A_LoopFileDir "\" A_LoopFileName "\" sRomName ".jpg"))
+		if (FileExist(sAssetsFolder "\" sFolder "\" sRomName ".jpg"))
 		{
-			oGameInfoDisplay.CreateGameInfoPage(A_LoopFileName, "jpg")
+			oGameInfoDisplay.CreateGameInfoPage(sFolder, "jpg")
 			continue
 		}
 	}
 
 	oGameInfoDisplay.GoPage("start")
+
+	;If a rom access event occurrs for a new game while the GameInfo screen is still being loaded for
+	;the previous game (e.g. player started a game, but then moved quickly to another), WatchFolder will
+	;never call RomAccess_Event(), and the rom for the previous game will never have its access timestamp
+	;updated. To address this, we manually scan the zip files of all games but the new one to see if 
+	;there are any files with a new access date and call RomAccess_Event() manually, but with the Ignore
+	;flag set to true since we only want RomAccess_Event to update the timestamp and not to re-run
+	;the action (since the player is not playing this game right now).
+	Loop Files sROMMonitorFolder "\*.zip"
+	{
+		if (A_LoopFilePath != sCurrentROM) {
+			if (DateDiff(A_Now, FileGetTime(A_LoopFilePath, "A"), "Days") < 2) 
+			{
+				SplitPath(A_LoopFilePath,,,,&OutNameNoExt)
+				Changes := Array()
+				Changes.Push({Name: OutNameNoExt})
+				RomAccess_Event(A_LoopFilePath, Changes, true)
+			}
+		} 
+	}
+
 }
 
 ;Log otherwise unhandled errors (spawed by OnError)
@@ -1134,4 +1190,46 @@ LogError(e, mode)
 {
     oLog.LogLine("ERROR: Unhandled exception: " oLog.FormatErrorMessage(e) "`n")
     ExitApp
+}
+
+/**
+ * Does a particular value from an array match a string?
+ * This is an exact match test (though not case sensitive).
+ * @param aNeedles - The array of values to look for
+ * @param sHaystack - The string to look for the values in
+ * @param {String} sFoundValue - The value found (by ref)
+ * @returns {Boolean} - Bool whether value was found
+ */
+IsValueInArray(aNeedles, sHaystack, &sFoundValue:="")
+{
+	for i, j in aNeedles
+		if (sHaystack == j)
+		{
+			sFoundValue := j
+			return 1
+		}
+	return 0
+}
+
+/**
+ * Removes a value from an array and reindexes
+ * @param aArray - byRef Array to remove value from
+ * @param aValue - The value to remove
+ * @returns {Integer} - true indicates value was found and removed
+ */
+RemoveValueFromArray(&aArray, aValue)
+{
+	bFound := false
+	for i, j in aArray
+	{
+		if (j == aValue)
+		{
+			bFound := true
+			aArray.RemoveAt(i)
+			break
+		}
+	}
+	aNewArray := aArray
+
+	return bFound
 }
