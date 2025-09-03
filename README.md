@@ -42,8 +42,8 @@ Once you apply these settings and close the dialog, you will be taken directly t
 
 Just remember to close the **Settings** screen when you use your virtual arcade since arcadeVFE pauses normal operation while the **Settings** screen is open. To fully close arcadeVFE, right-click on its icon in the Windows Tray and select **Exit**.
 
-Copy ROMS into ATC
-==================
+Copy ROMS to ATC
+================
 Use arcadeVFE to streamline installation of the correct roms into Arcade Time Capsule, and verify them. 
 
 **Preparation:**
