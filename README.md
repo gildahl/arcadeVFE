@@ -47,8 +47,8 @@ Quick ATC Install
 Use arcadeVFE to streamline installation of the correct roms into Arcade Time Capsule, and verify them. 
 
 **Preparation:**
-1. Ensure ATC's rom folder is empty: `Arcade Time Capsule\Retro\VRArcade\Content\Roms`.
-2. Fill two source folders with _non-merged_ rom sets. One with roms for mame2010 (0.139) and one with roms for mame2014 (0.159). Don't forget to include the chd subfolders \kinst is in your 2014 roms folder and \kinst2 is in your 2010 folder.
+1. Ensure ATC's rom folder is empty: `\Arcade Time Capsule\Retro\VRArcade\Content\Roms`.
+2. Fill two source folders with _non-merged_ rom sets. One with roms for mame2010 (0.139) and one with roms for mame2014 (0.159). Don't forget to include the chd subfolders `\kinst` in your 2014 roms folder and `\kinst2` in your 2010 folder.
 
 **Copy:**
 1. Run arcadeVFE and go to the **Initial Setup** dialog.
@@ -66,8 +66,8 @@ Log
 ===
 See the `log.txt` file in the `\Log` subfolder if needed for troubleshooting. This log is overwritten at the start of every run. Two beeps will be sounded whenever an error is written to the file. When reporting any issues, be sure to include the most recent log with your description of the problem. You may report errors on the Discord.
 
-Configuration
-=============
+General Configuration
+=====================
 arcadeVFE offers two different modes of operation. The first is a **ROM Monitor** mode that can execute game-specific actions whenever a game using a MAME rom file is played. This mode can provide fully automated game controller configuration in MAME environments like Arcade Time Capsule. 
 
 The second mode provides the option to trigger actions manually when a game controller button or keyboard key is pressed. Both **ROM Monitor** and keyboard/button actions can be added to the action list in any combination and are simultaneously active whenever the virtual arcade is running. 
