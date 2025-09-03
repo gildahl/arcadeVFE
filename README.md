@@ -9,11 +9,11 @@ Virtual Reality arcades based on MAME (such as Arcade Time Capsule and others), 
 To this end, arcadeVFE includes these features: 
 
 * Ability to automatically execute one or more command line application calls upon the start of each game in the arcade. This can be used to call applications like Virtual Controller or other programmable game controller software to create game-specific custom configurations. This makes possible the ability to do anything from tweaking the button layout on a gamepad for a single game, combining two controllers into one, or building an advanced composite control panel that adjusts to every game in the virtual arcade, just like the sophisticated panels in conventional multicade arcade machines.
+* Rom copy feature that can simplify installation of the correct roms into Arcade Time Capsule.
 * Manual execution of commands whenever a particular keyboard key or game controller button is pressed.
 * Voice notification of game control layout changes.
-* Mapping of keyboard keys to controller buttons in order to, for example, better facilitate access to the MAME tab configuration menus while in VR.
+* Mapping of controller buttons to keyboard keys in order to, for example, better facilitate access to the MAME tab configuration menus while in VR.
 * A detailed game information overlay that can be viewed in VR using one's favorite desktop viewport. This information comes from MAME gameinfo.dat and history.xml files, and can also include pictures of your choice--for example, flyers, pcbs, or pictures of real cab control panels (which can be very handy as a reference in the Candy Cab rooms of ATC).
-* Rom management functions such as rom file auditing and curation features.
 * A machine directory editor to more easily locate your favorite machines in the virtual arcade.
 
 Resources
@@ -42,12 +42,32 @@ Once you apply these settings and close the dialog, you will be taken directly t
 
 Just remember to close the **Settings** screen when you use your virtual arcade since arcadeVFE pauses normal operation while the **Settings** screen is open. To fully close arcadeVFE, right-click on its icon in the Windows Tray and select **Exit**.
 
+Quick ATC ROM Copy
+==================
+Use arcadeVFE to streamline installation of the correct roms into Arcade Time Capsule, and verify them. 
+
+**Preparation:**
+1. Ensure ATC's rom folder is empty: `\Arcade Time Capsule\Retro\VRArcade\Content\Roms`.
+2. Fill two source folders with _non-merged_ rom sets. One with roms for mame2010 (0.139) and one with roms for mame2014 (0.159). Don't forget to include the chd subfolders `\kinst` in your 2014 roms folder and `\kinst2` in your 2010 folder.
+
+**Copy the ROMS:**
+1. Run arcadeVFE and go to the **Initial Setup** dialog.
+ <img width="500" alt="Initial Setup" src="https://github.com/user-attachments/assets/61cc18f0-f2f9-4f76-890e-0013a257179e" /> 
+
+2. Ensure the **ROM folder to monitor** field contains a path to the (empty) ATC roms folder on your PC.  (_Suggestion: If you press the Audit ROMs button now, while the folder is still empty, you can get a list of all roms required by ATC and their mame versions._)
+3. Press the **Copy Roms** button.
+<img width="200" height="165" alt="Copy Roms" src="https://github.com/user-attachments/assets/f18ad5f6-8d6b-4573-8d55-2adb496d7a57" />
+
+4. Choose `2010` as the **ROM version**, and press the **Browse...** button. Browse to the folder containing your 2010 roms, select it, and perform the copy operation when prompted. 
+5. Choose `2014` as the **ROM version**, and press the **Browse...** button. Browse to the folder containing your 2014 roms, select it, and perform the copy operation when prompted.
+6. Finally, close the **Copy Roms** dialog and press the **Audit Roms** button on the **Initial Setup** dialog to confirm that your rom set is good.
+
 Log
 ===
 See the `log.txt` file in the `\Log` subfolder if needed for troubleshooting. This log is overwritten at the start of every run. Two beeps will be sounded whenever an error is written to the file. When reporting any issues, be sure to include the most recent log with your description of the problem. You may report errors on the Discord.
 
-Configuration
-=============
+General Configuration
+=====================
 arcadeVFE offers two different modes of operation. The first is a **ROM Monitor** mode that can execute game-specific actions whenever a game using a MAME rom file is played. This mode can provide fully automated game controller configuration in MAME environments like Arcade Time Capsule. 
 
 The second mode provides the option to trigger actions manually when a game controller button or keyboard key is pressed. Both **ROM Monitor** and keyboard/button actions can be added to the action list in any combination and are simultaneously active whenever the virtual arcade is running. 
@@ -171,7 +191,7 @@ This feature will display a desktop overlay on the primary monitor showing detai
 
 To navigate through the Game Info screens, you will want to assign at least the "Right" action in the game controller button configuration (and optionally, the "Left", "Start", and "Exit" options), using the **Game Info Navigation** radio switch at the top of the screen. If you would like custom pictures to be displayed along with the text information, you may create additional folders within the `..\GameInfo\Assets` subfolder of arcadeVFE, and fill it with `*.jpg` or `*.png` files having root names that are the same as the roms you would like to associate them with. Examples are provided in the `..\GameInfo\Assets\cpanels` and `..GameInfo\Assets\flyers` folders. Feel free to add additional folders as you like.
 
-**Note**: Be aware that the Game Info overlay feature is NOT compatible with spinner and trackball games **IF** you use mouse clicks for game input (such as for your fire button). To address this, either turn off this feature or use a game controller button for your fire button instead. See the [Issues and Limitations](#Issues-and-Limitations) section at the bottom of this document for more information about this potential issue.
+_**Note**: Be aware that the Game Info overlay feature is NOT compatible with spinner and trackball games **IF** you use mouse clicks for game input (such as for your fire button). To address this, either turn off this feature or use a game controller button for your fire button instead. See the [Issues and Limitations](#Issues-and-Limitations) section at the bottom of this document for more information about this potential issue._
 
 ### Always voice notify
 If you have configured voice notification phrases for your actions, then this switch can control when these are heard. This checkbox has three states. When checked (the default), the voice will be heard every time a game referenced in the action table is run. When unchecked, voice notification is effectively turned off. Finally, if the checkbox is configured with the minus sign (-), then voice notification will only occur if an action was actually executed (see the **Note 2** in the [ROM Monitor](#ROM-Monitor) section above).
@@ -191,7 +211,7 @@ Because this software is not code-integrated with the host emulator, but relies 
 
 1. arcadeVFE can only tell when a new game is loaded, but not when it is exited. Therefore, it can only surmise that you have exited a game when it detects that you have started a new and different game. Consequently, if you exit a game and re-enter the SAME game, arcadeVFE will not know that you did this. This should not affect gameplay at all since whatever state was loaded when you originally started the game will still be in effect. However, arcadeVFE will not be able to provide feedback (such as a beep or voice notification) when restarting the game. Only upon starting a new game.
 
-2. Trackball and spinner games rely on the arcade software having the focus. The **GameInfo** window that arcadeVFE overlays over the virtual arcade desktop display is therefore specifically designed to not take the focus. However, any mouse clicks made by the user that occur while the game information is displayed (whether or not you are actually viewing it), can cause the overlay to steal the focus. This means that game input will be lost if you use mouse buttons as your fire button in trackball and spinner games, since it will cause focus to be taken away from the emulator. The solution to this is to either keep the **GameInfo** feature turned off, or ensure that you are using a (non-mouse) game controller button as your fire button, in which case, everything should work as intended. Note that non-trackball and spinner games should be generally immune from this issue unless you happen to click your mouse while playing or click on your desktop window with your motion controller.   
+2. The **GameInfo** window that arcadeVFE overlays over the virtual arcade desktop display is specifically designed to not take the focus. However, as an overlay it still hase the effect of preventing mouse clicks from passing through to the application (whether or not you are actually viewing it). The consequence is that if you use the mouse button as a fire button in some games, it will not work while using the **GameInfo** feature. The solution to this is to either keep the **GameInfo** feature turned off, or ensure that you are using a (non-mouse) game controller button as your fire button, in which case, everything should work as intended. Note that non-trackball and spinner games should be generally immune from this issue.   
 
 3. arcadeVFE pauses operation while its Settings screen is displayed. Therefore, if you open your arcade software while the Setting screen is open, arcadeVFE will not function. If this happens, simply close both your arcade software and arcadeVFE completely, then restart them.
 
