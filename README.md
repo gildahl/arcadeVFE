@@ -4,7 +4,7 @@ By David Dahlstrom
 
 Summary
 =======
-Virtual Reality arcades based on MAME (such as **Arcade Time Capsule** and others), do not need conventional front-ends since players walk the floor of the virtual arcade, choosing games just as in real life. So there's no need for game selection menus, pictures and videos of gameplay, or background ambiance sounds since that's already right in front of the player. However, there are still a few important game controller, rom management, and information features common in front-ends that could still be of benefit to VR arcade players--if they could be made to work. This is the gap that **arcadeVFE** seeks to fill.
+Virtual Reality arcades based on **MAME** (such as **Arcade Time Capsule** and others), do not need conventional front-ends since players walk the floor of the virtual arcade, choosing games just as in real life. So there's no need for game selection menus, pictures and videos of gameplay, or background ambiance sounds since that's already right in front of the player. However, there are still a few important game controller, rom management, and information features common in front-ends that could still be of benefit to VR arcade players--if they could be made to work. This is the gap that **arcadeVFE** seeks to fill.
 
 To this end, **arcadeVFE** includes these features: 
 
@@ -12,8 +12,8 @@ To this end, **arcadeVFE** includes these features:
 * Rom copy feature that can simplify installation of the correct roms into **Arcade Time Capsule**.
 * Manual execution of commands whenever a particular keyboard key or game controller button is pressed.
 * Voice notification of game control layout changes.
-* Mapping of controller buttons to keyboard keys in order to, for example, better facilitate access to the MAME tab configuration menus while in VR.
-* A detailed game information overlay that can be viewed in VR using one's favorite desktop viewport. This information comes from MAME `gameinfo.dat` and `history.xml` files, and can also include pictures of your choice--for example, flyers, pcbs, or pictures of real cab control panels (which can be very handy as a reference in the Candy Cab rooms of ATC).
+* Mapping of controller buttons to keyboard keys in order to, for example, better facilitate access to the **MAME** tab configuration menus while in VR.
+* A detailed game information overlay that can be viewed in VR using one's favorite desktop viewport. This information comes from **MAME** `gameinfo.dat` and `history.xml` files, and can also include pictures of your choice--for example, flyers, pcbs, or pictures of real cab control panels (which can be very handy as a reference in the Candy Cab rooms of ATC).
 * A machine directory editor to more easily locate your favorite machines in the virtual arcade.
 
 Resources
@@ -26,10 +26,10 @@ Tested Software
 ===============
 **arcadeVFE** has been tested successfully with the following software, and is likely able to work with many others:
 
-* [Arcade Time Capsule](https://x.com/ArcadeHalf?ref_src=twsrc%5Egoogle%7Ctwcamp%5Eserp%7Ctwgr%5Eauthor) - fantastic MAME-based VR arcade and main tested target of arcadeVFE
+* [Arcade Time Capsule](https://x.com/ArcadeHalf?ref_src=twsrc%5Egoogle%7Ctwcamp%5Eserp%7Ctwgr%5Eauthor) - fantastic **MAME**-based VR arcade and main tested target of arcadeVFE
 * [Virtual Controller](https://sourceforge.net/projects/vjoy-controller/) - software to create virtual XInput controllers
-* [Ultimarc UltraMap](https://www.ultimarc.com/arcade-controls/joysticks/ultrastik-360-oval-top-clone/) - software to modify behavior of Ultimarc's UltraStik 360 joysticks
-* [Ultimarc JoyTray](https://www.ultimarc.com/arcade-controls/joysticks/servostik/) - software to control ServoStik sticks, including U360 with ServoStik upgrade
+* [Ultimarc UltraMap](https://www.ultimarc.com/arcade-controls/joysticks/ultrastik-360-oval-top-clone/) - software to modify behavior of **Ultimarc's UltraStik 360** joysticks
+* [Ultimarc JoyTray](https://www.ultimarc.com/arcade-controls/joysticks/servostik/) - software to control ServoStik sticks, including U360 with **ServoStik** upgrade
 * [RawAccel](https://github.com/RawAccelOfficial/rawaccel) - software to adjust sensitivity of mouse/trackball controllers
 
 Installation
@@ -68,7 +68,7 @@ See the `log.txt` file in the `\Log` subfolder if needed for troubleshooting. Th
 
 General Configuration
 =====================
-**arcadeVFE** offers two different modes of operation. The first is a **ROM Monitor** mode that can execute game-specific actions whenever a game using a MAME rom file is played. This mode can provide fully automated game controller configuration in MAME environments like **Arcade Time Capsule**. 
+**arcadeVFE** offers two different modes of operation. The first is a **ROM Monitor** mode that can execute game-specific actions whenever a game using a **MAME** rom file is played. This mode can provide fully automated game controller configuration in **MAME** environments like **Arcade Time Capsule**. 
 
 The second mode provides the option to trigger actions manually when a game controller button or keyboard key is pressed. Both **ROM Monitor** and keyboard/button actions can be added to the action list in any combination and are simultaneously active whenever the virtual arcade is running. 
 
