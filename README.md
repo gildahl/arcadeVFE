@@ -36,13 +36,13 @@ Installation
 ============
 After downloading the distribution zip file, you must first right click on it, choose Properties, check the **Unblock** checkbox at the bottom, then click **Apply**. After doing this, extract all files and folders from the zip into an empty folder on your PC that has read/write access.
 
-When you launch the executable (`vfe.exe`) for the first time, it will create a few new subfolders and some additional files. It will also display a small **Initial Setup** dialog in which you will choose your virtual arcade, the virtual arcade's executable, and the virtual arcade's rom folder. Once you've set the rom folder, you can also do a quick audit of the roms by pressing the **Audit ROMs...** button.  
+When you launch the executable (`vfe.exe`) for the first time, it will create a few new subfolders and some additional files. It will also display a small **Initial Setup** dialog in which you will choose your virtual arcade, the virtual arcade's executable, and the virtual arcade's rom folder. Once you've set the rom folder, you can also do a quick audit of the roms by pressing the **Audit ROMs...** button. If you haven't yet installed ROMs to ATC, see the next section, [Copy ROMs to ATC](Copy ROMs to ATC) for a streamlined method of doing this.
 
 Once you apply these settings and close the dialog, you will be taken directly to the **Settings** screen where you can begin configuration. Note that in the future, whenever you start arcadeVFE, you will not see anything on the screen, but rather it will create a joystick icon in the Windows Tray indicating normal background mode is active. If you need to return to the **Settings** dialog, just right-click on this icon and choose **Settings...**. You can also click on the **Initial Setup** button in the **Settings** screen to re-invoke the **Initial Setup** dialog.
 
 Just remember to close the **Settings** screen when you use your virtual arcade since arcadeVFE pauses normal operation while the **Settings** screen is open. To fully close arcadeVFE, right-click on its icon in the Windows Tray and select **Exit**.
 
-Copy ROMS to ATC
+Copy ROMs to ATC
 ================
 Use arcadeVFE to quickly install the correct roms into Arcade Time Capsule, and verify them. 
 
