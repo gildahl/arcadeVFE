@@ -44,7 +44,7 @@ Just remember to close the **Settings** screen when you use your virtual arcade 
 
 Copy ROMS to ATC
 ================
-Use arcadeVFE to streamline installation of the correct roms into Arcade Time Capsule, and verify them. 
+Use arcadeVFE to quickly install the correct roms into Arcade Time Capsule, and verify them. 
 
 **Preparation:**
 1. Ensure ATC's rom folder is empty: `\Arcade Time Capsule\Retro\VRArcade\Content\Roms`.
