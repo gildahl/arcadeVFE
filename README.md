@@ -1,4 +1,4 @@
-just# arcadeVFE 1.1
+# arcadeVFE 1.1
 ### The Arcade Virtual Front End
 By David Dahlstrom
 
