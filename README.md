@@ -215,9 +215,9 @@ Known Bugs
 
 * **ROM Copy** does not currently copy the `\chd` folders 
 
-* Toggling the **Operate only when the arcade is running** option requires a restart before the new behavior will take effect.
+* Toggling the **Operate only when the arcade is running** option may require a restart before the new behavior will take effect.
 
-* Keyboard mapping does not currently accommodate combining a key with Ctrl, alt, etc.
+* Keyboard mapping does not currently accommodate combining a key with Ctrl, Alt, etc.
 
 Issues and Limitations
 ======================
