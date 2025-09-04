@@ -211,7 +211,7 @@ Known Bugs
 
 * If you start with `Other` selected as the arcade type, the software may crash when selecting a rom.
 
-* If you use **GameInfo** and move to a new machine in the arcade too quickly (usually between 2 to 10 seconds), VFE may lose state and not operate with these machines any more until a restart.
+* If you use **GameInfo** and move to a new machine in the arcade too quickly (usually between 2 to 10 seconds), VFE may lose state and not operate with these machines anymore until a restart.
 
 * **Copy ROMs** does not currently copy the `\chd` folders 
 
