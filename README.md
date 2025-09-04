@@ -74,7 +74,7 @@ The second mode provides the option to trigger actions manually when a game cont
 
 ROM Monitor:
 ------------
-To setup a new rom to be monitored, choose `ROM Monitor` from the **Device List** list in the Settings screen. Next, choose a rom from the **Choose ROM** list and then use the **Profile** and **Command** fields to configure the specific commands that should execute when that game is loaded. Finally, press the **Assign ROM** button to add your defined command(s) to the **Action List**. 
+To setup a new rom to be monitored, choose `ROM Monitor` from the **Device List** list in the **Settings** screen. Next, choose a rom from the **Choose ROM** list and then use the **Profile** and **Command** fields to configure the specific commands that should execute when that game is loaded. Finally, press the **Assign ROM** button to add your defined command(s) to the **Action List**. 
 
 **Note 1**: If you choose one of the `[Group...]` options in the **Choose ROM** list, you can conveniently assign an action set to a whole group of similarly controlled games. If any of the games in that group need an alternate configuration on an exception basis, simply create another action for that specific rom, which will override the group setting. There is also a `[Default]` action which can be configured for cases where there is neither a rom-specific action nor group action to otherwise handle it.  The following are some examples of Groups.
 
