@@ -52,6 +52,9 @@ class TrayMenu
 	{
 		global bCancelPoll := true
 
+		if (WinExist("arcadeVFE " CodeVersion " - Settings"))
+			return
+
 		Settings.RefreshList()
 
 		oLog.LogLine("INFO: Showing Settings dialog.`n")
@@ -63,6 +66,9 @@ class TrayMenu
 	 */
 	static About(*)
 	{
+		if (WinExist("About arcadeVFE"))
+			return
+
 		sAboutTitle := "About arcadeVFE"
 
 		mAbout := Map()
