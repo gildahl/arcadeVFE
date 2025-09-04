@@ -4,16 +4,16 @@ By David Dahlstrom
 
 Summary
 =======
-Virtual Reality arcades based on MAME (such as Arcade Time Capsule and others), do not need conventional front-ends since players walk the floor of the virtual arcade, choosing games just as in real life. So there's no need for game selection menus, pictures and videos of gameplay, or background ambiance sounds since that's already right in front of the player. However, there are still a few important game controller, rom management, and information features common in front-ends that could still be of benefit to VR arcade players--if they could be made to work without direct front end selection. This is the gap that arcadeVFE seeks to fill.
+Virtual Reality arcades based on **MAME** (such as **Arcade Time Capsule** and others), do not need conventional front-ends since players walk the floor of the virtual arcade, choosing games just as in real life. So there's no need for game selection menus, pictures and videos of gameplay, or background ambiance sounds since that's already right in front of the player. However, there are still a few important game controller, rom management, and information features common in front-ends that could still be of benefit to VR arcade players--if they could be made to work. This is the gap that **arcadeVFE** seeks to fill.
 
-To this end, arcadeVFE includes these features: 
+To this end, **arcadeVFE** includes these features: 
 
-* Ability to automatically execute one or more command line application calls upon the start of each game in the arcade. This can be used to call applications like Virtual Controller or other programmable game controller software to create game-specific custom configurations. This makes possible the ability to do anything from tweaking the button layout on a gamepad for a single game, combining two controllers into one, or building an advanced composite control panel that adjusts to every game in the virtual arcade, just like the sophisticated panels in conventional multicade arcade machines.
-* Rom copy feature that can simplify installation of the correct roms into Arcade Time Capsule.
+* Ability to automatically execute one or more command line application calls upon the start of each game in the arcade. This can be used to call applications like **Virtual Controller** or other programmable game controller software to create game-specific custom configurations. This makes possible the ability to do anything from tweaking the button layout on a gamepad or fightstick for a single game, combining two controllers into one, or building an advanced composite control panel that adjusts to every game in the virtual arcade, just like the sophisticated panels in conventional multicade arcade machines.
+* Rom copy feature that can simplify installation of the correct roms into **Arcade Time Capsule**.
 * Manual execution of commands whenever a particular keyboard key or game controller button is pressed.
 * Voice notification of game control layout changes.
-* Mapping of controller buttons to keyboard keys in order to, for example, better facilitate access to the MAME tab configuration menus while in VR.
-* A detailed game information overlay that can be viewed in VR using one's favorite desktop viewport. This information comes from MAME gameinfo.dat and history.xml files, and can also include pictures of your choice--for example, flyers, pcbs, or pictures of real cab control panels (which can be very handy as a reference in the Candy Cab rooms of ATC).
+* Mapping of controller buttons to keyboard keys in order to, for example, better facilitate access to the **MAME** tab configuration menus while in VR.
+* A detailed game information overlay that can be viewed in VR using one's favorite desktop viewport. This information comes from **MAME** `gameinfo.dat` and `history.xml` files, and can also include pictures of your choice--for example, flyers, pcbs, or pictures of real cab control panels (which can be very handy as a reference in the Candy Cab rooms of ATC).
 * A machine directory editor to more easily locate your favorite machines in the virtual arcade.
 
 Resources
@@ -24,27 +24,27 @@ Resources
 
 Tested Software
 ===============
-arcadeVFE has been tested successfully with the following software, and is likely able to work with many others:
+**arcadeVFE** has been tested successfully with the following software, and is likely able to work with many others:
 
-* [Arcade Time Capsule](https://x.com/ArcadeHalf?ref_src=twsrc%5Egoogle%7Ctwcamp%5Eserp%7Ctwgr%5Eauthor) - fantastic MAME-based VR arcade and main tested target of arcadeVFE
+* [Arcade Time Capsule](https://x.com/ArcadeHalf?ref_src=twsrc%5Egoogle%7Ctwcamp%5Eserp%7Ctwgr%5Eauthor) - fantastic **MAME**-based VR arcade and main tested target of **arcadeVFE**
 * [Virtual Controller](https://sourceforge.net/projects/vjoy-controller/) - software to create virtual XInput controllers
-* [Ultimarc UltraMap](https://www.ultimarc.com/arcade-controls/joysticks/ultrastik-360-oval-top-clone/) - software to modify behavior of Ultimarc's UltraStik 360 joysticks
-* [Ultimarc JoyTray](https://www.ultimarc.com/arcade-controls/joysticks/servostik/) - software to control ServoStik sticks, including U360 with ServoStik upgrade
+* [Ultimarc UltraMap](https://www.ultimarc.com/arcade-controls/joysticks/ultrastik-360-oval-top-clone/) - software to modify behavior of **Ultimarc's UltraStik 360** joysticks
+* [Ultimarc JoyTray](https://www.ultimarc.com/arcade-controls/joysticks/servostik/) - software to control ServoStik sticks, including U360 with **ServoStik** upgrade
 * [RawAccel](https://github.com/RawAccelOfficial/rawaccel) - software to adjust sensitivity of mouse/trackball controllers
 
 Installation
 ============
 After downloading the distribution zip file, you must first right click on it, choose Properties, check the **Unblock** checkbox at the bottom, then click **Apply**. After doing this, extract all files and folders from the zip into an empty folder on your PC that has read/write access.
 
-When you launch the executable (`vfe.exe`) for the first time, it will create a few new subfolders and some additional files. It will also display a small **Initial Setup** dialog in which you will choose your virtual arcade, the virtual arcade's executable, and the virtual arcade's rom folder. Once you've set the rom folder, you can also do a quick audit of the roms by pressing the **Audit ROMs...** button.  
+When you launch the executable (`vfe.exe`) for the first time, it will create a few new subfolders and some additional files. It will also display a small **Initial Setup** dialog in which you will choose your virtual arcade, the virtual arcade's executable, and the virtual arcade's rom folder. Once you've set the rom folder, you can also do a quick audit of the roms by pressing the **Audit ROMs...** button. If you use **Arcade Time Capsule** and haven't yet installed its ROMs, see the next section, [Copy ROMs to ATC](#Copy-ROMs-to-ATC) for a streamlined method of doing this.
 
-Once you apply these settings and close the dialog, you will be taken directly to the **Settings** screen where you can begin configuration. Note that in the future, whenever you start arcadeVFE, you will not see anything on the screen, but rather it will create a joystick icon in the Windows Tray indicating normal background mode is active. If you need to return to the **Settings** dialog, just right-click on this icon and choose **Settings...**. You can also click on the **Initial Setup** button in the **Settings** screen to re-invoke the **Initial Setup** dialog.
+Once you apply these settings and close the dialog, you will be taken directly to the **Settings** screen where you can begin configuration. Note that in the future, whenever you start **arcadeVFE**, you will not see anything on the screen, but rather it will create a joystick icon in the Windows Tray indicating normal background mode is active. If you need to return to the **Settings** dialog, just right-click on this icon and choose **Settings...**. You can also click on the **Initial Setup** button in the **Settings** screen to re-invoke the **Initial Setup** dialog.
 
-Just remember to close the **Settings** screen when you use your virtual arcade since arcadeVFE pauses normal operation while the **Settings** screen is open. To fully close arcadeVFE, right-click on its icon in the Windows Tray and select **Exit**.
+Just remember to close the **Settings** screen when you use your virtual arcade since **arcadeVFE** pauses normal operation while the **Settings** screen is open. To fully close **arcadeVFE**, right-click on its icon in the Windows Tray and select **Exit**.
 
-Quick ATC ROM Copy
-==================
-Use arcadeVFE to streamline installation of the correct roms into Arcade Time Capsule, and verify them. 
+Copy ROMs to ATC
+================
+Use **arcadeVFE** to quickly install the correct roms into Arcade Time Capsule, and verify them. 
 
 **Preparation:**
 1. Ensure ATC's rom folder is empty: `\Arcade Time Capsule\Retro\VRArcade\Content\Roms`.
@@ -68,7 +68,7 @@ See the `log.txt` file in the `\Log` subfolder if needed for troubleshooting. Th
 
 General Configuration
 =====================
-arcadeVFE offers two different modes of operation. The first is a **ROM Monitor** mode that can execute game-specific actions whenever a game using a MAME rom file is played. This mode can provide fully automated game controller configuration in MAME environments like Arcade Time Capsule. 
+**arcadeVFE** offers two different modes of operation. The first is a **ROM Monitor** mode that can execute game-specific actions whenever a game using a **MAME** rom file is played. This mode can provide fully automated game controller configuration in **MAME** environments like **Arcade Time Capsule**. 
 
 The second mode provides the option to trigger actions manually when a game controller button or keyboard key is pressed. Both **ROM Monitor** and keyboard/button actions can be added to the action list in any combination and are simultaneously active whenever the virtual arcade is running. 
 
@@ -82,7 +82,7 @@ To setup a new rom to be monitored, choose `ROM Monitor` from the **Device List*
 - `[Group, 8-way]` : assigns the defined action to any game whose native controller is an 8-way joystick.
 - `[Group, rotary]`: assigns the defined action to any game whose native controller is a rotary joystick.
 
-**Note 2**: Be aware that arcadeVFE is "smart" enough to not execute the same action twice in a row. For example, if you switch between two games that use the same commands (such as two 4-way joystick games that use the same profiles), or exit a game and then restart the same one, profile loading will be suppressed since that configuration should still be in effect.
+**Note 2**: Be aware that **arcadeVFE** is "smart" enough to not execute the same action twice in a row. For example, if you switch between two games that use the same commands (such as two 4-way joystick games that use the same profiles), or exit a game and then restart the same one, profile loading will be suppressed since that configuration should still be in effect.
 
 Buttons and Key Presses:
 ------------------------
@@ -94,7 +94,7 @@ To setup a manual action that will run upon a particular button or key press, Ch
 
 Voice Notification 
 ==================
-If you would like arcadeVFE to verbally announce an action when it is executed, you may add a phrase to the optional **Voice notification phrase** field. This is highly recommended as it both provides active feedback that the software is working, and can provide the player with reminders about the control configuration for that game. You can test the phrase to see what it will sound like by pressing the **Voice Test** button. These phrases can provide reminders about how a game is configured. Some example might be:
+If you would like **arcadeVFE** to verbally announce an action when it is executed, you may add a phrase to the optional **Voice notification phrase** field. This is highly recommended as it both provides active feedback that the software is working, and can provide the player with reminders about the control configuration for that game. You can test the phrase to see what it will sound like by pressing the **Voice Test** button. These phrases can provide reminders about how a game is configured. Some example might be:
 
 * "Use left 8 way rotary joystick"
 * "Use right 4 way joystick"
@@ -102,7 +102,7 @@ If you would like arcadeVFE to verbally announce an action when it is executed, 
 
 How to Configure Command-Line Actions
 =====================================
-"Profiles", as defined in this document, are files containing specific game controller configurations created by game controller configuration software. Examples of such files might be `U360.vcd` for Virtual Controller, or `4-way.ugc` for UltraMap. To make command creation easier, you may specify the file name of a profile separately in the **Profile** field, and then choose a command template in the **Command** field, into which the profile will be inserted when the **Assign** button is pressed. This template will typically contain one of the following field tags:
+"Profiles", as defined in this document, are files containing specific game controller configurations created by game controller configuration software. Examples of such files might be `U360.vcd` for **Virtual Controller**, or `4-way.ugc` for **UltraMap**. To make command creation easier, you may specify the file name of a profile separately in the **Profile** field, and then choose a command template in the **Command** field, into which the profile will be inserted when the **Assign** button is pressed. This template will typically contain one of the following field tags:
 
 - `[profile_name]`        - will be replaced by the filename or contents of **Profile** field
 - `[profile_full_name]`   - will be replaced by the full path/file or contents of **Profile** field
@@ -111,13 +111,13 @@ For example, if the profile is `C:\Ultrastik\Profiles\qbert.ugc` and the command
 
 Additional Notes:
 -----------------
-* To test a command line while still in the Settings screen, press the **Test** button next to the Command field. Hovering over the **Test** button with the **Show Tooltips** option turned on, will show the actual command line that will be executed.
+* To test a command line while still in the **Settings** screen, press the **Test** button next to the Command field. Hovering over the **Test** button with the **Show Tooltips** option turned on, will show the actual command line that will be executed.
 
 * If your profile filename needs quotes around it, then simply add quotes around the field tag in the template, such as `"[profile_name]"` or `"[profile_full_name]"`.
  
 * If you wish to trigger two or up to three commands in a single action, click on the checkbox next to **Profile 2** and/or **Profile 3** and you can configure a second and/or third command line using a completely different profile and command line template.
 
-* If you want to add a new template to VFE that will persist across sessions, you can edit any of the built-in ones and then use the **Add** button. You may also delete any template you no longer want to see in the list.  Note that whenever you do this, all three **Command** lists will be synchronized to contain the same list of templates.
+* If you want to add a new template to **arcadeVFE** that will persist across sessions, you can edit any of the built-in ones and then use the **Add** button. You may also delete any template you no longer want to see in the list.  Note that whenever you do this, all three **Command** lists will be synchronized to contain the same list of templates.
 
 * As an FYI, these templates are saved in a file called `templates.json` in the root VFE folder. You may delete this file to restore the original defaults.
 
@@ -125,9 +125,9 @@ Additional Notes:
 
 Understanding the Action List Table
 ===================================
-Each time you use the **Assign** button to create a new action, that action will be added to the **Action List** table. If you get a warning saying "Duplicate", arcadeVFE will highlight the duplicate action in the list at which point you may delete it and try again or keep it.
+Each time you use the **Assign** button to create a new action, that action will be added to the **Action List** table. If you get a warning saying "Duplicate", **arcadeVFE** will highlight the duplicate action in the list at which point you may delete it and try again or keep it.
 
-When you complete the table, press the **Save list** button to save it.  It will be saved in the `\User` folder as a `*.json` file having the name specified in the **Activity list name** field above the table. By default this name is "Arcade Controller" (saved as `Arcade Controller.json`). If you switch between multiple controllers for use with your emulator, you could save different action lists under different names. These can then be loaded in the future by creating a shortcut that provides the name as a command line parameter when launching VFE.  For example,
+When you complete the table, press the **Save list** button to save it.  It will be saved in the `\User` folder as a `*.json` file having the name specified in the **Activity list name** field above the table. By default this name is `Arcade Controller` (saved as `Arcade Controller.json`). If you switch between multiple controllers for use with your emulator, you could save different action lists under different names. These can then be loaded in the future by creating a shortcut that provides the name as a command line parameter when launching VFE.  For example,
 
 * `>vfe.exe "Arcade Controller"` or
 * `>vfe.exe "Gamepad"`
@@ -145,7 +145,7 @@ The device or method that was chosen to trigger the action.
 ### Sequence
 For `Keyboard` and game controller actions, it is possible to assign multiple actions to the same key or button. The effect of this is that when you press that key or button the first time, the action with a sequence number of 1 will be triggered. When you press that same key or button a second time, the action with a sequence number of 2 will be triggered, and so forth (with each action being verbally announced if you provided notification phrases with each). This provides a means to manually switch between multiple profiles using a single key or button. 
 
-Sequence numbers are assigned to each action automatically when you add the action. To change the auto-assigned sequence of an action, just use the **Move Up** and **Move Down** buttons and you will see the sequence number for that action adjust according to its position in the list. Note that for `ROM Monitor` actions, the sequence number will always be 1 (since these are fully automated actions that have no need for sequencing).
+**Sequence numbers** are assigned to each action automatically when you add the action. To change the auto-assigned sequence of an action, just use the **Move Up** and **Move Down** buttons and you will see the sequence number for that action adjust according to its position in the list. Note that for `ROM Monitor` actions, the sequence number will always be 1 (since these are fully automated actions that have no need for sequencing).
 
 ### Voice Phrase
 This is the voice notification phrase you assigned to the action.
@@ -178,20 +178,20 @@ User Preferences
 ================
 These options allow the user to make adjustments to certain features.
 
-### Operate only when the arcade is running
-This is a recommended setting for most use cases (and required for the **Run RawAccel** and **Use Game Info Overlay** options). Turning this off is mainly intended for testing.
+### Monitor only when the arcade is running
+This is a recommended setting for most use cases (and required for the **Run RawAccel** and **Use GameInfo Overlay** options). Turning this off is mainly intended for testing.
 
 ### Run RawAccel
-RawAccel is a utility that can be found on GitHub at https://github.com/RawAccelOfficial/rawaccel. This software may be needed to tune some trackballs to have additional sensitivity. For example, I need it to make my Ultimarc U-Trak trackball work correctly in Arcade Time Capsule. To integrate RawAccel with arcadeVFE, simply install it to a subfolder of VFE called `..\RawAccel`.
+RawAccel is a utility that can be found on GitHub at `https://github.com/RawAccelOfficial/rawaccel`. This software may be needed to tune some trackballs to have additional sensitivity. For example, I need it to make my **Ultimarc U-Trak** trackball work correctly in Arcade Time Capsule. To integrate RawAccel with **arcadeVFE**, simply install it to a subfolder of VFE called `..\RawAccel`.
 
-This option is only available when the **Operate only when the arcade is running** above setting is configured. When this option is turned on VFE will automatically load RawAccel when the arcade is running, and will close RawAccel when the arcade is closed. It is up to the user to configure RawAccel properly for their trackball before use. 
+This option is only available when the **Monitor only when the arcade is running** above setting is configured. When this option is turned on VFE will automatically load RawAccel when the arcade is running, and will close RawAccel when the arcade is closed. It is up to the user to configure RawAccel properly for their trackball before use. 
 
-### Use Game Info Overlay
-This feature will display a desktop overlay on the primary monitor showing detailed game information, including pictures, associated with the game currently running in the emulator. This information may be easily viewed while you are in VR by using your favorite desktop viewport (third party, or one provided with your headset). The text information comes from the `mameinfo.dat` and `history.xml` files in the `\GameInfo` folder. This display will automatically unload when the arcade is closed (which is why this feature is also only available when the **Operate only when the arcade is running** setting is configured).
+### Use GameInfo Overlay
+This feature will display a desktop overlay on the primary monitor showing detailed game information, including pictures, associated with the game currently running in the emulator. This information may be easily viewed while you are in VR by using your favorite desktop viewport (third party, or one provided with your headset). The text information comes from the `mameinfo.dat` and `history.xml` files in the `\GameInfo` folder. This display will automatically unload when the arcade is closed (which is why this feature is also only available when the **Monitor only when the arcade is running** setting is configured).
 
-To navigate through the Game Info screens, you will want to assign at least the "Right" action in the game controller button configuration (and optionally, the "Left", "Start", and "Exit" options), using the **Game Info Navigation** radio switch at the top of the screen. If you would like custom pictures to be displayed along with the text information, you may create additional folders within the `..\GameInfo\Assets` subfolder of arcadeVFE, and fill it with `*.jpg` or `*.png` files having root names that are the same as the roms you would like to associate them with. Examples are provided in the `..\GameInfo\Assets\cpanels` and `..GameInfo\Assets\flyers` folders. Feel free to add additional folders as you like.
+To navigate through the **GameInfo** screens, you will want to assign at least the "Right" action in the game controller button configuration (and optionally, the "Left", "Start", and "Exit" options), using the **GameInfo navigation** radio switch at the top of the screen. If you would like custom pictures to be displayed along with the text information, you may create additional folders within the `..\GameInfo\Assets` subfolder of **arcadeVFE**, and fill it with `*.jpg` or `*.png` files having root names that are the same as the roms you would like to associate them with. Examples are provided in the `..\GameInfo\Assets\cpanels` and `..GameInfo\Assets\flyers` folders. Feel free to add additional folders as you like.
 
-_**Note**: Be aware that the Game Info overlay feature is NOT compatible with spinner and trackball games **IF** you use mouse clicks for game input (such as for your fire button). To address this, either turn off this feature or use a game controller button for your fire button instead. See the [Issues and Limitations](#Issues-and-Limitations) section at the bottom of this document for more information about this potential issue._
+_**Note**: Be aware that the **GameInfo** overlay feature is NOT compatible with spinner and trackball games **IF** you use mouse clicks for game input (such as for your fire button). To address this, either turn off this feature or use a game controller button for your fire button instead. See the [Issues and Limitations](#Issues-and-Limitations) section at the bottom of this document for more information about this potential issue._
 
 ### Always voice notify
 If you have configured voice notification phrases for your actions, then this switch can control when these are heard. This checkbox has three states. When checked (the default), the voice will be heard every time a game referenced in the action table is run. When unchecked, voice notification is effectively turned off. Finally, if the checkbox is configured with the minus sign (-), then voice notification will only occur if an action was actually executed (see the **Note 2** in the [ROM Monitor](#ROM-Monitor) section above).
@@ -209,10 +209,10 @@ Issues and Limitations
 ======================
 Because this software is not code-integrated with the host emulator, but relies on external interop techniques, there are a few limitations that should be noted. These may rarely be noticed, but they are good to be aware of.
 
-1. arcadeVFE can only tell when a new game is loaded, but not when it is exited. Therefore, it can only surmise that you have exited a game when it detects that you have started a new and different game. Consequently, if you exit a game and re-enter the SAME game, arcadeVFE will not know that you did this. This should not affect gameplay at all since whatever state was loaded when you originally started the game will still be in effect. However, arcadeVFE will not be able to provide feedback (such as a beep or voice notification) when restarting the game. Only upon starting a new game.
+1. **arcadeVFE** can only tell when a new game is loaded, but not when it is exited. Therefore, it can only surmise that you have exited a game when it detects that you have started a new and different game. Consequently, if you exit a game and re-enter the SAME game, **arcadeVFE** will not know that you did this. This should not affect gameplay at all since whatever state was loaded when you originally started the game will still be in effect. However, **arcadeVFE** will not be able to provide feedback (such as a beep or voice notification) when restarting the game. Only upon starting a new game.
 
-2. The **GameInfo** window that arcadeVFE overlays over the virtual arcade desktop display is specifically designed to not take the focus. However, as an overlay it still hase the effect of preventing mouse clicks from passing through to the application (whether or not you are actually viewing it). The consequence is that if you use the mouse button as a fire button in some games, it will not work while using the **GameInfo** feature. The solution to this is to either keep the **GameInfo** feature turned off, or ensure that you are using a (non-mouse) game controller button as your fire button, in which case, everything should work as intended. Note that non-trackball and spinner games should be generally immune from this issue.   
+2. The **GameInfo** window that **arcadeVFE** overlays over the virtual arcade desktop display is specifically designed to not take the focus. However, as an overlay it still hase the effect of preventing mouse clicks from passing through to the application (whether or not you are actually viewing it). The consequence is that if you use the mouse button as a fire button in some games, it will not work while using the **GameInfo** feature. The solution to this is to either keep the **GameInfo** feature turned off, or ensure that you are using a (non-mouse) game controller button as your fire button, in which case, everything should work as intended. Note that non-trackball and spinner games should be generally immune from this issue.   
 
-3. arcadeVFE pauses operation while its Settings screen is displayed. Therefore, if you open your arcade software while the Setting screen is open, arcadeVFE will not function. If this happens, simply close both your arcade software and arcadeVFE completely, then restart them.
+3. **arcadeVFE** pauses operation while its Settings screen is displayed. Therefore, if you open your arcade software while the Setting screen is open, **arcadeVFE** will not function. If this happens, simply close both your arcade software and **arcadeVFE** completely, then restart them.
 
-4. arcadeVFE does not actively monitor for new game controllers while running. So be sure that any game controller(s) you intend to use with it are plugged in before you start the software. If you plug in a controller while the software is running, the controller will not be recognized until you restart the program.
+4. **arcadeVFE** does not actively monitor for new game controllers while running. So be sure that any game controller(s) you intend to use with it are plugged in before you start the software. If you plug in a controller while the software is running, the controller will not be recognized until you restart the program.
