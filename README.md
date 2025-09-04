@@ -182,7 +182,7 @@ These options allow the user to make adjustments to certain features.
 This is a recommended setting for most use cases (and required for the **Run RawAccel** and **Use GameInfo Overlay** options). Turning this off is mainly intended for testing.
 
 ### Run RawAccel
-RawAccel is a utility that can be found on GitHub at `https://github.com/RawAccelOfficial/rawaccel`. This software may be needed to tune some trackballs to have additional sensitivity. For example, I need it to make my **Ultimarc U-Trak** trackball work correctly in Arcade Time Capsule. To integrate RawAccel with **arcadeVFE**, simply install it to a subfolder of VFE called `..\RawAccel`.
+RawAccel is a utility that can be found on GitHub at `https://github.com/RawAccelOfficial/rawaccel`. This software may be needed to tune some trackballs to have additional sensitivity. For example, I need it to make my **Ultimarc U-Trak** trackball work correctly in **Arcade Time Capsule**. To integrate RawAccel with **arcadeVFE**, simply install it to a subfolder of VFE called `..\RawAccel`.
 
 This option is only available when the **Monitor only when the arcade is running** above setting is configured. When this option is turned on VFE will automatically load RawAccel when the arcade is running, and will close RawAccel when the arcade is closed. It is up to the user to configure RawAccel properly for their trackball before use. 
 
