@@ -209,11 +209,15 @@ Known Bugs
 ==========
 **Known Bugs**: There are currently a few known bugs in version 1.1 that will be fixed in 1.2.
 
-    * If you start with `Other` selected as the arcade type, the software may crash when selecting a room.
-    * If you use **GameInfo** and move to a new machine too quickly (usually between 2 to 10 seconds), VFE may lose state and not operate with these machines any more until a restart.
-    * **ROM Copy** does not currently copy the chd folders 
-    * Toggling the **Operate only when the arcade is running** option requires a restart before the new behavior will take effect.
-    * Keyboard mapping does not currently accommodate combining a key with Ctrl, alt, etc.
+* If you start with `Other` selected as the arcade type, the software may crash when selecting a room.
+
+* If you use **GameInfo** and move to a new machine too quickly (usually between 2 to 10 seconds), VFE may lose state and not operate with these machines any more until a restart.
+
+* **ROM Copy** does not currently copy the chd folders 
+
+* Toggling the **Operate only when the arcade is running** option requires a restart before the new behavior will take effect.
+
+* Keyboard mapping does not currently accommodate combining a key with Ctrl, alt, etc.
 
 Issues and Limitations
 ======================
