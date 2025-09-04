@@ -8,7 +8,7 @@ Virtual Reality arcades based on **MAME** (such as **Arcade Time Capsule**), do 
 
 To this end, **arcadeVFE** includes these features: 
 
-* Ability to automatically execute one or more command line application calls upon the start of each game in the arcade. This can be used to call applications like **Virtual Controller** or other programmable game controller software to create game-specific custom configurations. This makes possible the ability to do anything from tweaking the button layout on a gamepad or fightstick for a single game, combining two controllers into one, or building an advanced composite control panel that adjusts to every game in the virtual arcade, just like the sophisticated panels in conventional multicade arcade machines.
+* Ability to automatically execute one or more command line application calls upon the start of each game in the arcade. This can be used to call applications like **Virtual Controller** or other programmable game controller software to create game-specific custom configurations. This makes possible the ability to do anything from tweaking the button layout on a gamepad or fightstick in a per-game basis, combining two controllers into one, or building an advanced composite control panel that adjusts to every game in the virtual arcade, just like the sophisticated panels in conventional multicade arcade machines.
 * Rom copy feature that can simplify installation of the correct roms into **Arcade Time Capsule**.
 * Manual execution of commands whenever a particular keyboard key or game controller button is pressed.
 * Voice notification of game control layout changes.
