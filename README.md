@@ -36,7 +36,7 @@ Installation
 ============
 After downloading the distribution zip file, you must first right click on it, choose Properties, check the **Unblock** checkbox at the bottom, then click **Apply**. After doing this, extract all files and folders from the zip into an empty folder on your PC that has read/write access.
 
-When you launch the executable (`vfe.exe`) for the first time, it will create a few new subfolders and some additional files. It will also display a small **Initial Setup** dialog in which you will choose your virtual arcade, the virtual arcade's executable, and the virtual arcade's rom folder. Once you've set the rom folder, you can also do a quick audit of the roms by pressing the **Audit ROMs...** button. If you use **Arcade Time Capsule** and haven't yet installed its ROMs, see the next section, [Copy ROMs to ATC](#Copy-ROMs-to-ATC) for a streamlined method of doing this.
+When you launch the executable (`vfe.exe`) for the first time, it will display a small **Initial Setup** dialog in which you will choose your virtual arcade, the virtual arcade's executable, and the virtual arcade's rom folder. Once you've set the rom folder, you can also do a quick audit of the roms by pressing the **Audit ROMs...** button. If you use **Arcade Time Capsule** and haven't yet installed its ROMs, see the next section, [Copy ROMs to ATC](#Copy-ROMs-to-ATC) for a streamlined method of doing this.
 
 Once you apply these settings and close the dialog, you will be taken directly to the **Settings** screen where you can begin configuration. Note that in the future, whenever you start **arcadeVFE**, you will not see anything on the screen, but rather it will create a joystick icon in the Windows Tray indicating normal background mode is active. If you need to return to the **Settings** dialog, just right-click on this icon and choose **Settings...**. You can also click on the **Initial Setup** button in the **Settings** screen to re-invoke the **Initial Setup** dialog.
 
@@ -44,7 +44,7 @@ Just remember to close the **Settings** screen when you use your virtual arcade 
 
 Copy ROMs to ATC
 ================
-Use **arcadeVFE** to quickly install the correct roms into Arcade Time Capsule, and verify them. 
+Use **arcadeVFE** to quickly install the correct roms into **Arcade Time Capsule**, and verify them. 
 
 **Preparation:**
 1. Ensure ATC's rom folder is empty: `\Arcade Time Capsule\Retro\VRArcade\Content\Roms`.
@@ -66,8 +66,8 @@ Log
 ===
 See the `log.txt` file in the `\Log` subfolder if needed for troubleshooting. This log is overwritten at the start of every run. Two beeps will be sounded whenever an error is written to the file. When reporting any issues, be sure to include the most recent log with your description of the problem. You may report errors on the Discord.
 
-General Configuration
-=====================
+General Configuration ("Settings" Dialog)
+=====================≠==================
 **arcadeVFE** offers two different modes of operation. The first is a **ROM Monitor** mode that can execute game-specific actions whenever a game using a **MAME** rom file is played. This mode can provide fully automated game controller configuration in **MAME** environments like **Arcade Time Capsule**. 
 
 The second mode provides the option to trigger actions manually when a game controller button or keyboard key is pressed. Both **ROM Monitor** and keyboard/button actions can be added to the action list in any combination and are simultaneously active whenever the virtual arcade is running. 
