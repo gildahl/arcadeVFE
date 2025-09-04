@@ -20,7 +20,7 @@ Resources
 =========
 * [GitHub:](https://github.com/gildahl/Background-Game-Profile-Switcher) - documentation and source code.
 * [Discord:](https://discord.gg/yQ7THG6d2u) - provide comments and report issues. 
-* [ATC Monster Control Panel Guide:](https://docs.google.com/document/d/1_UpA_Fa-1jQdQMLDDSFTut15gjGnhjljFkd_raw9Ox4/edit?tab=t.0) - build the ultimate ATC control panel.
+* [ATC "Monster" Control Panel Guide:](https://docs.google.com/document/d/1_UpA_Fa-1jQdQMLDDSFTut15gjGnhjljFkd_raw9Ox4/edit?tab=t.0) - build the ultimate ATC control panel.
 
 Tested Software
 ===============
