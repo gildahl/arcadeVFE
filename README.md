@@ -54,7 +54,7 @@ Use **arcadeVFE** to quickly install the correct roms into **Arcade Time Capsule
 1. Run arcadeVFE and go to the **Initial Setup** dialog.
  <img width="500" alt="Initial Setup" src="https://github.com/user-attachments/assets/61cc18f0-f2f9-4f76-890e-0013a257179e" /> 
 
-2. Ensure the **ROM folder to monitor** field contains a path to the (empty) ATC roms folder on your PC.  (_Suggestion: If you press the **Audit ROMs...** button now, while the folder is still empty, you can get a list of all roms required by ATC and their mame versions._)
+2. Ensure the **ROM folder to monitor** field contains a path to the (empty) ATC roms folder on your PC.  (_Suggestion: If you press the **Audit ROMs...** button now, while the folder is still empty, you can get a list of all roms required by ATC and their **MAME** versions._)
 3. Press the **Copy Roms** button.
 <img width="200" height="165" alt="Copy Roms" src="https://github.com/user-attachments/assets/f18ad5f6-8d6b-4573-8d55-2adb496d7a57" />
 
