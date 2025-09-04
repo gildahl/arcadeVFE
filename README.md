@@ -217,7 +217,7 @@ There are currently a few known bugs in version 1.1 that will be fixed in 1.2.
 
 * Toggling the **Operate only when the arcade is running** option may require a restart before the new behavior will take effect.
 
-* VFE's ATC 3.6 rom list includes a couple extra ROMs.
+* VFE's ATC 3.6 rom list includes a couple extra ROMs that aren't in the arcade.
 
 * Keyboard mapping does not currently accommodate combining a key with Ctrl, Alt, etc.
 
