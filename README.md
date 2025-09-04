@@ -213,7 +213,7 @@ Known Bugs
 
 * If you use **GameInfo** and move to a new machine too quickly (usually between 2 to 10 seconds), VFE may lose state and not operate with these machines any more until a restart.
 
-* **ROM Copy** does not currently copy the `\chd` folders 
+* **Copy ROMs** does not currently copy the `\chd` folders 
 
 * Toggling the **Operate only when the arcade is running** option may require a restart before the new behavior will take effect.
 
