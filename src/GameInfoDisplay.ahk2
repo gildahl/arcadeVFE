@@ -105,16 +105,13 @@ class GameInfoDisplay
 	}
 
 	/**
-	 * Add a GameInfo page. The "info" type is two-column text data; the "native" type is a
-	 * transparent screen that lets one see through to the native emulator in its paused state.
-	 * All other types are images (such as "highscore" screens, control panel "controls", etc.).
-	 * Additional image types of any kind can be added by adding new types to the [AssetPaths]
-	 * section of arcadeEIP.ini (for example, adding a new key called titles_folder= would 
-	 * add a new "titles" image type.)
+	 * Add a GameInfo page. The "info" type is two-column text data. All other types are images 
+	 * (such as "cabinets", "flyers", etc.) that can be added by simply adding new subfolders
+	 * containing rom-named *.png or *.jpg images to the \GameInfo\Assets folder. 
 	 * 
 	 * @param pageType - "info", "native" or an image type ("controls", "highscore", etc.)
 	 * @param bVisible - whether this page is currently displayable
-	 * @param control1 - image and "native" types require one control
+	 * @param control1 - image types require one control
 	 * @param {string} control2 - "info" requires a second control since it has two columns
 	 */
 	AddPage(pageType, bVisible, control1, control2:="")

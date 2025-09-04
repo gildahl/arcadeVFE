@@ -12,8 +12,7 @@
 
 #Requires AutoHotkey v2.0
 
-;This class reads the mame history.xml and mameinfo.dat files and
-;combines them for use in the arcadeEIP pause screen.
+;This class reads the mame history.xml and mameinfo.dat files.
 class MAMEData
 {
 	__New(mameinfo_file, mamehistory_file)
@@ -210,6 +209,9 @@ class MAMEData
 		}
 	}
 
+	;This method attempts to scrape controller information from the history file
+	;It is not exact since the information is not indexed, but it is useful enough 
+	;to be a partial information source.
 	GetControls(rom, sysList:="")
 	{
 		sInfo := this.GetHistory(rom, sysList:="")

@@ -99,11 +99,9 @@ global mRomsByName := Map()            ;A dictionary allowing a rom to be looked
 global aDefaultTemplates := Array()    ;The set of default command line templates
 global mROMVersions := Map()           ;Rom versions from listxml (games.xml)
 
-;Populate the default command line templates
+;Populate the default command templates
 aDefaultTemplates.Push('"C:\Program Files\Virtual Controller\VirtualController.exe" /load "[profile_name]" /run /minimize')
 aDefaultTemplates.Push('"C:\Program Files (x86)\Ultramap\Ultramap.exe" "[profile_full_name]"')
-
-;Populate built-in commands
 aDefaultTemplates.Push('Set Ultimarc ServoStik: 4-way')
 aDefaultTemplates.Push('Set Ultimarc ServoStik: 8-way')
 
@@ -119,14 +117,18 @@ global sArcadeFolder := A_ScriptDir "\Arcade"
 global sUserFile := sUserFolder "\Arcade Controller.json"
 global sTemplatesFile := sConfigFolder "\templates.json"
 global sTweaksFile := sConfigFolder "\tweaks.json"
-global sIniFile := sConfigFolder "\arcadeVFE.ini"
+global sIniFile := sConfigFolder "\vfe.ini"
 global sRawAccelExe := sRawAccelFolder "\rawaccel.exe"
 global sMame2010 := sAuditFolder "\mame2010\mame64.exe" ;For MAME 2010 / 0.139 rom file audits
 global sMame2014 := sAuditFolder "\mame2014\mame64.exe" ;For MAME 2014 / 0.159 rom file audits
 
+;rename old .ini file if it exists (as of ver. 1.2)
+if (FileExist(sConfigFolder "\arcadeVFE.ini"))
+	FileMove(sConfigFolder "\arcadeVFE.ini", sConfigFolder "\vfe.ini")
+
 ;arcade globals
 ;get initialized and set in Setup.PopulateFields() and Setup_ApplyButton_Click()
-global sArcadeString := ""            ;Currently may be "Arcade Time Capsule 3.6" or "Other"
+global sArcadeString := ""             ;Currently may be "Arcade Time Capsule 3.6" or "Other"
 global sDirectoryFile := ""
 global sFloorsFile := ""   
 global sVicinitiesFile := ""
@@ -186,20 +188,12 @@ else
 
 DoFileAudit()                     ;Confirm that all required runtime files are present
 TrayMenu.BuildMenu()              ;Build tray menu
-LoadInit()				          ;Load custom initializations
+LoadConfig()				      ;Load initializations from vfe.ini file
 LoadTweaks()				      ;Load custom tweaks
 Setup.CreateSetupDialog()         ;Load initial setup
 Settings.CreateSettingsDialog()   ;Build Settings screen
-Settings.InitDevices()            ;Get and populate the list of devices (a.k.a. Action Sources)
-Settings.ReadTemplates()          ;Populate Template list from JSON file if available
-Settings.ReadFloors()		      ;Populate Floor list from JSON if available
-Settings.ReadVicinities()         ;Populate Vicinities list from JSON if available
-Settings.ReadActionList()         ;Populate Action list from JSON file if available
-Settings.FillRomList()            ;Populate the ROM list
-
-StartRomWatcher()             ;Begin monitoring the rom folder    
-Poll()                        ;Start the button and keyboard polling loop
-
+StartRomWatcher()                 ;Begin monitoring the rom folder    
+Poll()                            ;Start the button and keyboard polling loop
 
 /**
  * Audit to ensure all required files are present
@@ -263,10 +257,10 @@ DoFileAudit()
 }
 
 /**
- * Load general application settings from arcadeVFE.ini.
+ * Load general application settings from vfe.ini.
  * Set defaults when not found.
  */
-LoadInit()
+LoadConfig()
 {
     ;Initialize GameInfo image order
 	try {
@@ -374,7 +368,7 @@ StartRomWatcher()
 	{
 		oLog.LogLine("INFO: ROM Folder set to: `"" sROMMonitorFolder ".`n")
 
-		;Ensure all rom files have a last-accessed date/time of a week ago.  This is to address
+		;Ensure all rom files have a last-accessed date/time of a week ago. This is to address
 		;a Windows deficiency in which the last-access date/time of files is not updated if the file
 		;was previously accessed within the last hour or so (or sometimes since the last boot), so
 		;we want them to look sufficiently old to force Windows to set the access timestamp that will
@@ -383,7 +377,7 @@ StartRomWatcher()
 
 		;Register the folder whose files will be monitored for being accessed. 32 watches for changes
 		;to the file access timestamp, and will notify RomAccess_Event() when such detections are made.
-		WatchFolder(sROMMonitorFolder, RomAccess_Event, False, 32)
+		WatchFolder(sROMMonitorFolder, RomAccess_Event, False, 32) ;32 = FILE_NOTIFY_CHANGE_LAST_ACCESS
 	}
 	else
 	{
@@ -416,7 +410,7 @@ RomAccess_Event(sFolder, aChanges, bIgnore:=false)
 		sNewROMFile := Change.HasOwnProp("Name") ? Change.Name : ""
 	}
 
-	;Changing the timestamp will trigger a second notification, so lets suppress it.
+	;Changing the timestamp will trigger a second notification, so let's suppress it.
 	if (tLastFileName == sNewROMFile)
 	{   
 		tLastFileName := ""
@@ -425,18 +419,26 @@ RomAccess_Event(sFolder, aChanges, bIgnore:=false)
 
 	;Force last-access timestamp of the **game we're about to exit** to a week ago. This is to overcome an issue in
 	;which Windows does not natively update this timestamp if it is too recent, so lets make it look old so it does.	
-	if (bIgnore && sFolder) ;RomAccess_Event() was called manually just to update the access timestamp
+	if (bIgnore && sFolder) ;this will be true if RomAccess_Event() was called manually just to update the access timestamp.
+	{
 		FileSetTime DateAdd(A_Now, -7, "days"), sFolder, "A"
-	else if (sCurrentROM) ;RomAccess_Event() was called by WatchFolder (note: sCurrentROM is a global)
+		SplitPath(sFolder, &OutName)
+		oLog.LogLine("INFO: Access timestamp updated on file (retroactive): `"" OutName "`"`n")
+	}
+	else if (sCurrentROM) ;this will be true if RomAccess_Event() was called by WatchFolder (note: sCurrentROM is a global)
+	{
 		FileSetTime DateAdd(A_Now, -7, "days"), sCurrentRom, "A"
+		SplitPath(sCurrentRom, &OutName)
+		oLog.LogLine("INFO: Access timestamp updated on file (active): `"" sCurrentRom "`"`n")
+	}
 
 	tLastFileName := sCurrentRom
 
 	if (bIgnore)
 		return
 
-	;Return if the application is in an inactive state (such when in the Settings screen)
-	;It's important that we don't leave earlier than this point since any file activity can happen in
+	;Return if the application is in an inactive state (such when in the Settings screen). In this case
+	;it's important that we don't leave earlier than this point since any file activity can happen in
 	;the dormant state and if it does, we still need to update the timestamps above. Also note that
 	;we don't use the **PAUSE feature of WatchFolder since it has side-effects.
 	if (!bActive)
@@ -823,7 +825,7 @@ PressedKey_Callback(HotkeyName)
  * @param sDevice - Can be a game controller name, "Keyboard", "Mouse", or "ROM Monitor"
  * @param sAction - Can be the index of a game controller button, a keyboard key (or combo), mouse button, or a rom name (with no extension)
  * @param mIndexer - A static Map() provided by the caller to keep track of the sequence.
- * @returns {Map} - Returns a map containing an action consisting of a verbal annunciation and up to two command lines.
+ * @returns {Map} - Returns a map containing an action consisting of a verbal annunciation and up to three command lines.
  */
 GetAction(sDevice, sAction, mIndexer)
 {
@@ -891,7 +893,7 @@ GetAction(sDevice, sAction, mIndexer)
 
 /**
  * Runs the action defined in oAction.  The action consists of an (optional) verbal annunciation
- * and up to two command lines.
+ * and up to three command lines.
  * @param oAction 
  * @param sModifier : "Down" or "Up" for button/key presses
  */
@@ -1164,12 +1166,12 @@ ShowGameInfo(sRomName)
 	oGameInfoDisplay.GoPage("start")
 
 	;If a rom access event occurrs for a new game while the GameInfo screen is still being loaded for
-	;the previous game (e.g. player started a game, but then moved quickly to another), WatchFolder will
+	;the previous game (e.g. player started a game, but then moved quickly to another), WatchFolder may
 	;never call RomAccess_Event(), and the rom for the previous game will never have its access timestamp
-	;updated. To address this, we manually scan the zip files of all games but the new one to see if 
-	;there are any files with a new access date and call RomAccess_Event() manually, but with the Ignore
-	;flag set to true since we only want RomAccess_Event to update the timestamp and not to re-run
-	;the action (since the player is not playing this game right now).
+	;updated. To address this, we manually scan the zip files of all games (except the new one) to see if 
+	;any have a recent access date. For any that do, we then call RomAccess_Event() manually, but with the Ignore
+	;flag set to true to only update the timestamp and not to re-run the action (since the player is not  
+	;actually playing this game right now).
 	Loop Files sROMMonitorFolder "\*.zip"
 	{
 		if (A_LoopFilePath != sCurrentROM) {
@@ -1195,15 +1197,15 @@ LogError(e, mode)
 /**
  * Does a particular value from an array match a string?
  * This is an exact match test (though not case sensitive).
- * @param aNeedles - The array of values to look for
- * @param sHaystack - The string to look for the values in
+ * @param aArray - The array of values to look for
+ * @param sValue - The string to look for the values in
  * @param {String} sFoundValue - The value found (by ref)
  * @returns {Boolean} - Bool whether value was found
  */
-IsValueInArray(aNeedles, sHaystack, &sFoundValue:="")
+IsValueInArray(aArray, sValue, &sFoundValue:="")
 {
-	for i, j in aNeedles
-		if (sHaystack == j)
+	for i, j in aArray
+		if (sValue == j)
 		{
 			sFoundValue := j
 			return 1
@@ -1214,22 +1216,21 @@ IsValueInArray(aNeedles, sHaystack, &sFoundValue:="")
 /**
  * Removes a value from an array and reindexes
  * @param aArray - byRef Array to remove value from
- * @param aValue - The value to remove
+ * @param sValue - The value to remove
  * @returns {Integer} - true indicates value was found and removed
  */
-RemoveValueFromArray(&aArray, aValue)
+RemoveValueFromArray(&aArray, sValue)
 {
 	bFound := false
 	for i, j in aArray
 	{
-		if (j == aValue)
+		if (j == sValue)
 		{
 			bFound := true
 			aArray.RemoveAt(i)
 			break
 		}
 	}
-	aNewArray := aArray
 
 	return bFound
 }

@@ -361,16 +361,24 @@ class Settings
 		gcCloseButton := guiSettings.AddButton("x" Settings.mMetrics.Width - nButtonWidthWide - 30 " y" 690 " w" nButtonWidthWide " h" 30, "Close")
 		gcCloseButton.OnEvent("Click", (*) => Settings.CloseButton_Click())
 		gcCloseButton.TT := "Close and exit this Settings dialog."
+
+		;Complete initialization
+		Settings.InitDevices()            ;Get and populate the list of devices (a.k.a. Action Sources)
+		Settings.ReadTemplates()          ;Populate Template list from JSON file if available
+		Settings.ReadFloors()		      ;Populate Floor list from JSON if available
+		Settings.ReadVicinities()         ;Populate Vicinities list from JSON if available
+		Settings.ReadActionList()         ;Populate Action list from JSON file if available
+		Settings.FillRomList()            ;Populate the ROM list
 	}
 
 	/**
 	 * Start SDL subsystem and initialize list of game devices
 	 * https://www.autohotkey.com/boards/viewtopic.php?t=115995
-	 * ;https://wiki.libsdl.org/SDL2/APIByCategory
+	 * https://wiki.libsdl.org/SDL2/APIByCategory
 	 */
 	static InitDevices()
 	{
-		SDL2.SDL_Init(SDL_INIT_EVERYTHING := -1) ;~ Init All
+		SDL2.SDL_Init(SDL_INIT_EVERYTHING := -1) 
 
 		SDL2.SDL_InitSubSystem(SDL_INIT_JOYSTICK := 0x00000200)
 		SDL2.SDL_JoystickEventState(1)
@@ -381,7 +389,7 @@ class Settings
 		{
 			loop joyNum
 			{
-				i := A_index - 1 ;~ because SDL joystick index start from 0
+				i := A_index - 1 ; because SDL joystick index starts from 0
 				joystick := SDL2.SDL_JoystickOpen(i)
 				jidx := SDL2.SDL_JoystickInstanceID(joystick)
 				pguid := SDL2.SDL_JoystickGetGUID(joystick)
@@ -445,8 +453,8 @@ class Settings
 	}
 
 	/**
-	 * Templates are the command line templates used to load game controller profiles. The will normally include a
-	 * template tag in brackets whose name determines how it is formatted:
+	 * Templates are the command line templates used to load game controller profiles. They  
+	 * may include a field tag in brackets whose name determines how it is formatted:
 	 * 
 	 * [profile_name] = use the filename only
 	 * [profile_full_name] = use the full pathname and filename
@@ -479,25 +487,38 @@ class Settings
 		gcTestTemplateButton_3.TT := "Test this command line:`n" Settings.GetFormattedCommandLine(gcProfileEdit_3.Text, gcTemplateEdit_3.Text)
 	}
 
+
+	/**
+	 * Read the arcade floors from the arcade-specific JSON file
+	 */
 	static ReadFloors()
 	{
-		sJSON := FileRead(sFloorsFile)
-		global oFloors := JSON.parse(sJSON)
+		if (FileExist(sFloorsFile))
+		{
+			sJSON := FileRead(sFloorsFile)
+			global oFloors := JSON.parse(sJSON)
 
-		gcFloorDropDown.Add(oFloors)
-	}
-
-	static ReadVicinities()
-	{
-		sJSON := FileRead(sVicinitiesFile)
-		global oVicinities := JSON.parse(sJSON)
-
-		gcVicinityComboBox.Add(oVicinities)
+			gcFloorDropDown.Add(oFloors) ;
+		}
 	}
 
 	/**
-	 * Reads JSON config file containing all current button configurations,
-	 * and populates the list view.
+	 * Read the machine vicinities from the arcade-specific JSON file
+	 */
+	static ReadVicinities()
+	{
+		if (FileExist(sFloorsFile))
+		{
+			sJSON := FileRead(sVicinitiesFile)
+			global oVicinities := JSON.parse(sJSON)
+
+			gcVicinityComboBox.Add(oVicinities)
+		}
+	}
+
+	/**
+	 * Reads JSON config file the saved action list
+	 * and populates the ListView table.
 	 */
 	static ReadActionList()
 	{
@@ -537,7 +558,7 @@ class Settings
 	}
 
 	/**
-	 * Program Exit/Close
+	 * Program Exit
 	 * @returns {Integer} 
 	 */
 	static Settings_Close(*)
@@ -583,8 +604,10 @@ class Settings
 	}
 
 	/**
-	 * Fills the ROM list with gamenames. Uses the Game.xml file to obtain
-	 * the full names of the games represented by the roms.
+	 * Fills the ROM list with game names. Uses the Game.xml file to obtain
+	 * the full names of the games represented by the roms. If there is a duplicate name
+	 * (as could happen if roms with multiple versions are loaded), the rom name will
+	 * be appended to the name.
 	 */
 	static FillRomList()
 	{
@@ -610,7 +633,7 @@ class Settings
 			SplitPath(A_LoopFileName,,,, &OutNameNoExt)
 
 			;Filter using the current arcade's audit list if available,
-			;otherwise, assume all roms in the folder are potentially valid
+			;otherwise assume all roms in the folder are potentially valid
 			if (oArcadeRomList.Count && sArcadeString != "Other")
 			{
 				if (!oArcadeRomList.Has(OutNameNoExt))
@@ -1695,7 +1718,7 @@ class Settings
 	}
 
 	/**
-	 * Keep the two template listboxes in sync if new items
+	 * Keep the three template listboxes in sync if new items
 	 * are added or removed.
 	 */
 	static SyncTemplates()
@@ -1902,10 +1925,17 @@ class Settings
 	{
 		sYear := sManufacturer := sRom := sVersion := ""
 
-		for sRom, mInfo in oArcadeRomList {
-			if (sRom == mRomsByName[gcROMDropDown.Text])
-            	gcROMDropDownMAMEVersion.Text := "Uses mame " mInfo["MAMEVersion"]
-        }
+		if (sArcadeString == "Other") 
+		{
+			gcROMDropDownMAMEVersion.Text := ""
+		}
+		else
+		{
+			for sRom, mInfo in oArcadeRomList {
+				if (sRom == mRomsByName[gcROMDropDown.Text])
+					gcROMDropDownMAMEVersion.Text := "Uses mame " mInfo["MAMEVersion"]
+			}
+		}
 
 		Switch gcROMDropDown.Text
 		{
@@ -1976,15 +2006,18 @@ class Settings
 
 		Settings.SetLocationInfoVisiblity(!InStr(sRom,"["))
 
-		sFloor := ""
-		try sFloor := IniRead(sDirectoryFile, sRom, "Floor")
-		gcFloorDropDown.Text := sFloor ? sFloor : ""
+		if (sArcadeString != "Other")
+		{
+			sFloor := ""
+			try sFloor := IniRead(sDirectoryFile, sRom, "Floor")
+			gcFloorDropDown.Text := sFloor ? sFloor : ""
 
-		sVicinity := ""
-		try sVicinity := IniRead(sDirectoryFile, sRom, "Vicinity")
-		gcVicinityComboBox.Text := sVicinity ? sVicinity : ""
+			sVicinity := ""
+			try sVicinity := IniRead(sDirectoryFile, sRom, "Vicinity")
+			gcVicinityComboBox.Text := sVicinity ? sVicinity : ""
 
-		Settings.VicinityComboBox_Change() ;update enabled state of add/remove buttons
+			Settings.VicinityComboBox_Change() ;update enabled state of add/remove buttons
+		}
 	}
 
 	/**

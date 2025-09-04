@@ -94,8 +94,8 @@ class Setup
  
         Setup.PopulateFields()
 
-        ;Force display the Setup dialog if any or all of its fields are empty after attempting to populate its
-        ;fields from the arcadeVFE.ini file. This would be expected on an initial run.
+        ;Force display of the Setup dialog if any or all of its fields are empty after attempting to populate its
+        ;fields from the vfe.ini file. This would be expected on an initial run.
         if (!gcArcadeDropDown.Text || !gcApplicationEdit.Text || !DirExist(gcROMMonitorFolderEdit.Text))
         {
             Setup.ShowSetupDialog()
@@ -140,7 +140,15 @@ class Setup
         global sDirectoryFile := sArcadeFolder "\" sArcadeString ".Locations.ini"
         global sFloorsFile := sArcadeFolder "\" sArcadeString ".Floors.json"
         global sVicinitiesFile := sArcadeFolder "\" sArcadeString ".Vicinities.json"
-        
+
+        ;During startup, we reach this before the Settings dialog
+        ;is created, so make sure we don't call these methods prematurely.
+        if (IsSet(guiSettings))
+        {
+            Settings.ReadFloors()
+            Settings.ReadVicinities()
+        }
+
         local sRomListFile := sArcadeFolder "\" sArcadeString ".RomList.json"
 
         ;Initialize the global oArcadeRomList
@@ -291,8 +299,6 @@ class Setup
         ;Loop through each file in the rom list for this arcade, doing a version-specific validation of each.
         for sRom, mInfo in oArcadeRomList
         {
-            if (sRom == "ghostb")
-                test:=1
             gcAuditProgress.Value := A_Index / oArcadeRomList.Count * 100
 
             ;Missing file check
