@@ -1,4 +1,4 @@
-# arcadeVFE 1.1
+just# arcadeVFE 1.1
 ### The Arcade Virtual Front End
 By David Dahlstrom
 
@@ -209,7 +209,7 @@ Known Bugs
 ==========
 **Known Bugs**: There are currently a few known bugs in version 1.1 that will be fixed in 1.2.
 
-* If you start with `Other` selected as the arcade type, the software may crash when selecting a room.
+* If you start with `Other` selected as the arcade type, the software may crash when selecting a rom.
 
 * If you use **GameInfo** and move to a new machine too quickly (usually between 2 to 10 seconds), VFE may lose state and not operate with these machines any more until a restart.
 
