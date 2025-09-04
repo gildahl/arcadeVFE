@@ -34,7 +34,7 @@ Tested Software
 
 Installation
 ============
-After downloading the distribution zip file, you must first right click on it, choose Properties, check the **Unblock** checkbox at the bottom if present, then click **Apply**. After doing this, extract all files and folders from the zip into an empty folder on your PC that has read/write access.
+After downloading the distribution zip file, you must first right-click on it, choose Properties, check the **Unblock** checkbox at the bottom if present, then click **Apply**. After doing this, extract all files and folders from the zip into an empty folder on your PC that has read/write access.
 
 When you launch the executable (`vfe.exe`) for the first time, it will display a small **Initial Setup** dialog in which you will choose your virtual arcade, the virtual arcade's executable, and the virtual arcade's rom folder. Once you've set the rom folder, you can also do a quick audit of the roms by pressing the **Audit ROMs...** button. If you use **Arcade Time Capsule** and haven't yet installed its ROMs, see the next section, [Copy ROMs to ATC](#Copy-ROMs-to-ATC) for a streamlined method of doing this.
 
