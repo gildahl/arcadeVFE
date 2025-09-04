@@ -86,7 +86,7 @@ To setup a new rom to be monitored, choose `ROM Monitor` from the **Device List*
 
 Buttons and Key Presses:
 ------------------------
-To setup a manual action that will run upon a particular button or key press, Choose `Keyboard` or one of the game controllers from the Device List in the Settings screen. Next, use the **Profile** and **Command** fields to configure the command line that will execute when the button or key is pressed. Finally, press the **Assign** button to choose the actual button or key you want to assign to the action and add it to the **Actions List**.
+To setup a manual action that will run upon a particular button or key press, Choose `Keyboard` or one of the game controllers from the **Device List** in the Settings screen. Next, use the **Profile** and **Command** fields to configure the command line that will execute when the button or key is pressed. Finally, press the **Assign** button to choose the actual button or key you want to assign to the action and add it to the **Actions List**.
 
 **Note 1**: In addition to command line actions, game controller buttons can also be configured to send virtual keyboard key presses or perform game information screen navigation actions. These options can be configured by choosing the appropriate radio button at the top of the screen whenever a game controller is selected in the **Devices List**.
 
