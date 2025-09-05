@@ -15,7 +15,7 @@
 /***********************************************************************
 * Compiler directives
 ************************************************************************/
-global CodeVersion := "1.2.0"
+global CodeVersion := "1.2"
 ;@Ahk2Exe-Let version = %A_PriorLine~U)^(.+"){1}(.+)".*$~$2%
 ;@Ahk2Exe-SetCopyright © 2025 David G. Dahlstrom
 ;@Ahk2Exe-SetProductName arcadeVFE
@@ -41,7 +41,9 @@ global CodeVersion := "1.2.0"
 #include GameInfoDisplay.ahk2
 #include PacDrive.ahk2
 
-TraySetIcon A_ScriptDir "\Resources\joystick.ico"
+global sResourceFolder := A_ScriptDir "\Resources"
+global sJoystickIconFile := sResourceFolder "\joystick.ico"
+TraySetIcon sJoystickIconFile
 A_IconTip := "arcadeVFE`nVirtual Front End"
 
 OnMessage(WM_MOUSEMOVE  := 0x0200, OnMouseEvent)
@@ -186,6 +188,7 @@ else
 ;  Main Application Startup
 ;==============================
 
+ShowSplash()
 DoFileAudit()                     ;Confirm that all required runtime files are present
 TrayMenu.BuildMenu()              ;Build tray menu
 LoadConfig()				      ;Load initializations from vfe.ini file
@@ -229,7 +232,7 @@ DoFileAudit()
 		bAuditSuccessful := false, oLog.LogLine("ERROR: Required file missing: " sMame2014 "`n")
 
 	;.\Resources folder file
-	if (!FileExist(A_ScriptDir "\Resources\joystick.ico"))
+	if (!FileExist(sJoystickIconFile))
 		bAuditSuccessful := false, oLog.LogLine("ERROR: Required file missing: " sMame2014 "`n")
 
 	;.\Arcade folder files
@@ -1184,7 +1187,53 @@ ShowGameInfo(sRomName)
 			}
 		} 
 	}
+}
 
+/**
+ * Show a brief splash screen while loading
+ */
+ShowSplash()
+{
+	global guiSplash := Gui(, "vfeGuiSplash")
+
+	dpi := 96 / A_ScreenDPI
+	guiSplash.Opt("-Caption +ToolWindow +LastFound +AlwaysOnTop")
+	guiSplash.BackColor := color_edit_text
+
+	iHeight := 100
+	iWidth := 400
+
+	x1 := nScreenWidth / 2 - iWidth / 2
+	y1 := nScreenHeight / 2 - iHeight / 2
+	
+	WinSetRegion x1/dpi "-" y1/dpi " w" iWidth/dpi " h" iHeight/dpi " r40-40" 
+
+	global gcSplashIcon := guiSplash.AddPicture(, sJoystickIconFile)
+
+    gcSplashIcon.GetPos(&icon_posX, &icon_posY, &icon_posW, &icon_posH)
+
+	iIconHeight := iHeight * 2/3 ;set icon height to 2/3 the window size
+
+	;adjust icon size while maintaining aspect ratio
+	if (icon_posH > iIconHeight)
+	{
+		iconH := iIconHeight
+		iconW := Floor(icon_posW * iIconHeight/icon_posH)
+	}
+	else
+	{
+		iconH := icon_posH
+		iconW := icon_posW
+	}
+
+    gcSplashIcon.Move(x1+20, nScreenHeight/2 - iconH/2, iconH, iconW)
+            
+	global gcSplashLabel := guiSplash.AddText("x" x1 + 30 + iconW " y" y1+29 " w" iWidth " h" iHeight, "arcadeVFE " CodeVersion)
+	gcSplashLabel.SetFont("s26 w700", "Courier New")
+
+	guiSplash.Show("NA w" nScreenWidth " h" nScreenHeight)
+	Sleep 3000
+	guiSplash.Destroy
 }
 
 ;Log otherwise unhandled errors (spawed by OnError)

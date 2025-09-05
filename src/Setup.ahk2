@@ -279,6 +279,7 @@ class Setup
         oAuditLog.LogLine("INFO: Using curated arcade ROM list: `"" sArcadeString "`"`n")
         oAuditLog.LogLine("`n")
 
+        OG_DetectHiddenWindows := A_DetectHiddenWindows
         DetectHiddenWindows True
 
         try 
@@ -370,6 +371,8 @@ class Setup
 
         gcAuditButton.Enabled := true
         gcSetup_CloseButton.Enabled := true
+
+        DetectHiddenWindows OG_DetectHiddenWindows
         
         static PadString(a, b)
         {	
