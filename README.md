@@ -1,6 +1,12 @@
 # arcadeVFE 1.1
 ### The Arcade Virtual Front End
 By David Dahlstrom
+<!--
+ToDo:
+- Add splash screen
+- Add Virtual Controller button
+- Add Physical Deployment to guide
+-->
 
 Summary
 =======
