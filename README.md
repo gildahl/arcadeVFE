@@ -227,14 +227,14 @@ There are currently a few known bugs in version 1.1 that will be fixed in 1.2.
 
 * Keyboard mapping does not currently accommodate combining a key with Ctrl, Alt, etc.
 
-Issues and Limitations
-======================
+Limitations
+===========
 Because this software is not code-integrated with the host emulator, but relies on external interop techniques, there are a few limitations that should be noted. These may rarely be noticed, but they are good to be aware of.
 
-1. **arcadeVFE** can only tell when a new game is loaded, but not when it is exited. Therefore, it can only surmise that you have exited a game when it detects that you have started a new and different game. Consequently, if you exit a game and re-enter the SAME game, **arcadeVFE** will not know that you did this. This should not affect gameplay at all since whatever state was loaded when you originally started the game will still be in effect. However, **arcadeVFE** will not be able to provide feedback (such as a beep or voice notification) when restarting the game. Only upon starting a new game.
+1. **arcadeVFE** can only tell when a new game is loaded, but not when it is exited. Therefore, it can only surmise that you have exited a game when it detects that you have started a new and different game. Consequently, if you exit a game and re-enter the SAME game, **arcadeVFE** will not know that you did this. This should not affect practical operation since whatever state was loaded when you originally started the game will still be in effect. However, **arcadeVFE** will not be able to provide feedback (such as a beep or voice notification) when restarting the game. Only upon starting a new game.
 
 2. The **GameInfo** window that **arcadeVFE** overlays on top of the virtual arcade desktop display is specifically designed to not take the focus. However, as an overlay it still has the effect of preventing mouse clicks from passing through to the application (whether or not you are actually viewing it). The consequence is that if you use the mouse button as a fire button in some games, it will not work while using the **GameInfo** feature. The solution to this is to either keep the **GameInfo** feature turned off, or ensure that you map a (non-mouse) game controller button as your fire button, in which case, everything should work as intended.   
 
-3. **arcadeVFE** pauses operation while its **Settings** screen is displayed. Therefore, if you open your arcade software while the **Setting** screen is open, **arcadeVFE** will not operate as expected. If this happens, close both your arcade software and **arcadeVFE**, then restart.
+3. **arcadeVFE** pauses operation while the **Settings** screen is displayed. Therefore, if you open your arcade software while the **Setting** screen is open, **arcadeVFE** will not perform any monitoring. If this happens, close both your arcade software and **arcadeVFE**, then restart.
 
 4. **arcadeVFE** does not actively monitor for new game controllers while running. So be sure that any game controller(s) you intend to use with it are plugged in before you start the software. If you turn-on/plug-in a controller while the software is running, the controller will not be recognized until you restart the software.
