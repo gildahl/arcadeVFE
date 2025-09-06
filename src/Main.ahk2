@@ -1171,7 +1171,7 @@ ShowGameInfo(sRomName)
 	;If a rom access event occurrs for a new game while the GameInfo screen is still being loaded for
 	;the previous game (e.g. player started a game, but then moved quickly to another), WatchFolder may
 	;never call RomAccess_Event(), and the rom for the previous game will never have its access timestamp
-	;updated. To address this, we manually scan the zip files of all games (except the new one) to see if 
+	;updated. To address this, manually scan the zip files of all games (except the new one) to see if 
 	;any have a recent access date. For any that do, we then call RomAccess_Event() manually, but with the Ignore
 	;flag set to true to only update the timestamp and not to re-run the action (since the player is not  
 	;actually playing this game right now).

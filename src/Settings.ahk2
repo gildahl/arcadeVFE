@@ -1888,7 +1888,7 @@ class Settings
 	}
 
 	/**
-	 * This re-organizes the list to keep all actions associated with a single button or keypress
+	 * Re-organize the list to keep all actions associated with a single button or keypress
 	 * together, and listed in order of the command sequence. Using the move-up and move-down buttons
 	 * in combination with this let users customize the sequencing.
 	 * @returns {Integer} 

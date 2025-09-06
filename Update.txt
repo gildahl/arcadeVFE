@@ -28,7 +28,7 @@ completed.
   toggling the "Operate only when the arcade is running" setting.
 * Added WS_EX_NOACTIVATE to GameInfo to better protect from mouse clicks.
 * "Copy ROMs" function now copies chd folders as well.
-* Limit image scaling for low res images in GameInfo to improve quality
+* Limit image scaling for low res images in GameInfo to improve quality.
 * Tooltip help updates.
 * Added additional startup logging and auditing.
 * Documentation updates.
