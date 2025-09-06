@@ -353,14 +353,16 @@ class Settings
 		gcToolTip_Checkbox.TT := "Show or hide tooltips on this screen."
         
 		try global g_sRawAccelExe := IniRead(g_sIniFile, "General", "RawAccelExe", g_sRawAccelExe)
+
+		gcSettingsMessageLabel := guiSettings.AddText("x" Settings.mMetrics.Width - 330 " y" 640 " w" 300, "arcadeVFE is currently **PAUSED**. Close this dialog when`nyou have completed configuration to begin active monitoring.")
 		
 		gcSetupButton := guiSettings.AddButton("x" Settings.mMetrics.Width - nButtonWidthWide*2 - 40 " y" 690 " w" nButtonWidthWide " h" 30, "Initial Setup")
 		gcSetupButton.OnEvent("Click", (*) => Settings.SetupButton_Click())
-		gcSetupButton.TT := "Open the intial setup and rom audit dialog."
+		gcSetupButton.TT := "Open the intial setup`nand rom tools dialog."
 
 		gcCloseButton := guiSettings.AddButton("x" Settings.mMetrics.Width - nButtonWidthWide - 30 " y" 690 " w" nButtonWidthWide " h" 30, "Close")
 		gcCloseButton.OnEvent("Click", (*) => Settings.CloseButton_Click())
-		gcCloseButton.TT := "Close and exit this Settings dialog."
+		gcCloseButton.TT := "Close this Settings dialog to begin active`nmonitoring.`n`nTo exit arcadeVFE completely, right-click`non its tray icon and choose Exit."
 
 		;Complete initialization
 		Settings.InitDevices()            ;Get and populate the list of devices (a.k.a. Action Sources)
