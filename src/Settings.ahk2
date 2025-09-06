@@ -71,18 +71,18 @@ class Settings
 		gcCommandLine_Radio.OnEvent("Click", (*) => Settings.CommandLine_Radio_Click())
 		gcCommandLine_Radio.TT := "Check this to create a command line button action."
 
-		gcSendKey_Radio := guiSettings.AddRadio("x" 520 " y" 35, "Map a keypress")
+		gcSendKey_Radio := guiSettings.AddRadio("x" 520 " y" 65, "Map a keypress")
 		gcSendKey_Radio.OnEvent("Click", (*) => Settings.SendKey_Radio_Click())
 		gcSendKey_Radio.TT := "Check this to map a keypress action."
 
-		gcGameInfo_Radio := guiSettings.AddRadio("x" 520 " y" 65, "GameInfo navigation")
+		gcGameInfo_Radio := guiSettings.AddRadio("x" 520 " y" 35, "GameInfo navigation")
 		gcGameInfo_Radio.OnEvent("Click", (*) => Settings.GameInfo_Radio_Click())
 		gcGameInfo_Radio.TT := "Check this to map a GameInfo navigation action."
 
-		gcSendKey_ComboBox := guiSettings.AddComboBox("x" 655 " y" 32 " w" 100 " +BackgroundWhite",)
+		gcSendKey_ComboBox := guiSettings.AddComboBox("x" 655 " y" 62 " w" 100 " +BackgroundWhite",)
 		gcSendKey_ComboBox.OnEvent("Change", (*) => Settings.SendKey_ComboBox_Change())
 
-		gcGameInfo_ComboBox := guiSettings.AddComboBox("x" 655 " y" 62 " w" 100 " +BackgroundWhite",)
+		gcGameInfo_ComboBox := guiSettings.AddComboBox("x" 655 " y" 32 " w" 100 " +BackgroundWhite",)
 		gcGameInfo_ComboBox.OnEvent("Change", (*) => Settings.GameInfo_ComboBox_Change())
 
 		gcSendKey_ComboBox.Add(Settings.GetKeysArray())
@@ -124,7 +124,7 @@ class Settings
 		gcVicinityLabel := guiSettings.AddText("x" 520 " y" 73 " w" 20, "Vicinity:")
 		gcVicinityComboBox := guiSettings.AddComboBox("x" 561 " y" 70 " w" 233 " +BackgroundWhite",)
 		gcVicinityComboBox.OnEvent("Change", (*) => Settings.VicinityComboBox_Change())
-		gcVicinityComboBox.TT := "A game or landmark near this machine."
+		gcVicinityComboBox.TT := "Select from list or type in a description of where the`nmachine is located on the floor to help you find it."
 
 		gcAddVicinityButton := guiSettings.AddButton("x" Settings.mMetrics.Width - nIconButtonWidth*2 - 30 - 2 " y" 69 " w" nIconButtonWidth)
 		gcAddVicinityButton.OnEvent("Click", (*) => Settings.AddVicinityButton_Click())
@@ -771,6 +771,7 @@ class Settings
 	{
 		bROMControlVisible := true
 		bGameControlVisible := false
+		bKeyboardControlVisible := false
 
 		if (gcDevices.Text == "ROM Monitor")
 		{
@@ -783,6 +784,7 @@ class Settings
 			{
 				gcAssignButton.Text := "Assign Key"
 				gcAssignButton.TT := "Press to assign a key or key combination,`nas the trigger for the commands defined above."
+				bGameControlVisible := true
 			}
 			else if (gcDevices.Text == "Mouse")
 			{
@@ -817,11 +819,19 @@ class Settings
 
 		;Set visibility of controls only used in Game Controller mode
 		gcButtonOptionsGroupBox.Visible := bGameControlVisible
-		gcSendKey_Radio.Visible := bGameControlVisible
-		gcGameInfo_Radio.Visible := bGameControlVisible
 		gcCommandLine_Radio.Visible := bGameControlVisible
-		gcSendKey_ComboBox.Visible := bGameControlVisible
+		gcGameInfo_Radio.Visible := bGameControlVisible
 		gcGameInfo_ComboBox.Visible := bGameControlVisible
+
+		if (gcDevices.Text == "Keyboard")
+			bGameControlVisible := false
+		gcSendKey_Radio.Visible := bGameControlVisible
+		gcSendKey_ComboBox.Visible := bGameControlVisible
+
+		;Clear any values in the Keyboard and Controller option combos
+		gcCommandLine_Radio.Value := 1
+		gcGameInfo_ComboBox.Value := ""
+		gcSendKey_ComboBox.Value := ""
 	}
 
 	static SetLocationInfoVisiblity(bState)

@@ -1212,9 +1212,9 @@ ShowSplash()
 
     gcSplashIcon.GetPos(&icon_posX, &icon_posY, &icon_posW, &icon_posH)
 
-	iIconHeight := iHeight * 2/3 ;set icon height to 2/3 the window size
+	iIconHeight := iHeight * 2/3 ;set icon height to 2/3 the window height
 
-	;adjust icon size while maintaining aspect ratio
+	;adjust icon size if needed while maintaining aspect ratio
 	if (icon_posH > iIconHeight)
 	{
 		iconH := iIconHeight
@@ -1226,9 +1226,9 @@ ShowSplash()
 		iconW := icon_posW
 	}
 
-    gcSplashIcon.Move(x1+20, nScreenHeight/2 - iconH/2, iconH, iconW)
+    gcSplashIcon.Move(x1 + 20, nScreenHeight / 2 - iconH / 2, iconH, iconW)
             
-	global gcSplashLabel := guiSplash.AddText("x" x1 + 30 + iconW " y" y1+29 " w" iWidth " h" iHeight, "arcadeVFE " CodeVersion)
+	global gcSplashLabel := guiSplash.AddText("x" x1 + 30 + iconW " y" y1 + 29 " w" iWidth " h" iHeight, "arcadeVFE " CodeVersion)
 	gcSplashLabel.SetFont("s26 w700", "Courier New")
 
 	guiSplash.Show("NA w" nScreenWidth " h" nScreenHeight)
