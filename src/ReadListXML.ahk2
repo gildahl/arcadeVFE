@@ -59,7 +59,7 @@ class ReadListXML
 						catch as e
 						{
 							sMessage := ""
-							try sMessage := oLog.FormatErrorMessage(e)
+							try sMessage := g_oLog.FormatErrorMessage(e)
 							Throw("ERROR: XML Processing Error (MSXML2.DOMDocument.3.0): "  "`n", -1)
 						}				
 					}
@@ -124,7 +124,7 @@ class ReadListXML
 							}							
 						}
 						catch as e {
-							try oLog.LogLine("WARNING: Unexpected XML read error: " oLog.FormatErrorMessage(e) "`n")
+							try g_oLog.LogLine("WARNING: Unexpected XML read error: " g_oLog.FormatErrorMessage(e) "`n")
 							break
 						}
 					}

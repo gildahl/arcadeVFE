@@ -49,8 +49,8 @@ class Settings
 
 		Settings.mMetrics.Width := 910
 		Settings.mMetrics.Height := 750
-		Settings.mMetrics.X := Round((nScreenWidth / 2) - (Settings.mMetrics.Width * 96 // A_ScreenDPI / 2))
-		Settings.mMetrics.Y := Round((nScreenHeight / 2) - (Settings.mMetrics.Height * 96 // A_ScreenDPI / 2)) - 100
+		Settings.mMetrics.X := Round((g_nScreenWidth / 2) - (Settings.mMetrics.Width * 96 // A_ScreenDPI / 2))
+		Settings.mMetrics.Y := Round((g_nScreenHeight / 2) - (Settings.mMetrics.Height * 96 // A_ScreenDPI / 2)) - 100
 		guiSettings := Gui(,sSettingsTitle)
 
 		guiSettings.OnEvent("Close", (*) => Settings.Settings_Close())
@@ -247,13 +247,13 @@ class Settings
 		gcActionListNameEdit.OnEvent("LoseFocus", (*) => Settings.ActionListNameEdit_LoseFocus())
 		gcActionListNameEdit.TT := "This is the name that the Action List will be saved as. If you rename this,`nand save it as a new list, you may load it later by launching arcadeVFE with`nthe command line: vfe.exe <list name>."
 
-		try gcActionListNameEdit.Text := IniRead(sIniFile, "General", "ActionListName", Settings.sActionListName)
+		try gcActionListNameEdit.Text := IniRead(g_sIniFile, "General", "ActionListName", Settings.sActionListName)
 		Settings.sActionListName := gcActionListNameEdit.Text
-		global sUserFile := sUserFolder "\" gcActionListNameEdit.Text ".json"
+		global g_sUserFile := g_sUserFolder "\" gcActionListNameEdit.Text ".json"
 		TrayMenu.SetMenuName("New", Settings.sActionListName)  
-		guiSettings.Title := sSettingsTitle " - " sArcadeString " - " gcActionListNameEdit.Text
-		oLog.LogLine("INFO: Loaded Arcade is: `"" sArcadeString "`"`n")
-		oLog.LogLine("INFO: Loaded Action List is: `"" gcActionListNameEdit.Text "`"`n")
+		guiSettings.Title := sSettingsTitle " - " g_sArcadeString " - " gcActionListNameEdit.Text
+		g_oLog.LogLine("INFO: Loaded Arcade is: `"" g_sArcadeString "`"`n")
+		g_oLog.LogLine("INFO: Loaded Action List is: `"" gcActionListNameEdit.Text "`"`n")
 
 		gcListView := guiSettings.AddListView("-Multi" " r" 10 " x" 30 " y" 380 " w" Settings.mMetrics.Width - 30*2 " Grid", ["Device", "Action", "Sequence", "Voice Phrase", "", "Command", "", "Command 2", "", "", "", "", "Command 3"])
 		fListView_ItemSelect := Settings.ListView_ItemSelect.Bind()
@@ -299,34 +299,34 @@ class Settings
 		gcApplication_Checkbox.OnEvent("Click", (*) => Settings.Application_Checkbox_Click())
 		gcApplication_Checkbox.TT := "Keep arcadeVFE dormant when the arcade emulator system`nsoftware is not running (recommended).`n`nTurning this off is primarily intended for testing."
 
-		try gcApplication_Checkbox.Value := IniRead(sIniFile, "General", "MonitorApplication", 1)
+		try gcApplication_Checkbox.Value := IniRead(g_sIniFile, "General", "MonitorApplication", 1)
 		
 		gcApplication_Checkbox.Enabled := gcApplicationEdit.Text ? true : false
-		global bOnlyMonitorWhenApplicationLoaded := gcApplication_Checkbox.Enabled && gcApplication_Checkbox.Value == 1
+		global g_bOnlyMonitorWhenArcadeIsLoaded := gcApplication_Checkbox.Enabled && gcApplication_Checkbox.Value == 1
 
 		gcAlwaysAnnunciate_Checkbox := guiSettings.AddCheckbox("x" 45 " y" 677 " Check3", "Always voice notify")
 		gcAlwaysAnnunciate_Checkbox.OnEvent("Click", (*) => Settings.AlwaysAnnunciate_Checkbox_Click())
-		try gcAlwaysAnnunciate_Checkbox.Value := IniRead(sIniFile, "General", "AlwaysAnnunciate", 1)	
+		try gcAlwaysAnnunciate_Checkbox.Value := IniRead(g_sIniFile, "General", "AlwaysAnnunciate", 1)	
 		gcAlwaysAnnunciate_Checkbox.TT := "Adjust when voice notification is used.`n`nChecked:      Always notify upon new game start.`nUnchecked:  Never notify (off).`nMinus:          Only notify when an action is performed."
 
 		gcBeep_Checkbox := guiSettings.AddCheckbox("x" 45 " y" 700, "Beep on action")
 		gcBeep_Checkbox.OnEvent("Click", (*) => Settings.Beep_Checkbox_Click())
-		try gcBeep_Checkbox.Value := IniRead(sIniFile, "General", "BeepOnProfileChange", 0)	
+		try gcBeep_Checkbox.Value := IniRead(g_sIniFile, "General", "BeepOnProfileChange", 0)	
 		gcBeep_Checkbox.TT := "Checked:        Beep whenever an action is performed.`nUnchecked:    Never beep (off)"
 
 		gcRawAccel_Checkbox := guiSettings.AddCheckbox("x" 280 " y" 700, "Run RawAccel")
 		gcRawAccel_Checkbox.OnEvent("Click", (*) => Settings.RawAccel_Checkbox_Click())
-		try gcRawAccel_Checkbox.Value := IniRead(sIniFile, "General", "LoadRawAccel", 0)	
+		try gcRawAccel_Checkbox.Value := IniRead(g_sIniFile, "General", "LoadRawAccel", 0)	
 		gcRawAccel_Checkbox.TT := "Run RawAccel when the arcade application starts`nand close it when the application terminates.`n`nRawAccel is expected to be in a subfolder called`n\RawAccel within the arcadeVFE folder."
 
 		if (!FileExist(A_ScriptDir "\RawAccel\rawaccel.exe") || gcApplicationEdit.Text == '' || gcApplication_Checkbox.Value == 0)
 			gcRawAccel_Checkbox.Enabled := false
         
-		try global sRawAccelExe := IniRead(sIniFile, "General", "RawAccelExe", sRawAccelExe)
+		try global g_sRawAccelExe := IniRead(g_sIniFile, "General", "RawAccelExe", g_sRawAccelExe)
 
 		gcShowGameInfo_Checkbox := guiSettings.AddCheckbox("x" 280 " y" 653, "Use GameInfo Overlay")
 		gcShowGameInfo_Checkbox.OnEvent("Click", (*) => Settings.ShowGameInfo_Checkbox_Click())
-		try gcShowGameInfo_Checkbox.Value := IniRead(sIniFile, "General", "ShowGameInfo", 0)	
+		try gcShowGameInfo_Checkbox.Value := IniRead(g_sIniFile, "General", "ShowGameInfo", 0)	
 		gcShowGameInfo_Checkbox.TT := "Show GameInfo overlay on the desktop when the arcade application`nstarts and close it when the application terminates.`n`nNote that it is is advised that you DO NOT use this feature if you`nuse mouse clicks as your fire button, since any mouse clicks are`nsuppressed to prevent mouse clicks from taking the focus. To`navoid this, use game controller button input for fire instead."
 
 		if (gcApplication_Checkbox.Value == 0)
@@ -335,24 +335,24 @@ class Settings
 		gcGameInfoFontSizeLabel := guiSettings.AddText("x" 330 " y" 673 " w" 100 " h" 20, "Font Size")
 		gcGameInfoFontSizeLabel.SetFont("s7")
 
-		try iGameInfoFontSize := IniRead(sIniFile, "General", "GameInfoFontSize", iDefaultGameInfoFontSize)
+		try iGameInfoFontSize := IniRead(g_sIniFile, "General", "GameInfoFontSize", g_iDefaultGameInfoFontSize)
 		gcGameInfoFontSizeEdit := guiSettings.AddEdit("x" 295 " y" 670 " w" 30 " +BackgroundWhite", iGameInfoFontSize)
 		gcGameInfoFontSizeEdit.OnEvent("Change", (*) => Settings.GameInfoFontSizeEdit_Change())
 		gcGameInfoFontSizeEdit.TT := "Enter the font size to be used`nfor the GameInfo screen."
 
 		gcShowLocations_Checkbox := guiSettings.AddCheckbox("x" 440 " y" 653, "Show Directory")
 		gcShowLocations_Checkbox.OnEvent("Click", (*) => Settings.ShowLocations_Checkbox_Click())
-		gcShowLocations_Checkbox.Value := IniRead(sIniFile, "General", "ShowLocations", 0)	
+		gcShowLocations_Checkbox.Value := IniRead(g_sIniFile, "General", "ShowLocations", 0)	
 		gcShowLocations_Checkbox.TT := "Show/hide machine directory/editor under the ROM list on`nthis screen whenever a game rom is selected."
 
-		gcShowLocations_Checkbox.Enabled := sArcadeString == "Other" ? false : true
+		gcShowLocations_Checkbox.Enabled := g_sArcadeString == "Other" ? false : true
 
 		gcToolTip_Checkbox := guiSettings.AddCheckbox("x" 440 " y" 700, "Show Tooltips")
 		gcToolTip_Checkbox.OnEvent("Click", (*) => Settings.ToolTip_Checkbox_Click())
-		try gcToolTip_Checkbox.Value := IniRead(sIniFile, "General", "ShowToolTips", 1)	
+		try gcToolTip_Checkbox.Value := IniRead(g_sIniFile, "General", "ShowToolTips", 1)	
 		gcToolTip_Checkbox.TT := "Show or hide tooltips on this screen."
         
-		try global sRawAccelExe := IniRead(sIniFile, "General", "RawAccelExe", sRawAccelExe)
+		try global g_sRawAccelExe := IniRead(g_sIniFile, "General", "RawAccelExe", g_sRawAccelExe)
 		
 		gcSetupButton := guiSettings.AddButton("x" Settings.mMetrics.Width - nButtonWidthWide*2 - 40 " y" 690 " w" nButtonWidthWide " h" 30, "Initial Setup")
 		gcSetupButton.OnEvent("Click", (*) => Settings.SetupButton_Click())
@@ -378,76 +378,76 @@ class Settings
 	 */
 	static InitDevices()
 	{
-		SDL2.SDL_Init(SDL_INIT_EVERYTHING := -1) 
+		g_oSDL2.SDL_Init(SDL_INIT_EVERYTHING := -1) 
 
-		SDL2.SDL_InitSubSystem(SDL_INIT_JOYSTICK := 0x00000200)
-		SDL2.SDL_JoystickEventState(1)
+		g_oSDL2.SDL_InitSubSystem(SDL_INIT_JOYSTICK := 0x00000200)
+		g_oSDL2.SDL_JoystickEventState(1)
 
-		joyNum := SDL2.SDL_NumJoysticks() 
+		joyNum := g_oSDL2.SDL_NumJoysticks() 
 
 		if (joyNum > 0)
 		{
 			loop joyNum
 			{
 				i := A_index - 1 ; because SDL joystick index starts from 0
-				joystick := SDL2.SDL_JoystickOpen(i)
-				jidx := SDL2.SDL_JoystickInstanceID(joystick)
-				pguid := SDL2.SDL_JoystickGetGUID(joystick)
-				name := SDL2.SDL_JoystickName(joystick)
+				joystick := g_oSDL2.SDL_JoystickOpen(i)
+				jidx := g_oSDL2.SDL_JoystickInstanceID(joystick)
+				pguid := g_oSDL2.SDL_JoystickGetGUID(joystick)
+				name := g_oSDL2.SDL_JoystickName(joystick)
 
 				;each unique guid can have multiple, same-named devices
 				;(like XBox controllers), so index each in an array
-				if !mDevices.Has(pguid) {
-					mDevices[pguid] := Array()
+				if !g_mDevices.Has(pguid) {
+					g_mDevices[pguid] := Array()
 				}
 				mDeviceInfo := Map()
 				mDeviceInfo["name"] := name
 				mDeviceInfo["index"] := jidx
-				mDevices[pguid].Push(mDeviceInfo)
+				g_mDevices[pguid].Push(mDeviceInfo)
 			}
 
 			;Add "ROM Monitor"
-			mDevices["000"] := Array()
+			g_mDevices["000"] := Array()
 			mDeviceInfo := Map()
 			mDeviceInfo["name"] := "ROM Monitor"
 			mDeviceInfo["index"] := 1
-			mDevices["000"].Push(mDeviceInfo)
+			g_mDevices["000"].Push(mDeviceInfo)
 
 			;Add "Keyboard" device
-			mDevices["001"] := Array()
+			g_mDevices["001"] := Array()
 			mDeviceInfo := Map()
 			mDeviceInfo["name"] := "Keyboard"
 			mDeviceInfo["index"] := 1
-			mDevices["001"].Push(mDeviceInfo)
+			g_mDevices["001"].Push(mDeviceInfo)
 
 			/*
 			;Add "Mouse" device
-			mDevices["002"] := Array()
+			g_mDevices["002"] := Array()
 			mDeviceInfo := Map()
 			mDeviceInfo["name"] := "Mouse"
 			mDeviceInfo["index"] := 1
-			mDevices["002"].Push(mDeviceInfo)
+			g_mDevices["002"].Push(mDeviceInfo)
 			*/
 
 			;Create the list to display in the devices list
-			for guid, j in mDevices
+			for guid, j in g_mDevices
 			{
-				for device_index, device_info in mDevices[guid]
+				for device_index, device_info in g_mDevices[guid]
 				{
-					if (mDevices[guid].Length > 1)
+					if (g_mDevices[guid].Length > 1)
 					{
-						aDevices.Push(device_info["name"] " " device_index)
-						mDeviceIndex[device_info["index"]] := aDevices.Length 
+						g_aDevices.Push(device_info["name"] " " device_index)
+						g_mDeviceIndex[device_info["index"]] := g_aDevices.Length 
 					}
 					else
 					{
-						aDevices.Push(device_info["name"])
-						mDeviceIndex[device_info["index"]] := aDevices.Length
+						g_aDevices.Push(device_info["name"])
+						g_mDeviceIndex[device_info["index"]] := g_aDevices.Length
 					}
 				}
 			}
 
-			gcDevices.Add(aDevices)
+			gcDevices.Add(g_aDevices)
 			gcDevices.Value := 1
 		}
 	}
@@ -461,28 +461,28 @@ class Settings
 	 */
 	static ReadTemplates()
 	{
-		if (!FileExist(sTemplatesFile))
+		if (!FileExist(g_sTemplatesFile))
 		{
-			sJSON := JSON.stringify(aDefaultTemplates)
+			sJSON := JSON.stringify(g_aDefaultTemplates)
 
-			fTemplatesFile := FileOpen(sTemplatesFile, "w")
+			fTemplatesFile := FileOpen(g_sTemplatesFile, "w")
 			fTemplatesFile.Write(sJSON)
 			fTemplatesFile.Close()
 		}
 
-		;Now rebuild the global oTemplates object
-		sJSON := FileRead(sTemplatesFile)
-		global oTemplates := JSON.parse(sJSON)
+		;Now rebuild the global g_oTemplates object
+		sJSON := FileRead(g_sTemplatesFile)
+		global g_oTemplates := JSON.parse(sJSON)
 
-		gcTemplateEdit.Add(oTemplates)
+		gcTemplateEdit.Add(g_oTemplates)
 		try gcTemplateEdit.Choose(1)
 		gcTestTemplateButton.TT := "Test this command line:`n" Settings.GetFormattedCommandLine(gcProfileEdit.Text, gcTemplateEdit.Text)
 
-		gcTemplateEdit_2.Add(oTemplates)
+		gcTemplateEdit_2.Add(g_oTemplates)
 		try gcTemplateEdit_2.Choose(1)
 		gcTestTemplateButton_2.TT := "Test this command line:`n" Settings.GetFormattedCommandLine(gcProfileEdit_2.Text, gcTemplateEdit_2.Text)
 
-		gcTemplateEdit_3.Add(oTemplates)
+		gcTemplateEdit_3.Add(g_oTemplates)
 		try gcTemplateEdit_3.Choose(1)
 		gcTestTemplateButton_3.TT := "Test this command line:`n" Settings.GetFormattedCommandLine(gcProfileEdit_3.Text, gcTemplateEdit_3.Text)
 	}
@@ -493,12 +493,12 @@ class Settings
 	 */
 	static ReadFloors()
 	{
-		if (FileExist(sFloorsFile))
+		if (FileExist(g_sFloorsFile))
 		{
-			sJSON := FileRead(sFloorsFile)
-			global oFloors := JSON.parse(sJSON)
+			sJSON := FileRead(g_sFloorsFile)
+			global g_oFloors := JSON.parse(sJSON)
 
-			gcFloorDropDown.Add(oFloors) ;
+			gcFloorDropDown.Add(g_oFloors) ;
 		}
 	}
 
@@ -507,12 +507,12 @@ class Settings
 	 */
 	static ReadVicinities()
 	{
-		if (FileExist(sFloorsFile))
+		if (FileExist(g_sFloorsFile))
 		{
-			sJSON := FileRead(sVicinitiesFile)
-			global oVicinities := JSON.parse(sJSON)
+			sJSON := FileRead(g_sVicinitiesFile)
+			global g_oVicinities := JSON.parse(sJSON)
 
-			gcVicinityComboBox.Add(oVicinities)
+			gcVicinityComboBox.Add(g_oVicinities)
 		}
 	}
 
@@ -525,13 +525,13 @@ class Settings
 		global
 
 		;read any saved configuration
-		if (FileExist(sUserFile))
+		if (FileExist(g_sUserFile))
 		{
-			sJSON := FileRead(sUserFile)
-			oActions := JSON.parse(sJSON)
-			oActions.Default := ""
+			sJSON := FileRead(g_sUserFile)
+			g_oActions := JSON.parse(sJSON)
+			g_oActions.Default := ""
 			
-			for device, j in oActions
+			for device, j in g_oActions
 				for button, t in j
 					for sequence, info in t
 					iRow := gcListView.Insert(1000,,device, button, sequence, info.Get("annunciation", ""), info.Get("profile", ""), info.Get("command_line", ""), info.Get("profile_2", ""),
@@ -578,14 +578,14 @@ class Settings
 			{
 				;In this case where there is nothing to save, but the user changed the Action List name, we just
 				;change the name and make that the new default.
-				if (FileExist(sUserFile))
-					try FileMove(sUserFile, sUserFolder "\" gcActionListNameEdit.Text ".json")
+				if (FileExist(g_sUserFile))
+					try FileMove(g_sUserFile, g_sUserFolder "\" gcActionListNameEdit.Text ".json")
 
 				TrayMenu.SetMenuName(Settings.sActionListName, gcActionListNameEdit.Text)
 				Settings.sActionListName := gcActionListNameEdit.Text
-				global sUserFile := sUserFolder "\" Settings.sActionListName ".json"
-				IniWrite(Settings.sActionListName, sIniFile, "General", "ActionListName")
-				guiSettings.Title := sSettingsTitle " - " sArcadeString " - " gcActionListNameEdit.Text
+				global g_sUserFile := g_sUserFolder "\" Settings.sActionListName ".json"
+				IniWrite(Settings.sActionListName, g_sIniFile, "General", "ActionListName")
+				guiSettings.Title := sSettingsTitle " - " g_sArcadeString " - " gcActionListNameEdit.Text
 			}
 		}
 
@@ -593,7 +593,7 @@ class Settings
 		{
 			gcSaveButton.Enabled := false
 			guiSettings.Hide()
-			oLog.LogLine("INFO: Closed Settings dialog.`n")
+			g_oLog.LogLine("INFO: Closed Settings dialog.`n")
 			ToolTip("") ;kill any tooltips
 
 			SetTimer(ApplicationProcessCheck_Callback, 0)
@@ -611,47 +611,47 @@ class Settings
 	 */
 	static FillRomList()
 	{
-		global mRomsByName := Map()
+		global g_mRomsByName := Map()
 		aGameList := Array()      ;the gamelist to be assigned to the list control
 		sGameList := ""           ;used to sort the list
 		gcROMDropDown.Delete()    ;make sure dropdown control is empty
-		mRomsByName["[Default]"] := "[Default]"
-		mRomsByName[TWO_WAY_H] := TWO_WAY_H
-		mRomsByName[TWO_WAY_V] := TWO_WAY_V
-		mRomsByName[FOUR_WAY] := FOUR_WAY
-		mRomsByName[EIGHT_WAY] := EIGHT_WAY
-		mRomsByName[ANALOG] := ANALOG
-		mRomsByName[DUAL] := DUAL
-		mRomsByName[DIAGONAL] := DIAGONAL
-		mRomsByName[ROTARY] := ROTARY
-		mRomsByName[SPINNER] := SPINNER
-		mRomsByName[TRACKBALL] := TRACKBALL
+		g_mRomsByName["[Default]"] := "[Default]"
+		g_mRomsByName[TWO_WAY_H] := TWO_WAY_H
+		g_mRomsByName[TWO_WAY_V] := TWO_WAY_V
+		g_mRomsByName[FOUR_WAY] := FOUR_WAY
+		g_mRomsByName[EIGHT_WAY] := EIGHT_WAY
+		g_mRomsByName[ANALOG] := ANALOG
+		g_mRomsByName[DUAL] := DUAL
+		g_mRomsByName[DIAGONAL] := DIAGONAL
+		g_mRomsByName[ROTARY] := ROTARY
+		g_mRomsByName[SPINNER] := SPINNER
+		g_mRomsByName[TRACKBALL] := TRACKBALL
 
 		;Loop through all the rom files. These must have a *.zip extension
-		Loop Files sROMMonitorFolder "\*.zip"
+		Loop Files g_sROMMonitorFolder "\*.zip"
 		{
 			SplitPath(A_LoopFileName,,,, &OutNameNoExt)
 
 			;Filter using the current arcade's audit list if available,
 			;otherwise assume all roms in the folder are potentially valid
-			if (oArcadeRomList.Count && sArcadeString != "Other")
+			if (g_oArcadeRomList.Count && g_sArcadeString != "Other")
 			{
-				if (!oArcadeRomList.Has(OutNameNoExt))
+				if (!g_oArcadeRomList.Has(OutNameNoExt))
 					continue
 			}
 
-			oGameInfo := ReadListXML.GetXMLMetaInfo(sGamesXMLFile, OutNameNoExt)
+			oGameInfo := ReadListXML.GetXMLMetaInfo(g_sGamesXMLFile, OutNameNoExt)
 			
 			if (oGameInfo)
 			{
-				if (mRomsByName.Has(oGameInfo["description"]))
+				if (g_mRomsByName.Has(oGameInfo["description"]))
 				{
-					 mRomsByName[oGameInfo["description"] " (" OutNameNoExt ")"] := OutNameNoExt ;duplicate, so add the rom name to make it unique
+					 g_mRomsByName[oGameInfo["description"] " (" OutNameNoExt ")"] := OutNameNoExt ;duplicate, so add the rom name to make it unique
 					 sGameList := sGameList oGameInfo["description"] " (" OutNameNoExt ")`n"
 				}
 				else
 				{
-					mRomsByName[oGameInfo["description"]] := OutNameNoExt 
+					g_mRomsByName[oGameInfo["description"]] := OutNameNoExt 
 					sGameList := sGameList oGameInfo["description"] "`n"
 				}
 			}
@@ -676,7 +676,7 @@ class Settings
 	 */
 	static SaveButton_Click(*)
 	{
-		global bCancelAssign := true
+		global g_bCancelAssign := true
 
 		result := MsgBox("Are you sure you would like to save these settings?", "Save Settings?", 4132)
 
@@ -697,15 +697,15 @@ class Settings
 
 			if (result == "Yes") ;Rename option chosen
 			{
-				try FileDelete(sUserFile)
-				oLog.LogLine("INFO: Renamed Action list (from: `"" Settings.sActionListName "`" to `"" gcActionListNameEdit.Text "`").`n")
+				try FileDelete(g_sUserFile)
+				g_oLog.LogLine("INFO: Renamed Action list (from: `"" Settings.sActionListName "`" to `"" gcActionListNameEdit.Text "`").`n")
 			}
 
 			TrayMenu.SetMenuName(Settings.sActionListName, gcActionListNameEdit.Text)
 			Settings.sActionListName := gcActionListNameEdit.Text
-			global sUserFile := sUserFolder "\" Settings.sActionListName ".json"
-			IniWrite(Settings.sActionListName, sIniFile, "General", "ActionListName")
-			guiSettings.Title := sSettingsTitle " - " sArcadeString " - " gcActionListNameEdit.Text
+			global g_sUserFile := g_sUserFolder "\" Settings.sActionListName ".json"
+			IniWrite(Settings.sActionListName, g_sIniFile, "General", "ActionListName")
+			guiSettings.Title := sSettingsTitle " - " g_sArcadeString " - " gcActionListNameEdit.Text
 		}
 
 		mConfig := Map()
@@ -737,20 +737,20 @@ class Settings
 
 		sJSON := JSON.stringify(mConfig)
 
-		fConfigFile := FileOpen(sUserFile, "w")
+		fConfigFile := FileOpen(g_sUserFile, "w")
 
 		fConfigFile.Write(sJSON)
 		fConfigFile.Close()
 
-		;Now rebuild the oActions map
-		sJSON := FileRead(sUserFile)
-		global oActions := JSON.parse(sJSON)
+		;Now rebuild the g_oActions map
+		sJSON := FileRead(g_sUserFile)
+		global g_oActions := JSON.parse(sJSON)
 
 		gcSaveButton.Enabled := false
 
 		Settings.RefreshList()
 
-		oLog.LogLine("INFO: Saved Action list as `"" sUserFile "`".`n")
+		g_oLog.LogLine("INFO: Saved Action list as `"" g_sUserFile "`".`n")
 	}
 
 	/**
@@ -776,7 +776,7 @@ class Settings
 		if (gcDevices.Text == "ROM Monitor")
 		{
 			gcAssignButton.Text := "Assign ROM"
-			gcAssignButton.TT := "Press to add the ROM Monitor command set defined above`nfor the " mRomsByName[gcROMDropDown.Text] " rom as an action to the table below."
+			gcAssignButton.TT := "Press to add the ROM Monitor command set defined above`nfor the " g_mRomsByName[gcROMDropDown.Text] " rom as an action to the table below."
 		}
 		else
 		{
@@ -996,11 +996,11 @@ class Settings
 	static FloorDropDown_Change()
 	{
 		sRom := ""
-		try sRom := mRomsByName[gcROMDropDown.Text]
+		try sRom := g_mRomsByName[gcROMDropDown.Text]
 
 		if (sRom && !InStr(sRom, "["))
 		{
-			IniWrite(gcFloorDropDown.Text, sDirectoryFile, sRom, "Floor")
+			IniWrite(gcFloorDropDown.Text, g_sDirectoryFile, sRom, "Floor")
 		}
 	}
 
@@ -1075,11 +1075,11 @@ class Settings
 	{
 		;Write vicinity to the location ini file
 		sRom := ""
-		try sRom := mRomsByName[gcROMDropDown.Text]
+		try sRom := g_mRomsByName[gcROMDropDown.Text]
 
 		if (sRom && !InStr(sRom, "["))
 		{
-			IniWrite(gcVicinityComboBox.Text, sDirectoryFile, sRom, "Vicinity")
+			IniWrite(gcVicinityComboBox.Text, g_sDirectoryFile, sRom, "Vicinity")
 		}
 	}
 
@@ -1175,7 +1175,7 @@ class Settings
 					Case "[Default]", TWO_WAY_H, TWO_WAY_V, FOUR_WAY, EIGHT_WAY, ANALOG, DUAL, DIAGONAL, ROTARY, SPINNER, TRACKBALL:
 						sGame := gcListView.GetText(iRow, Settings.ACTION)
 					default: 
-						sGame := ReadListXML.GetXMLMetaInfo(sGamesXMLFile, gcListView.GetText(iRow, Settings.ACTION))["description"]
+						sGame := ReadListXML.GetXMLMetaInfo(g_sGamesXMLFile, gcListView.GetText(iRow, Settings.ACTION))["description"]
 				}
 
 				gcROMDropDown.Text := sGame
@@ -1238,7 +1238,7 @@ class Settings
 
 	static AnnunciationTestButton_Click(*)
 	{
-		oVoice.Speak(gcAnnunciationEdit.Text)
+		g_oVoice.Speak(gcAnnunciationEdit.Text)
 	}
 
 	static Profile_2_Checkbox_Click(*)
@@ -1253,23 +1253,23 @@ class Settings
 
 	static ToolTip_Checkbox_Click(*)
 	{
-		IniWrite(gcToolTip_Checkbox.Value, sIniFile, "General", "ShowToolTips")
+		IniWrite(gcToolTip_Checkbox.Value, g_sIniFile, "General", "ShowToolTips")
 		ToolTip()
 	}
 
 	static AlwaysAnnunciate_Checkbox_Click(*)
 	{
-		IniWrite(gcAlwaysAnnunciate_Checkbox.Value, sIniFile, "General", "AlwaysAnnunciate")
+		IniWrite(gcAlwaysAnnunciate_Checkbox.Value, g_sIniFile, "General", "AlwaysAnnunciate")
 	}
 
 	static Beep_Checkbox_Click(*)
 	{
-		IniWrite(gcBeep_Checkbox.Value, sIniFile, "General", "BeepOnProfileChange")
+		IniWrite(gcBeep_Checkbox.Value, g_sIniFile, "General", "BeepOnProfileChange")
 	}
 
 	static ShowLocations_Checkbox_Click(*)
 	{
-		IniWrite(gcShowLocations_Checkbox.Value, sIniFile, "General", "ShowLocations")
+		IniWrite(gcShowLocations_Checkbox.Value, g_sIniFile, "General", "ShowLocations")
 
 	    Settings.Devices_Change()
 	}
@@ -1403,8 +1403,8 @@ class Settings
 
 	static Application_Checkbox_Click(*)
 	{
-		IniWrite(gcApplication_Checkbox.Value, sIniFile, "General", "MonitorApplication")
-		global bOnlyMonitorWhenApplicationLoaded := gcApplication_Checkbox.Enabled && gcApplication_Checkbox.Value == 1
+		IniWrite(gcApplication_Checkbox.Value, g_sIniFile, "General", "MonitorApplication")
+		global g_bOnlyMonitorWhenArcadeIsLoaded := gcApplication_Checkbox.Enabled && gcApplication_Checkbox.Value == 1
 
 		gcRawAccel_Checkbox.Enabled := FileExist(A_ScriptDir "\RawAccel\rawaccel.exe") && gcApplicationEdit.Text && gcApplication_Checkbox.Value ? true : false
 		gcShowGameInfo_Checkbox.Enabled := gcApplicationEdit.Text && gcApplication_Checkbox.Value ? true : false
@@ -1422,17 +1422,17 @@ class Settings
 
 	static RawAccel_Checkbox_Click(*)
 	{
-		IniWrite(gcRawAccel_Checkbox.Value, sIniFile, "General", "LoadRawAccel")
+		IniWrite(gcRawAccel_Checkbox.Value, g_sIniFile, "General", "LoadRawAccel")
 	}
 
 	static ShowGameInfo_Checkbox_Click()
 	{
-		IniWrite(gcShowGameInfo_Checkbox.Value, sIniFile, "General", "ShowGameInfo")
+		IniWrite(gcShowGameInfo_Checkbox.Value, g_sIniFile, "General", "ShowGameInfo")
 	}
 
 	static GameInfoFontSizeEdit_Change(*)
 	{
-		IniWrite(gcGameInfoFontSizeEdit.Value, sIniFile, "General", "GameInfoFontSize")
+		IniWrite(gcGameInfoFontSizeEdit.Value, g_sIniFile, "General", "GameInfoFontSize")
 	}
 
 	static ActionListNameEdit_Change(*)
@@ -1473,14 +1473,14 @@ class Settings
 	 */
 	static AssignButton_Click(*)
 	{
-		global bCancelAssign
+		global g_bCancelAssign
 
 		Settings.SetAssignButtonState(false)
 
 		if (gcDevices.Text == "ROM Monitor")
 		{
-			if (mRomsByName.Has(gcROMDropDown.Text))
-				sROM := mRomsByName[gcROMDropDown.Text]
+			if (g_mRomsByName.Has(gcROMDropDown.Text))
+				sROM := g_mRomsByName[gcROMDropDown.Text]
 			else
 				sROM := gcROMDropDown.Text
 
@@ -1508,19 +1508,19 @@ class Settings
 		evtBuffer := Buffer(56,0)
 
 		;purge the buffer
-		SDL2.SDL_PumpEvents()
-		SDL2.SDL_FlushEvent(SDL_EventType.SDL_JOYBUTTONDOWN)
-		SDL2.SDL_FlushEvent(SDL_EventType.SDL_JOYHATMOTION)
-		;SDL2.SDL_FlushEvent(SDL_EventType.SDL_JOYAXISMOTION)
+		g_oSDL2.SDL_PumpEvents()
+		g_oSDL2.SDL_FlushEvent(SDL_EventType.SDL_JOYBUTTONDOWN)
+		g_oSDL2.SDL_FlushEvent(SDL_EventType.SDL_JOYHATMOTION)
+		;g_oSDL2.SDL_FlushEvent(SDL_EventType.SDL_JOYAXISMOTION)
 
 		;Handle button presses via SDL_Event
 		loop
 		{
-			PollEvent := SDL2.SDL_PollEvent(evtBuffer)
+			PollEvent := g_oSDL2.SDL_PollEvent(evtBuffer)
 			evt := SDL2DLL.SDL_Event(evtBuffer)
-			if (bCancelAssign)
+			if (g_bCancelAssign)
 			{
-					bCancelAssign := false
+					g_bCancelAssign := false
 					break
 			}
 			
@@ -1528,11 +1528,11 @@ class Settings
 			{
 				switch evt.type {
 					case SDL_EventType.SDL_QUIT: ; Close evt
-						SDL2.SDL_Quit()
+						g_oSDL2.SDL_Quit()
 						break			 
 
 					case SDL_EventType.SDL_JOYBUTTONDOWN: ;, SDL_EventType.SDL_JOYBUTTONUP: ; Joy button evt
-						if (Settings.WriteActionToList(aDevices[mDeviceIndex[evt.jbutton.which]], evt.jbutton.button))
+						if (Settings.WriteActionToList(g_aDevices[g_mDeviceIndex[evt.jbutton.which]], evt.jbutton.button))
 							break
 
 					case SDL_EventType.SDL_JOYHATMOTION:
@@ -1541,13 +1541,13 @@ class Settings
 							Switch evt.jhat.hatvalue
 							{
 								Case SDL_EventType.SDL_HAT_UP:
-									Settings.WriteActionToList(aDevices[mDeviceIndex[evt.jhat.which]], "DPad Up")
+									Settings.WriteActionToList(g_aDevices[g_mDeviceIndex[evt.jhat.which]], "DPad Up")
 								Case SDL_EventType.SDL_HAT_RIGHT:
-									Settings.WriteActionToList(aDevices[mDeviceIndex[evt.jhat.which]], "DPad Right")
+									Settings.WriteActionToList(g_aDevices[g_mDeviceIndex[evt.jhat.which]], "DPad Right")
 								Case SDL_EventType.SDL_HAT_DOWN:
-									Settings.WriteActionToList(aDevices[mDeviceIndex[evt.jhat.which]], "DPad Down")
+									Settings.WriteActionToList(g_aDevices[g_mDeviceIndex[evt.jhat.which]], "DPad Down")
 								Case SDL_EventType.SDL_HAT_LEFT:
-									Settings.WriteActionToList(aDevices[mDeviceIndex[evt.jhat.which]], "DPad Left")
+									Settings.WriteActionToList(g_aDevices[g_mDeviceIndex[evt.jhat.which]], "DPad Left")
 							}
 
 							break
@@ -1567,14 +1567,14 @@ class Settings
 									sDirection := evt.jaxis.axisValue > 0 ? "Down" : "Up" 
 							}
 
-							if (Settings.WriteActionToList(aDevices[mDeviceIndex[evt.jaxis.which]], "Axis " evt.jaxis.axis " " sDirection)) {
+							if (Settings.WriteActionToList(g_aDevices[g_mDeviceIndex[evt.jaxis.which]], "Axis " evt.jaxis.axis " " sDirection)) {
 									break
 							}
 						}
 					*/
 				}
 			}
-			SDL2.SDL_Delay(1)
+			g_oSDL2.SDL_Delay(1)
 		}
 
 		Settings.SetAssignButtonState(true)
@@ -1724,7 +1724,7 @@ class Settings
 			Settings.SetAssignButtonState(true)
 		}
 		else
-			global bCancelAssign := true
+			global g_bCancelAssign := true
 	}
 
 	/**
@@ -1816,14 +1816,14 @@ class Settings
 		
 		sJSON := JSON.stringify(aTemplates)
 
-		fTemplatesFile := FileOpen(sTemplatesFile, "w")
+		fTemplatesFile := FileOpen(g_sTemplatesFile, "w")
 
 		fTemplatesFile.Write(sJSON)
 		fTemplatesFile.Close()
 
-		;Now rebuild the oTemplates object
-		sJSON := FileRead(sTemplatesFile)
-		global oTemplates := JSON.parse(sJSON)
+		;Now rebuild the g_oTemplates object
+		sJSON := FileRead(g_sTemplatesFile)
+		global g_oTemplates := JSON.parse(sJSON)
 
 		return aTemplates.Length
 	}
@@ -1835,14 +1835,14 @@ class Settings
 		
 		sJSON := JSON.stringify(aVicinities)
 
-		fVicinitiesFile := FileOpen(sVicinitiesFile, "w")
+		fVicinitiesFile := FileOpen(g_sVicinitiesFile, "w")
 
 		fVicinitiesFile.Write(sJSON)
 		fVicinitiesFile.Close()
 
-		;Now rebuild the oVicinities object
-		sJSON := FileRead(sVicinitiesFile)
-		global oVicinities := JSON.parse(sJSON)
+		;Now rebuild the g_oVicinities object
+		sJSON := FileRead(g_sVicinitiesFile)
+		global g_oVicinities := JSON.parse(sJSON)
 
 		return aVicinities.Length
 	}
@@ -1935,14 +1935,14 @@ class Settings
 	{
 		sYear := sManufacturer := sRom := sVersion := ""
 
-		if (sArcadeString == "Other") 
+		if (g_sArcadeString == "Other") 
 		{
 			gcROMDropDownMAMEVersion.Text := ""
 		}
 		else
 		{
-			for sRom, mInfo in oArcadeRomList {
-				if (sRom == mRomsByName[gcROMDropDown.Text])
+			for sRom, mInfo in g_oArcadeRomList {
+				if (sRom == g_mRomsByName[gcROMDropDown.Text])
 					gcROMDropDownMAMEVersion.Text := "Uses mame " mInfo["MAMEVersion"]
 			}
 		}
@@ -1953,9 +1953,9 @@ class Settings
 				gcROMDropDownGameInfo.Text := ""
 		}
 
-		try sYear := ReadListXML.GetXMLMetaInfo(sGamesXMLFile, mRomsByName[gcROMDropDown.Text])["year"]
-		try sManufacturer := ReadListXML.GetXMLMetaInfo(sGamesXMLFile, mRomsByName[gcROMDropDown.Text])["manufacturer"]
-		try sVersion := ReadListXML.GetXMLMetaInfo(sGamesXMLFile, mRomsByName[gcROMDropDown.Text])["version"]
+		try sYear := ReadListXML.GetXMLMetaInfo(g_sGamesXMLFile, g_mRomsByName[gcROMDropDown.Text])["year"]
+		try sManufacturer := ReadListXML.GetXMLMetaInfo(g_sGamesXMLFile, g_mRomsByName[gcROMDropDown.Text])["manufacturer"]
+		try sVersion := ReadListXML.GetXMLMetaInfo(g_sGamesXMLFile, g_mRomsByName[gcROMDropDown.Text])["version"]
 
 		;Truncate a couple rom descriptions due to length
 		if (gcROMDropDown.Text == "Aero Fighters" || gcROMDropDown.Text == "Gain Ground")
@@ -1968,7 +1968,7 @@ class Settings
 		else
 			gcROMDropDownGameInfo.Text := sYear
 
-		try sRom := mRomsByName[gcROMDropDown.Text]
+		try sRom := g_mRomsByName[gcROMDropDown.Text]
 
 		Switch sRom
 		{
@@ -2008,22 +2008,22 @@ class Settings
 			default: 
 				gcROMDropDownGameRom.Text := sRom == "" ? sRom : sRom ".zip"
 				sControl := ""
-				try sControl := IniRead(sControlsIniFile, "Controls", sRom)
+				try sControl := IniRead(g_sControlsIniFile, "Controls", sRom)
 				gcROMDropDownController.Text := sControl
 		}
 
-		gcAssignButton.TT := "Press to add the ROM Monitor command set defined above for`nthe " mRomsByName[gcROMDropDown.Text] " rom as an action to the table below."
+		gcAssignButton.TT := "Press to add the ROM Monitor command set defined above for`nthe " g_mRomsByName[gcROMDropDown.Text] " rom as an action to the table below."
 
 		Settings.SetLocationInfoVisiblity(!InStr(sRom,"["))
 
-		if (sArcadeString != "Other")
+		if (g_sArcadeString != "Other")
 		{
 			sFloor := ""
-			try sFloor := IniRead(sDirectoryFile, sRom, "Floor")
+			try sFloor := IniRead(g_sDirectoryFile, sRom, "Floor")
 			gcFloorDropDown.Text := sFloor ? sFloor : ""
 
 			sVicinity := ""
-			try sVicinity := IniRead(sDirectoryFile, sRom, "Vicinity")
+			try sVicinity := IniRead(g_sDirectoryFile, sRom, "Vicinity")
 			gcVicinityComboBox.Text := sVicinity ? sVicinity : ""
 
 			Settings.VicinityComboBox_Change() ;update enabled state of add/remove buttons

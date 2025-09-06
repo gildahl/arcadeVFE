@@ -50,14 +50,14 @@ class TrayMenu
 	 */
 	static Settings(*)
 	{
-		global bCancelPoll := true
+		global g_bCancelPoll := true
 
 		if (WinExist("arcadeVFE " CodeVersion " - Settings"))
 			return
 
 		Settings.RefreshList()
 
-		oLog.LogLine("INFO: Showing Settings dialog.`n")
+		g_oLog.LogLine("INFO: Showing Settings dialog.`n")
 		guiSettings.Show("X" Settings.mMetrics.X " Y" Settings.mMetrics.Y " W" Settings.mMetrics.Width " H" Settings.mMetrics.Height)
 	}
 

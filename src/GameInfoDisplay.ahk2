@@ -36,15 +36,15 @@ class GameInfoDisplay
 		guiGameInfo.BackColor := "Black" 
 
 		guiGameInfo.SetFont("cWhite s50")
-		global gcGameInfoPleaseWait := guiGameInfo.AddText("w" nScreenWidth " Center", "Preparing Game Information.`nPlease wait...")
+		global gcGameInfoPleaseWait := guiGameInfo.AddText("w" g_nScreenWidth " Center", "Preparing Game Information.`nPlease wait...")
 
 		gcGameInfoPleaseWait.GetPos(&label_posX, &label_posY, &label_posW, &label_posH)
-        label_xpos := nScreenWidth / 2 - label_posW / 2 ;center label horizontally
+        label_xpos := g_nScreenWidth / 2 - label_posW / 2 ;center label horizontally
 
 		this._rom := sRom
 		sLogoFile := ""
-		if (FileExist(sLogoFolder "\" sRom ".png")) ;logos are only in .png format
-			sLogoFile := sLogoFolder "\" sRom ".png"
+		if (FileExist(g_sLogoFolder "\" sRom ".png")) ;logos are only in .png format
+			sLogoFile := g_sLogoFolder "\" sRom ".png"
 
 		if (sLogoFile)
 		{
@@ -55,9 +55,9 @@ class GameInfoDisplay
 
             ;The following code ensures that the logo fits in its designated position
             ;on the screen and keeps its aspect ratio
-            if (logo_posH > nScreenHeight / 4) ;keep logo to no more than 1/4 the screen height
+            if (logo_posH > g_nScreenHeight / 4) ;keep logo to no more than 1/4 the screen height
             {
-                logoH := nScreenHeight / 4
+                logoH := g_nScreenHeight / 4
                 logoW := Floor(logo_posW * logoH/logo_posH)
             }
             else
@@ -66,17 +66,17 @@ class GameInfoDisplay
                 logoW := logo_posW
             }
 
-            if (logoW > nScreenWidth / 2) ;keep logo to no more than 1/2 the screen width
+            if (logoW > g_nScreenWidth / 2) ;keep logo to no more than 1/2 the screen width
             {
                 origLogoW := logoW
-                logoW := nScreenWidth / 2
+                logoW := g_nScreenWidth / 2
                 logoH := Floor(logoW * logoH/origLogoW)
             }        
             
 			;Position the label and logo on the screen
-            screen_topThird := nScreenHeight * (1/3)
-			screen_centerH := nScreenHeight / 2
-            screen_centerW := nScreenWidth / 2
+            screen_topThird := g_nScreenHeight * (1/3)
+			screen_centerH := g_nScreenHeight / 2
+            screen_centerW := g_nScreenWidth / 2
 
 			label_ypos := screen_topThird - label_posH / 2
 			label_xpos := screen_centerW - label_posW / 2
@@ -99,7 +99,7 @@ class GameInfoDisplay
 		;do this. 0x08000000 (WS_EX_NOACTIVATE), prevents mouse clicks from re-activating the screen and
 		;the +E prefix indicates that extended styles are being applied.
 		guiGameInfo.Opt("+AlwaysOnTop +E0x08000000") 
-		guiGameInfo.Show("W" nScreenWidth " H" nScreenHeight " X0 Y0 NA")
+		guiGameInfo.Show("W" g_nScreenWidth " H" g_nScreenHeight " X0 Y0 NA")
 
 		this._active := true
 	}
@@ -239,7 +239,7 @@ class GameInfoDisplay
 			}
 			else if (pageType == "info")
 			{
-				guiGameInfo.BackColor := color_edit_bg
+				guiGameInfo.BackColor := g_color_edit_bg
 				
 				(gGui.%pages[thisPage]["control1"]%).Visible := true
 				(gGui.%pages[thisPage]["control2"]%).Visible := true	
@@ -276,7 +276,7 @@ class GameInfoDisplay
 		}
 		else if (pageType == "info")
 		{
-			guiGameInfo.BackColor := color_edit_bg
+			guiGameInfo.BackColor := g_color_edit_bg
 			
 			(gGui.%pages[newPage]["control1"]%).Visible := true			
 			(gGui.%pages[newPage]["control2"]%).Visible := true
@@ -305,7 +305,7 @@ class GameInfoDisplay
 	 */
 	CreateGameInfoPage(assetType, sType:="")
 	{
-		global oMameData
+		global g_oMameData
 
 		info_text := ""
 		bPageVisible := true
@@ -317,13 +317,13 @@ class GameInfoDisplay
 			;*********************************
 
 			edit_margin := 45 ;this is 5 greater than the width of the navigation triangles
-			edit_width := nScreenWidth // 2 - edit_margin
-			edit_height := nScreenHeight			
+			edit_width := g_nScreenWidth // 2 - edit_margin
+			edit_height := g_nScreenHeight			
 
 			;These two "test" controls are used to discover the height of a single row in the edit control
 			;-E0x200 hides the border (corresponds to WS_EX_CLIENTEDGE)
 			;-Hdr removes column header
-			iGameInfoFontSize := IniRead(sIniFile, "General", "GameInfoFontSize", iDefaultGameInfoFontSize)
+			iGameInfoFontSize := IniRead(g_sIniFile, "General", "GameInfoFontSize", g_iDefaultGameInfoFontSize)
 			guiGameInfo.SetFont("s" iGameInfoFontSize, "Tahoma")
 			gGui.guiGameInfo_Test1 := guiGameInfo.AddEdit("x0 y0 -VScroll -HScroll -E0x200 vTest1 R1")
 			Tst1 := gGui.guiGameInfo_Test1.Hwnd
@@ -340,18 +340,18 @@ class GameInfoDisplay
 			gGui.guiGameInfo_Test1.Visible := false
 			gGui.guiGameInfo_Test2.Visible := false
 
-			screen_lines := nScreenHeight // ht ;number of lines available on the screen
+			screen_lines := g_nScreenHeight // ht ;number of lines available on the screen
 
 			;get the history for the current game
-			if (!IsObject(oMameData))
-				oMameData := MAMEData(mameinfo_file, mamehistory_file)
+			if (!IsObject(g_oMameData))
+				g_oMameData := MAMEData(g_sMameInfoFile, g_sMameHistoryFile)
 
-			mame_history_text := oMameData.GetHistory(this._rom)
-			mame_info_text := oMameData.GetInfo(this._rom)
+			mame_history_text := g_oMameData.GetHistory(this._rom)
+			mame_info_text := g_oMameData.GetInfo(this._rom)
 
 			if (!mame_history_text && !mame_info_text)
 			{
-				oGameInfo := ReadListXML.GetXMLMetaInfo(sGamesXMLFile, this._rom)
+				oGameInfo := ReadListXML.GetXMLMetaInfo(g_sGamesXMLFile, this._rom)
 				info_text := "There is no information available for the game: " oGameInfo["description"] " (" this._rom ")"
 			}
 			else
@@ -369,7 +369,7 @@ class GameInfoDisplay
 			{  
 				ClipSaved := ClipboardAll() ; Save the entire clipboard to a variable.		
 				if (!ClipWait(5)) {
-					oLog.LogLine("WARNING: Could not save clipboard in CreateGameInfoPage().`n")
+					g_oLog.LogLine("WARNING: Could not save clipboard in CreateGameInfoPage().`n")
 				}
 
 				;Add the first control
@@ -429,7 +429,7 @@ class GameInfoDisplay
 						ErrorLevel := SendMessage(0xBA,0,0,,"ahk_id " . hwndSrc) ;EM_GETLINECOUNT
 					}
 					catch {
-						oLog.LogLine("WARNING: SendMessage EM_GETLINECOUNT failed in CreateGameInfoPage().`n")
+						g_oLog.LogLine("WARNING: SendMessage EM_GETLINECOUNT failed in CreateGameInfoPage().`n")
 					}
 					total_lines := ErrorLevel  ;This is the total line count (including the overflow)
 
@@ -440,30 +440,30 @@ class GameInfoDisplay
 					{
 						ErrorLevel := SendMessage(0xBB, screen_lines-1, 0,,"ahk_id " . hwndSrc)  ; EM_LINEINDEX
 						if (ErrorLevel == "FAIL")
-							oLog.LogLine("WARNING: SendMessage EM_LINEINDEX failed in CreateGameInfoPage().`n")	
+							g_oLog.LogLine("WARNING: SendMessage EM_LINEINDEX failed in CreateGameInfoPage().`n")	
 						offset := ErrorLevel ;this is the character # that starts the last displayable line
 						;Sleep 50
 
 						ErrorLevel := SendMessage(0xB1, offset, -1,,"ahk_id " . hwndSrc)  ; EM_SETSEL  Note, the -1 selects to the end of the text
 						if (ErrorLevel == "FAIL")
-							oLog.LogLine("WARNING: SendMessage EM_SETSEL failed in CreateGameInfoPage().`n")
+							g_oLog.LogLine("WARNING: SendMessage EM_SETSEL failed in CreateGameInfoPage().`n")
 						success := ErrorLevel ;now select all the overflow text
 						;Sleep 50
 
 						ErrorLevel := SendMessage(0x300,0,0,,"ahk_id " . hwndSrc)   ; WM_CUT    ;Cut overflow text from src edit control
 						if (ErrorLevel == "FAIL")
-							oLog.LogLine("WARNING: SendMessage EM_CUT failed in CreateGameInfoPage().`n")
+							g_oLog.LogLine("WARNING: SendMessage EM_CUT failed in CreateGameInfoPage().`n")
 						if !ClipWait(5) 
-							oLog.LogLine("WARNING: Could not save to clipboard in CreateGameInfoPage().`n")
+							g_oLog.LogLine("WARNING: Could not save to clipboard in CreateGameInfoPage().`n")
 						Sleep 300 ;required, to avoid side-effects (partial data in screens)
 
 						;ClipWait 5
 						;	if (ErrorLevel == 1)		
-						;		oLog.LogLine("WARNING: Could not save to clipboard in CreateGameInfoPage().`n")
+						;		g_oLog.LogLine("WARNING: Could not save to clipboard in CreateGameInfoPage().`n")
 
 						ErrorLevel := SendMessage(0x302,0,0,,"ahk_id " . hwndDest)  ; WM_PASTE  ;Paste this text into the dest edit control
 						if (ErrorLevel == "FAIL")
-							oLog.LogLine("WARNING: SendMessage EM_PASTE failed in CreateGameInfoPage().`n")
+							g_oLog.LogLine("WARNING: SendMessage EM_PASTE failed in CreateGameInfoPage().`n")
 						Sleep 100 ;give paste a little extra time (leaving this out can cause partial or no paste issues)
 						clipboard := "" ;clear the clipboard
 
@@ -471,7 +471,7 @@ class GameInfoDisplay
 						;to see if we need to continue.
 						ErrorLevel := SendMessage(0xBA,0,0,,"ahk_id " . hwndDest) ;EM_GETLINECOUNT
 						if (ErrorLevel == "FAIL")
-							oLog.LogLine("WARNING: SendMessage EM_GETLINECOUNT failed in CreateGameInfoPage().`n")
+							g_oLog.LogLine("WARNING: SendMessage EM_GETLINECOUNT failed in CreateGameInfoPage().`n")
 						total_lines := ErrorLevel  ;This is the total line count (including any new overflow)
 
 						delta := total_lines - screen_lines ;this is the number of lines of overflow text
@@ -505,7 +505,7 @@ class GameInfoDisplay
 		}
 		else ;assetType not "info", so must be an image type
 		{
-			asset_full_path := sAssetsFolder "\" assetType "\" this._rom "." sType
+			asset_full_path := g_sAssetsFolder "\" assetType "\" this._rom "." sType
 
 			gGui.guiGameInfo_GameImage%assetType% := guiGameInfo.AddPicture("BackgroundTrans vGameImage%" . assetType . "%", asset_full_path)		
 			gGui.guiGameInfo_GameImage%assetType%.GetPos(&game_image_posX, &game_image_posY, &game_image_posW, &game_image_posH)
@@ -515,21 +515,21 @@ class GameInfoDisplay
 			nMaxEnlarge := 1.5
 
 			image_width := game_image_posW * nMaxEnlarge
-			image_width := image_width >= nScreenWidth ? nScreenWidth : image_width
+			image_width := image_width >= g_nScreenWidth ? g_nScreenWidth : image_width
 
 			;Resize the image to fit on the screen while preserving aspect ratio
-			;image_width := nScreenWidth
+			;image_width := g_nScreenWidth
 			image_height := image_width * game_image_posH / game_image_posW
 	
-			if (image_height > nScreenHeight)
+			if (image_height > g_nScreenHeight)
 			{
-				image_height := nScreenHeight
+				image_height := g_nScreenHeight
 				image_width := image_height * game_image_posW / game_image_posH
 			}
 			
 			;center image
-			image_x := Floor(nScreenWidth / 2 - image_width / 2)
-			image_y := Floor(nScreenHeight / 2 - image_height / 2)
+			image_x := Floor(g_nScreenWidth / 2 - image_width / 2)
+			image_y := Floor(g_nScreenHeight / 2 - image_height / 2)
 	
 			gGui.guiGameInfo_GameImage%assetType%.Move(image_x, image_y, image_width, image_height)
 			gGui.guiGameInfo_GameImage%assetType%.Visible := false ;hide this for now (GameKey function will show/hide)

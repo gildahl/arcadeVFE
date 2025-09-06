@@ -13,17 +13,17 @@
 #include ..\MAMEData.ahk2
 
 sROMFolder := "D:\Stand Alone\Arcade Time Capsule\RetroVRArcade\Content\Roms"
-mameinfo_file := A_ScriptDir "\mameinfo.dat"
-mamehistory_file := A_ScriptDir "\history.xml"
+sMameInfoFile := A_ScriptDir "\mameinfo.dat"
+sMameHistoryFile := A_ScriptDir "\history.xml"
 fControls := A_ScriptDir "\controls.ini"
 fControlsclassic := A_ScriptDir "\controlsclassic.ini"
 
-oMameData := MAMEData(mameinfo_file, mamehistory_file)
+g_oMameData := MAMEData(sMameInfoFile, sMameHistoryFile)
 
 Loop Files sROMFolder "\*.zip"
 {
 	SplitPath(A_LoopFileName,,,,&OutNameNoExt)
-	controls := StrLower(oMameData.GetControls(OutNameNoExt))
+	controls := StrLower(g_oMameData.GetControls(OutNameNoExt))
 	IniWrite(controls, fControls, "Controls", OutNameNoExt)
 
 	sValue := ""

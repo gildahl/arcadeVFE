@@ -46,7 +46,7 @@ class Setup
         
         ;Add supported arcades to the list
         ;Arcades are supported via arcade-specific files in the \Arcade subfolder (minimally *.RomList.json)
-        loop files sArcadeFolder "\*.RomList.json"
+        loop files g_sArcadeFolder "\*.RomList.json"
         {
             local sArcade := SubStr(A_LoopFileName, 1, InStr(A_LoopFileName, ".") + 1)
             gcArcadeDropDown.Add([sArcade])
@@ -122,24 +122,24 @@ class Setup
 
     static PopulateFields()
     {
-        global oArcadeRomList
+        global g_oArcadeRomList
 
         if (!gcArcadeDropDown.Text)
-            try gcArcadeDropDown.Text := IniRead(sIniFile, "General", "Arcade", "Arcade Time Capsule 3.6")
+            try gcArcadeDropDown.Text := IniRead(g_sIniFile, "General", "Arcade", "Arcade Time Capsule 3.6")
 
-        try gcApplicationEdit.Text := IniRead(sIniFile, gcArcadeDropDown.Text, "Application")
-        try gcROMMonitorFolderEdit.Text := IniRead(sIniFile, gcArcadeDropDown.Text, "ROMFolder")            
+        try gcApplicationEdit.Text := IniRead(g_sIniFile, gcArcadeDropDown.Text, "Application")
+        try gcROMMonitorFolderEdit.Text := IniRead(g_sIniFile, gcArcadeDropDown.Text, "ROMFolder")            
 
         if (!gcApplicationEdit.Text && InStr(gcArcadeDropDown.Text, "Arcade Time Capsule"))
             gcApplicationEdit.Text := "RetroVRArcade.exe"      
 
         ;Set globals
-        global sArcadeString := gcArcadeDropDown.Text
-        global sApplicationName := gcApplicationEdit.Text
-        global sROMMonitorFolder := gcROMMonitorFolderEdit.Text 
-        global sDirectoryFile := sArcadeFolder "\" sArcadeString ".Locations.ini"
-        global sFloorsFile := sArcadeFolder "\" sArcadeString ".Floors.json"
-        global sVicinitiesFile := sArcadeFolder "\" sArcadeString ".Vicinities.json"
+        global g_sArcadeString := gcArcadeDropDown.Text
+        global g_sApplicationName := gcApplicationEdit.Text
+        global g_sROMMonitorFolder := gcROMMonitorFolderEdit.Text 
+        global g_sDirectoryFile := g_sArcadeFolder "\" g_sArcadeString ".Locations.ini"
+        global g_sFloorsFile := g_sArcadeFolder "\" g_sArcadeString ".Floors.json"
+        global g_sVicinitiesFile := g_sArcadeFolder "\" g_sArcadeString ".Vicinities.json"
 
         ;During startup, we reach this before the Settings dialog
         ;is created, so make sure we don't call these methods prematurely.
@@ -149,26 +149,26 @@ class Setup
             Settings.ReadVicinities()
         }
 
-        local sRomListFile := sArcadeFolder "\" sArcadeString ".RomList.json"
+        local sRomListFile := g_sArcadeFolder "\" g_sArcadeString ".RomList.json"
 
-        ;Initialize the global oArcadeRomList
-        if (sArcadeString != "Other") ;skip if "Other"
+        ;Initialize the global g_oArcadeRomList
+        if (g_sArcadeString != "Other") ;skip if "Other"
         {
             if (FileExist(sRomListFile))
             {
                 sJSON := FileRead(sRomListFile)
-                oArcadeRomList := JSON.parse(sJSON)
+                g_oArcadeRomList := JSON.parse(sJSON)
             }
             else {
-                oLog.LogLine("ERROR: Could not find rom list file: " sRomListFile "`n")
+                g_oLog.LogLine("ERROR: Could not find rom list file: " sRomListFile "`n")
             }
 
-            iCount := oArcadeRomList.Count
+            iCount := g_oArcadeRomList.Count
             if (iCount == 0)
-                oLog.LogLine("ERROR: Arcade rom list is empty!`n")
+                g_oLog.LogLine("ERROR: Arcade rom list is empty!`n")
         }
 
-        gcCopyRomsButton.Enabled := gcAuditButton.Enabled := sArcadeString != "Other" && DirExist(gcROMMonitorFolderEdit.Text) ? true : false
+        gcCopyRomsButton.Enabled := gcAuditButton.Enabled := g_sArcadeString != "Other" && DirExist(gcROMMonitorFolderEdit.Text) ? true : false
 
         Setup.UpdateApplyButton()
     }
@@ -177,7 +177,7 @@ class Setup
     {
         sSourceFolder := ""
 
-        try sSourceFolder := IniRead(sIniFile, "General", gcRomVersionDropDown.Text "RomVersionFolder")
+        try sSourceFolder := IniRead(g_sIniFile, "General", gcRomVersionDropDown.Text "RomVersionFolder")
 
         ;Must force dismisal of ToolTip over browse window
 		tempTT := gcCopyRomsBrowseButton.TT
@@ -202,12 +202,12 @@ class Setup
             gcAuditProgress.Visible := true
 
             ;As a future convenience, remember the folder that had been selected for this version of the roms
-            try IniWrite(sFolder, sIniFile, "General", gcRomVersionDropDown.Text "RomVersionFolder")
+            try IniWrite(sFolder, g_sIniFile, "General", gcRomVersionDropDown.Text "RomVersionFolder")
 
             ;Copy each file in the rom list having the specified version
-            for sRom, mInfo in oArcadeRomList
+            for sRom, mInfo in g_oArcadeRomList
             {
-                gcAuditProgress.Value := A_Index / oArcadeRomList.Count * 100 ;increment progress bar
+                gcAuditProgress.Value := A_Index / g_oArcadeRomList.Count * 100 ;increment progress bar
 
                 ;copy the rom
                 if (mInfo["MAMEVersion"] == gcRomVersionDropDown.Text)
@@ -238,7 +238,7 @@ class Setup
         ;Pull all unique MAME versions used by the rom list and
         ;populate the version list with these.
         oVersions := Map()
-        for sRom, mInfo in oArcadeRomList {
+        for sRom, mInfo in g_oArcadeRomList {
             oVersions[mInfo["MAMEVersion"]] := 1 ;1 is just a dummy value; we're storing the versions in the index.
         }
 
@@ -272,11 +272,11 @@ class Setup
         gcAuditButton.Enabled := false
         gcSetup_CloseButton.Enabled := false
         gcAuditProgress.Visible := true
-        oAuditLog.Init(sAuditFolder "\audit.txt", "arcadeVFE ROM File Audit")
+        oAuditLog.Init(g_sAuditFolder "\audit.txt", "arcadeVFE ROM File Audit")
 
         sROMFolder := gcROMMonitorFolderEdit.Text
         oAuditLog.LogLine("INFO: Start auditing ROM files in folder: " sROMFolder "\*.zip`n")
-        oAuditLog.LogLine("INFO: Using curated arcade ROM list: `"" sArcadeString "`"`n")
+        oAuditLog.LogLine("INFO: Using curated arcade ROM list: `"" g_sArcadeString "`"`n")
         oAuditLog.LogLine("`n")
 
         OG_DetectHiddenWindows := A_DetectHiddenWindows
@@ -298,9 +298,9 @@ class Setup
         }
 
         ;Loop through each file in the rom list for this arcade, doing a version-specific validation of each.
-        for sRom, mInfo in oArcadeRomList
+        for sRom, mInfo in g_oArcadeRomList
         {
-            gcAuditProgress.Value := A_Index / oArcadeRomList.Count * 100
+            gcAuditProgress.Value := A_Index / g_oArcadeRomList.Count * 100
 
             ;Missing file check
             if (!FileExist(sROMFolder "\" sRom ".zip"))
@@ -314,9 +314,9 @@ class Setup
             {
                 ;Use specific versions of MAME to do the -verifyroms checks
                 if (mInfo["MAMEVersion"] == "2010")
-                    exec := WshShell.Exec(sMame2010  ' -rompath "' sROMFolder '" -verifyroms ' sRom)
+                    exec := WshShell.Exec(g_sMame2010  ' -rompath "' sROMFolder '" -verifyroms ' sRom)
                 else if (mInfo["MAMEVersion"] == "2014")
-                    exec := WshShell.Exec(sMame2014  ' -rompath "' sROMFolder '" -verifyroms ' sRom)
+                    exec := WshShell.Exec(g_sMame2014  ' -rompath "' sROMFolder '" -verifyroms ' sRom)
 
                 stdout := Trim(StrReplace(exec.StdOut.ReadAll(), "`r`n", "; "), " " ";")
                 stderr := exec.StdErr.ReadAll()
@@ -361,7 +361,7 @@ class Setup
             sAnomalyPhrase := "anomaly was found."        
 
         oAuditLog.LogLine("`n")
-        oAuditLog.LogLine("INFO: Completed audit of " oArcadeRomList.Count " rom files. " iErrorCount " " sAnomalyPhrase "`n")
+        oAuditLog.LogLine("INFO: Completed audit of " g_oArcadeRomList.Count " rom files. " iErrorCount " " sAnomalyPhrase "`n")
         oAuditLog.LogLine("INFO: Please note that ROMs reporting anomalies may still work, but should be tested.`n")
 
         gcAuditProgress.Visible := false
@@ -409,9 +409,9 @@ class Setup
     {
         ;get saved values
         sArcade := sApplication := sROMFolder := ""
-        try sArcade := IniRead(sIniFile, "General", "Arcade")
-        try sApplication := IniRead(sIniFile, sArcade, "Application")
-        try sROMFolder := IniRead(sIniFile, sArcade, "ROMFolder")
+        try sArcade := IniRead(g_sIniFile, "General", "Arcade")
+        try sApplication := IniRead(g_sIniFile, sArcade, "Application")
+        try sROMFolder := IniRead(g_sIniFile, sArcade, "ROMFolder")
 
         ;handle case where settings haven't been applied
         if(sArcade != gcArcadeDropDown.Text || sApplication != gcApplicationEdit.Text || sROMFolder != gcROMMonitorFolderEdit.Text)
@@ -431,9 +431,9 @@ class Setup
         if (Setup.bAutoshow && sArcade && sApplication && DirExist(sROMFolder))
         {
             guiSetup.Hide()
-            global bCancelPoll := true
+            global g_bCancelPoll := true
             Settings.RefreshList()
-            oLog.LogLine("INFO: Showing Settings dialog.`n")
+            g_oLog.LogLine("INFO: Showing Settings dialog.`n")
             guiSettings.Show("X" Settings.mMetrics.X " Y" Settings.mMetrics.Y " W" Settings.mMetrics.Width " H" Settings.mMetrics.Height)
             Setup.bAutoshow := false
             return
@@ -449,43 +449,43 @@ class Setup
     {
         if (gcArcadeDropDown.Text && gcApplicationEdit.Text && DirExist(gcROMMonitorFolderEdit.Text))
         {
-            IniWrite(gcArcadeDropDown.Text, sIniFile, "General", "Arcade")
+            IniWrite(gcArcadeDropDown.Text, g_sIniFile, "General", "Arcade")
 
             ;if the rom folder was changed, reset the access dates
             sOGROMFolder := ""
-            try sOGROMFolder := IniRead(sIniFile, "General", "ROMFolder")
+            try sOGROMFolder := IniRead(g_sIniFile, "General", "ROMFolder")
             if (gcROMMonitorFolderEdit.Text != sOGROMFolder)
                 StartRomWatcher()
 
             ;Also index these settings in their own section
-            IniWrite(gcArcadeDropDown.Text, sIniFile, gcArcadeDropDown.Text, "Arcade")
-            IniWrite(gcApplicationEdit.Text, sIniFile, gcArcadeDropDown.Text, "Application")
-            IniWrite(gcROMMonitorFolderEdit.Text, sIniFile, gcArcadeDropDown.Text, "ROMFolder")
+            IniWrite(gcArcadeDropDown.Text, g_sIniFile, gcArcadeDropDown.Text, "Arcade")
+            IniWrite(gcApplicationEdit.Text, g_sIniFile, gcArcadeDropDown.Text, "Application")
+            IniWrite(gcROMMonitorFolderEdit.Text, g_sIniFile, gcArcadeDropDown.Text, "ROMFolder")
 
             ;Set globals
-            global sArcadeString := gcArcadeDropDown.Text
-            global sApplicationName := gcApplicationEdit.Text
-            global sROMMonitorFolder := gcROMMonitorFolderEdit.Text 
-            global sDirectoryFile := sArcadeFolder "\" sArcadeString ".Locations.ini"
-            global sFloorsFile := sArcadeFolder "\" sArcadeString ".Floors.json"
-            global sVicinitiesFile := sArcadeFolder "\" sArcadeString ".Vicinities.json"
+            global g_sArcadeString := gcArcadeDropDown.Text
+            global g_sApplicationName := gcApplicationEdit.Text
+            global g_sROMMonitorFolder := gcROMMonitorFolderEdit.Text 
+            global g_sDirectoryFile := g_sArcadeFolder "\" g_sArcadeString ".Locations.ini"
+            global g_sFloorsFile := g_sArcadeFolder "\" g_sArcadeString ".Floors.json"
+            global g_sVicinitiesFile := g_sArcadeFolder "\" g_sArcadeString ".Vicinities.json"
 
             Settings.FillRomList()
             Settings.SetRomInfo()
             gcApplyButton.Enabled := false
 
             if (!Setup.bAutoShow)
-                guiSettings.Title := sSettingsTitle " - " sArcadeString " - " gcActionListNameEdit.Text
+                guiSettings.Title := sSettingsTitle " - " g_sArcadeString " - " gcActionListNameEdit.Text
 
             ;Machine location editor is not supported for "Other" arcade
             ;Use try since this may be called before Settings is created
-            try gcShowLocations_Checkbox.Enabled := sArcadeString == "Other" ? false : true
+            try gcShowLocations_Checkbox.Enabled := g_sArcadeString == "Other" ? false : true
         }
     }
 
     static ROMMonitorFolderEdit_Change(*)
     {
-        gcCopyRomsButton.Enabled := gcAuditButton.Enabled := sArcadeString != "Other" && DirExist(gcROMMonitorFolderEdit.Text) ? true : false
+        gcCopyRomsButton.Enabled := gcAuditButton.Enabled := g_sArcadeString != "Other" && DirExist(gcROMMonitorFolderEdit.Text) ? true : false
 
         Setup.UpdateApplyButton()
     }
@@ -508,7 +508,7 @@ class Setup
         
         gcROMMonitorFolderEdit.Value := sFolder
 
-        gcCopyRomsButton.Enabled := gcAuditButton.Enabled := sArcadeString != "Other" && DirExist(gcROMMonitorFolderEdit.Text) ? true : false
+        gcCopyRomsButton.Enabled := gcAuditButton.Enabled := g_sArcadeString != "Other" && DirExist(gcROMMonitorFolderEdit.Text) ? true : false
 
         Setup.UpdateApplyButton()
     }

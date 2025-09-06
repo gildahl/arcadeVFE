@@ -24,7 +24,7 @@ Loop Files sROMFolder "\*.zip"
 ;List missing images
 try FileDelete(sDestinationFolder "\!missing.txt")
 iMissing := 0 
-global oLog := []
+global g_oLog := []
 
 Loop Files sROMFolder "\*.zip"
 {

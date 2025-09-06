@@ -41,9 +41,9 @@ global CodeVersion := "1.2"
 #include GameInfoDisplay.ahk2
 #include PacDrive.ahk2
 
-global sResourceFolder := A_ScriptDir "\Resources"
-global sJoystickIconFile := sResourceFolder "\joystick.ico"
-TraySetIcon sJoystickIconFile
+global g_sResourceFolder := A_ScriptDir "\Resources"
+global g_sJoystickIconFile := g_sResourceFolder "\joystick.ico"
+TraySetIcon g_sJoystickIconFile
 A_IconTip := "arcadeVFE`nVirtual Front End"
 
 OnMessage(WM_MOUSEMOVE  := 0x0200, OnMouseEvent)
@@ -53,92 +53,92 @@ OnMessage(WM_MOUSELEAVE := 0x02A3, OnMouseEvent)
 ;globals for GameInfo display
 global gGui := {}
 global guiGameInfo := ""
-global sCurrentROM := ""
-global color_edit_bg := "0x1F1F1F"
-global color_edit_text := "0xCCCCCC"
-global nScreenWidth := A_ScreenWidth * 96 // A_ScreenDPI
-global nScreenHeight := A_ScreenHeight * 96 // A_ScreenDPI
-global sGameInfoFolder := A_ScriptDir "\GameInfo"
-global sAssetsFolder := sGameInfoFolder "\Assets"
-global mameinfo_file := sGameInfoFolder "\mameinfo.dat"
-global mamehistory_file := sGameInfoFolder "\history.xml"
-global sControlsIniFile := sGameInfoFolder "\controls.ini"
-global sGamesXMLFile := sGameInfoFolder "\games.xml"
-global void_file := sGameInfoFolder "\void.png"
-global sLogoFolder := A_ScriptDir "\GameInfo\Logo"
-global oMameData := MAMEData(mameinfo_file, mamehistory_file)
-global oGameInfoDisplay := GameInfoDisplay()
-global iDefaultGameInfoFontSize := 18 
-global aImageOrder := Array()     
-global sImageOrder := "cabinets,cpanel,instructions,instructions_2,flyers,flyers_back,pcb"  
+global g_sCurrentROM := ""
+global g_color_edit_bg := "0x1F1F1F"
+global g_color_edit_text := "0xCCCCCC"
+global g_nScreenWidth := A_ScreenWidth * 96 // A_ScreenDPI
+global g_nScreenHeight := A_ScreenHeight * 96 // A_ScreenDPI
+global g_sGameInfoFolder := A_ScriptDir "\GameInfo"
+global g_sAssetsFolder := g_sGameInfoFolder "\Assets"
+global g_sMameInfoFile := g_sGameInfoFolder "\mameinfo.dat"
+global g_sMameHistoryFile := g_sGameInfoFolder "\history.xml"
+global g_sControlsIniFile := g_sGameInfoFolder "\controls.ini"
+global g_sGamesXMLFile := g_sGameInfoFolder "\games.xml"
+global g_sLogoFolder := A_ScriptDir "\GameInfo\Logo"
+global g_oMameData := MAMEData(g_sMameInfoFile, g_sMameHistoryFile)
+global g_oGameInfoDisplay := GameInfoDisplay()
+global g_iDefaultGameInfoFontSize := 18 
+global g_aImageOrder := Array()     
+global g_sImageOrder := "cabinets,cpanel,instructions,instructions_2,flyers,flyers_back,pcb"  
 ;***********************************************************
 
-global SDL2 := SDL2DLL() ;SDL library for game device discovery and polling
-global oPacDrive := PacDriveDLL() ;Support for Ultimarc ServoStik rotation
+global g_oSDL2 := SDL2DLL() ;SDL library for game device discovery and polling
+global g_oPacDrive := PacDriveDLL() ;Support for Ultimarc ServoStik rotation
 
 ;global flags
-global bCancelAssign := false
-global bCancelPoll := false
-global bActive := false
-global bOnlyMonitorWhenApplicationLoaded := false
-global iRawAccelPID := 0
-global sLastActionKey := ""
-global bSuppressLastAccess := false
+global g_bCancelAssign := false
+global g_bCancelPoll := false
+global g_bActive := false
+global g_bOnlyMonitorWhenArcadeIsLoaded := false
+global g_iRawAccelPID := 0
+global g_sLastActionKey := ""
+global g_bSuppressLastAccess := false
 
 ;global delays
-global iRestartDelay := 0              ;Delay in between application close and restart (in ms)
-global iCommandLineDelay := 500        ;Delay in between two consecutive command line calls (in ms)
+global g_iRestartDelay := 0              ;Delay in between application close and restart (in ms)
+global g_iCommandLineDelay := 500        ;Delay in between two consecutive command line calls (in ms)
 
 ;global objects
-global oVoice := voice_class()         ;initialize speech support
-global oTemplates                      ;Object used by the JSON parser to hold the Template list
-global oTweaks                         ;Object used by the JSON parser to hold the Tweaks list
-global oActions	:= Map()		       ;Object used by the JSON parser to hold the Actions list
-global aDevices := Array()             ;Holds the list of devices (a.k.a. Action Sources)
-global mDeviceIndex := Map()           ;Holds the indexes of the devices in the list
-global mDevices := Map()               ;Holds info for all devices in the list              ;
-global mRomsByName := Map()            ;A dictionary allowing a rom to be looked up by its description
-global aDefaultTemplates := Array()    ;The set of default command line templates
-global mROMVersions := Map()           ;Rom versions from listxml (games.xml)
+global g_oVoice := voice_class()         ;initialize speech support
+global g_oTemplates                      ;Object used by the JSON parser to hold the Template list
+global g_oTweaks                         ;Object used by the JSON parser to hold the Tweaks list
+global g_oActions	:= Map()		       ;Object used by the JSON parser to hold the Actions list
+global g_aDevices := Array()             ;Holds the list of devices (a.k.a. Action Sources)
+global g_mDeviceIndex := Map()           ;Holds the indexes of the devices in the list
+global g_mDevices := Map()               ;Holds info for all devices in the list              ;
+global g_mRomsByName := Map()            ;A dictionary allowing a rom to be looked up by its description
 
 ;Populate the default command templates
-aDefaultTemplates.Push('"C:\Program Files\Virtual Controller\VirtualController.exe" /load "[profile_name]" /run /minimize')
-aDefaultTemplates.Push('"C:\Program Files (x86)\Ultramap\Ultramap.exe" "[profile_full_name]"')
-aDefaultTemplates.Push('Set Ultimarc ServoStik: 4-way')
-aDefaultTemplates.Push('Set Ultimarc ServoStik: 8-way')
+global g_aDefaultTemplates := Array()    ;The set of default command line templates
+g_aDefaultTemplates.Push('"C:\Program Files\Virtual Controller\VirtualController.exe" /load "[profile_name]" /run /minimize')
+g_aDefaultTemplates.Push('"C:\Program Files (x86)\Ultramap\Ultramap.exe" "[profile_full_name]"')
+g_aDefaultTemplates.Push('Set Ultimarc ServoStik: 4-way')
+g_aDefaultTemplates.Push('Set Ultimarc ServoStik: 8-way')
 
 ;folder defaults
-global sConfigFolder := A_ScriptDir "\Config"
-global sUserFolder := A_ScriptDir "\User"
-global sLogFolder := A_ScriptDir "\Log"
-global sRawAccelFolder := A_ScriptDir "\RawAccel"
-global sAuditFolder := A_ScriptDir "\Audit"
-global sArcadeFolder := A_ScriptDir "\Arcade"
+global g_sConfigFolder := A_ScriptDir "\Config"
+global g_sUserFolder := A_ScriptDir "\User"
+global g_sLogFolder := A_ScriptDir "\Log"
+global g_sRawAccelFolder := A_ScriptDir "\RawAccel"
+global g_sAuditFolder := A_ScriptDir "\Audit"
+global g_sArcadeFolder := A_ScriptDir "\Arcade"
 
 ;filename defaults
-global sUserFile := sUserFolder "\Arcade Controller.json"
-global sTemplatesFile := sConfigFolder "\templates.json"
-global sTweaksFile := sConfigFolder "\tweaks.json"
-global sIniFile := sConfigFolder "\vfe.ini"
-global sRawAccelExe := sRawAccelFolder "\rawaccel.exe"
-global sMame2010 := sAuditFolder "\mame2010\mame64.exe" ;For MAME 2010 / 0.139 rom file audits
-global sMame2014 := sAuditFolder "\mame2014\mame64.exe" ;For MAME 2014 / 0.159 rom file audits
+global g_sUserFile := g_sUserFolder "\Arcade Controller.json"
+global g_sTemplatesFile := g_sConfigFolder "\templates.json"
+global g_sTweaksFile := g_sConfigFolder "\tweaks.json"
+global g_sIniFile := g_sConfigFolder "\vfe.ini"
+global g_sRawAccelExe := g_sRawAccelFolder "\rawaccel.exe"
+global g_sMame2010 := g_sAuditFolder "\mame2010\mame64.exe" ;For MAME 2010 / 0.139 rom file audits
+global g_sMame2014 := g_sAuditFolder "\mame2014\mame64.exe" ;For MAME 2014 / 0.159 rom file audits
 
-;rename old .ini file if it exists (as of ver. 1.2)
-if (FileExist(sConfigFolder "\arcadeVFE.ini"))
-	FileMove(sConfigFolder "\arcadeVFE.ini", sConfigFolder "\vfe.ini")
+;Make file updates effective with ver. 1.2)
+if (FileExist(g_sConfigFolder "\arcadeVFE.ini"))
+	FileMove(g_sConfigFolder "\arcadeVFE.ini", g_sConfigFolder "\vfe.ini")
+if (FileExist(g_sGameInfoFolder "\void.png"))
+	FileDelete(g_sGameInfoFolder "\void.png")
 
 ;arcade globals
 ;get initialized and set in Setup.PopulateFields() and Setup_ApplyButton_Click()
-global sArcadeString := ""             ;Currently may be "Arcade Time Capsule 3.6" or "Other"
-global sDirectoryFile := ""
-global sFloorsFile := ""   
-global sVicinitiesFile := ""
-global sApplicationName := ""
-global sROMMonitorFolder := ""
-global oArcadeRomList := Map()         ;Holds the curated arcade rom list including rom versions 
-global oFloors                         ;initialized in Settings.ReadFloors()
-global oVicinities                     ;initialized in Settings.ReadVicinities()
+global g_sArcadeString := ""             ;Currently may be "Arcade Time Capsule 3.6" or "Other"
+global g_sDirectoryFile := ""
+global g_sFloorsFile := ""   
+global g_sVicinitiesFile := ""
+global g_sApplicationName := ""
+global g_sROMMonitorFolder := ""
+global g_oArcadeRomList := Map()         ;Holds the curated arcade rom list including rom versions 
+global g_oFloors                         ;initialized in Settings.ReadFloors()
+global g_oVicinities                     ;initialized in Settings.ReadVicinities()
 
 ;group constants
 global TWO_WAY_H :=  "[Group, 2-way horizontal]"
@@ -152,36 +152,36 @@ global ROTARY    :=  "[Group, rotary]"
 global SPINNER   :=  "[Group, spinner]"
 global TRACKBALL :=  "[Group, trackball]"
 
-global oLog := AppLog()
-oLog.Init(sLogFolder "\log.txt", "arcadeVFE") ;initialize the application log
+global g_oLog := AppLog()
+g_oLog.Init(g_sLogFolder "\log.txt", "arcadeVFE") ;initialize the application log
 OnError LogError ;deal with unhandled exceptions
 
 global oAuditLog := AppLog()
 
 ;Create configuration folder if it doesn't already exist
-CreateDirAndLog(sConfigFolder)
-CreateDirAndLog(sUserFolder)
+CreateDirAndLog(g_sConfigFolder)
+CreateDirAndLog(g_sUserFolder)
 
 ;Process the command line if any args 
 ;Currently, the only supported parameter is the name of a specific named/saved
 ;<Action list>.json files
 if (A_Args.Length > 0)
 {
-	oLog.LogLine("INFO: Ran with command line parameter: `"" A_Args[1] "`"`n") 
+	g_oLog.LogLine("INFO: Ran with command line parameter: `"" A_Args[1] "`"`n") 
 	SplitPath(A_Args[1],,,,&sArgNoExt) 
-	loop files sUserFolder "\*.json"
+	loop files g_sUserFolder "\*.json"
 	{		
 		SplitPath(A_LoopFileName,,,,&sLoopFileNoExt)
 		if (A_LoopFileName = A_Args[1] || sLoopFileNoExt = A_Args[1])
 		{
-			IniWrite(sLoopFileNoExt, sIniFile, "General", "ActionListName")
+			IniWrite(sLoopFileNoExt, g_sIniFile, "General", "ActionListName")
 			break
 		}
 	}
 }
 else
 {
-	oLog.LogLine("INFO: Ran with no command line parameter`n") 
+	g_oLog.LogLine("INFO: Ran with no command line parameter`n") 
 }
 
 ;==============================
@@ -207,56 +207,56 @@ DoFileAudit()
 
 	;Root folder files
 	if (!FileExist(A_ScriptDir "\icons.dll"))
-		bAuditSuccessful := false, oLog.LogLine("ERROR: Required file missing: " A_ScriptDir "\icons.dll" "`n")
+		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " A_ScriptDir "\icons.dll" "`n")
 	if (!FileExist(A_ScriptDir "\PacDrive64.dll"))
-		bAuditSuccessful := false, oLog.LogLine("ERROR: Required file missing: " A_ScriptDir "\PacDrive64.dll" "`n")
+		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " A_ScriptDir "\PacDrive64.dll" "`n")
 	if (!FileExist(A_ScriptDir "\SDL2.dll"))
-		bAuditSuccessful := false, oLog.LogLine("ERROR: Required file missing: " A_ScriptDir "\SDL2.dll" "`n")
+		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " A_ScriptDir "\SDL2.dll" "`n")
 	if (!FileExist(A_ScriptDir "\UltraStik64.dll"))
-		bAuditSuccessful := false, oLog.LogLine("ERROR: Required file missing: " A_ScriptDir "\UltraStik64.dll" "`n")
+		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " A_ScriptDir "\UltraStik64.dll" "`n")
 
 	;.\GameInfo folder files
-	if (!FileExist(mameinfo_file))
-		bAuditSuccessful := false, oLog.LogLine("ERROR: Required file missing: " mameinfo_file "`n")
-	if (!FileExist(mamehistory_file))
-		bAuditSuccessful := false, oLog.LogLine("ERROR: Required file missing: " mamehistory_file "`n")
-	if (!FileExist(sControlsIniFile))
-		bAuditSuccessful := false, oLog.LogLine("ERROR: Required file missing: " sControlsIniFile "`n")
-	if (!FileExist(sGamesXMLFile))
-		bAuditSuccessful := false, oLog.LogLine("ERROR: Required file missing: " sGamesXMLFile "`n")
+	if (!FileExist(g_sMameInfoFile))
+		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " g_sMameInfoFile "`n")
+	if (!FileExist(g_sMameHistoryFile))
+		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " g_sMameHistoryFile "`n")
+	if (!FileExist(g_sControlsIniFile))
+		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " g_sControlsIniFile "`n")
+	if (!FileExist(g_sGamesXMLFile))
+		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " g_sGamesXMLFile "`n")
 
 	;.\Audit folder files
-	if (!FileExist(sMame2010))
-		bAuditSuccessful := false, oLog.LogLine("ERROR: Required file missing: " sMame2010 "`n")
-	if (!FileExist(sMame2014))
-		bAuditSuccessful := false, oLog.LogLine("ERROR: Required file missing: " sMame2014 "`n")
+	if (!FileExist(g_sMame2010))
+		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " g_sMame2010 "`n")
+	if (!FileExist(g_sMame2014))
+		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " g_sMame2014 "`n")
 
 	;.\Resources folder file
-	if (!FileExist(sJoystickIconFile))
-		bAuditSuccessful := false, oLog.LogLine("ERROR: Required file missing: " sMame2014 "`n")
+	if (!FileExist(g_sJoystickIconFile))
+		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " g_sMame2014 "`n")
 
 	;.\Arcade folder files
 	if (!FileExist(A_ScriptDir "\Arcade\Arcade Time Capsule 3.6.Floors.json"))
-		bAuditSuccessful := false, oLog.LogLine("ERROR: Required file missing: " A_ScriptDir "\Arcade\Arcade Time Capsule 3.6.Floors.json" "`n")
+		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " A_ScriptDir "\Arcade\Arcade Time Capsule 3.6.Floors.json" "`n")
 	if (!FileExist(A_ScriptDir "\Arcade\Arcade Time Capsule 3.6.Locations.ini"))
-		bAuditSuccessful := false, oLog.LogLine("ERROR: Required file missing: " A_ScriptDir "\Arcade\Arcade Time Capsule 3.6.Locations.ini" "`n")
+		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " A_ScriptDir "\Arcade\Arcade Time Capsule 3.6.Locations.ini" "`n")
 	if (!FileExist(A_ScriptDir "\Arcade\Arcade Time Capsule 3.6.RomList.json"))
-		bAuditSuccessful := false, oLog.LogLine("ERROR: Required file missing: " A_ScriptDir "\Arcade\Arcade Time Capsule 3.6.RomList.json" "`n")
+		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " A_ScriptDir "\Arcade\Arcade Time Capsule 3.6.RomList.json" "`n")
 	if (!FileExist(A_ScriptDir "\Arcade\Arcade Time Capsule 3.6.Vicinities.json"))
-		bAuditSuccessful := false, oLog.LogLine("ERROR: Required file missing: " A_ScriptDir "\Arcade\Arcade Time Capsule 3.6.Vicinities.json" "`n")
+		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " A_ScriptDir "\Arcade\Arcade Time Capsule 3.6.Vicinities.json" "`n")
 
 	if (bAuditSuccessful)
-		oLog.LogLine("INFO: All required runtime files confirmed to exist.`n")
+		g_oLog.LogLine("INFO: All required runtime files confirmed to exist.`n")
 
 	;Also audit optional files
 	Loop Files A_ScriptDir "\User\*.json" {
-		oLog.LogLine("INFO: Found action list file(s): " A_LoopFileName "`n")
+		g_oLog.LogLine("INFO: Found action list file(s): " A_LoopFileName "`n")
 	}
 
 	if (FileExist(A_ScriptDir "\RawAccel\rawaccel.exe"))
-		oLog.LogLine("INFO: RawAccel is present.`n")
+		g_oLog.LogLine("INFO: RawAccel is present.`n")
 	else
-		oLog.LogLine("INFO: RawAccel is not present.`n")
+		g_oLog.LogLine("INFO: RawAccel is not present.`n")
 }
 
 /**
@@ -267,73 +267,73 @@ LoadConfig()
 {
     ;Initialize GameInfo image order
 	try {
-		global sImageOrder := IniRead(sIniFile, "General", "ImageOrder")
+		global g_sImageOrder := IniRead(g_sIniFile, "General", "ImageOrder")
 	}
 	catch {
-		IniWrite(sImageOrder, sIniFile, "General", "ImageOrder")
+		IniWrite(g_sImageOrder, g_sIniFile, "General", "ImageOrder")
 	}
 
-	;Create the fully validated aImageOrder array accounting for possible
+	;Create the fully validated g_aImageOrder array accounting for possible
 	;additional folders or deleted folders
-	global aImageOrder := StrSplit(sImageOrder,",", " ") 
-	aTempImageOrder := aImageOrder
+	global g_aImageOrder := StrSplit(g_sImageOrder,",", " ") 
+	aTempImageOrder := g_aImageOrder
 	Loop Files A_ScriptDir "\GameInfo\Assets\*.*", "D"
 	{
-		if (!IsValueInArray(aImageOrder, A_LoopFileName))
+		if (!IsValueInArray(g_aImageOrder, A_LoopFileName))
 			aTempImageOrder.Push(A_LoopFileName)
 	}
-	aImageOrder := aTempImageOrder
-	for i, sImageFolder in aImageOrder
+	g_aImageOrder := aTempImageOrder
+	for i, sImageFolder in g_aImageOrder
 	{
 		if (!DirExist(A_ScriptDir "\GameInfo\Assets\" sImageFolder))
 			RemoveValueFromArray(&aTempImageOrder, sImageFolder)
 	}
-	aImageOrder := aTempImageOrder
+	g_aImageOrder := aTempImageOrder
 
 	;Initialize delay between closing an app and restarting it to 500ms
 	try {
-		global iRestartDelay := IniRead(sIniFile, "General", "RestartDelay")
+		global g_iRestartDelay := IniRead(g_sIniFile, "General", "RestartDelay")
 	}
 	catch {
-		IniWrite(iRestartDelay, sIniFile, "General", "RestartDelay")
+		IniWrite(g_iRestartDelay, g_sIniFile, "General", "RestartDelay")
 	}
 
 	;Init delay between two consecutive command line calls to 1000ms
 	try {
-		global iCommandLineDelay := IniRead(sIniFile, "General", "CommandLineDelay")
+		global g_iCommandLineDelay := IniRead(g_sIniFile, "General", "CommandLineDelay")
 	}
 	catch {
-		IniWrite(iCommandLineDelay, sIniFile, "General", "CommandLineDelay")
+		IniWrite(g_iCommandLineDelay, g_sIniFile, "General", "CommandLineDelay")
 	}
 
 	;Init RawAccel path
 	try {
-		sRA := IniRead(sIniFile, "General", "RawAccelExe")
+		sRA := IniRead(g_sIniFile, "General", "RawAccelExe")
 
 		;in case the folder was moved
 		if (!FileExist(sRA))
 		{
-			if (FileExist(sRawAccelExe))
-				IniWrite(sRawAccelExe, sIniFile, "General", "RawAccelExe")
+			if (FileExist(g_sRawAccelExe))
+				IniWrite(g_sRawAccelExe, g_sIniFile, "General", "RawAccelExe")
 		    else
-				global sRawAccelExe := sRA
+				global g_sRawAccelExe := sRA
 		}
 	}
 	catch {
-		IniWrite(sRawAccelExe, sIniFile, "General", "RawAccelExe")
+		IniWrite(g_sRawAccelExe, g_sIniFile, "General", "RawAccelExe")
 	}
 }
 
 /**
- * Load any application-specific tweaks from tweaks.json into oTweaks.
+ * Load any application-specific tweaks from tweaks.json into g_oTweaks.
  * Create a default tweaks.json if not found.
  */
 LoadTweaks()
 {
-	if (FileExist(sTweaksFile))
+	if (FileExist(g_sTweaksFile))
 	{
-		sJSON := FileRead(sTweaksFile)
-		global oTweaks := JSON.parse(sJSON)
+		sJSON := FileRead(g_sTweaksFile)
+		global g_oTweaks := JSON.parse(sJSON)
 	}
 	else
 	{
@@ -346,14 +346,14 @@ LoadTweaks()
 
 		sJSON := JSON.stringify(mTweaks)
 
-		fTweaksFile := FileOpen(sTweaksFile, "w")
+		fTweaksFile := FileOpen(g_sTweaksFile, "w")
 
 		fTweaksFile.Write(sJSON)
 		fTweaksFile.Close()
 
-		;Now rebuild the oActions map
-		sJSON := FileRead(sTweaksFile)
-		global oTweaks := JSON.parse(sJSON)
+		;Now rebuild the g_oActions map
+		sJSON := FileRead(g_sTweaksFile)
+		global g_oTweaks := JSON.parse(sJSON)
 	}
 }
 
@@ -365,29 +365,29 @@ LoadTweaks()
 StartRomWatcher()
 {
 	attrib := ""
-	try	attrib := DirExist(sROMMonitorFolder)  
+	try	attrib := DirExist(g_sROMMonitorFolder)  
 	
 	if (attrib)
 	{
-		oLog.LogLine("INFO: ROM Folder set to: `"" sROMMonitorFolder ".`n")
+		g_oLog.LogLine("INFO: ROM Folder set to: `"" g_sROMMonitorFolder ".`n")
 
 		;Ensure all rom files have a last-accessed date/time of a week ago. This is to address
 		;a Windows deficiency in which the last-access date/time of files is not updated if the file
 		;was previously accessed within the last hour or so (or sometimes since the last boot), so
 		;we want them to look sufficiently old to force Windows to set the access timestamp that will
 		;trigger our notification.
-		FileSetTime DateAdd(A_Now, -7, "days"), sROMMonitorFolder "\*.zip", "A"
+		FileSetTime DateAdd(A_Now, -7, "days"), g_sROMMonitorFolder "\*.zip", "A"
 
 		;Register the folder whose files will be monitored for being accessed. 32 watches for changes
 		;to the file access timestamp, and will notify RomAccess_Event() when such detections are made.
-		WatchFolder(sROMMonitorFolder, RomAccess_Event, False, 32) ;32 = FILE_NOTIFY_CHANGE_LAST_ACCESS
+		WatchFolder(g_sROMMonitorFolder, RomAccess_Event, False, 32) ;32 = FILE_NOTIFY_CHANGE_LAST_ACCESS
 	}
 	else
 	{
-		if (sROMMonitorFolder == "")
-			oLog.LogLine("INFO: ROM Folder is not configured.`n")
+		if (g_sROMMonitorFolder == "")
+			g_oLog.LogLine("INFO: ROM Folder is not configured.`n")
 		else
-			oLog.LogLine("INFO: ROM Folder: `"" sROMMonitorFolder "`" is invalid.`n")
+			g_oLog.LogLine("INFO: ROM Folder: `"" g_sROMMonitorFolder "`" is invalid.`n")
 	}
 }
 
@@ -402,9 +402,9 @@ RomAccess_Event(sFolder, aChanges, bIgnore:=false)
 {
     static tLastFileName := ""
 
-	if (bSuppressLastAccess)
+	if (g_bSuppressLastAccess)
 	{
-		global bSuppressLastAccess := false
+		global g_bSuppressLastAccess := false
 		return
 	}
 
@@ -426,16 +426,16 @@ RomAccess_Event(sFolder, aChanges, bIgnore:=false)
 	{
 		FileSetTime DateAdd(A_Now, -7, "days"), sFolder, "A"
 		SplitPath(sFolder, &OutName)
-		oLog.LogLine("INFO: Access timestamp updated on file (retroactive): `"" OutName "`"`n")
+		g_oLog.LogLine("INFO: Access timestamp updated on file (retroactive): `"" OutName "`"`n")
 	}
-	else if (sCurrentROM) ;this will be true if RomAccess_Event() was called by WatchFolder (note: sCurrentROM is a global)
+	else if (g_sCurrentROM) ;this will be true if RomAccess_Event() was called by WatchFolder (note: g_sCurrentROM is a global)
 	{
-		FileSetTime DateAdd(A_Now, -7, "days"), sCurrentRom, "A"
-		SplitPath(sCurrentRom, &OutName)
-		oLog.LogLine("INFO: Access timestamp updated on file (active): `"" sCurrentRom "`"`n")
+		FileSetTime DateAdd(A_Now, -7, "days"), g_sCurrentROM, "A"
+		SplitPath(g_sCurrentROM, &OutName)
+		g_oLog.LogLine("INFO: Access timestamp updated on file (active): `"" g_sCurrentROM "`"`n")
 	}
 
-	tLastFileName := sCurrentRom
+	tLastFileName := g_sCurrentROM
 
 	if (bIgnore)
 		return
@@ -444,10 +444,10 @@ RomAccess_Event(sFolder, aChanges, bIgnore:=false)
 	;it's important that we don't leave earlier than this point since any file activity can happen in
 	;the dormant state and if it does, we still need to update the timestamps above. Also note that
 	;we don't use the **PAUSE feature of WatchFolder since it has side-effects.
-	if (!bActive)
+	if (!g_bActive)
 		return
 
-	oLog.LogLine("INFO: ROM file: `"" sNewROMFile "`" was accessed.`n")
+	g_oLog.LogLine("INFO: ROM file: `"" sNewROMFile "`" was accessed.`n")
 	
 	SplitPath(sNewROMFile,,,,&OutNameNoExt) ;strip off .zip extension
 
@@ -459,7 +459,7 @@ RomAccess_Event(sFolder, aChanges, bIgnore:=false)
 	{
 		;Get the game's native controller info from controls.ini
 		sControl := ""
-		try sControl := IniRead(sControlsIniFile, "Controls", OutNameNoExt)
+		try sControl := IniRead(g_sControlsIniFile, "Controls", OutNameNoExt)
 
 		sAction := ""
 		;Select the appropriate action as listed in controls.ini (if one exists)
@@ -489,67 +489,67 @@ RomAccess_Event(sFolder, aChanges, bIgnore:=false)
 
 		oAction := GetAction("ROM Monitor", sAction, mIndexer)
 		if (oAction.Key)
-			oLog.LogLine("INFO: Using the " sAction " action for rom: " OutNameNoExt "`n")
+			g_oLog.LogLine("INFO: Using the " sAction " action for rom: " OutNameNoExt "`n")
 
 		;no Group, so attempt to apply a [Default] action (if one exists)
 		if (oAction.Key == "")
 		{
 			oAction := GetAction("ROM Monitor", "[Default]", mIndexer)
 			if (oAction.Key)
-				oLog.LogLine("INFO: Using the [Default] action for rom: " OutNameNoExt "`n")
+				g_oLog.LogLine("INFO: Using the [Default] action for rom: " OutNameNoExt "`n")
 		}
 
 		;we tried everything, so report it to the log
 		if (oAction.Key == "")
-			oLog.LogLine("INFO: No action could be found for rom: " OutNameNoExt "`n")
+			g_oLog.LogLine("INFO: No action could be found for rom: " OutNameNoExt "`n")
 	}
 	
 	RunAction(oAction) ;execute the action
 
-	global sCurrentROM := sNewROMFile ;this *must* be above the call to ShowGameInfo()
+	global g_sCurrentROM := sNewROMFile ;this *must* be above the call to ShowGameInfo()
 
 	;Show GameInfo (but only if the option is turned on and the application is running)
-	if ((gcShowGameInfo_Checkbox.Value && gcShowGameInfo_Checkbox.Enabled) && bOnlyMonitorWhenApplicationLoaded && ProcessExist(sApplicationName))
+	if ((gcShowGameInfo_Checkbox.Value && gcShowGameInfo_Checkbox.Enabled) && g_bOnlyMonitorWhenArcadeIsLoaded && ProcessExist(g_sApplicationName))
 		ShowGameInfo(OutNameNoExt)	
 }
 
 /**
  * This gets called every 250ms when active. It is active whenever the main monitoring Poll() loop is 
- * not running and the bOnlyMonitorWhenApplicationLoaded is set to true. If it detects the application has
+ * not running and the g_bOnlyMonitorWhenArcadeIsLoaded is set to true. If it detects the application has
  * started/resumed running, it will kill its timer and resume monitoring by calling Poll().
  */
 ApplicationProcessCheck_Callback()
 {
-	global bCancelPoll
-	global iRawAccelPID
+	global g_bCancelPoll
+	global g_iRawAccelPID
 
-	;Terminate this timer if bCancelPoll gets set
+	;Terminate this timer if g_bCancelPoll gets set
 	;Needed to support toggling of "Monitor only when Arcade running" option
-	if (bCancelPoll)
+	if (g_bCancelPoll)
 	{
-		bCancelPoll := false
+		g_bCancelPoll := false
 		SetTimer(ApplicationProcessCheck_Callback, 0)
 	}
 
 	;if we are only supposed to monitor when an application is loaded and it is
 	;now loaded, then call Poll() to start/resume monitoring
-	if (bOnlyMonitorWhenApplicationLoaded && ProcessExist(sApplicationName))
+	if (g_bOnlyMonitorWhenArcadeIsLoaded && ProcessExist(g_sApplicationName))
 	{
-		oLog.LogLine("INFO: Application, `"" sApplicationName "`" was detected.`n" )
+		g_oLog.LogLine("INFO: Application, `"" g_sApplicationName "`" was detected.`n" )
 
-		;Refresh the sCurrentROM timestamp since it might get replayed
-		if (sCurrentROM) ;sCurrentROM is a global
+		;Refresh the g_sCurrentROM timestamp since it might get replayed
+		if (g_sCurrentROM) ;g_sCurrentROM is a global
 		{
-			global bSuppressLastAccess := true
-			FileSetTime DateAdd(A_Now, -7, "days"), sCurrentRom, "A"
+			global g_bSuppressLastAccess := true
+			FileSetTime DateAdd(A_Now, -7, "days"), g_sCurrentROM, "A"
 		}
 
 		;Run RawAccel if the option is checked and it's available
-		if (gcRawAccel_Checkbox.Value && FileExist(sRawAccelExe))
+		if (gcRawAccel_Checkbox.Value && FileExist(g_sRawAccelExe))
 		{
-			SplitPath(sRawAccelExe,,&OutDir)
-			Run sRawAccelExe, OutDir, "Min", &iRawAccelPID
-			oLog.LogLine("INFO: RawAccel started from: " sRawAccelExe ".`n" )
+			SplitPath(g_sRawAccelExe,,&OutDir)
+			Run g_sRawAccelExe, OutDir, "Min", &g_iRawAccelPID
+			g_oLog.LogLine("INFO: RawAccel started from: " g_sRawAccelExe ".`n" )
 		}
 
 		;terminate this timer since Poll() will now take up monitoring 
@@ -562,20 +562,20 @@ ApplicationProcessCheck_Callback()
 /**
  * Main handler for game controller buttons and keyboard key presses.
  * 
- * Set the global bCancelPoll := false to disable polling. 
+ * Set the global g_bCancelPoll := false to disable polling. 
  * Call Poll() to start/resume polling.
  */
 Poll()
 {
-	global bCancelPoll
-	global bActive := true
-	global iRawAccelPID
+	global g_bCancelPoll
+	global g_bActive := true
+	global g_iRawAccelPID
 
-	if (!bCancelPoll)
-		oLog.LogLine("INFO: Polling started...`n" )
+	if (!g_bCancelPoll)
+		g_oLog.LogLine("INFO: Polling started...`n" )
 
 	;Register plain old AHK hotkeys for keypress handling
-	for device, buttons in oActions
+	for device, buttons in g_oActions
 	{
 		for button, sequences in buttons
 		{
@@ -596,58 +596,58 @@ Poll()
     evtBuffer := Buffer(56,0)
 
 	;purge the buffer
-	SDL2.SDL_PumpEvents()
-	SDL2.SDL_FlushEvent(SDL_EventType.SDL_JOYBUTTONDOWN)
-	SDL2.SDL_FlushEvent(SDL_EventType.SDL_JOYBUTTONUP)
-	SDL2.SDL_FlushEvent(SDL_EventType.SDL_JOYHATMOTION)
+	g_oSDL2.SDL_PumpEvents()
+	g_oSDL2.SDL_FlushEvent(SDL_EventType.SDL_JOYBUTTONDOWN)
+	g_oSDL2.SDL_FlushEvent(SDL_EventType.SDL_JOYBUTTONUP)
+	g_oSDL2.SDL_FlushEvent(SDL_EventType.SDL_JOYHATMOTION)
    
 	mIndexer := Map() ;Used to keep track of button/key sequences
 
     ;Poll for SDL_Event 
     loop
     {
-		PollEvent := SDL2.SDL_PollEvent(evtBuffer)
+		PollEvent := g_oSDL2.SDL_PollEvent(evtBuffer)
 		evt := SDL2DLL.SDL_Event(evtBuffer)
 
 		;if we are only supposed to monitor when an application is loaded and it is
 		;not currently loaded, then cancel the Poll() loop, and register a timer
 		;to wait for the application to be loaded.
-		if (bOnlyMonitorWhenApplicationLoaded && !ProcessExist(sApplicationName))
+		if (g_bOnlyMonitorWhenArcadeIsLoaded && !ProcessExist(g_sApplicationName))
 		{
-			oLog.LogLine("INFO: Application, `"" sApplicationName "`" not detected.`n" )
+			g_oLog.LogLine("INFO: Application, `"" g_sApplicationName "`" not detected.`n" )
 
 			;shutdown RawAccel if it is running
-			if (gcRawAccel_Checkbox.Value && iRawAccelPID)
+			if (gcRawAccel_Checkbox.Value && g_iRawAccelPID)
 			{
-				ProcessClose(iRawAccelPID)
-				iRawAccelPID := 0
-				oLog.LogLine("INFO: RawAccel Closed.`n" )
+				ProcessClose(g_iRawAccelPID)
+				g_iRawAccelPID := 0
+				g_oLog.LogLine("INFO: RawAccel Closed.`n" )
 			}
 
 			;Turn off the GameInfo display if it is running
-			if (oGameInfoDisplay.Active)
-				oGameInfoDisplay.Clear()
+			if (g_oGameInfoDisplay.Active)
+				g_oGameInfoDisplay.Clear()
 
-			bCancelPoll := true
+			g_bCancelPoll := true
 
-			;reset sLastActionKey in case any config changes are made 
+			;reset g_sLastActionKey in case any config changes are made 
 			;externally while the application is closed.
-			global sLastActionKey := ""
+			global g_sLastActionKey := ""
 
 			;Start a monitor to poll the application for its resumption
 			SetTimer(ApplicationProcessCheck_Callback)
 		}
 
-		if (bCancelPoll)
+		if (g_bCancelPoll)
 		{
-			oLog.LogLine("INFO: Polling disabled.`n" )
+			g_oLog.LogLine("INFO: Polling disabled.`n" )
 
-			SDL2.SDL_FlushEvent(SDL_EventType.SDL_JOYBUTTONDOWN)
-			SDL2.SDL_FlushEvent(SDL_EventType.SDL_JOYBUTTONUP)
-			SDL2.SDL_FlushEvent(SDL_EventType.SDL_JOYHATMOTION)
+			g_oSDL2.SDL_FlushEvent(SDL_EventType.SDL_JOYBUTTONDOWN)
+			g_oSDL2.SDL_FlushEvent(SDL_EventType.SDL_JOYBUTTONUP)
+			g_oSDL2.SDL_FlushEvent(SDL_EventType.SDL_JOYHATMOTION)
 
 			;disable hotkeys
-			for device, buttons in oActions
+			for device, buttons in g_oActions
 			{
 				for button, sequences in buttons
 				{
@@ -660,8 +660,8 @@ Poll()
 			}
 
 			;set global flags
-			bCancelPoll := false 
-			bActive := false
+			g_bCancelPoll := false 
+			g_bActive := false
 			break
 		}
 
@@ -670,13 +670,13 @@ Poll()
 		{
 			if (evt.type == SDL_EventType.SDL_QUIT) ; Close event
 			{
-				SDL2.SDL_Quit()		 
+				g_oSDL2.SDL_Quit()		 
 			}
 			else if (evt.type == SDL_EventType.SDL_JOYBUTTONDOWN) 
 			{
 				;Get the next logical action from the action list based on the button press, then run it
-				oAction := GetAction(aDevices[mDeviceIndex[evt.jbutton.which]], evt.jbutton.button, mIndexer)
-				SDL2.SDL_FlushEvent(SDL_EventType.SDL_JOYBUTTONDOWN)				
+				oAction := GetAction(g_aDevices[g_mDeviceIndex[evt.jbutton.which]], evt.jbutton.button, mIndexer)
+				g_oSDL2.SDL_FlushEvent(SDL_EventType.SDL_JOYBUTTONDOWN)				
 				
 				if (oAction.Key) ;Don't run null actions
 					RunAction(oAction, "Down")				
@@ -684,8 +684,8 @@ Poll()
 			else if (evt.type == SDL_EventType.SDL_JOYBUTTONUP) 
 			{
 				;Get the next logical action from the action list based on the button press, then run it
-				oAction := GetAction(aDevices[mDeviceIndex[evt.jbutton.which]], evt.jbutton.button, mIndexer)
-				SDL2.SDL_FlushEvent(SDL_EventType.SDL_JOYBUTTONUP)				
+				oAction := GetAction(g_aDevices[g_mDeviceIndex[evt.jbutton.which]], evt.jbutton.button, mIndexer)
+				g_oSDL2.SDL_FlushEvent(SDL_EventType.SDL_JOYBUTTONUP)				
 				
 				if (oAction.Key) ;Don't run null actions
 					RunAction(oAction, "Up")				
@@ -698,20 +698,20 @@ Poll()
 					Switch evt.jhat.hatvalue
 					{
 						Case SDL_EventType.SDL_HAT_UP:
-							oAction := GetAction(aDevices[mDeviceIndex[evt.jhat.which]], "DPad Up", mIndexer)
+							oAction := GetAction(g_aDevices[g_mDeviceIndex[evt.jhat.which]], "DPad Up", mIndexer)
 						Case SDL_EventType.SDL_HAT_RIGHT:
-							oAction := GetAction(aDevices[mDeviceIndex[evt.jhat.which]], "DPad Right", mIndexer)
+							oAction := GetAction(g_aDevices[g_mDeviceIndex[evt.jhat.which]], "DPad Right", mIndexer)
 						Case SDL_EventType.SDL_HAT_DOWN:
-							oAction := GetAction(aDevices[mDeviceIndex[evt.jhat.which]], "DPad Down", mIndexer)
+							oAction := GetAction(g_aDevices[g_mDeviceIndex[evt.jhat.which]], "DPad Down", mIndexer)
 						Case SDL_EventType.SDL_HAT_LEFT:
-							oAction := GetAction(aDevices[mDeviceIndex[evt.jhat.which]], "DPad Left", mIndexer)
+							oAction := GetAction(g_aDevices[g_mDeviceIndex[evt.jhat.which]], "DPad Left", mIndexer)
 					}
 
 					if (oAction.Key) ;Don't run null actions
 						RunAction(oAction)
 				}
 
-				SDL2.SDL_FlushEvent(SDL_EventType.SDL_JOYHATMOTION)				
+				g_oSDL2.SDL_FlushEvent(SDL_EventType.SDL_JOYHATMOTION)				
 			}
 
 			/* ;Omit axis handling for now
@@ -735,18 +735,18 @@ Poll()
 					if (sDirection != "Skip")
 					{
 						;Get the next logical action from the action list based on the axis movement, then run it
-						oAction := GetAction(aDevices[mDeviceIndex[evt.jaxis.which]], "Axis " evt.jaxis.axis " " sDirection, mIndexer)			
+						oAction := GetAction(g_aDevices[g_mDeviceIndex[evt.jaxis.which]], "Axis " evt.jaxis.axis " " sDirection, mIndexer)			
 						
 						if (oAction.Key) ;Don't run null actions
 							RunAction(oAction)	
 					}
 
-					SDL2.SDL_FlushEvent(SDL_EventType.SDL_JOYAXISMOTION)	
+					g_oSDL2.SDL_FlushEvent(SDL_EventType.SDL_JOYAXISMOTION)	
 				}
 			}
 			*/
 		}
-		SDL2.SDL_Delay(1)
+		g_oSDL2.SDL_Delay(1)
     }
 }
 
@@ -838,7 +838,7 @@ GetAction(sDevice, sAction, mIndexer)
 	cl_2 := ""
 	cl_3 := ""
 
-	for device, buttons in oActions
+	for device, buttons in g_oActions
 		for button, sequences in buttons
 			for sequence, info in sequences
 			{
@@ -851,20 +851,20 @@ GetAction(sDevice, sAction, mIndexer)
 							if (A_Index != sequences.Count)
 							{
 								mIndexer[device button] := A_Index + 1
-								annunc := oActions[device][button][String(A_Index + 1)]["annunciation"]
-								cl := oActions[device][button][String(A_Index + 1)]["command_line"]
-								cl_2 := oActions[device][button][String(A_Index + 1)]["command_line_2"]
-								cl_3 := oActions[device][button][String(A_Index + 1)]["command_line_3"]
+								annunc := g_oActions[device][button][String(A_Index + 1)]["annunciation"]
+								cl := g_oActions[device][button][String(A_Index + 1)]["command_line"]
+								cl_2 := g_oActions[device][button][String(A_Index + 1)]["command_line_2"]
+								cl_3 := g_oActions[device][button][String(A_Index + 1)]["command_line_3"]
 								seq := sequences.Count
 								break 3
 							}
 							else
 							{
 								mIndexer[device button] := 1
-								annunc := oActions[device][button]["1"]["annunciation"]
-								cl := oActions[device][button]["1"]["command_line"]
-								cl_2 := oActions[device][button]["1"]["command_line_2"]
-								cl_3 := oActions[device][button]["1"]["command_line_3"]
+								annunc := g_oActions[device][button]["1"]["annunciation"]
+								cl := g_oActions[device][button]["1"]["command_line"]
+								cl_2 := g_oActions[device][button]["1"]["command_line_2"]
+								cl_3 := g_oActions[device][button]["1"]["command_line_3"]
 								break 3
 							}
 						}
@@ -902,10 +902,10 @@ GetAction(sDevice, sAction, mIndexer)
  */
 RunAction(oAction, sModifier:="")
 {
-	global sLastActionKey
+	global g_sLastActionKey
 
 	if (gcAlwaysAnnunciate_Checkbox.Value == 1 && oAction.Annunciation && sModifier != "Up")
-		oVoice.Speak(oAction.Annunciation)
+		g_oVoice.Speak(oAction.Annunciation)
 
 	;if a keypress action, send the key
 	if (InStr(oAction.CommandLine, "Send Keypress:"))
@@ -955,14 +955,14 @@ RunAction(oAction, sModifier:="")
 		Switch sNavAction
 		{
 			Case "Right":
-				oGameInfoDisplay.GoPage("r")
+				g_oGameInfoDisplay.GoPage("r")
 			Case "Left"	:		
-				oGameInfoDisplay.GoPage("l")
+				g_oGameInfoDisplay.GoPage("l")
 			Case "Home":	
-			    SplitPath(sCurrentROM,,,,&OutNameNoExt)
+			    SplitPath(g_sCurrentROM,,,,&OutNameNoExt)
 				ShowGameInfo(OutNameNoExt)
 			Case "Exit":			
-				oGameInfoDisplay.Clear()
+				g_oGameInfoDisplay.Clear()
 
 			Sleep 300
 		}
@@ -971,14 +971,14 @@ RunAction(oAction, sModifier:="")
 	}
 
 	;if a command line action, don't run the same action twice in a row
-	if (oAction.Key != sLastActionKey) 
+	if (oAction.Key != g_sLastActionKey) 
 	{
-		oLog.LogLine("EXECUTING ACTION: Source: " oAction.Device ", Action: " oAction.Action ", Sequence: " oAction.Sequence "`n")
+		g_oLog.LogLine("EXECUTING ACTION: Source: " oAction.Device ", Action: " oAction.Action ", Sequence: " oAction.Sequence "`n")
 
 		if (oAction.CommandLine)
 		{
 			if (gcAlwaysAnnunciate_Checkbox.Value == -1)
-				oVoice.Speak(oAction.Annunciation)
+				g_oVoice.Speak(oAction.Annunciation)
 			
 			if (gcBeep_Checkbox.Value == 1)
 				SoundBeep
@@ -987,18 +987,18 @@ RunAction(oAction, sModifier:="")
 			
 			if (oAction.CommandLine_2)
 			{
-				Sleep iCommandLineDelay
+				Sleep g_iCommandLineDelay
 				RunCommandLine(oAction.CommandLine_2)
 			}
 
 			if (oAction.CommandLine_3)
 			{
-				Sleep iCommandLineDelay
+				Sleep g_iCommandLineDelay
 				RunCommandLine(oAction.CommandLine_3)
 			}			 
 		}
 
-		sLastActionKey := oAction.Key
+		g_sLastActionKey := oAction.Key
 	}
 }
 
@@ -1010,15 +1010,15 @@ RunCommandLine(cl)
 {
 	if (cl == "Set Ultimarc ServoStik: 4-way")
 	{
-		oPacDrive.PacSetServoStik4Way()
-		oLog.LogLine("COMMAND: Set Ultimarc ServoStik: 4-way`n")
+		g_oPacDrive.PacSetServoStik4Way()
+		g_oLog.LogLine("COMMAND: Set Ultimarc ServoStik: 4-way`n")
 		return
 	}
 
 	if (cl == "Set Ultimarc ServoStik: 8-way")
 	{
-		oPacDrive.PacSetServoStik8Way()
-		oLog.LogLine("COMMAND: Set Ultimarc ServoStik: 8-way`n")
+		g_oPacDrive.PacSetServoStik8Way()
+		g_oLog.LogLine("COMMAND: Set Ultimarc ServoStik: 8-way`n")
 		return
 	}
 
@@ -1029,7 +1029,7 @@ RunCommandLine(cl)
 
 	;Check the tweaks.json file to see if this app needs to be restarted
 	sExeName := ""
-	for tweak, j in oTweaks
+	for tweak, j in g_oTweaks
 	{
 		if (tweak == "restart")
 		{
@@ -1049,13 +1049,13 @@ RunCommandLine(cl)
 		if (ProcessExist(sExeName))
 		{
 			ProcessClose(sExeName)
-			oLog.LogLine("COMMAND: Closed: " sExeName "`n")
+			g_oLog.LogLine("COMMAND: Closed: " sExeName "`n")
 		}
 	
-	Sleep iRestartDelay
+	Sleep g_iRestartDelay
 
 	try Run cl, OutDir
-	oLog.LogLine("COMMAND: Run: " cl "`n")
+	g_oLog.LogLine("COMMAND: Run: " cl "`n")
 }
 
 /**
@@ -1074,11 +1074,11 @@ DeleteAndLog(t, f)
 				FileDelete(f)
 			}
 			catch as e {
-				oLog.LogLine("INFO: File could not be deleted: " f ". Error was: " oLog.FormatErrorMessage(e) "`n")
+				g_oLog.LogLine("INFO: File could not be deleted: " f ". Error was: " g_oLog.FormatErrorMessage(e) "`n")
 				return 1
 			}
 			else {
-				oLog.LogLine("INFO: Deleted file: " f "`n")
+				g_oLog.LogLine("INFO: Deleted file: " f "`n")
 				return 0
 			}
 		}
@@ -1091,11 +1091,11 @@ DeleteAndLog(t, f)
 				DirDelete(f, true) ;true deletes even if files exist in folder
 			}
 			catch as e {
-				oLog.LogLine("INFO: Folder could not be deleted: " f ". Error was: " oLog.FormatErrorMessage(e) "`n")
+				g_oLog.LogLine("INFO: Folder could not be deleted: " f ". Error was: " g_oLog.FormatErrorMessage(e) "`n")
 				return 1
 			}
 			else {
-				oLog.LogLine("INFO: Deleted folder: " f "`n")
+				g_oLog.LogLine("INFO: Deleted folder: " f "`n")
 				return 0
 			}
 		}
@@ -1119,12 +1119,12 @@ CreateDirAndLog(d)
         }
         catch
         {
-            oLog.LogLine("NOTICE: Failed to create folder, " d "`n")
+            g_oLog.LogLine("NOTICE: Failed to create folder, " d "`n")
             return false
         }
         else        
         {
-            oLog.LogLine("INFO: Created folder, " d "`n")  
+            g_oLog.LogLine("INFO: Created folder, " d "`n")  
             return true
         }         
     }
@@ -1144,29 +1144,29 @@ ShowGameInfo(sRomName)
 		return
 
 	if (!bFirstTime)
-		oGameInfoDisplay.Clear()
+		g_oGameInfoDisplay.Clear()
 	
 	bFirstTime := false
-	oGameInfoDisplay.CreateGameInfoScreen(sRomName)
-	oGameInfoDisplay.CreateGameInfoPage("info") ;create the GameInfo pages
+	g_oGameInfoDisplay.CreateGameInfoScreen(sRomName)
+	g_oGameInfoDisplay.CreateGameInfoPage("info") ;create the GameInfo pages
 
 	;Create image pages for any images in the \GameInfo\Assets subfolders
-	for i, sFolder in aImageOrder
+	for i, sFolder in g_aImageOrder
 	{
-		if (FileExist(sAssetsFolder "\" sFolder "\" sRomName ".png"))
+		if (FileExist(g_sAssetsFolder "\" sFolder "\" sRomName ".png"))
 		{
-			oGameInfoDisplay.CreateGameInfoPage(sFolder, "png")
+			g_oGameInfoDisplay.CreateGameInfoPage(sFolder, "png")
 			continue
 		}
 
-		if (FileExist(sAssetsFolder "\" sFolder "\" sRomName ".jpg"))
+		if (FileExist(g_sAssetsFolder "\" sFolder "\" sRomName ".jpg"))
 		{
-			oGameInfoDisplay.CreateGameInfoPage(sFolder, "jpg")
+			g_oGameInfoDisplay.CreateGameInfoPage(sFolder, "jpg")
 			continue
 		}
 	}
 
-	oGameInfoDisplay.GoPage("start")
+	g_oGameInfoDisplay.GoPage("start")
 
 	;If a rom access event occurrs for a new game while the GameInfo screen is still being loaded for
 	;the previous game (e.g. player started a game, but then moved quickly to another), WatchFolder may
@@ -1175,9 +1175,9 @@ ShowGameInfo(sRomName)
 	;any have a recent access date. For any that do, we then call RomAccess_Event() manually, but with the Ignore
 	;flag set to true to only update the timestamp and not to re-run the action (since the player is not  
 	;actually playing this game right now).
-	Loop Files sROMMonitorFolder "\*.zip"
+	Loop Files g_sROMMonitorFolder "\*.zip"
 	{
-		if (A_LoopFilePath != sCurrentROM) {
+		if (A_LoopFilePath != g_sCurrentROM) {
 			if (DateDiff(A_Now, FileGetTime(A_LoopFilePath, "A"), "Days") < 2) 
 			{
 				SplitPath(A_LoopFilePath,,,,&OutNameNoExt)
@@ -1196,21 +1196,19 @@ ShowSplash()
 {
 	global guiSplash := Gui(, "vfeGuiSplash")
 
-	sArcade := IniRead(sIniFile, "General", "Arcade")
-
 	dpi := 96 / A_ScreenDPI
 	guiSplash.Opt("-Caption +ToolWindow +LastFound +AlwaysOnTop")
-	guiSplash.BackColor := color_edit_text
+	guiSplash.BackColor := g_color_edit_text
 
 	iHeight := 100
 	iWidth := 400
 
-	x1 := nScreenWidth / 2 - iWidth / 2
-	y1 := nScreenHeight / 2 - iHeight / 2
+	x1 := g_nScreenWidth / 2 - iWidth / 2
+	y1 := g_nScreenHeight / 2 - iHeight / 2
 	
 	WinSetRegion x1/dpi "-" y1/dpi " w" iWidth/dpi " h" iHeight/dpi " r40-40" 
 
-	global gcSplashIcon := guiSplash.AddPicture(, sJoystickIconFile)
+	global gcSplashIcon := guiSplash.AddPicture(, g_sJoystickIconFile)
 
     gcSplashIcon.GetPos(&icon_posX, &icon_posY, &icon_posW, &icon_posH)
 
@@ -1228,15 +1226,16 @@ ShowSplash()
 		iconW := icon_posW
 	}
 
-    gcSplashIcon.Move(x1 + 20, nScreenHeight / 2 - iconH / 2, iconH, iconW)
+    gcSplashIcon.Move(x1 + 20, g_nScreenHeight / 2 - iconH / 2, iconH, iconW)
             
 	global gcSplashTitle := guiSplash.AddText("x" x1 + 30 + iconW " y" y1 + 29 " w" iWidth " h" iHeight, "arcadeVFE " CodeVersion)
 	gcSplashTitle.SetFont("s26 w700", "Courier New")
 
+	sArcade := IniRead(g_sIniFile, "General", "Arcade")
 	global gcSplashSubtitle := guiSplash.AddText("x" x1 + 32 + iconW " y" y1 + 65 " w" iWidth " h" iHeight, "for " sArcade)
 	gcSplashSubtitle.SetFont("s10 w700", "Courier New")
 
-	guiSplash.Show("NA w" nScreenWidth " h" nScreenHeight)
+	guiSplash.Show("NA w" g_nScreenWidth " h" g_nScreenHeight)
 	Sleep 3000
 	guiSplash.Destroy
 }
@@ -1244,7 +1243,7 @@ ShowSplash()
 ;Log otherwise unhandled errors (spawed by OnError)
 LogError(e, mode)
 {
-    oLog.LogLine("ERROR: Unhandled exception: " oLog.FormatErrorMessage(e) "`n")
+    g_oLog.LogLine("ERROR: Unhandled exception: " g_oLog.FormatErrorMessage(e) "`n")
     ExitApp
 }
 
