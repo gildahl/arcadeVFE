@@ -1196,6 +1196,8 @@ ShowSplash()
 {
 	global guiSplash := Gui(, "vfeGuiSplash")
 
+	sArcade := IniRead(sIniFile, "General", "Arcade")
+
 	dpi := 96 / A_ScreenDPI
 	guiSplash.Opt("-Caption +ToolWindow +LastFound +AlwaysOnTop")
 	guiSplash.BackColor := color_edit_text
@@ -1228,8 +1230,11 @@ ShowSplash()
 
     gcSplashIcon.Move(x1 + 20, nScreenHeight / 2 - iconH / 2, iconH, iconW)
             
-	global gcSplashLabel := guiSplash.AddText("x" x1 + 30 + iconW " y" y1 + 29 " w" iWidth " h" iHeight, "arcadeVFE " CodeVersion)
-	gcSplashLabel.SetFont("s26 w700", "Courier New")
+	global gcSplashTitle := guiSplash.AddText("x" x1 + 30 + iconW " y" y1 + 29 " w" iWidth " h" iHeight, "arcadeVFE " CodeVersion)
+	gcSplashTitle.SetFont("s26 w700", "Courier New")
+
+	global gcSplashSubtitle := guiSplash.AddText("x" x1 + 32 + iconW " y" y1 + 65 " w" iWidth " h" iHeight, "for " sArcade)
+	gcSplashSubtitle.SetFont("s10 w700", "Courier New")
 
 	guiSplash.Show("NA w" nScreenWidth " h" nScreenHeight)
 	Sleep 3000
