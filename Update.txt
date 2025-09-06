@@ -24,11 +24,12 @@ completed.
 * Added splash screen at startup.
 * Send discrete up/down events when mapping buttons to keypresses.
 * Added rom's MAME version above the rom list.
-* Fixed (I think) an issue that was causing a restart to be needed when
-  toggling the "Operate only when the arcade is running" setting.
+* Warn user to restart the application when toggling the "Operate only 
+  when arcade is running" setting.
 * Added WS_EX_NOACTIVATE to GameInfo to better protect from mouse clicks.
 * "Copy ROMs" function now copies chd folders as well.
 * Limit image scaling for low res images in GameInfo to improve quality.
+* Clear the current rom when arcade exits. 
 * Tooltip help updates.
 * Added additional startup logging and auditing.
 * Documentation updates.

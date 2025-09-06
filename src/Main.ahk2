@@ -634,6 +634,8 @@ Poll()
 			;externally while the application is closed.
 			global g_sLastActionKey := ""
 
+			global g_sCurrentROM := "" ;clear current rom
+
 			;Start a monitor to poll the application for its resumption
 			SetTimer(ApplicationProcessCheck_Callback)
 		}
@@ -960,7 +962,8 @@ RunAction(oAction, sModifier:="")
 				g_oGameInfoDisplay.GoPage("l")
 			Case "Home":	
 			    SplitPath(g_sCurrentROM,,,,&OutNameNoExt)
-				ShowGameInfo(OutNameNoExt)
+				if ((gcShowGameInfo_Checkbox.Value && gcShowGameInfo_Checkbox.Enabled) && g_bOnlyMonitorWhenArcadeIsLoaded && ProcessExist(g_sApplicationName))
+					ShowGameInfo(OutNameNoExt)
 			Case "Exit":			
 				g_oGameInfoDisplay.Clear()
 

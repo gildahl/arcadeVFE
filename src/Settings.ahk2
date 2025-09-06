@@ -1409,13 +1409,11 @@ class Settings
 		gcRawAccel_Checkbox.Enabled := FileExist(A_ScriptDir "\RawAccel\rawaccel.exe") && gcApplicationEdit.Text && gcApplication_Checkbox.Value ? true : false
 		gcShowGameInfo_Checkbox.Enabled := gcApplicationEdit.Text && gcApplication_Checkbox.Value ? true : false
 
-		/*
-		;The need for this should be fixed, but leaving code here just in case an exception is found.
+		;Post restart warning
 		result := "Yes"
 		result := MsgBox("It is recommended to restart arcadeVFE after`nchanging this setting.`n`nWould you like to exit this application now?", "Exit arcadeVFE?", 4132)
 		if (result == "Yes")
 			ExitApp
-		*/
 
 		return
 	}
