@@ -221,7 +221,7 @@ There are currently a few known bugs in version 1.1 that will be fixed in 1.2.
 
 * **Copy ROMs** does not currently copy the `\chd` folders 
 
-* Toggling the **Operate only when the arcade is running** option may require a restart before the new behavior will take effect.
+* Toggling the **Operate only when the arcade is running** option may require a restart before the new behavior will take effect, but there is no warning.
 
 * Combo boxes are not re-initialized when switching from a controller device to a keyboard device resulting in possible wrong/unintended keyboard assignments being made to the action table.
 
