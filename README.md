@@ -223,6 +223,8 @@ There are currently a few known bugs in version 1.1 that will be fixed in 1.2.
 
 * Toggling the **Operate only when the arcade is running** option may require a restart before the new behavior will take effect.
 
+* Combo boxes are not re-initialized when switching from a controller device to a keyboard device resulting in possible wrong/unintended keyboard assignements being made.
+
 * Keyboard mapping does not currently accommodate combining a key with Ctrl, Alt, etc.
 
 Issues and Limitations
