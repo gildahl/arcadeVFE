@@ -21,6 +21,7 @@ class Settings
 	static sROMFolderOGText := ""
 	static mMetrics := Map()
 	static iCommandLinesUsed := 1
+	static bIsRom := false
 
 	;Action list constants
 	static DEVICE := 1
@@ -44,6 +45,7 @@ class Settings
 		local nButtonWidth := 70
 		local nButtonWidthWide := 90
 		local nIconButtonWidth := 40
+		local nButtonWidthBottom := 100
 
 		sSettingsTitle := "arcadeVFE " CodeVersion " - Settings"
 
@@ -356,11 +358,16 @@ class Settings
 
 		gcSettingsMessageLabel := guiSettings.AddText("x" Settings.mMetrics.Width - 330 " y" 640 " w" 300, "arcadeVFE is currently **PAUSED**. Close this dialog when`nyou have completed configuration to begin active monitoring.")
 		
-		gcSetupButton := guiSettings.AddButton("x" Settings.mMetrics.Width - nButtonWidthWide*2 - 40 " y" 690 " w" nButtonWidthWide " h" 30, "Initial Setup")
+		gcViewGameInfoButton := guiSettings.AddButton("x" Settings.mMetrics.Width - nButtonWidthBottom*3 - 40 " y" 690 " w" nButtonWidthBottom " h" 30, "View GameInfo...")
+		gcViewGameInfoButton.OnEvent("Click", (*) => Settings.ViewGameInfoButton_Click())
+		gcViewGameInfoButton.TT := "View GameInfo for the selected game. Use left and right arrow`nkeyboard keys to navigate and Escape to exit.`n`nNote that when you use the GameInfo Overlay during gameplay`n(rather than this Settings dialog), navigation will use the keys or`nbuttons specified in the Action List."
+		gcViewGameInfoButton.Enabled := false
+
+		gcSetupButton := guiSettings.AddButton("x" Settings.mMetrics.Width - nButtonWidthBottom*2 - 35 " y" 690 " w" nButtonWidthBottom " h" 30, "Initial Setup...")
 		gcSetupButton.OnEvent("Click", (*) => Settings.SetupButton_Click())
 		gcSetupButton.TT := "Open the intial setup`nand rom tools dialog."
 
-		gcCloseButton := guiSettings.AddButton("x" Settings.mMetrics.Width - nButtonWidthWide - 30 " y" 690 " w" nButtonWidthWide " h" 30, "Close")
+		gcCloseButton := guiSettings.AddButton("x" Settings.mMetrics.Width - nButtonWidthBottom - 30 " y" 690 " w" nButtonWidthBottom " h" 30, "Close")
 		gcCloseButton.OnEvent("Click", (*) => Settings.CloseButton_Click())
 		gcCloseButton.TT := "Close this Settings dialog to begin active`nmonitoring.`n`nTo exit arcadeVFE completely, right-click`non its tray icon and choose Exit."
 
@@ -567,6 +574,8 @@ class Settings
 	{
 		Sleep 0
 
+		SystemCursor("On")
+
 		Settings.CancelAssign()
 
 		result := "Yes"
@@ -672,6 +681,44 @@ class Settings
 	;============================================
 	; Settings Screen events
 	;============================================
+
+	/**
+	 * View GameInfo from within the Settings dialog
+	 */
+	static ViewGameInfoButton_Click(*)
+	{
+		;SystemCursor("Off")
+		SplitPath(gcROMDropDownGameRom.Text,,,,&OutNameNoExt)
+		ShowGameInfo(OutNameNoExt)
+
+		Hotkey(g_sGameInfoSettingsRightKey, ObjBindMethod(Settings.GameInfo_Callback,,g_sGameInfoSettingsRightKey), "On")
+		Hotkey(g_sGameInfoSettingsLeftKey, ObjBindMethod(Settings.GameInfo_Callback,,g_sGameInfoSettingsLeftKey), "On")
+		Hotkey(g_sGameInfoSettingsExitKey, ObjBindMethod(Settings.GameInfo_Callback,,g_sGameInfoSettingsExitKey), "On")
+	}
+
+	/**
+	 * Process hotkeys used when manually accessing GameInfo from the Settings dialog
+	 * @param params - param[1] is the Hotkey
+	 */
+	static GameInfo_Callback(params*)
+	{
+		Sleep 0
+
+		Switch params[1]
+		{
+			Case "Right":
+				g_oGameInfoDisplay.GoPage("r")
+			Case "Left"	:		
+				g_oGameInfoDisplay.GoPage("l")
+			Case "Escape":	
+				g_oGameInfoDisplay.Clear()
+				Hotkey(g_sGameInfoSettingsRightKey, ObjBindMethod(Settings.GameInfo_Callback), "Off")
+				Hotkey(g_sGameInfoSettingsLeftKey, ObjBindMethod(Settings.GameInfo_Callback), "Off")
+				Hotkey(g_sGameInfoSettingsExitKey, ObjBindMethod(Settings.GameInfo_Callback), "Off")		
+				SystemCursor("On")
+				Sleep 300
+		}
+	}
 
 	/**
 	 * Save the button configurations in the ListView to a JSON configuration file. 
@@ -807,6 +854,9 @@ class Settings
 
 			bROMControlVisible := false
 		}
+
+		;Set ViewGameInfo enable state
+		gcViewGameInfoButton.Enabled := Settings.bIsRom && gcDevices.Text == "ROM Monitor" ? true : false
 
 		;Set visibilty of controls only used in ROM Monitor Mode
 		gcROMDropDownLabel.Visible := bROMControlVisible
@@ -1934,6 +1984,7 @@ class Settings
 	static SetRomInfo()
 	{
 		sYear := sManufacturer := sRom := sVersion := ""
+		Settings.bIsRom := false
 
 		if (g_sArcadeString == "Other") 
 		{
@@ -1943,7 +1994,10 @@ class Settings
 		{
 			for sRom, mInfo in g_oArcadeRomList {
 				if (sRom == g_mRomsByName[gcROMDropDown.Text])
-					gcROMDropDownMAMEVersion.Text := "Uses mame " mInfo["MAMEVersion"]
+				{
+					ver := mInfo["MAMEVersion"] == "2010" ? "MAME 2010 (0.139)" : "MAME 2014 (0.159)"
+					gcROMDropDownMAMEVersion.Text := ver
+				}
 			}
 		}
 
@@ -2006,6 +2060,7 @@ class Settings
 				gcROMDropDownGameRom.Text := ""
 				gcROMDropDownController.Text := "trackball games"
 			default: 
+				Settings.bIsRom := true
 				gcROMDropDownGameRom.Text := sRom == "" ? sRom : sRom ".zip"
 				sControl := ""
 				try sControl := IniRead(g_sControlsIniFile, "Controls", sRom)
@@ -2014,6 +2069,8 @@ class Settings
 
 		gcAssignButton.TT := "Press to add the ROM Monitor command set defined above for`nthe " g_mRomsByName[gcROMDropDown.Text] " rom as an action to the table below."
 
+		gcViewGameInfoButton.Enabled := Settings.bIsRom ? true : false
+	
 		Settings.SetLocationInfoVisiblity(!InStr(sRom,"["))
 
 		if (g_sArcadeString != "Other")

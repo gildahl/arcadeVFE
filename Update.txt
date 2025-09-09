@@ -1,4 +1,5 @@
-arcadeVFE v.1.2.0
+arcadeVFE v.1.2
+
 To update from version 1.1, right click on the zip file, choose Properties, 
 check the Unblock checkbox at the bottom, then click Apply. After doing this,
 extract all files and folders from the zip into your 1.1 folder and allow
@@ -13,29 +14,47 @@ Note 2: If you made any changes to the Command template list, backup the
 file .\Config\templates.json prior to overwriting files, and restore when 
 completed.
 
-* Now possible to map keyboard keypresses to GameInfo navigation actions.
-* Removed lower case letters from "Map a keypress" since they're redundant.
-* Improved algorithm to deal with a case where quickly moving between.
-  machines with GameInfo enabled could cause loss of state.
-* Provide a method to specify image order in GameInfo.
-* Added support for ctrl, alt, shift, win keypress combos.
-* Game data updates, and added a large number of new images.
-* Added game logo to GameInfo startup.
-* Added splash screen at startup.
-* Send discrete up/down events when mapping buttons to keypresses.
-* Added rom's MAME version above the rom list.
-* Warn user to restart the application when toggling the "Operate only 
-  when arcade is running" setting.
-* Added WS_EX_NOACTIVATE to GameInfo to better protect from mouse clicks.
-* "Copy ROMs" function now copies chd folders as well.
-* Limit image scaling for low res images in GameInfo to improve quality.
-* Clear the current rom when arcade exits. 
-* Tooltip help updates.
-* Added additional startup logging and auditing.
-* Documentation updates.
-* Some general code clean-up.
+* (Fix) If you started with Other selected as the arcade type, the software
+  could crash when selecting a rom.
+* (Fix) If you used GameInfo and started a new machine in the arcade too 
+  quickly after starting the previous one (usually between 2 to 10 seconds),
+  VFE could lose state and not operate with these machines anymore until a
+  restart.
+* (Fix) Copy ROMs function did not copy \chd folders.
+* (Fix) Added warning to restart the application when toggling the "Operate
+  only when arcade is running" setting to avoid indeterminate state.
+* (Fix) Combo boxes were not re-initialized when switching from a controller
+  device to a keyboard device resulting in possible wrong/unintended keyboard
+  assignments being made to the action table.
+* (Fix) Keyboard mapping did not permit combining keys with Ctrl, Alt, etc.
+* (Fix) Removed redundant lower case letters from "Map a keypress".
+* (Fix) "Copy ROMs" function now copies \chd folders as well.
+* (Fix) Clear the current rom when arcade exits to avoid side effects.
+* (New) Can now view GameInfo from the Settings dialog.
+* (New) Added default GameInfo navigation key mappings.
+* (New) Game data/history now use most up-to-date files (0.208).
+* (New) Added a large number of new images corresponding to ATC roms.
+* (New) Provided a method to specify image order in GameInfo.
+* (New) Added some formatting to the GameInfo text.
+* (New) Now possible to use keyboard keypresses to GameInfo navigation 
+  actions (not just controller buttons).
+* (New) Added title splash screen at application startup.
+* (New) Added game logo to GameInfo startup.
+* (New) Added progress bar to GameInfo startup.
+* (New) Added the MAME version used by ATC for the rom above the rom list.
+* (Improvement) GameInfo now appends base rom information for export roms.
+* (Improvement) Send discrete up/down events when mapping buttons to 
+  keypresses.
+* (Improvement) Added WS_EX_NOACTIVATE to GameInfo to better protect from 
+  mouse clicks.
+* (Improvement) Limit image scaling for low res images in GameInfo to
+  reduce pixelation/improve quality.
+* (Improvement) Tooltip help updates.
+* (Improvement) Added additional startup logging and auditing.
+* (Improvement) Documentation updates.
+* (Improvement) Code stabilization, refactoring, and minor bug fixes.
 
-arcadeVFE v.1.1.0
+arcadeVFE v.1.1
 * Added a third command line config option.
 * Added game information overlay
 * Added initial setup dialog
@@ -54,5 +73,5 @@ arcadeVFE v.1.1.0
 * Error message enhancements.
 * Many bug fixes.
 
-Background Profile Switcher v.1.0.0
+Background Profile Switcher v.1.0
 * Initial preview release.

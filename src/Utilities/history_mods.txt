@@ -1,0 +1,41 @@
+Added batrid by replacing this...
+
+<systems>
+	<system name="batrider" />
+	<system name="batriderja" />
+	<system name="batridert" />
+	<system name="batriderhk" />
+</systems>
+
+with this...
+
+<systems>
+	<system name="batrid" />
+	<system name="batrider" />
+	<system name="batriderja" />
+	<system name="batridert" />
+	<system name="batriderhk" />
+</systems>
+
+Added wwfwfestb by replacing this...
+
+<systems>
+	<system name="wwfwfest" />
+	<system name="wwfwfestj" />
+	<system name="wwfwfestub" />
+	<system name="wwfwfestk" />
+	<system name="wwfwfestu" />
+	<system name="wwfwfestu1" />
+</systems>
+
+with this...
+
+<systems>
+	<system name="wwfwfestb" />
+	<system name="wwfwfest" />
+	<system name="wwfwfestj" />
+	<system name="wwfwfestub" />
+	<system name="wwfwfestk" />
+	<system name="wwfwfestu" />
+	<system name="wwfwfestu1" />
+</systems>

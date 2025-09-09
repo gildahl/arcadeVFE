@@ -40,7 +40,9 @@ global CodeVersion := "1.2"
 #include MAMEData.ahk2
 #include GameInfoDisplay.ahk2
 #include PacDrive.ahk2
+#include SystemCursor.ahk2
 
+global g_iTickCount := A_TickCount
 global g_sResourceFolder := A_ScriptDir "\Resources"
 global g_sJoystickIconFile := g_sResourceFolder "\joystick.ico"
 TraySetIcon g_sJoystickIconFile
@@ -64,11 +66,15 @@ global g_sMameInfoFile := g_sGameInfoFolder "\mameinfo.dat"
 global g_sMameHistoryFile := g_sGameInfoFolder "\history.xml"
 global g_sControlsIniFile := g_sGameInfoFolder "\controls.ini"
 global g_sGamesXMLFile := g_sGameInfoFolder "\games.xml"
+global g_sBaseRomsFile := g_sGameInfoFolder "\baseroms.ini"
 global g_sLogoFolder := A_ScriptDir "\GameInfo\Logo"
 global g_oMameData := MAMEData(g_sMameInfoFile, g_sMameHistoryFile)
 global g_oGameInfoDisplay := GameInfoDisplay()
 global g_iDefaultGameInfoFontSize := 18 
 global g_aImageOrder := Array()     
+global g_sGameInfoSettingsExitKey := "Escape"
+global g_sGameInfoSettingsRightKey := "Right"
+global g_sGameInfoSettingsLeftKey := "Left"
 global g_sImageOrder := "cabinets,cpanel,instructions,instructions_2,flyers,flyers_back,pcb"  
 ;***********************************************************
 
@@ -156,7 +162,7 @@ global g_oLog := AppLog()
 g_oLog.Init(g_sLogFolder "\log.txt", "arcadeVFE") ;initialize the application log
 OnError LogError ;deal with unhandled exceptions
 
-global oAuditLog := AppLog()
+global g_oAuditLog := AppLog()
 
 ;Create configuration folder if it doesn't already exist
 CreateDirAndLog(g_sConfigFolder)
@@ -188,15 +194,23 @@ else
 ;  Main Application Startup
 ;==============================
 
-ShowSplash()
-DoFileAudit()                     ;Confirm that all required runtime files are present
-TrayMenu.BuildMenu()              ;Build tray menu
-LoadConfig()				      ;Load initializations from vfe.ini file
-LoadTweaks()				      ;Load custom tweaks
-Setup.CreateSetupDialog()         ;Load initial setup
-Settings.CreateSettingsDialog()   ;Build Settings screen
-StartRomWatcher()                 ;Begin monitoring the rom folder    
-Poll()                            ;Start the button and keyboard polling loop
+ShowSplash()                       ;Show splash screen
+DoFileAudit()                      ;Confirm that all required runtime files are present
+TrayMenu.BuildMenu()               ;Build tray menu
+CreateDefaultActionList()          ;Create a default action list if one does not exist
+LoadConfig()				       ;Load initializations from vfe.ini file
+LoadTweaks()				       ;Load custom tweaks
+Setup.CreateSetupDialog()          ;Load initial setup
+Settings.CreateSettingsDialog()    ;Build Settings screen
+StartRomWatcher()                  ;Begin monitoring the rom folder  
+
+;Turn off splash screen after at least 3 seconds
+iSleepDelay := 3000 - (A_TickCount - g_iTickCount)                  
+if (iSleepDelay > 0)                     
+	Sleep iSleepDelay					  
+guiSplash.Destroy		
+
+Poll() ;Start button and keyboard polling loop
 
 /**
  * Audit to ensure all required files are present
@@ -259,18 +273,87 @@ DoFileAudit()
 		g_oLog.LogLine("INFO: RawAccel is not present.`n")
 }
 
+CreateDefaultActionList()
+{
+	;Write default action list with default keys to minimally operate
+	;the GameInfo display; but only if there is no previous action list defined.
+	if (!FileExist(g_sUserFolder "\*.json"))
+	{
+		mConfig := Map()
+		mConfig["Keyboard"] := Map()
+
+		mInfo := Map()
+		mInfo["annunciation"] := ""
+		mInfo["profile"] := ""
+		mInfo["profile_2"] := ""
+		mInfo["command_line_2"] := ""
+		mInfo["template"] := ""
+		mInfo["template_2"] := ""
+		mInfo["template_3"] := ""
+		mInfo["profile_3"] := ""
+		mInfo["command_line_3"] := ""
+		
+		mInfo := mInfo.Clone()
+		mInfo["command_line"] := "GameInfo Navigation: {Right}"
+		mConfig["Keyboard"]["Right"] := Map()
+		mConfig["Keyboard"]["Right"]["1"] := mInfo
+
+		mInfo := mInfo.Clone()
+		mInfo["command_line"] := "GameInfo Navigation: {Left}"
+		mConfig["Keyboard"]["Left"] := Map()
+		mConfig["Keyboard"]["Left"]["1"] := mInfo
+
+		;Write the default action list
+		sJSON := JSON.stringify(mConfig)
+
+		fConfigFile := FileOpen(g_sUserFile, "w")
+
+		fConfigFile.Write(sJSON)
+		fConfigFile.Close()
+
+		;Rebuild the g_oActions map
+		sJSON := FileRead(g_sUserFile)
+		global g_oActions := JSON.parse(sJSON)
+	}
+}
+
 /**
  * Load general application settings from vfe.ini.
  * Set defaults when not found.
  */
 LoadConfig()
 {
-    ;Initialize GameInfo image order
+	;************* Initialize GameInfo Default Settings ************************************
+	;Initialize Settings GameInfo Exit key
 	try {
-		global g_sImageOrder := IniRead(g_sIniFile, "General", "ImageOrder")
+		global g_sGameInfoSettingsExitKey := IniRead(g_sIniFile, "GameInfo", "SettingsExitKey")
 	}
 	catch {
-		IniWrite(g_sImageOrder, g_sIniFile, "General", "ImageOrder")
+		IniWrite(g_sGameInfoSettingsExitKey, g_sIniFile, "GameInfo", "SettingsExitKey")
+	}
+
+	;Initialize Settings GameInfo Right key
+	try {
+		global g_sGameInfoSettingsRightKey := IniRead(g_sIniFile, "GameInfo", "SettingsRightKey")
+	}
+	catch {
+		IniWrite(g_sGameInfoSettingsRightKey, g_sIniFile, "GameInfo", "SettingsRightKey")
+	}
+
+	;Initialize Settings GameInfo Left key
+	try {
+		global g_sGameInfoSettingsLeftKey := IniRead(g_sIniFile, "GameInfo", "SettingsLeftKey")
+	}
+	catch {
+		IniWrite(g_sGameInfoSettingsLeftKey, g_sIniFile, "GameInfo", "SettingsLeftKey")
+	}	
+
+    ;Initialize GameInfo image order
+	try {
+		global g_sImageOrder := IniRead(g_sIniFile, "GameInfo", "ImageOrder")
+	}
+	catch {
+		IniWrite(g_sImageOrder, g_sIniFile, "GameInfo", "ImageOrder")
 	}
 
 	;Create the fully validated g_aImageOrder array accounting for possible
@@ -289,6 +372,8 @@ LoadConfig()
 			RemoveValueFromArray(&aTempImageOrder, sImageFolder)
 	}
 	g_aImageOrder := aTempImageOrder
+
+	;*****************************************************************************************
 
 	;Initialize delay between closing an app and restarting it to 500ms
 	try {
@@ -369,7 +454,7 @@ StartRomWatcher()
 	
 	if (attrib)
 	{
-		g_oLog.LogLine("INFO: ROM Folder set to: `"" g_sROMMonitorFolder ".`n")
+		g_oLog.LogLine("INFO: StartRomWatcher. ROM Folder set to: `"" g_sROMMonitorFolder ".`n")
 
 		;Ensure all rom files have a last-accessed date/time of a week ago. This is to address
 		;a Windows deficiency in which the last-access date/time of files is not updated if the file
@@ -385,9 +470,9 @@ StartRomWatcher()
 	else
 	{
 		if (g_sROMMonitorFolder == "")
-			g_oLog.LogLine("INFO: ROM Folder is not configured.`n")
+			g_oLog.LogLine("INFO: StartRomWatcher. ROM Folder is not configured.`n")
 		else
-			g_oLog.LogLine("INFO: ROM Folder: `"" g_sROMMonitorFolder "`" is invalid.`n")
+			g_oLog.LogLine("INFO: StartRomWatcher. ROM Folder: `"" g_sROMMonitorFolder "`" is invalid.`n")
 	}
 }
 
@@ -1231,23 +1316,15 @@ ShowSplash()
 
     gcSplashIcon.Move(x1 + 20, g_nScreenHeight / 2 - iconH / 2, iconH, iconW)
             
-	global gcSplashTitle := guiSplash.AddText("x" x1 + 30 + iconW " y" y1 + 29 " w" iWidth " h" iHeight, "arcadeVFE " CodeVersion)
+	global gcSplashTitle := guiSplash.AddText("x" x1 + 35 + iconW " y" y1 + 24 " w" iWidth " h" iHeight, "arcadeVFE " CodeVersion)
 	gcSplashTitle.SetFont("s26 w700", "Courier New")
 
-	sArcade := IniRead(g_sIniFile, "General", "Arcade")
-	global gcSplashSubtitle := guiSplash.AddText("x" x1 + 32 + iconW " y" y1 + 65 " w" iWidth " h" iHeight, "for " sArcade)
+	sArcade := IniRead(g_sIniFile, "General", "Arcade", "")
+	sArcade := sArcade == "Other" || !sArcade ? "The Arcade Virtual Front End" : "for " sArcade
+	global gcSplashSubtitle := guiSplash.AddText("x" x1 + 37 + iconW " y" y1 + 60 " w" iWidth " h" iHeight, sArcade)
 	gcSplashSubtitle.SetFont("s10 w700", "Courier New")
 
 	guiSplash.Show("NA w" g_nScreenWidth " h" g_nScreenHeight)
-	Sleep 3000
-	guiSplash.Destroy
-}
-
-;Log otherwise unhandled errors (spawed by OnError)
-LogError(e, mode)
-{
-    g_oLog.LogLine("ERROR: Unhandled exception: " g_oLog.FormatErrorMessage(e) "`n")
-    ExitApp
 }
 
 /**
@@ -1289,4 +1366,12 @@ RemoveValueFromArray(&aArray, sValue)
 	}
 
 	return bFound
+}
+
+;Log otherwise unhandled errors (spawed by OnError)
+LogError(e, mode)
+{
+	SystemCursor("On")
+    g_oLog.LogLine("ERROR: Unhandled exception: " g_oLog.FormatErrorMessage(e) "`n")
+    ExitApp
 }

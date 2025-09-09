@@ -1,0 +1,477 @@
+$info=batrid
+$mame
+0.129u3 [Josh W.]
+
+0.37b9 [Yochizo]
+
+
+Artwork available
+
+
+WIP:
+
+- 0.225: Hatsune Mike fixed YM2151/OKI level balancing for Armed Police Batrider.
+
+- 0.211: Use optional_memory_bank for Armed Police Batrider OKI bankswitching because they aren't present NMK112 [cam900].
+
+- 10th June 2019: Smitdogg - Moffitt dumped some PLD chips on Batrider.
+
+- 0.193: trap15 fixed Batrider's audio CPU clock. Note: Was doing a repair today that required me to hook up a different clock source to the YM2151, so we tried to use the Z80's clock. Turns out, it's not at all 4MHz, so it was wrong. We put the 32MHz oscillator and the Z80 clock on an oscilloscope and determined the Z80 clock was divided by 6 instead of 8. So instead we divided the 68k's clock by 4 and got 4MHz, so the 68k is indeed 16MHz. Changed Z80 CPU2 clock speed to 5333333 Hz.
+
+- 0.187: Allow device to be configured for acknowledgement to occur separately from data reads (machine\gen_latch.cpp); use this for Armed Police Batrider [AJR].
+
+- 0.172: trap15 and The Dumping Union added clone Armed Police Batrider (Hong Kong) (Mon Dec 22 1997).
+
+- 0.158: David Haywood fixed video\gp9001.c. This fixes a portion of the boss's ('Gob-Robo') face is missing in batrider and clone batriderj.
+
+- 15th May 2011: Mr. Do - Looks like batrider got renamed (again). You can simply grab the LAY file and let ClrMAME work it out. Thank you Roman, for the heads up.
+
+- 0.141u4: Alex Jackson fixed inconsistent rom naming between some of the Armed Police Batrider clones. Changed description of clones (Fri Feb 13 1998) to 'Armed Police Batrider (Japan, B version) (Fri Feb 13 1998)', (Mon Dec 22 1997) to 'Armed Police Batrider (Japan, older version) (Mon Dec 22 1997)', (Mon Dec 22 1997) to 'Armed Police Batrider (Taiwan) (Mon Dec 22 1997)' and (Fri Feb 13 1998) to 'Armed Police Batrider (USA) (Fri Feb 13 1998)'. Renamed (batrid) to (batrider), (batridc) to (batriderc), (batridj) to (batriderj), (batridja) to (batriderja), (batridk) to (batriderk), (batridta) to (batridert) and (batridu) to (batrideru).
+
+- 0.136u4: Anonymous added clone Armed Police Batrider - A Version (Taiwan) (Mon Dec 22 1997). Changed description of clone (Japan) (Mon Dec 22 1997) to 'Armed Police Batrider - A Version (Japan) (Mon Dec 22 1997)'.
+
+- 0.135u1: Fabio Priuli fixed reversed 'Guest Player/Player Select/Special Course' dipswitch settings in Armed Police Batrider and clones.
+
+- 0.132u4: Fabio Priuli fixed Armed Police Batrider 'Hit Score', 'Sound Effect' and 'Music' dipswitches are inverted vs MAME tab, if you select freeplay.
+
+- 0.129u3: Josh W. added 'Armed Police Batrider (Europe) (Fri Feb 13 1998)' and clones (U.S.A.) (Fri Feb 13 1998) and (China) (Fri Feb 13 1998). Renamed (batrider) to (batridj), (batridrk) to (batridk) and (batridra) to (batridja).
+
+- 0.125u3: Added dipswitches 'Credits to Start' and 'Coin B'.
+
+- 0.117u1: Alex Jackson fixed crash in Batrider. Changed description to 'Armed Police Batrider - B Version (Japan) (Fri Feb 13 1998)' and clones (Japan, version A) to 'Armed Police Batrider (Japan) (Mon Dec 22 1997)' and (Korea, version B) to 'Armed Police Batrider (Korea) (Fri Feb 13 1998)'.
+
+-  8th October 2006: Mr. Do - Added Armed Police Batrider instruction cards from TheSheep.
+
+- 0.105u4: Added dipswitches 'Joystick Mode', 'Hit Score', 'Sound Effect' and 'Music'.
+
+- 0.99u8: Mamesick fixed dipswitches in Batrider. Added dipswitches 'Guest Player', 'Player Select' and 'Special Course'.
+
+- 0.94u2: Aaron Giles fixed Batrider sound. Changed 2nd OKI6295 clock speed to 19393 Hz.
+
+- 0.94u1: Attempted to fix Batrider crash [Aaron Giles].
+
+- 0.71u1: David Haywood added missing rowselect effect to Armed Police Batrider.
+
+- 0.68: Brian Troha added clone Armed Police Batrider (Korea, version B).
+
+- 13th May 2003: Brian Troha added the international version of Dodonpachi and the Korean version of Armed Police Batrider.
+
+- 0.61: Quench fixed screen stands still during attract mode in Batrider.
+
+- 11th February 2001: Quench sent in a Toaplan2 update which fixed disappearing sprites in the Raizing games.
+
+- 0.37b10: Changed clock speed of the 2x OKI6295 to 24242 Hz.
+
+-  9th November 2000: Quench sent an updated Toaplan2 driver with text-layer scroll effect that fixes the ending scene in Armed Police Batrider.
+
+- 0.37b9: Yochizo added 'Armed Police Batrider (Japan, version B)' (Raizing 1998) and clone (Japan, version A).
+
+- 14th October 2000: Yochizo fixed some graphics problems in Shippu Mahou Daisakusen and Armed Police Batrider, added sound to Armed Police Batrider and sped up the driver a little.
+
+-  9th September 2000: Yochizo added Armed Police Batrider to the Toaplan2 driver, but sound is missing.
+
+
+LEVELS: 3 - 5 - 7 - 18 (easy / normal / advanced / special mode)
+
+
+Other Emulators:
+
+* FB Neo
+
+* RAINE
+
+
+Recommended Games (Cops):
+
+Cops'n Robbers
+
+Lupin III
+
+Streaking
+
+Swinging Singles
+
+Time Limit
+
+Hogan's Alley (PlayChoice-10)
+
+Vs. Hogan's Alley
+
+FamicomBox (Hogan's Alley)
+
+Turkey Shoot
+
+Cop 01
+
+Crackshot (Police Alley)
+
+Street Heat
+
+Jail Break
+
+APB - All Points Bulletin
+
+Chase H.Q.
+
+Chase H.Q. 2
+
+Special Criminal Investigation
+
+Special Criminal Investigation (TourVision)
+
+Super Chase - Criminal Termination
+
+Round Up 5 - Super Delta Force
+
+Gang Busters
+
+Robocop
+
+Robocop 2
+
+Robocop 3 (Nintendo Super System)
+
+Crime City
+
+E-Swat - Cyber Police
+
+Cyber Police ESWAT: Enhanced Special Weapons and Tactics (Mega-Tech)
+
+A.B. Cop
+
+Cisco Heat
+
+Die Hard (TourVision)
+
+Die Hard Arcade / Dynamite Deka
+
+Asian Dynamite / Dynamite Deka EX
+
+Down Load (TourVision)
+
+Steel Gunner
+
+Steel Gunner 2
+
+Cosmic Cop
+
+Waku Waku Sonic Patrol Car
+
+Dead Connection
+
+Lethal Enforcers
+
+Lethal Weapon (Nintendo Super System)
+
+Lucky & Wild
+
+Crime Patrol
+
+Crime Patrol 2: Drug Wars
+
+Judge Dredd
+
+Judge Dredd (Rev C Dec. 17 1997)
+
+Under Fire
+
+Cops (USA)
+
+Hard Times
+
+Locked 'n Loaded
+
+Marbella Vice
+
+Virtua Cop
+
+Virtua Cop 2
+
+Virtua Cop 3
+
+Dead Eye
+
+Dynamite Cop
+
+Police Trainer
+
+Police Trainer 2
+
+Total Vice
+
+Armed Police Batrider
+
+Code One Dispatch
+
+Hashire Patrol Car
+
+Police 911 / The Keisatsukan: Shinjuku 24-ji
+
+Police 911 2
+
+SWAT Police
+
+Hog Wild
+
+Tokyo Cop
+
+Ghost Squad
+
+Ghost Squad Evolution
+
+
+Recommended Games (Airforce 3):
+
+Tokio / Scramble Formation
+
+World Wars
+
+Asuka & Asuka
+
+Image Fight
+
+Image Fight (TourVision)
+
+Dyger
+
+Master of Weapon
+
+Air Duel
+
+Gun & Frontier
+
+Raiden
+
+Raiden (TourVision)
+
+Raiden II
+
+Raiden DX
+
+Raiden II New / Raiden DX
+
+Raiden III
+
+Raiden IV
+
+Raiden Fighters
+
+Raiden Fighters 2 - Operation Hell Dive
+
+Raiden Fighters Jet
+
+Thunder Dragon
+
+Thunder Dragon 2
+
+Turbo Force
+
+Aero Fighters
+
+Aero Fighters 2
+
+Aero Fighters 3
+
+Aero Fighters Special
+
+Grid Seeker: Project Storm Hammer
+
+Sand Scorpion
+
+Sky Alert
+
+Varth: Operation Thunderstorm
+
+Zing Zing Zip
+
+Air Assault
+
+Batsugun
+
+Daioh
+
+Mad Shark
+
+U.N. Defense Force: Earth Joker
+
+DonPachi
+
+DoDonPachi
+
+DoDonPachi II - Bee Storm
+
+DoDonPachi III
+
+DoDonPachi Dai-Fukkatsu
+
+DoDonPachi Dai-Fukkatsu Black Label
+
+DoDonPachi Dai-Ou-Jou Tamashii
+
+Air Gallet
+
+Battle Garegga
+
+Battle Bakraid
+
+Skull Fang
+
+Storm Blade
+
+Sengeki Striker
+
+Armed Police Batrider
+
+Cyvern - The Dragon Weapons
+
+Guardian Storm
+
+Stagger I
+
+Change Air Blade
+
+Gaia - The Last Choice of Earth
+
+Solite Spirits
+
+1945k III
+
+
+Romset: 20.2 MB / 11 files / 7.62 zip
+
+$end
+
+$info=wwfwfest
+$mame
+0.180 [David Haywood, RAINE team]
+
+0.37b16 [David Haywood, RAINE team]
+
+
+WIP:
+
+- 0.201: SpinalFeyd and The Dumping Union added clone WWF WrestleFest (US). Minor clean up: Correct OKI Clock for wwfwfest sets. Updated rom names to MAME convention minor ROM name corrections [Brian Troha]. Changed MSM6295 sound clock speed to 1056000 Hz. Changed description of clone (US) to 'WWF WrestleFest (US, rev 2)'. Renamed (wwfwfestb) to (wwfwfestub).
+
+- 27th July 2018: Smitdogg - SpinalFeyd dumped what looks to be the original/first USA version of WWF WrestleFest.
+
+- 0.180: Correct rom labels as per recent redump. Reorder parent / clone for WWF Wrestlefest [Brian Troha]. Changed clone (US Tecmo) to parent 'WWF WrestleFest (World)' and (US set 1) to clone 'WWF WrestleFest (US)'. Renamed (wwfwfest) to (wwfwfestu) and (wwfwfesta) to (wwfwfest).
+
+- 0.155: WWF WrestleFest works again [hap]. Fixed M68k byte smearing regression [Alex Jackson].
+
+- 0.148u2: Simon Dennison added clone WWF WrestleFest (Korea).
+
+- 0.133u1: Renamed (wwfwfsta) to (wwfwfesta), (wwfwfstb) to (wwfwfestb) and (wwfwfstj) to (wwfwfestj).
+
+- 0.128u7: Improvements to WWFSuperstars driver [Mamesick]: Converted driver to be fully scanlines based using timers. Updated driver to new video screen raw parameters. Hooked up interrupts. Changed VSync to 57.444853 Hz.
+
+- 0.127u3: Kevin Eshbach added save state support to WWF WrestleFest. Updated rom names.
+
+- 0.125u3: Nicola Salmoria fixed cpu_getiloops() which was not returning the correct value. This fixes flickering in-game graphics.
+
+- 0.112: Brian Troha added DIP locations to WWF WrestleFest driver.
+
+- 12th May 2006: Guru - WWF WrestleFest (Technos) arrived from Japan. The game is not specifically needed, but I will dump and document it anyway.
+
+- 0.88u5: Pierpaolo Prazzoli added clone WWF WrestleFest (US bootleg). Changed parent description to 'WWF WrestleFest (US set 1)'.
+
+- 0.70u5: Inigo Luja fixed dipswitches in WWF WrestleFest.
+
+- 0.60: Changed 'Unknown' dipswitch to 'Unused'.
+
+- 23rd April 2002: Karasu submitted correct dipswitch settings for Wrestlefest and The Three Stooges.
+
+- 0.53: Changed visible area to 320x240 and OKI6295 clock speed to 7759 Hz. Added dipswitches 'Buy In Price', 'Regain Power Price', 'Continue Price', 'Demo Sounds', 'Flip Screen', 'Difficulty', 'Players' and 'Health For Winning'. Removed 2nd coin slot.
+
+- 10th July 2001: Bryan McPhail finished the Wrestlefest driver, fixing all the known bugs.
+
+- 0.37b16: David Haywood added 'WWF WrestleFest (US)' (Technos 1991) and clones (US Tecmo) and (Japan). Known issues: Sound Volumes, probably not right. DSW's are mapped weirdly, i'll verify my code here, and try to work out some of the others, Raine's DSW's don't seem to be correct. Improve Sprite Code, I think it may clip at the bottom sometimes when it shouldn't. Improve way priority is handled, which bits of the control register are significant etc. Demolition don't seem to have a logo in Tag mode? is this normal? its just a block of Junk but i don't see any other way it could be. Palette Code could probably be improved, lot of unused colours at the moment because of the odd way palette ram is used.
+
+- 21st June 2001: David Haywood wrote a driver for WWF Wrestlefest.
+
+- 20th June 2001: Did Pretty Much everything else, the game is now playable [David Haywood].
+
+- 19th June 2001: Started the driver, based on Raine, the WWF Superstars driver, and the Double Dragon 3 Driver, got most of the basics done, the game will boot showing some graphics [David Haywood].
+
+
+LEVELS: 5 (must be finished twice)
+
+
+Other Emulators:
+
+* FB Neo
+
+* RAINE
+
+
+Recommended Games (Wrestling):
+
+The Big Pro Wrestling!
+
+Appoooh
+
+Champion Pro Wrestling
+
+Mat Mania
+
+Body Slam
+
+Mania Challenge
+
+Pro Wrestling (PlayChoice-10)
+
+Robo Wres 2001
+
+Bikkuri Pro Wrestling
+
+The Main Event
+
+Champion Wrestler
+
+Grudge Match (Yankee Game Technology)
+
+Wrestle War
+
+Wrestle War (Mega-Tech)
+
+WWF Superstars
+
+WWF WrestleFest
+
+Ring Rage
+
+3 Count Bout / Fire Suplex
+
+Muscle Bomber Duo: Ultimate Team Battle
+
+Saturday Night Slam Masters
+
+Ring of Destruction: Slammasters II
+
+Blazing Tornado
+
+WWF: Wrestlemania
+
+Shin Nihon Pro Wrestling Toukon Retsuden 3 Arcade Edition
+
+Shin Nihon Pro Wrestling Toukon Retsuden 4 Arcade Edition
+
+Zen Nippon Pro-Wrestling Featuring Virtua
+
+Ehrgeiz
+
+Buriki One: World Grapple Tournament '99 in Tokyo
+
+Giant Gram: All Japan Pro Wrestling 2
+
+Giant Gram 2000
+
+WWF Royal Rumble
+
+Kinnikuman Muscle Grand Prix
+
+Kinnikuman Muscle Grand Prix 2
+
+
+Romset: 9.69 MB / 15 files / 4.37 zip
+
+$end

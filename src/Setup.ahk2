@@ -272,12 +272,12 @@ class Setup
         gcAuditButton.Enabled := false
         gcSetup_CloseButton.Enabled := false
         gcAuditProgress.Visible := true
-        oAuditLog.Init(g_sAuditFolder "\audit.txt", "arcadeVFE ROM File Audit")
+        g_oAuditLog.Init(g_sAuditFolder "\audit.txt", "arcadeVFE ROM File Audit")
 
         sROMFolder := gcROMMonitorFolderEdit.Text
-        oAuditLog.LogLine("INFO: Start auditing ROM files in folder: " sROMFolder "\*.zip`n")
-        oAuditLog.LogLine("INFO: Using curated arcade ROM list: `"" g_sArcadeString "`"`n")
-        oAuditLog.LogLine("`n")
+        g_oAuditLog.LogLine("INFO: Start auditing ROM files in folder: " sROMFolder "\*.zip`n")
+        g_oAuditLog.LogLine("INFO: Using curated arcade ROM list: `"" g_sArcadeString "`"`n")
+        g_oAuditLog.LogLine("`n")
 
         OG_DetectHiddenWindows := A_DetectHiddenWindows
         DetectHiddenWindows True
@@ -293,7 +293,7 @@ class Setup
         }
         catch as e
         {		
-            oAuditLog.LogLine("ERROR: Attaching console for GetHi2TxtScores(): " oAuditLog.FormatErrorMessage(e) "`n")
+            g_oAuditLog.LogLine("ERROR: Attaching console for GetHi2TxtScores(): " g_oAuditLog.FormatErrorMessage(e) "`n")
             ExitApp
         }
 
@@ -305,7 +305,7 @@ class Setup
             ;Missing file check
             if (!FileExist(sROMFolder "\" sRom ".zip"))
             {
-                oAuditLog.LogLine("AUDIT " mInfo["MAMEVersion"] " ROM: " PadString(sRom, 8) "  : Rom File missing.`n")
+                g_oAuditLog.LogLine("AUDIT " mInfo["MAMEVersion"] " ROM: " PadString(sRom, 8) "  : Rom File missing.`n")
                 iErrorCount++
                 continue
             }
@@ -342,14 +342,14 @@ class Setup
                         stdout := " " PadString(sRom, 8) "  : Rom file is not supported in this version of MAME."
 
                     iErrorCount++
-                    oAuditLog.LogLine("AUDIT " mInfo["MAMEVersion"] " ROM: " stdout "`n")
+                    g_oAuditLog.LogLine("AUDIT " mInfo["MAMEVersion"] " ROM: " stdout "`n")
                 }
 
                 if (stderr)
-                    oAuditLog.LogLine("AUDIT " mInfo["MAMEVersion"] " ROM: " stderr " (stderr)`n")
+                    g_oAuditLog.LogLine("AUDIT " mInfo["MAMEVersion"] " ROM: " stderr " (stderr)`n")
             }
             catch as e {
-                oAuditLog.LogLine("ERROR: Calling -verifyroms, Rom: " sRom ", Message: " oAuditLog.FormatErrorMessage(e) "`n")
+                g_oAuditLog.LogLine("ERROR: Calling -verifyroms, Rom: " sRom ", Message: " g_oAuditLog.FormatErrorMessage(e) "`n")
             }
         }
 
@@ -360,14 +360,14 @@ class Setup
         if (iErrorCount == 1)
             sAnomalyPhrase := "anomaly was found."        
 
-        oAuditLog.LogLine("`n")
-        oAuditLog.LogLine("INFO: Completed audit of " g_oArcadeRomList.Count " rom files. " iErrorCount " " sAnomalyPhrase "`n")
-        oAuditLog.LogLine("INFO: Please note that ROMs reporting anomalies may still work, but should be tested.`n")
+        g_oAuditLog.LogLine("`n")
+        g_oAuditLog.LogLine("INFO: Completed audit of " g_oArcadeRomList.Count " rom files. " iErrorCount " " sAnomalyPhrase "`n")
+        g_oAuditLog.LogLine("INFO: Please note that ROMs reporting anomalies may still work, but should be tested.`n")
 
         gcAuditProgress.Visible := false
         gcAuditProgress.Value := 0
 
-        oAuditLog.ShowLog()    
+        g_oAuditLog.ShowLog()    
 
         gcAuditButton.Enabled := true
         gcSetup_CloseButton.Enabled := true
@@ -401,6 +401,8 @@ class Setup
         try guiSettings.Opt("+Disabled")
         guiSetup.Opt("-Resize -MaximizeBox -MinimizeBox")
         guiSetup.Show("x" Setup.mSetup.X " y" Setup.mSetup.Y " w" Setup.mSetup.Width " h" Setup.mSetup.Height)
+
+        g_oLog.LogLine("INFO: Showing Setup Dialog.`n")
 
         Setup.PopulateFields()
     }
@@ -443,6 +445,8 @@ class Setup
 
         guiSettings.Opt("-Disabled")
         guiSetup.Hide()
+
+        g_oLog.LogLine("INFO: Closed Setup dialog.`n")
     }
 
     static Setup_ApplyButton_Click(*)
@@ -455,7 +459,10 @@ class Setup
             sOGROMFolder := ""
             try sOGROMFolder := IniRead(g_sIniFile, "General", "ROMFolder")
             if (gcROMMonitorFolderEdit.Text != sOGROMFolder)
+            {
+                global g_sROMMonitorFolder := gcROMMonitorFolderEdit.Text 
                 StartRomWatcher()
+            }
 
             ;Also index these settings in their own section
             IniWrite(gcArcadeDropDown.Text, g_sIniFile, gcArcadeDropDown.Text, "Arcade")
@@ -480,6 +487,8 @@ class Setup
             ;Machine location editor is not supported for "Other" arcade
             ;Use try since this may be called before Settings is created
             try gcShowLocations_Checkbox.Enabled := g_sArcadeString == "Other" ? false : true
+
+            g_oLog.LogLine("INFO: Setup Apply Button pressed.`n")
         }
     }
 
