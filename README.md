@@ -213,7 +213,7 @@ In addition to this documentation file, the **Settings** screen implements toolt
 
 Known Bugs
 ==========
-There are currently a few known bugs in version 1.1 that will be fixed in 1.2.
+There are currently some known bugs in version 1.1 that will be fixed in 1.2.
 
 * If you start with `Other` selected as the arcade type, the software may crash when selecting a rom.
 
