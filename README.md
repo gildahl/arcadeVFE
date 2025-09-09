@@ -18,7 +18,7 @@ To this end, **arcadeVFE** includes these features:
 * A detailed game information overlay that can be viewed in VR using one's favorite desktop portal. This information comes from **MAME** [`history.xml`](https://www.arcade-history.com/index.php?page=download) and [`gameinfo.dat`](https://mameinfo.mameworld.info/) files, and can also include pictures of your choice--for example, flyers, pcbs, or pictures of real cab control panels (which can be very handy as a reference in the Candy Cab rooms of ATC).
 * Manual execution of command line actions whenever a particular keyboard key or game controller button is pressed.
 * Mapping of controller buttons to keyboard keys in order to, for example, better facilitate access to the **MAME** tab configuration menus while in VR.
-* * A machine directory editor to more easily locate your favorite machines in the virtual arcade.
+* A machine directory editor to more easily locate your favorite machines in the virtual arcade.
 * Rom copy feature that can simplify installation of the correct roms into **Arcade Time Capsule**.
 * A Rom audit feature that can determine whether your rom set is suitable for **Arcade Time Capsule**.
 * Voice notification of game control layout changes.
