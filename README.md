@@ -10,16 +10,16 @@ ToDo:
 
 Summary
 =======
-Virtual Reality arcades based on **MAME** (such as **Arcade Time Capsule**), do not need conventional front-ends since players walk the floor of the virtual arcade, choosing games just as in real life. So there's no need for game selection menus, pictures and videos of gameplay, or background ambiance sounds since that's already right in front of the player. However, there are still a few important game controller, rom management, and information features common in front-ends that could still be of benefit to VR arcade players--if they could be made to work. This is the gap that **arcadeVFE** seeks to fill.
+Virtual Reality arcades based on **MAME** such as **Arcade Time Capsule**, do not need conventional front-ends since players walk the floor of the virtual arcade, choosing games just as in real life. So there's no need for game selection menus, pictures and videos of gameplay, or background ambiance sounds since that's already right in front of the player. However, there are still a few important game controller, rom management, and information features common in front-ends that could still be of benefit to VR arcade players--if they could be made to work. This is the gap that **arcadeVFE** seeks to fill.
 
 To this end, **arcadeVFE** includes these features: 
 
 * Ability to automatically execute one or more command line application calls upon the start of each game in the arcade. This can be used to call applications like **Virtual Controller** or other programmable game controller software to create game-specific custom configurations. This makes possible the ability to do anything from tweaking the button layout of a gamepad or fightstick on a per-game basis, combining two or more controllers into one, or building an advanced composite control panel that adjusts to every game in the virtual arcade, just like the sophisticated panels in conventional multicade arcade machines.
+* A detailed game information overlay that can be viewed in VR using one's favorite desktop viewport. This information comes from **MAME** `gameinfo.dat` and `history.xml` files, and can also include pictures of your choice--for example, flyers, pcbs, or pictures of real cab control panels (which can be very handy as a reference in the Candy Cab rooms of ATC).
 * Rom copy feature that can simplify installation of the correct roms into **Arcade Time Capsule**.
 * Manual execution of commands whenever a particular keyboard key or game controller button is pressed.
 * Voice notification of game control layout changes.
 * Mapping of controller buttons to keyboard keys in order to, for example, better facilitate access to the **MAME** tab configuration menus while in VR.
-* A detailed game information overlay that can be viewed in VR using one's favorite desktop viewport. This information comes from **MAME** `gameinfo.dat` and `history.xml` files, and can also include pictures of your choice--for example, flyers, pcbs, or pictures of real cab control panels (which can be very handy as a reference in the Candy Cab rooms of ATC).
 * A machine directory editor to more easily locate your favorite machines in the virtual arcade.
 
 Resources
