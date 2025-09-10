@@ -10,17 +10,18 @@ ToDo:
 
 Summary
 =======
-Virtual Reality arcades based on **MAME** (such as **Arcade Time Capsule**), do not need conventional front-ends since players walk the floor of the virtual arcade, choosing games just as in real life. So there's no need for game selection menus, pictures and videos of gameplay, or background ambiance sounds since that's already right in front of the player. However, there are still a few important game controller, rom management, and information features common in front-ends that could still be of benefit to VR arcade players--if they could be made to work. This is the gap that **arcadeVFE** seeks to fill.
+Virtual Reality arcades based on **MAME** such as **Arcade Time Capsule**, do not need conventional front-ends since players walk the floor of the virtual arcade, choosing games just as in real life. So there's no need for game selection menus, pictures and videos of gameplay, or background ambiance sounds since that's already right in front of the player. However, there are still a few important game controller, rom management, and information features common in front-ends that could still be of benefit to VR arcade players--if they could be made to work. This is the gap that **arcadeVFE** seeks to fill.
 
 To this end, **arcadeVFE** includes these features: 
 
 * Ability to automatically execute one or more command line application calls upon the start of each game in the arcade. This can be used to call applications like **Virtual Controller** or other programmable game controller software to create game-specific custom configurations. This makes possible the ability to do anything from tweaking the button layout of a gamepad or fightstick on a per-game basis, combining two or more controllers into one, or building an advanced composite control panel that adjusts to every game in the virtual arcade, just like the sophisticated panels in conventional multicade arcade machines.
-* Rom copy feature that can simplify installation of the correct roms into **Arcade Time Capsule**.
-* Manual execution of commands whenever a particular keyboard key or game controller button is pressed.
-* Voice notification of game control layout changes.
+* A detailed game information overlay that can be viewed in VR using one's favorite desktop portal. This information comes from **MAME** [`history.xml`](https://www.arcade-history.com/index.php?page=download) and [`gameinfo.dat`](https://mameinfo.mameworld.info/) files, and can also include pictures of your choice--for example, flyers, pcbs, or pictures of real cab control panels (which can be very handy as a reference in the Candy Cab rooms of ATC).
+* Manual execution of command line actions whenever a particular keyboard key or game controller button is pressed.
 * Mapping of controller buttons to keyboard keys in order to, for example, better facilitate access to the **MAME** tab configuration menus while in VR.
-* A detailed game information overlay that can be viewed in VR using one's favorite desktop viewport. This information comes from **MAME** `gameinfo.dat` and `history.xml` files, and can also include pictures of your choice--for example, flyers, pcbs, or pictures of real cab control panels (which can be very handy as a reference in the Candy Cab rooms of ATC).
 * A machine directory editor to more easily locate your favorite machines in the virtual arcade.
+* Rom copy feature that can simplify installation of the correct roms into **Arcade Time Capsule**.
+* A Rom audit feature that can determine whether your rom set is suitable for **Arcade Time Capsule**.
+* Voice notification of game control layout changes.
 
 Resources
 =========
@@ -40,9 +41,9 @@ Tested Software
 
 Installation
 ============
-After downloading the distribution zip file, you must first right-click on it, choose Properties, check the **Unblock** checkbox at the bottom if present, then click **Apply**. After doing this, extract all files and folders from the zip into an empty folder on your PC that has read/write access.
+After downloading the distribution zip file, right-click on it, choose Properties, check the **Unblock** checkbox at the bottom if present, then click **Apply**. After doing this, extract all files and folders from the zip into an empty folder on your PC that has read/write access.
 
-When you launch the executable (`vfe.exe`) for the first time, it will display a small **Initial Setup** dialog in which you will choose your virtual arcade, the virtual arcade's executable, and the virtual arcade's rom folder. Once you've set the rom folder, you can also do a quick audit of the roms by pressing the **Audit ROMs...** button. If you use **Arcade Time Capsule** and haven't yet installed its roms, see the next section, [Copy ROMs to ATC](#Copy-ROMs-to-ATC) for a streamlined method of doing this.
+When you launch the executable (`vfe.exe`) for the first time, it will display a small **Initial Setup** dialog in which you will choose your virtual arcade (**Arcade Time Capsule 3.6** by default), the virtual arcade's executable, and the virtual arcade's rom folder. Once you've set the rom folder, you can also do a quick audit of the roms by pressing the **Audit ROMs...** button. If you use **Arcade Time Capsule** and haven't yet installed its roms, see the next section, [Copy ROMs to ATC](#Copy-ROMs-to-ATC) for a streamlined method of doing this.
 
 Once you apply these settings and close the dialog, you will be taken directly to the **Settings** screen where you can begin configuration. Note that in the future, whenever you start **arcadeVFE**, you will not see anything on the screen, but rather it will create a joystick icon in the Windows Tray indicating normal background mode is active. If you need to return to the **Settings** dialog, just right-click on this icon and choose **Settings...**. You can also click on the **Initial Setup** button in the **Settings** screen to re-invoke the **Initial Setup** dialog.
 
@@ -213,7 +214,7 @@ In addition to this documentation file, the **Settings** screen implements toolt
 
 Known Bugs
 ==========
-There are currently a few known bugs in version 1.1 that will be fixed in 1.2.
+There are currently some known bugs in version 1.1 that will be fixed in 1.2.
 
 * If you start with `Other` selected as the arcade type, the software may crash when selecting a rom.
 
