@@ -301,24 +301,24 @@ class Settings
 		gcApplication_Checkbox.OnEvent("Click", (*) => Settings.Application_Checkbox_Click())
 		gcApplication_Checkbox.TT := "Keep arcadeVFE dormant when the arcade emulator system`nsoftware is not running (recommended).`n`nTurning this off is primarily intended for testing."
 
-		try gcApplication_Checkbox.Value := IniRead(g_sIniFile, "General", "MonitorApplication", 1)
+		try gcApplication_Checkbox.Value := Integer(IniRead(g_sIniFile, "General", "MonitorApplication", 1))
 		
 		gcApplication_Checkbox.Enabled := gcApplicationEdit.Text ? true : false
 		global g_bOnlyMonitorWhenArcadeIsLoaded := gcApplication_Checkbox.Enabled && gcApplication_Checkbox.Value == 1
 
 		gcAlwaysAnnunciate_Checkbox := guiSettings.AddCheckbox("x" 45 " y" 677 " Check3", "Always voice notify")
 		gcAlwaysAnnunciate_Checkbox.OnEvent("Click", (*) => Settings.AlwaysAnnunciate_Checkbox_Click())
-		try gcAlwaysAnnunciate_Checkbox.Value := IniRead(g_sIniFile, "General", "AlwaysAnnunciate", 1)	
+		try gcAlwaysAnnunciate_Checkbox.Value := Integer(IniRead(g_sIniFile, "General", "AlwaysAnnunciate", 1))	
 		gcAlwaysAnnunciate_Checkbox.TT := "Adjust when voice notification is used.`n`nChecked:      Always notify upon new game start.`nUnchecked:  Never notify (off).`nMinus:          Only notify when an action is performed."
 
 		gcBeep_Checkbox := guiSettings.AddCheckbox("x" 45 " y" 700, "Beep on action")
 		gcBeep_Checkbox.OnEvent("Click", (*) => Settings.Beep_Checkbox_Click())
-		try gcBeep_Checkbox.Value := IniRead(g_sIniFile, "General", "BeepOnProfileChange", 0)	
+		try gcBeep_Checkbox.Value := Integer(IniRead(g_sIniFile, "General", "BeepOnProfileChange", 0))	
 		gcBeep_Checkbox.TT := "Checked:        Beep whenever an action is performed.`nUnchecked:    Never beep (off)"
 
 		gcRawAccel_Checkbox := guiSettings.AddCheckbox("x" 280 " y" 700, "Run RawAccel")
 		gcRawAccel_Checkbox.OnEvent("Click", (*) => Settings.RawAccel_Checkbox_Click())
-		try gcRawAccel_Checkbox.Value := IniRead(g_sIniFile, "General", "LoadRawAccel", 0)	
+		try gcRawAccel_Checkbox.Value := Integer((g_sIniFile, "General", "LoadRawAccel", 0))
 		gcRawAccel_Checkbox.TT := "Run RawAccel when the arcade application starts`nand close it when the application terminates.`n`nRawAccel is expected to be in a subfolder called`n\RawAccel within the arcadeVFE folder."
 
 		if (!FileExist(A_ScriptDir "\RawAccel\rawaccel.exe") || gcApplicationEdit.Text == '' || gcApplication_Checkbox.Value == 0)
@@ -342,16 +342,16 @@ class Settings
 		gcGameInfoFontSizeEdit.OnEvent("Change", (*) => Settings.GameInfoFontSizeEdit_Change())
 		gcGameInfoFontSizeEdit.TT := "Enter the font size to be used`nfor the GameInfo screen."
 
-		gcShowLocations_Checkbox := guiSettings.AddCheckbox("x" 440 " y" 653, "Show Directory")
+		gcShowLocations_Checkbox := guiSettings.AddCheckbox("x" 440 " y" 653, "Edit Directory")
 		gcShowLocations_Checkbox.OnEvent("Click", (*) => Settings.ShowLocations_Checkbox_Click())
-		gcShowLocations_Checkbox.Value := IniRead(g_sIniFile, "General", "ShowLocations", 0)	
-		gcShowLocations_Checkbox.TT := "Show/hide machine directory/editor under the ROM list on`nthis screen whenever a game rom is selected."
+		gcShowLocations_Checkbox.Value := IniRead(g_sIniFile, "General", "EditLocations", 0)	
+		gcShowLocations_Checkbox.TT := "Enable editing the machine location`ninformation under the ROM list."
 
 		gcShowLocations_Checkbox.Enabled := g_sArcadeString == "Other" ? false : true
 
 		gcToolTip_Checkbox := guiSettings.AddCheckbox("x" 440 " y" 700, "Show Tooltips")
 		gcToolTip_Checkbox.OnEvent("Click", (*) => Settings.ToolTip_Checkbox_Click())
-		try gcToolTip_Checkbox.Value := IniRead(g_sIniFile, "General", "ShowToolTips", 1)	
+		try gcToolTip_Checkbox.Value := Integer(IniRead(g_sIniFile, "General", "ShowToolTips", 1))
 		gcToolTip_Checkbox.TT := "Show or hide tooltips on this screen."
         
 		try global g_sRawAccelExe := IniRead(g_sIniFile, "General", "RawAccelExe", g_sRawAccelExe)
@@ -687,7 +687,8 @@ class Settings
 	 */
 	static ViewGameInfoButton_Click(*)
 	{
-		;SystemCursor("Off")
+		if (!bTestMode && g_bHideCursor)
+			SystemCursor("Off")
 		SplitPath(gcROMDropDownGameRom.Text,,,,&OutNameNoExt)
 		ShowGameInfo(OutNameNoExt)
 
@@ -867,7 +868,7 @@ class Settings
 		gcROMDropDownController.Visible := bROMControlVisible
 		gcROMDropDownMAMEVersion.Visible := bRomControlVisible
 		
-		Settings.SetLocationInfoVisiblity(bROMControlVisible && !InStr(gcROMDropDown.Text,"["))
+		Settings.SetLocationInfoVisiblity(bROMControlVisible)
 
 		;Set visibility of controls only used in Game Controller mode
 		gcButtonOptionsGroupBox.Visible := bGameControlVisible
@@ -888,6 +889,9 @@ class Settings
 
 	static SetLocationInfoVisiblity(bState)
 	{
+		;force invisibility if a group is selected in the rom list
+		bState := bState && !InStr(gcROMDropDown.Text,"[")
+
 		bShowLocations := false
 		try bShowLocations := (gcShowLocations_Checkbox.Value && gcShowLocations_Checkbox.Enabled)
 
@@ -900,6 +904,22 @@ class Settings
 		gcVicinityComboBox.Visible := bState
 		gcAddVicinityButton.Visible := bState
 		gcRemoveVicinityButton.Visible := bState
+		
+		try
+		{
+			if (gcShowLocations_Checkbox.Enabled && gcDevices.Text == "ROM Monitor" && !InStr(gcROMDropDown.Text,"["))
+			{
+				gcFloorLabel.Visible := true
+				gcFloorDropDown.Visible := true
+				gcVicinityLabel.Visible := true
+				gcVicinityComboBox.Visible := true
+
+				gcFloorDropDown.Enabled := gcShowLocations_Checkbox.Value
+				gcVicinityComboBox.Enabled := gcShowLocations_Checkbox.Value
+				gcAddVicinityButton.Visible := gcShowLocations_Checkbox.Value
+				gcRemoveVicinityButton.Visible := gcShowLocations_Checkbox.Value
+			}
+		}	
 	}
 
 	static TemplateEdit_Change(*)
@@ -1321,7 +1341,7 @@ class Settings
 
 	static ShowLocations_Checkbox_Click(*)
 	{
-		IniWrite(gcShowLocations_Checkbox.Value, g_sIniFile, "General", "ShowLocations")
+		IniWrite(gcShowLocations_Checkbox.Value, g_sIniFile, "General", "EditLocations")
 
 	    Settings.Devices_Change()
 	}

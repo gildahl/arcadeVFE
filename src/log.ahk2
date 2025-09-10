@@ -12,6 +12,8 @@
 
 #Requires AutoHotkey v2.0
 
+#include Utility.ahk2
+
 class AppLog
 {
     _sLogFile := ""
@@ -48,7 +50,7 @@ class AppLog
         sLogEntry := "LOG: " sAppName " started on: " FormatTime(,"LongDate") ", at " FormatTime(,"Time") "`n"
         iEntryLen := StrLen(sLogEntry)
         this.LogLine(sLogEntry)
-        sSep := this.RepeatChar("=", iEntryLen)
+        sSep := RepeatChar("=", iEntryLen)
         this.LogLine(sSep "`n")
         this.LogLine("`n")
         if (sLogLine)
@@ -93,18 +95,10 @@ class AppLog
         e_line := e.line ? ", Line: " . e.line : ""
         e_what := e.what ? ", " . e.what : ""
         e_message := e.message ? ", Message: " . e.message : ""
-        e_extra := e.extra ? ", Extra: " . e.extra : ""
+        e_extra := e.extra ? ", Additional Info: " . e.extra : ""
         
         retValue := e_file . e_line . e_what . e_message . e_extra
         
         return retValue
-    }
-
-    RepeatChar(val, length)
-    {
-        result := ""
-        Loop length
-            result := result . val
-        return result
     }
 }

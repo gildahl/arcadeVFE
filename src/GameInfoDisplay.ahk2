@@ -22,22 +22,45 @@ class GameInfoDisplay
 		this._currentPage := 1
 		this._totalPages := 0
 		this._pages := Map()
-		this._hideNavTriangles := false
 		this._active := false
 		this._rom := ""
+		this._ScreenWidth := A_ScreenWidth
+		this._ScreenHeight := A_ScreenHeight	
+		this._boundsLeft := 0
+		this._boundsRight := 0
+		this._boundsTop := 0
+		this._boundsBottom := 0
 	}
 
 	CreateGameInfoScreen(sRom)
 	{
+		;Get the relative bounds of the monitor we will be using for GameInfo.
+		;For multimonitor support, note that we only need to move the gui to the
+		;designated monitor's coordinates and not the controls since the control 
+		;positions are alwasy relative to the parent gui.
+		try {
+			MonitorGet(g_iMonitor, &boundsLeft, &boundsTop, &boundsRight, &boundsBottom) ;boundsLeft=2560, boundsTop=0, boundsRight=4480, boundsBottom=1200
+			this._boundsLeft := boundsLeft
+			this._boundsRight := boundsRight
+			this._boundsTop := boundsTop
+			this._boundsBottom := boundsBottom
+			this._ScreenWidth := boundsRight - boundsLeft
+			this._ScreenHeight := boundsBottom - boundsTop
+		}
+		catch
+		{
+			g_oLog.LogLine("WARNING: Monitor=" g_iMonitor ", in " g_sIniFile " is invalid on this system. Using monitor 1 instead. Please specify a monitor number that exists on this machine.")
+		}
+
 		this.guiGameInfo := Gui(, "eipGui - guiGameInfo")
 		this.guiGameInfo.Opt("-Caption -DPIScale")
 		this.guiGameInfo.BackColor := "Black" 
 
 		this.guiGameInfo.SetFont("cWhite s50")
-		this.gcGameInfoPleaseWait := this.guiGameInfo.AddText("w" A_ScreenWidth " Center", "Preparing Game Information.`nPlease wait...")
+		this.gcGameInfoPleaseWait := this.guiGameInfo.AddText("w" this._ScreenWidth " Center", "Preparing Game Information.`nPlease wait...")
 
 		this.gcGameInfoPleaseWait.GetPos(&label_posX, &label_posY, &label_posW, &label_posH)
-        label_xpos := A_ScreenWidth / 2 - label_posW / 2 ;center label horizontally
+        label_xpos := this._ScreenWidth / 2 - label_posW / 2 ;center label horizontally
 
 		this._rom := sRom
 		sLogoFile := ""
@@ -53,9 +76,9 @@ class GameInfoDisplay
 
             ;The following code ensures that the logo fits in its designated position
             ;on the screen and keeps its aspect ratio
-            if (logo_posH > A_ScreenHeight / 4) ;keep logo to no more than 1/4 the screen height
+            if (logo_posH > this._ScreenHeight / 4) ;keep logo to no more than 1/4 the screen height
             {
-                logoH := A_ScreenHeight / 4
+                logoH := this._ScreenHeight / 4
                 logoW := Floor(logo_posW * logoH/logo_posH)
             }
             else
@@ -64,17 +87,17 @@ class GameInfoDisplay
                 logoW := logo_posW
             }
 
-            if (logoW > A_ScreenWidth / 2) ;keep logo to no more than 1/2 the screen width
+            if (logoW > this._ScreenWidth / 2) ;keep logo to no more than 1/2 the screen width
             {
                 origLogoW := logoW
-                logoW := A_ScreenWidth / 2
+                logoW := this._ScreenWidth / 2
                 logoH := Floor(logoW * logoH/origLogoW)
             }        
             
 			;Position the label and logo on the screen
-            screen_topThird := A_ScreenHeight * (1/3)
-			screen_centerH := A_ScreenHeight / 2
-            screen_centerW := A_ScreenWidth / 2
+            screen_topThird := this._ScreenHeight * (1/3)
+			screen_centerH := this._ScreenHeight / 2
+            screen_centerW := this._ScreenWidth / 2
 
 			label_ypos := screen_topThird - label_posH / 2
 			label_xpos := screen_centerW - label_posW / 2
@@ -87,10 +110,10 @@ class GameInfoDisplay
 		}
 		else
 		{
-			this.gcGameInfoPleaseWait.Move(,A_ScreenHeight / 3)
+			this.gcGameInfoPleaseWait.Move(,this._ScreenHeight / 3)
 		}
 
-		this.gcGameInfoProgress := this.guiGameInfo.AddProgress("x" A_ScreenWidth * (3/8) " y" A_ScreenHeight * (6/8) " w" A_ScreenWidth / 4 " h" 40)
+		this.gcGameInfoProgress := this.guiGameInfo.AddProgress("x" this._ScreenWidth * (3/8) " y" this._ScreenHeight * (6/8) " w" this._ScreenWidth / 4 " h" 40)
 		this.gcGameInfoProgress.Value := 3 ;start at 3%
 
 		this.ShowGameInfoScreen()
@@ -104,7 +127,7 @@ class GameInfoDisplay
 		;do this. 0x08000000 (WS_EX_NOACTIVATE), prevents mouse clicks from re-activating the screen and
 		;the +E prefix indicates that extended styles are being applied.
 		this.guiGameInfo.Opt("+AlwaysOnTop +E0x08000000") 
-		this.guiGameInfo.Show("W" A_ScreenWidth " H" A_ScreenHeight " X0 Y0 NA")
+		this.guiGameInfo.Show("X" this._boundsLeft " Y" this._boundsTop "W" this._ScreenWidth " H" this._ScreenHeight " NA")
 
 		this._active := true
 		g_oLog.LogLine("INFO: Showing GameInfo screen.`n")
@@ -145,7 +168,6 @@ class GameInfoDisplay
 			page["control2"] := control2 ;the right column edit control
 			page["control1FormattedText"] := Array() ;array holding formatted text overlay controls
 			page["control2FormattedText"] := Array() ;array holding formatted text overlay controls
-
 
 			idx := this._totalPages
 			pages[idx] := page
@@ -241,8 +263,7 @@ class GameInfoDisplay
 
 			if (pageType != "info") ;if image type
 			{
-				this.guiGameInfo.BackColor := "Black"
-			
+				this.guiGameInfo.BackColor := "Black"			
 				try	(this.%pages[thisPage]["control1"]%).Visible := false
 			}
 			else if (pageType == "info")
@@ -275,10 +296,10 @@ class GameInfoDisplay
 			(this.%pages[thisPage]["control1"]%).Visible := true
 			(this.%pages[thisPage]["control2"]%).Visible := true	
 
-			for i, j in pages[thisPage]["control1FormattedText"]
-				j.Visible := true
-			for i, j in pages[thisPage]["control2FormattedText"]
-				j.Visible := true
+			for i, page in pages[thisPage]["control1FormattedText"]
+				page.Visible := true
+			for i, page in pages[thisPage]["control2FormattedText"]
+				page.Visible := true
 		}
 
 		HidePages()
@@ -290,10 +311,10 @@ class GameInfoDisplay
 			;Hide any formatting overlay controls
 			if (pages[thisPage]["type"] == "info")
 			{
-				for i, j in pages[thisPage]["control1FormattedText"]
-					j.Visible := false
-				for i, j in pages[thisPage]["control2FormattedText"]
-					j.Visible := false
+				for i, page in pages[thisPage]["control1FormattedText"]
+					page.Visible := false
+				for i, page in pages[thisPage]["control2FormattedText"]
+					page.Visible := false
 			}
 		}
 	 
@@ -338,6 +359,8 @@ class GameInfoDisplay
 		info_text := ""
 		bPageVisible := true
 		iProgressLinesPerPage := 0
+		iLineIndex := 0
+		bDone := false
 
 		if (assetType == "info")
 		{
@@ -346,18 +369,16 @@ class GameInfoDisplay
 			;*********************************
 
 			edit_margin := 45 ;this is 5 greater than the width of the navigation triangles
-			edit_width := A_ScreenWidth // 2 - edit_margin
-			edit_height := A_ScreenHeight			
+			edit_width := this._ScreenWidth // 2 - edit_margin
+			edit_height := this._ScreenHeight			
 
 			;These two "test" controls are used to discover the height of a single row in the edit control
 			;-E0x200 hides the border (corresponds to WS_EX_CLIENTEDGE)
-			;-Hdr removes column header
-			iGameInfoFontSize := IniRead(g_sIniFile, "General", "GameInfoFontSize", g_iDefaultGameInfoFontSize)
+			iGameInfoFontSize := Integer(IniRead(g_sIniFile, "General", "GameInfoFontSize", g_iDefaultGameInfoFontSize))
 			this.guiGameInfo.SetFont("s" iGameInfoFontSize, "Tahoma")
 			this.guiGameInfo_Test1 := this.guiGameInfo.AddEdit("x0 y0 Hidden -VScroll -HScroll -E0x200 vTest1 R1") ;A one row edit control
 			Tst1 := this.guiGameInfo_Test1.Hwnd
 
-			;GuiControlGet, sz1, Pos, Test1
 			this.guiGameInfo_Test1.GetPos(&sz1X, &sz1Y, &sz1sW, &sz1H)
 			this.guiGameInfo_Test2 := this.guiGameInfo.AddEdit("x0 y0 Hidden -VScroll -HScroll -E0x200 vTest2 R2") ;A two row edit control
 			Tst2 := this.guiGameInfo_Test2.Hwnd
@@ -365,7 +386,7 @@ class GameInfoDisplay
 			this.guiGameInfo_Test2.GetPos(&sz2X, &sz2Y, &sz2sW, &sz2H)
 			ht := sz2H - sz1H ;the delta between the two test edit controls gives us the line height
 
-			screen_lines := A_ScreenHeight // ht ;number of lines available for the screen height
+			screen_lines := this._ScreenHeight // ht ;number of lines available for the screen height
 
 			;get the history for the current game
 			if (!IsObject(g_oMameData))
@@ -373,15 +394,15 @@ class GameInfoDisplay
 
 			mame_history_text := g_oMameData.GetHistory(this._rom)
 
-			;some games in the history.xml defer to the base rom for a full desciption
+			;some games in the history.xml refer to the base rom for a full desciption
+			;so lets look that up and include it.
 			sBaseRom := IniRead(g_sBaseRomsFile, "BaseRoms", this._rom, "")
-			mame_baserom_history_text := sBaseRom ? g_oMameData.GetHistory(sBaseRom) : ""
-			if (mame_baserom_history_text)
-				mame_baserom_history_text := "`n`n`n===== Base ROM Game Information =====`n`n" mame_baserom_history_text
 
-			mame_info_text := g_oMameData.GetInfo(this._rom)
-			if (mame_info_text)
-				mame_info_text := "`n`n`n===== MAME Development History =====`n`n" mame_info_text
+			mame_baserom_history_text := sBaseRom ? g_oMameData.GetHistory(sBaseRom) : ""
+			mame_baserom_history_text :=  mame_baserom_history_text ? "`n`n`n===== Base ROM Game Information =====`n`n" mame_baserom_history_text : mame_baserom_history_text
+
+			mame_info_text := g_oMameData.GetInfo(this._rom)				
+			mame_info_text := mame_info_text ? "`n`n`n===== MAME Development History =====`n`n" mame_info_text : mame_info_text
 
 			if (!mame_history_text && !mame_info_text && !mame_baserom_history_text)
 			{
@@ -391,12 +412,12 @@ class GameInfoDisplay
 			else
 				info_text := mame_history_text . mame_baserom_history_text . mame_info_text
 
-			ChangeEncoding(&info_text, "CP0", "UTF-8")
-
 			;Replace "En Dash" characters with "Hyphen-Minus" to avoid display issues.
 			info_text := StrReplace(info_text, "–", "-")
 
 			;Replace linefeeds with carriage return/linefeed
+			;(can't do this in MAMEData since the carriage returns seem to get 
+			;stripped when the string is returned.)
 			info_text := StrReplace(info_text, "`n", "`r`n")
 
 			if (info_text)
@@ -408,22 +429,36 @@ class GameInfoDisplay
 				;These pages are just strings that will be double-deref'ed when called. 
 				this.AddPage("info", true, "guiGameInfo_GameInfo1", "guiGameInfo_GameInfo2")
 
-				;add history to first edit control. The number of lines can't be determined until
-				;after this text is added due to word wrapping, proportional spacing, etc.
+				;add all the text to first edit control. The number of lines can't be determined
+				;until after this text is added due to word wrapping, proportional spacing, etc.
 				this.guiGameInfo_GameInfo1.Text := info_text
 
+				;Get the full line count from the src control. Select all text and point an
+				;index at where the overflow text					
+				total_lines := EditGetLineCount(this.guiGameInfo_GameInfo1.Hwnd)
+
+				;handle case where there will be no overflow text
+				if (total_lines < screen_lines)
+				{
+					screen_lines := 0
+					bDone := true
+				}
+				iLineIndex := screen_lines
+
 				;Each loop populates a single edit control; every two edit controls form a page.
-				;(basically, each edit control is one column of a two column text display)
+				;(basically, each of these edit controls is one column of a two column text display).
+				;Formatted text is handled by overlaying one line edit controls containing the
+				;formatted text over the individual page edit controls.
 				Loop
 				{
 					;As long as an edit control's text exceeds the on-screen capacity, copy
-					;the overflow from that "src" control to the next "dest" control.
+					;the overflow text from that "src" control to the next "dest" control.
 					srcIdx := A_Index
 					destIdx := A_Index + 1
 
 					;This is an odd/even check
 					;if odd, margin is 0; if even, margin is at the middle (edit_width)
-					x_pos := ((A_Index & 1) != 0) ? edit_width + edit_margin : edit_margin
+					x_pos := Odd(A_Index) ? edit_width + edit_margin : edit_margin
 
 					;Add page to GameInfoDisplay object every time we create a new odd (left) edit control
 					if (x_pos == edit_margin)
@@ -433,7 +468,6 @@ class GameInfoDisplay
 					this.guiGameInfo_GameInfo%destIdx% := this.guiGameInfo.AddEdit("x" . x_pos . " y0 h" . edit_height . " w" edit_width . " c0xCCCCCC Background0x1F1F1F Hidden -VScroll -HScroll -E0x200 vGameInfo%" . destIdx . "%")
 					this.hwndInfo%destIdx% := this.guiGameInfo_GameInfo%destIdx%.Hwnd
 
-					;SendMessage commands need the hwnd
 					try {
 						hwndSrc := this.guiGameInfo_GameInfo%srcIdx%.Hwnd
 					}
@@ -447,71 +481,54 @@ class GameInfoDisplay
 					catch {
 						hwndDest := ""
 					}
-					
-					;Get the full line count from the src control. Select all text that overflows the 
-					;screen and cut/paste it into the new dest edit control.					
-					total_lines := EditGetLineCount(hWndSrc)
 
-					delta := total_lines - screen_lines ;this is the number of lines of overflow
-	
-					;Cut/Paste the overflow text from src to dest edit control
-					if (delta > 0)
+					;Use the first edit control, which contains all of the text, and copy
+					;overflow text to the next control.
+					sLines := ""
+					loop screen_lines
 					{
-						;winuser.h: https://gitlab.winehq.org/pali/wine/-/blob/wine-0.9.23/include/winuser.h?ref_type=tags
-						ErrorLevel := SendMessage(0xBB, screen_lines-1, 0,,"ahk_id " . hwndSrc)  ; EM_LINEINDEX
-						if (ErrorLevel == "FAIL")
-							g_oLog.LogLine("WARNING: SendMessage EM_LINEINDEX failed in CreateGameInfoPage().`n")	
-						offset := ErrorLevel ;this is the character # that starts the last displayable line
+						sLines := sLines EditGetLine(A_Index + iLineIndex, hwndInfo1) "`n"
 
-						;we use the lines on first page to estimate the approximate
-						;lines-per-page for use with the the progress bar
-						if (!iProgressLinesPerPage)
-							iProgressLinesPerPage := offset
-
-						ErrorLevel := SendMessage(0xB1, offset, -1,,"ahk_id " . hwndSrc)  ; EM_SETSEL  Note, the -1 selects to the end of the text
-						if (ErrorLevel == "FAIL")
-							g_oLog.LogLine("WARNING: SendMessage EM_SETSEL failed in CreateGameInfoPage().`n")
-						success := ErrorLevel ;now select all the overflow text
-
-						ErrorLevel := SendMessage(0x300,0,0,,"ahk_id " . hwndSrc)   ; WM_CUT    ;Cut overflow text from src edit control
-						if (ErrorLevel == "FAIL")
-							g_oLog.LogLine("WARNING: SendMessage EM_CUT failed in CreateGameInfoPage().`n")
-						if !ClipWait(5) 
-							g_oLog.LogLine("WARNING: Could not save to clipboard in CreateGameInfoPage().`n")
-						Sleep 300 ;required, to avoid side-effects (partial data in screens)
-
-						ErrorLevel := SendMessage(0x302,0,0,,"ahk_id " . hwndDest)  ; WM_PASTE  ;Paste this text into the dest edit control
-						if (ErrorLevel == "FAIL")
-							g_oLog.LogLine("WARNING: SendMessage EM_PASTE failed in CreateGameInfoPage().`n")
-						Sleep 100 ;give paste a little extra time (leaving this out can cause partial or no paste issues)
-						A_Clipboard := "" ;clear the clipboard						
-
-						;Now get the full line count from the control we just pasted into, then get the delta 
-						;to see if we need to continue.
-						total_lines := EditGetLineCount(hWndDest)
-
-						delta := total_lines - screen_lines ;this is the number of lines of overflow text
-						;if there's no more overflow text left, then we're done.
-						;otherwise, we continue the loop to create more edit controls.
-						if (delta <= 0)
+						if (A_Index + iLineIndex == total_lines)
 						{
-							;make sure there are two edit controls on the screen
-							if (x_pos == edit_margin) ;last control created was on the left side, so create empty one on the right.
-							{
-								destIdx++
-
-								this.guiGameInfo_GameInfo%destIdx% := this.guiGameInfo.AddEdit("x" . edit_width . " y0 h" . edit_height . " w" . edit_width . " c0xCCCCCC Background0x1F1F1F Hidden -VScroll -HScroll -E0x200 vGameInfo%" . destIdx . "%")
-								this.hwndInfo%destIdx% := this.guiGameInfo_GameInfo%destIdx%.Hwnd
-							}
-							
+							bDone := true
 							break
 						}
-
-						iProgVal := Floor(iProgressLinesPerPage * A_Index / StrLen(info_text) * 100)
-						this.gcGameInfoProgress.Value := iProgVal > 2 ? iProgVal : 3 ;start at 3% 
 					}
-					else
+
+					iLineIndex := iLineIndex + screen_lines
+					this.guiGameInfo_GameInfo%destIdx%.Value := sLines
+
+					;if there's no more overflow text left, then we're done.
+					;otherwise, we continue the loop to create more edit controls.
+					if (bDone)
+					{
+						;make sure there are two edit controls on the screen
+						if (x_pos == edit_margin) ;last control created was on the left side, so create empty one on the right.
+						{
+							destIdx++
+
+							this.guiGameInfo_GameInfo%destIdx% := this.guiGameInfo.AddEdit("x" . edit_width . " y0 h" . edit_height . " w" . edit_width . " c0xCCCCCC Background0x1F1F1F Hidden -VScroll -HScroll -E0x200 vGameInfo%" . destIdx . "%")
+							this.hwndInfo%destIdx% := this.guiGameInfo_GameInfo%destIdx%.Hwnd
+						}
+						
 						break
+					}
+
+					iProgVal := Floor(iProgressLinesPerPage * A_Index / StrLen(info_text) * 100)
+					this.gcGameInfoProgress.Value := iProgVal > 2 ? iProgVal : 3 ;start at 3% 
+				}
+
+				;Finally, remove extra text from guiGameInfo_GameInfo1, which otherwise
+				;can sometimes be seen at the very bottom of the control as extra text.
+				if (screen_lines) ;this will be 0 if there was no overflow text
+				{
+					screen_lines := total_lines < screen_lines ? total_lines : screen_lines
+					sLines := ""
+					loop screen_lines {
+						sLines := sLines EditGetLine(A_Index, hwndInfo1) "`n"
+					}
+					this.guiGameInfo_GameInfo1.Value := sLines
 				}
 				
 				;The edit control doesn't offer any options for formatting or coloring by individual
@@ -528,7 +545,6 @@ class GameInfoDisplay
 
 					FormatPage(iLeftHwnd, "control1FormattedText")
 					FormatPage(iRightHwnd, "control2FormattedText")
-
 				}
 
 				;This function handles the specific formatting requests
@@ -563,7 +579,7 @@ class GameInfoDisplay
 						{		
 							CreateFormattedOverlay(idx, sControlType)
 							this.gcFormattedText%idx%.Value := sText
-							this.gcFormattedText%idx%.SetFont("cWhite", "Verdana")
+							this.gcFormattedText%idx%.SetFont("cWhite w500", "Verdana")
 						}
 
 						if (InStr(sText, "=====")) 
@@ -593,10 +609,7 @@ class GameInfoDisplay
 				else
 					Sleep 500
 
-				this.gcGameInfoPleaseWait.Visible := false
-				this.gcGameInfoProgress.Visible := false
-
-				try this.gcGameInfoLogo.Visible := false
+				try this.gcGameInfoPleaseWait.Visible := this.gcGameInfoProgress.Visible := this.gcGameInfoLogo.Visible := false
 			}
 		}
 		else ;assetType not "info", so must be an image type
@@ -611,21 +624,20 @@ class GameInfoDisplay
 			nMaxEnlarge := 1.5
 
 			image_width := game_image_posW * nMaxEnlarge
-			image_width := image_width >= A_ScreenWidth ? A_ScreenWidth : image_width
+			image_width := image_width >= this._ScreenWidth ? this._ScreenWidth : image_width
 
 			;Resize the image to fit on the screen while preserving aspect ratio
-			;image_width := A_ScreenWidth
 			image_height := image_width * game_image_posH / game_image_posW
 	
-			if (image_height > A_ScreenHeight)
+			if (image_height > this._ScreenHeight)
 			{
-				image_height := A_ScreenHeight
+				image_height := this._ScreenHeight
 				image_width := image_height * game_image_posW / game_image_posH
 			}
 			
 			;center image
-			image_x := Floor(A_ScreenWidth / 2 - image_width / 2)
-			image_y := Floor(A_ScreenHeight / 2 - image_height / 2)
+			image_x := Floor(this._ScreenWidth / 2 - image_width / 2)
+			image_y := Floor(this._ScreenHeight / 2 - image_height / 2)
 	
 			this.guiGameInfo_GameImage%assetType%.Move(image_x, image_y, image_width, image_height)
 	
@@ -657,11 +669,4 @@ class GameInfoDisplay
 	{
 		get => this._active
 	}
-}
-
-ChangeEncoding(&sStr, sFrom, sTo)
-{
-	buf := Buffer(StrPut(sStr, sFrom))
-    StrPut(sStr, buf, sFrom)
-    sStr := StrGet(buf, sTo)
 }

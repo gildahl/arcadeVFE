@@ -41,11 +41,18 @@ global CodeVersion := "1.2"
 #include GameInfoDisplay.ahk2
 #include PacDrive.ahk2
 #include SystemCursor.ahk2
+#include Utility.ahk2
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;Turn test mode on/off
+global bTestMode := 0
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 global g_iTickCount := A_TickCount
 global g_sResourceFolder := A_ScriptDir "\Resources"
-global g_sJoystickIconFile := g_sResourceFolder "\joystick.ico"
-TraySetIcon g_sJoystickIconFile
+global g_sVFEIconFile := g_sResourceFolder "\vfe.ico"
+global g_sVFEImageFile := g_sResourceFolder "\vfe.png"
+TraySetIcon g_sVFEIconFile
 A_IconTip := "arcadeVFE`nVirtual Front End"
 
 OnMessage(WM_MOUSEMOVE  := 0x0200, OnMouseEvent)
@@ -76,6 +83,8 @@ global g_sGameInfoSettingsExitKey := "Escape"
 global g_sGameInfoSettingsRightKey := "Right"
 global g_sGameInfoSettingsLeftKey := "Left"
 global g_sImageOrder := "cabinets,cpanel,instructions,instructions_2,flyers,flyers_back,pcb"  
+global g_bHideCursor := 0
+global g_iMonitor := 1
 ;***********************************************************
 
 global g_oSDL2 := SDL2DLL() ;SDL library for game device discovery and polling
@@ -120,10 +129,10 @@ global g_sAuditFolder := A_ScriptDir "\Audit"
 global g_sArcadeFolder := A_ScriptDir "\Arcade"
 
 ;filename defaults
+global g_sIniFile := g_sConfigFolder "\vfe.ini"
 global g_sUserFile := g_sUserFolder "\Arcade Controller.json"
 global g_sTemplatesFile := g_sConfigFolder "\templates.json"
 global g_sTweaksFile := g_sConfigFolder "\tweaks.json"
-global g_sIniFile := g_sConfigFolder "\vfe.ini"
 global g_sRawAccelExe := g_sRawAccelFolder "\rawaccel.exe"
 global g_sMame2010 := g_sAuditFolder "\mame2010\mame64.exe" ;For MAME 2010 / 0.139 rom file audits
 global g_sMame2014 := g_sAuditFolder "\mame2014\mame64.exe" ;For MAME 2014 / 0.159 rom file audits
@@ -205,10 +214,13 @@ Settings.CreateSettingsDialog()    ;Build Settings screen
 StartRomWatcher()                  ;Begin monitoring the rom folder  
 
 ;Turn off splash screen after at least 3 seconds
-iSleepDelay := 3000 - (A_TickCount - g_iTickCount)                  
-if (iSleepDelay > 0)                     
-	Sleep iSleepDelay					  
-guiSplash.Destroy		
+if (IsSet(guiSplash))
+{
+	iSleepDelay := 3000 - (A_TickCount - g_iTickCount)                  
+	if (iSleepDelay > 0)                     
+		Sleep iSleepDelay					  
+	guiSplash.Destroy		
+}
 
 Poll() ;Start button and keyboard polling loop
 
@@ -246,7 +258,7 @@ DoFileAudit()
 		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " g_sMame2014 "`n")
 
 	;.\Resources folder file
-	if (!FileExist(g_sJoystickIconFile))
+	if (!FileExist(g_sVFEIconFile))
 		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " g_sMame2014 "`n")
 
 	;.\Arcade folder files
@@ -324,6 +336,18 @@ CreateDefaultActionList()
 LoadConfig()
 {
 	;************* Initialize GameInfo Default Settings ************************************
+	;Initialize Settings GameInfo Monitor setting
+	global g_iMonitor := Integer(IniRead(g_sIniFile, "GameInfo", "Monitor", g_iMonitor))
+	IniWrite(g_iMonitor, g_sIniFile, "GameInfo", "Monitor")
+
+	;Initialize Settings GameInfo HideCursor setting
+	global g_bHideCursor := Integer(IniRead(g_sIniFile, "GameInfo", "HideCursor", g_bHideCursor))
+	IniWrite(g_bHideCursor, g_sIniFile, "GameInfo", "HideCursor")
+
+	;override if in test mode
+	if (bTestMode)
+		g_bHideCursor := 1
+
 	;Initialize Settings GameInfo Exit key
 	try {
 		global g_sGameInfoSettingsExitKey := IniRead(g_sIniFile, "GameInfo", "SettingsExitKey")
@@ -377,7 +401,7 @@ LoadConfig()
 
 	;Initialize delay between closing an app and restarting it to 500ms
 	try {
-		global g_iRestartDelay := IniRead(g_sIniFile, "General", "RestartDelay")
+		global g_iRestartDelay := Integer(IniRead(g_sIniFile, "General", "RestartDelay"))
 	}
 	catch {
 		IniWrite(g_iRestartDelay, g_sIniFile, "General", "RestartDelay")
@@ -385,7 +409,7 @@ LoadConfig()
 
 	;Init delay between two consecutive command line calls to 1000ms
 	try {
-		global g_iCommandLineDelay := IniRead(g_sIniFile, "General", "CommandLineDelay")
+		global g_iCommandLineDelay := Integer(IniRead(g_sIniFile, "General", "CommandLineDelay"))
 	}
 	catch {
 		IniWrite(g_iCommandLineDelay, g_sIniFile, "General", "CommandLineDelay")
@@ -1282,6 +1306,11 @@ ShowGameInfo(sRomName)
  */
 ShowSplash()
 {
+	;Don't show splash on brand new startup since we'll be
+	;going directly to the Setup dialog.
+	if (!FileExist(g_sIniFile))
+		return
+
 	global guiSplash := Gui(, "vfeGuiSplash")
 
 	dpi := 96 / A_ScreenDPI
@@ -1289,18 +1318,18 @@ ShowSplash()
 	guiSplash.BackColor := g_color_edit_text
 
 	iHeight := 100
-	iWidth := 400
+	iWidth := 430
 
 	x1 := g_nScreenWidth / 2 - iWidth / 2
 	y1 := g_nScreenHeight / 2 - iHeight / 2
 	
 	WinSetRegion x1/dpi "-" y1/dpi " w" iWidth/dpi " h" iHeight/dpi " r40-40" 
 
-	global gcSplashIcon := guiSplash.AddPicture(, g_sJoystickIconFile)
+	global gcSplashIcon := guiSplash.AddPicture(, g_sVFEImageFile)
 
     gcSplashIcon.GetPos(&icon_posX, &icon_posY, &icon_posW, &icon_posH)
 
-	iIconHeight := iHeight * 2/3 ;set icon height to 2/3 the window height
+	iIconHeight := iHeight * 7/8 ;set icon height to 6/8 the window height
 
 	;adjust icon size if needed while maintaining aspect ratio
 	if (icon_posH > iIconHeight)
@@ -1327,51 +1356,12 @@ ShowSplash()
 	guiSplash.Show("NA w" g_nScreenWidth " h" g_nScreenHeight)
 }
 
-/**
- * Does a particular value from an array match a string?
- * This is an exact match test (though not case sensitive).
- * @param aArray - The array of values to look for
- * @param sValue - The string to look for the values in
- * @param {String} sFoundValue - The value found (by ref)
- * @returns {Boolean} - Bool whether value was found
- */
-IsValueInArray(aArray, sValue, &sFoundValue:="")
-{
-	for i, j in aArray
-		if (sValue == j)
-		{
-			sFoundValue := j
-			return 1
-		}
-	return 0
-}
-
-/**
- * Removes a value from an array and reindexes
- * @param aArray - byRef Array to remove value from
- * @param sValue - The value to remove
- * @returns {Integer} - true indicates value was found and removed
- */
-RemoveValueFromArray(&aArray, sValue)
-{
-	bFound := false
-	for i, j in aArray
-	{
-		if (j == sValue)
-		{
-			bFound := true
-			aArray.RemoveAt(i)
-			break
-		}
-	}
-
-	return bFound
-}
-
 ;Log otherwise unhandled errors (spawed by OnError)
 LogError(e, mode)
 {
 	SystemCursor("On")
-    g_oLog.LogLine("ERROR: Unhandled exception: " g_oLog.FormatErrorMessage(e) "`n")
+	sErr := "ERROR: Unhandled exception: " g_oLog.FormatErrorMessage(e)
+    g_oLog.LogLine(sErr "`n")
+	OutputDebug sErr
     ExitApp
 }

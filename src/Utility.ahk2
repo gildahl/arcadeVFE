@@ -1,0 +1,99 @@
+#Requires AutoHotkey v2.0
+
+/**********************************************************************
+ * @description Generic Utility Functions
+ * @file Utility.ahk2
+ * @author David G. Dahlstrom
+  **********************************************************************/
+
+/***********************************************************************
+* LICENSE
+* The code in this file is free of any license considerations and is
+* regarded by its author to be in the public domain.
+************************************************************************/
+
+;Return whether numbers are odd or even
+Odd(iVal) => ((iVal & 1) != 0)
+Even(iVal) => ((iVal & 1) == 0)
+
+/**
+ * Does a particular value from an array match a string?
+ * This is an exact match test (though not case sensitive).
+ * @param aArray - The array of values to look for
+ * @param sValue - The string to look for the values in
+ * @param {String} sFoundValue - The value found (by ref)
+ * @returns {Boolean} - Bool whether value was found
+ */
+IsValueInArray(aArray, sValue, &sFoundValue:="")
+{
+	for i, j in aArray
+		if (sValue == j)
+		{
+			sFoundValue := j
+			return 1
+		}
+	return 0
+}
+
+/**
+ * Removes a value from an array and reindexes
+ * @param aArray - byRef Array to remove value from
+ * @param sValue - The value to remove
+ * @returns {Integer} - true indicates value was found and removed
+ */
+RemoveValueFromArray(&aArray, sValue)
+{
+	bFound := false
+	for i, j in aArray
+	{
+		if (j == sValue)
+		{
+			bFound := true
+			aArray.RemoveAt(i)
+			break
+		}
+	}
+
+	return bFound
+}
+
+/**
+ * Repeat a character the designated number of times
+ * @param val - value to repeat
+ * @param length - number of times to repeat
+ * @returns {String} - the new string
+ */
+RepeatChar(val, length)
+{
+    result := ""
+    Loop length
+        result := result . val
+    return result
+}
+
+/**
+ * Pad a string with characters to a designated length.
+ * Truncates string if it is longer than the padded length.
+ * @param a - string to be padded
+ * @param b - padded string length
+ * @returns {String} - The padded (or truncated) string
+ */
+PadString(sVal, iLen, sChar:=A_Space)
+{	
+    padLen := iLen - StrLen(sVal)
+    if (padLen < 0)
+        return SubStr(sVal, 1, StrLen(sVal)-padLen)
+    else
+    {
+        padding := RepeatChar(sChar, padLen)
+        result := sVal . padding
+    }
+    return result
+}
+
+ChangeEncoding(&sStr, sFrom, sTo)
+{
+	buf := Buffer(StrPut(sStr, sFrom))
+    StrPut(sStr, buf, sFrom)
+    sStr := StrGet(buf, sTo)
+}

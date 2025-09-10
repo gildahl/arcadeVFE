@@ -202,9 +202,11 @@ class MAMEData
 			if (systemName == rom && !listName)
 			{
 				nodeId := entryNodeList.item(idx).selectSingleNode("text")
-				this._current_text := nodeId.text
+				sCurrentText := nodeID.text
+				ChangeEncoding(&sCurrentText, "CP0", "UTF-8")
+				this._current_text := sCurrentText
 
-				return nodeId.text
+				return sCurrentText
 			}
 		}
 	}
