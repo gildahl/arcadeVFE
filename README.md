@@ -132,7 +132,7 @@ Additional Notes:
 * As an FYI, these templates are saved in a file called `templates.json` in the root VFE folder. You may delete this file to restore the original defaults.
 
 > [!IMPORTANT]
-> Be aware that VFE pauses active operation while the **Settings** screen is open, so be sure to close it when done with configuration.
+> _Be aware that VFE pauses active operation while the **Settings** screen is open, so be sure to close it when done with configuration._
 
 Understanding the Action List Table
 ===================================
