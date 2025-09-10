@@ -1,5 +1,6 @@
 # arcadeVFE 1.1
 ### The Arcade Virtual Front End
+<img width="128" height="128" alt="furry_elephant_vr_arcade_128x128" src="https://github.com/user-attachments/assets/9e708a1a-9422-46ff-91c3-864eef4868a9" />
 By David Dahlstrom
 <!--
 ToDo:
