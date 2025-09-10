@@ -644,7 +644,7 @@ ApplicationProcessCheck_Callback()
 	;now loaded, then call Poll() to start/resume monitoring
 	if (g_bOnlyMonitorWhenArcadeIsLoaded && ProcessExist(g_sApplicationName))
 	{
-		g_oLog.LogLine("INFO: Application, `"" g_sApplicationName "`" was detected.`n" )
+		g_oLog.LogLine("INFO: Application, `"" g_sApplicationName "`" detected.`n" )
 
 		;Refresh the g_sCurrentROM timestamp since it might get replayed
 		if (g_sCurrentROM) ;g_sCurrentROM is a global
@@ -742,6 +742,14 @@ Poll()
 			;reset g_sLastActionKey in case any config changes are made 
 			;externally while the application is closed.
 			global g_sLastActionKey := ""
+
+			;Reset the access timestamp of the last accessed rom by calling
+			;RomAccess manually. This handles a use cases where the user plays a game,
+			;exits the arcade, changes the Use GameInfo Overlay setting and then
+			;returns to play the same game.
+			Changes := Array()
+			Changes.Push({Name: "Void"}) ;This is just a place holder
+			RomAccess_Event(g_sCurrentROM, Changes, true)			
 
 			global g_sCurrentROM := "" ;clear current rom
 
@@ -1292,9 +1300,8 @@ ShowGameInfo(sRomName)
 		if (A_LoopFilePath != g_sCurrentROM) {
 			if (DateDiff(A_Now, FileGetTime(A_LoopFilePath, "A"), "Days") < 2) 
 			{
-				SplitPath(A_LoopFilePath,,,,&OutNameNoExt)
 				Changes := Array()
-				Changes.Push({Name: OutNameNoExt})
+				Changes.Push({Name: "Void"}) ;This is just a place holder
 				RomAccess_Event(A_LoopFilePath, Changes, true)
 			}
 		} 
@@ -1349,7 +1356,7 @@ ShowSplash()
 	gcSplashTitle.SetFont("s26 w700", "Courier New")
 
 	global gcSplashVer := guiSplash.AddText("x" x1 + 235 + iconW " y" y1 + 24 " w" iWidth " h" iHeight, CodeVersion)
-	gcSplashVer.SetFont("s20 w700", "Courier New")
+	gcSplashVer.SetFont("s19 w600", "Courier New")
 
 	sArcade := IniRead(g_sIniFile, "General", "Arcade", "")
 	sArcade := sArcade == "Other" || !sArcade ? "The Arcade Virtual Front End" : "for " sArcade
