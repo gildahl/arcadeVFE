@@ -216,7 +216,7 @@ StartRomWatcher()                  ;Begin monitoring the rom folder
 ;Turn off splash screen after at least 3 seconds
 if (IsSet(guiSplash))
 {
-	iSleepDelay := 3000 - (A_TickCount - g_iTickCount)                  
+	iSleepDelay := 4000 - (A_TickCount - g_iTickCount)                  
 	if (iSleepDelay > 0)                     
 		Sleep iSleepDelay					  
 	guiSplash.Destroy		
@@ -1318,7 +1318,7 @@ ShowSplash()
 	guiSplash.BackColor := g_color_edit_text
 
 	iHeight := 100
-	iWidth := 430
+	iWidth := 400
 
 	x1 := g_nScreenWidth / 2 - iWidth / 2
 	y1 := g_nScreenHeight / 2 - iHeight / 2
@@ -1345,8 +1345,11 @@ ShowSplash()
 
     gcSplashIcon.Move(x1 + 20, g_nScreenHeight / 2 - iconH / 2, iconH, iconW)
             
-	global gcSplashTitle := guiSplash.AddText("x" x1 + 35 + iconW " y" y1 + 24 " w" iWidth " h" iHeight, "arcadeVFE " CodeVersion)
+	global gcSplashTitle := guiSplash.AddText("x" x1 + 35 + iconW " y" y1 + 22 " w" iWidth " h" iHeight, "arcadeVFE")
 	gcSplashTitle.SetFont("s26 w700", "Courier New")
+
+	global gcSplashVer := guiSplash.AddText("x" x1 + 235 + iconW " y" y1 + 24 " w" iWidth " h" iHeight, CodeVersion)
+	gcSplashVer.SetFont("s20 w700", "Courier New")
 
 	sArcade := IniRead(g_sIniFile, "General", "Arcade", "")
 	sArcade := sArcade == "Other" || !sArcade ? "The Arcade Virtual Front End" : "for " sArcade
