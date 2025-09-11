@@ -34,6 +34,9 @@ class GameInfoDisplay
 
 	CreateGameInfoScreen(sRom)
 	{
+		;Read ini in case user updated during runtime.
+		global g_iMonitor := Integer(IniRead(g_sIniFile, "GameInfo", "Monitor", g_iMonitor))
+
 		;Get the relative bounds of the monitor we will be using for GameInfo.
 		;For multimonitor support, note that we only need to move the gui to the
 		;designated monitor's coordinates and not the controls since the control 

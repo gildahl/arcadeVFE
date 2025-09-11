@@ -299,7 +299,7 @@ class Settings
 
 		gcApplication_Checkbox := guiSettings.AddCheckbox("x" 45 " y" 653 " w" 220, "Monitor only when the arcade is running")
 		gcApplication_Checkbox.OnEvent("Click", (*) => Settings.Application_Checkbox_Click())
-		gcApplication_Checkbox.TT := "Keep arcadeVFE dormant when the arcade emulator system`nsoftware is not running (recommended).`n`nTurning this off is primarily intended for testing."
+		gcApplication_Checkbox.TT := "Keep arcadeVFE paused while the arcade emulator system`nsoftware is not running (recommended).`n`nTurning this off is primarily intended for testing. Note that`nyou will need to restart arcadeVFE after changing this setting."
 
 		try gcApplication_Checkbox.Value := Integer(IniRead(g_sIniFile, "General", "MonitorApplication", 1))
 		
@@ -329,7 +329,7 @@ class Settings
 		gcShowGameInfo_Checkbox := guiSettings.AddCheckbox("x" 280 " y" 653, "Use GameInfo Overlay")
 		gcShowGameInfo_Checkbox.OnEvent("Click", (*) => Settings.ShowGameInfo_Checkbox_Click())
 		try gcShowGameInfo_Checkbox.Value := IniRead(g_sIniFile, "General", "ShowGameInfo", 0)	
-		gcShowGameInfo_Checkbox.TT := "Show GameInfo overlay on the desktop when the arcade application`nstarts and close it when the application terminates.`n`nNote that it is is advised that you DO NOT use this feature if you`nuse mouse clicks as your fire button, since any mouse clicks are`nsuppressed to prevent mouse clicks from taking the focus. To`navoid this, use game controller button input for fire instead."
+		gcShowGameInfo_Checkbox.TT := "Show GameInfo overlay on the desktop when the arcade application`nstarts and close it when the application terminates.`n`nNote that if you use mouse clicks as your fire button, these may not work`nwhile the overlay is covering the emulator's screen. To fix this you may:`n(1) turn off this feature,`n(2) map your fire button to a controller button, or `n(3) display GameInfo on another monitor using the Monitor setting`n     in vfe.ini (try Monitor=2)."
 
 		if (gcApplication_Checkbox.Value == 0)
 			gcShowGameInfo_Checkbox.Enabled := false
@@ -687,6 +687,9 @@ class Settings
 	 */
 	static ViewGameInfoButton_Click(*)
 	{
+		;update from ini in case user updated during runtime
+		global g_bHideCursor := Integer(IniRead(g_sIniFile, "GameInfo", "HideCursor", g_bHideCursor))
+
 		if (!bTestMode && g_bHideCursor)
 			SystemCursor("Off")
 		SplitPath(gcROMDropDownGameRom.Text,,,,&OutNameNoExt)
