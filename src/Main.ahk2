@@ -213,7 +213,7 @@ Setup.CreateSetupDialog()          ;Load initial setup
 Settings.CreateSettingsDialog()    ;Build Settings screen
 StartRomWatcher()                  ;Begin monitoring the rom folder  
 
-;Turn off splash screen after at least 3 seconds
+;Turn off splash screen after at least 4 seconds
 if (IsSet(guiSplash))
 {
 	iSleepDelay := 4000 - (A_TickCount - g_iTickCount)                  
@@ -250,6 +250,8 @@ DoFileAudit()
 		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " g_sControlsIniFile "`n")
 	if (!FileExist(g_sGamesXMLFile))
 		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " g_sGamesXMLFile "`n")
+	if (!FileExist(g_sBaseRomsFile))
+		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " g_sBaseRomsFile "`n")
 
 	;.\Audit folder files
 	if (!FileExist(g_sMame2010))
@@ -257,9 +259,11 @@ DoFileAudit()
 	if (!FileExist(g_sMame2014))
 		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " g_sMame2014 "`n")
 
-	;.\Resources folder file
+	;.\Resources folder files
 	if (!FileExist(g_sVFEIconFile))
-		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " g_sMame2014 "`n")
+		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " g_sMame2014 "`n")  
+	if (!FileExist(g_sVFEImageFile))
+		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " g_sVFEImageFile "`n")
 
 	;.\Arcade folder files
 	if (!FileExist(A_ScriptDir "\Arcade\Arcade Time Capsule 3.6.Floors.json"))
@@ -287,8 +291,8 @@ DoFileAudit()
 
 CreateDefaultActionList()
 {
-	;Write default action list with default keys to minimally operate
-	;the GameInfo display; but only if there is no previous action list defined.
+	;Write default action list with default GameInfo navigation keys to minimally 
+	;operate the screen; but only if there is no previous action list defined.
 	if (!FileExist(g_sUserFolder "\*.json"))
 	{
 		mConfig := Map()
@@ -1336,7 +1340,7 @@ ShowSplash()
 
     gcSplashIcon.GetPos(&icon_posX, &icon_posY, &icon_posW, &icon_posH)
 
-	iIconHeight := iHeight * 7/8 ;set icon height to 6/8 the window height
+	iIconHeight := iHeight * 7/8 ;set icon height to 7/8 the window height
 
 	;adjust icon size if needed while maintaining aspect ratio
 	if (icon_posH > iIconHeight)
