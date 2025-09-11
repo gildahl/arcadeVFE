@@ -40,7 +40,7 @@ class GameInfoDisplay
 		;Get the relative bounds of the monitor we will be using for GameInfo.
 		;For multimonitor support, note that we only need to move the gui to the
 		;designated monitor's coordinates and not the controls since the control 
-		;positions are alwasy relative to the parent gui.
+		;positions are always relative to the parent gui.
 		try {
 			MonitorGet(g_iMonitor, &boundsLeft, &boundsTop, &boundsRight, &boundsBottom) ;boundsLeft=2560, boundsTop=0, boundsRight=4480, boundsBottom=1200
 			this._boundsLeft := boundsLeft
@@ -169,8 +169,8 @@ class GameInfoDisplay
 			page["visible"] := bVisible
 			page["control1"] := control1 ;the left column edit control
 			page["control2"] := control2 ;the right column edit control
-			page["control1FormattedText"] := Array() ;array holding formatted text overlay controls
-			page["control2FormattedText"] := Array() ;array holding formatted text overlay controls
+			page["control1Fields"] := Array() ;array holding formatted field overlay controls
+			page["control2Fields"] := Array() ;array holding formatted field overlay controls
 
 			idx := this._totalPages
 			pages[idx] := page
@@ -258,24 +258,6 @@ class GameInfoDisplay
 		if ((directive == "r" || directive == "l") && pages.Count <= 1)
 			return
 
-		;Hide the current page
-		if (directive != "start") ;page is already blank for "start" so skip
-		{
-			thisPage := this._currentPage			
-			pageType := pages[thisPage]["type"]
-
-			if (pageType != "info") ;if image type
-			{
-				this.guiGameInfo.BackColor := "Black"			
-				try	(this.%pages[thisPage]["control1"]%).Visible := false
-			}
-			else if (pageType == "info")
-			{
-				this.guiGameInfo.BackColor := g_color_edit_bg				
-				ShowPages()
-			}
-		}
-
 		Switch directive 
 		{
 			case "hide":
@@ -296,28 +278,35 @@ class GameInfoDisplay
 		{
 			thisPage := this._currentPage
 
-			(this.%pages[thisPage]["control1"]%).Visible := true
-			(this.%pages[thisPage]["control2"]%).Visible := true	
+			(this.%pages[thisPage]["control1"]%).Visible := true	
 
-			for i, page in pages[thisPage]["control1FormattedText"]
-				page.Visible := true
-			for i, page in pages[thisPage]["control2FormattedText"]
-				page.Visible := true
+			if (pages[thisPage]["type"] == "info")
+			{
+				(this.%pages[thisPage]["control2"]%).Visible := true
+
+				for i, field in pages[thisPage]["control1Fields"]
+					field.Visible := true
+				for i, field in pages[thisPage]["control2Fields"]
+					field.Visible := true
+			}
 		}
 
 		HidePages()
 		{
+			thisPage := this._currentPage
+
 			;hide the main edit controls
 			try (this.%pages[thisPage]["control1"]%).Visible := false
-			try (this.%pages[thisPage]["control2"]%).Visible := false
 
-			;Hide any formatting overlay controls
+			;Hide any field controls
 			if (pages[thisPage]["type"] == "info")
 			{
-				for i, page in pages[thisPage]["control1FormattedText"]
-					page.Visible := false
-				for i, page in pages[thisPage]["control2FormattedText"]
-					page.Visible := false
+				try (this.%pages[thisPage]["control2"]%).Visible := false
+
+				for i, field in pages[thisPage]["control1Fields"]
+					field.Visible := false
+				for i, field in pages[thisPage]["control2Fields"]
+					field.Visible := false
 			}
 		}
 	 
@@ -334,8 +323,6 @@ class GameInfoDisplay
 			this.guiGameInfo.BackColor := g_color_edit_bg			
 			ShowPages()
 		}
-
-		this._currentPage := newPage
 	}
 
 	;Call this between each game
@@ -546,12 +533,12 @@ class GameInfoDisplay
 					iRightHwnd := this.guiGameInfo_GameInfo%A_Index * 2%.Hwnd
 					iPage := A_Index
 
-					FormatPage(iLeftHwnd, "control1FormattedText")
-					FormatPage(iRightHwnd, "control2FormattedText")
+					FormatField(iLeftHwnd, "control1Fields")
+					FormatField(iRightHwnd, "control2Fields")
 				}
 
 				;This function handles the specific formatting requests
-				FormatPage(iHwnd, sControlType)
+				FormatField(iHwnd, sControlType)
 				{
 					Loop EditGetLineCount(iHwnd)
 					{
@@ -559,49 +546,51 @@ class GameInfoDisplay
 						idx := iPage "_" iLineNum
 						sText := EditGetLine(iLineNum, iHwnd)
 
-						if (iPage == 1 && iLineNum == 1 && sControlType == "control1FormattedText")
+						if (iPage == 1 && iLineNum == 1 && sControlType == "control1Fields")
 						{
-							CreateFormattedOverlay(idx, sControlType)
-							this.gcFormattedText%idx%.Value := sText
-							this.gcFormattedText%idx%.SetFont("italic")
+							CreateField(idx, sControlType)
+							this.gcFormatField%idx%.Value := sText
+							this.gcFormatField%idx%.SetFont("italic")
 						}
 
-						if (iPage == 1 && iLineNum == 3 && sControlType == "control1FormattedText")
+						if (iPage == 1 && iLineNum == 3 && sControlType == "control1Fields")
 						{
-							CreateFormattedOverlay(idx, sControlType)
-							this.gcFormattedText%idx%.Value := sText
-							this.gcFormattedText%idx%.SetFont("cWhite underline bold", "Verdana")
+							CreateField(idx, sControlType)
+							this.gcFormatField%idx%.Value := sText
+							this.gcFormatField%idx%.SetFont("cWhite underline bold", "Verdana")
 						}
+							 
+						sPhrases := "
+						(
+						Bugs:,NOTE:,HOW TO PLAY:,STORY:,LEVELS:,SETUP:,TEST MODE:.WIP:,* CONSOLES:,* OTHERS:,* COMPUTERS:,
+						* HANDHELDS:,* TODO:,* GLITCH:,- TRIVIA -,- UPDATES -,- SCORING -,- CAST OF CHARACTERS -,
+						- STAFF -,- CONTRIBUTE -,- TECHNICAL -,- TIPS AND TRICKS -,- SERIES -,- PORTS -
+						)"
 
-						if (InStr(sText, "Bugs:", 1) || InStr(sText, "NOTE:", 1) || InStr(sText, "HOW TO PLAY:", 1) || InStr(sText, "STORY:",1) || InStr(sText, "LEVELS:", 1)
-							InStr(sText, "SETUP:", 1) || InStr(sText, "TEST MODE:", 1) || InStr(sText, "WIP:", 1) || InStr(sText, "* CONSOLES:", 1) ||
-						    InStr(sText, "* OTHERS:", 1) || InStr(sText, "* COMPUTERS:", 1) || InStr(sText, "* HANDHELDS:", 1) || InStr(sText, "* TODO:", 1) ||
-							InStr(sText, "* GLITCH:", 1) || InStr(sText, "- TRIVIA -", 1) || InStr(sText, "- UPDATES -", 1) || InStr(sText, "- SCORING -", 1) || 
-							InStr(sText, "- CAST OF CHARACTERS -", 1) || InStr(sText, "- STAFF -", 1) || InStr(sText, "- CONTRIBUTE -", 1) || InStr(sText, "- TECHNICAL -", 1) || 
-							InStr(sText, "- TIPS AND TRICKS -", 1) || InStr(sText, "- SERIES -", 1) || InStr(sText, "- PORTS -", 1)) 
+						if (IsAnyInStr(sText, sPhrases))
 						{		
-							CreateFormattedOverlay(idx, sControlType)
-							this.gcFormattedText%idx%.Value := sText
-							this.gcFormattedText%idx%.SetFont("cWhite w500", "Verdana")
+							CreateField(idx, sControlType)
+							this.gcFormatField%idx%.Value := sText
+							this.gcFormatField%idx%.SetFont("cWhite w500", "Verdana")
 						}
 
 						if (InStr(sText, "=====")) 
 						{		
-							CreateFormattedOverlay(idx, sControlType)
-							this.gcFormattedText%idx%.Value := Trim(sText, " =")
-							this.gcFormattedText%idx%.SetFont("cWhite bold", "Verdana")
+							CreateField(idx, sControlType)
+							this.gcFormatField%idx%.Value := Trim(sText, " =")
+							this.gcFormatField%idx%.SetFont("cWhite bold", "Verdana")
 						}						
 					}
 				}
 
-				;Creates the overlay edit control and positions it on the host control
-				CreateFormattedOverlay(idx, sControlType)
+				;Creates the formatted field and positions it on the host control
+				CreateField(idx, sControlType)
 				{				
-					margin := sControlType == "control1FormattedText" ? edit_margin : edit_width + edit_margin	
-					this.gcFormattedText%idx% := this.guiGameInfo.AddEdit("c0xCCCCCC Background0x1F1F1F Hidden -VScroll -HScroll -E0x200 R1") ;A one row edit control
-					pages[iPage][sControlType].Push(this.gcFormattedText%idx%) 
+					margin := sControlType == "control1Fields" ? edit_margin : edit_width + edit_margin	
+					this.gcFormatField%idx% := this.guiGameInfo.AddEdit("c0xCCCCCC Background0x1F1F1F Hidden -VScroll -HScroll -E0x200 R1") ;A one row edit control
+					pages[iPage][sControlType].Push(this.gcFormatField%idx%) 
 					yPos := ht * (iLineNum - 1)
-					this.gcFormattedText%idx%.Move(margin, yPos, edit_width - edit_margin, ht)
+					this.gcFormatField%idx%.Move(margin, yPos, edit_width - edit_margin, ht)
 				}
 
 				iProg := this.gcGameInfoProgress.Value

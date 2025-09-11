@@ -18,7 +18,7 @@ Even(iVal) => ((iVal & 1) == 0)
 
 /**
  * Does a particular value from an array match a string?
- * This is an exact match test (though not case sensitive).
+ * This is a case sensitive exact match test.
  * @param aArray - The array of values to look for
  * @param sValue - The string to look for the values in
  * @param {String} sFoundValue - The value found (by ref)
@@ -33,6 +33,29 @@ IsValueInArray(aArray, sValue, &sFoundValue:="")
 			return 1
 		}
 	return 0
+}
+
+/**
+ * Determines if any of the listed values are in the text string.
+ * These are case sensitive exact match tests.
+ * @param sText - the string to parse
+ * @param sList - a list of comma separated values
+ * @returns {Any} - the (first) string that was found
+ */
+IsAnyInStr(sText, sList)
+{
+	aList := StrSplit(sList, ",")
+   	sFound := ""
+   	for i, sVal in aList
+   	{
+      	if (InStr(sText, sVal))
+      	{
+         	sFound := sVal
+         	break
+    	}
+   	}	
+    
+	return sFound
 }
 
 /**

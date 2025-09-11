@@ -1,5 +1,5 @@
 /*****************************************************************************
- * @description arcadeVFE - The Arcade Virtual Front End
+ * @description arcadeVFE - The Virtual Arcade Front End
  * @file Main.ahk2
  * @author © 2025 David G. Dahlstrom
   ****************************************************************************/
@@ -53,14 +53,13 @@ global g_sResourceFolder := A_ScriptDir "\Resources"
 global g_sVFEIconFile := g_sResourceFolder "\vfe.ico"
 global g_sVFEImageFile := g_sResourceFolder "\vfe.png"
 TraySetIcon g_sVFEIconFile
-A_IconTip := "arcadeVFE`nVirtual Front End"
+A_IconTip := "arcadeVFE`nThe Virtual Arcade`nFront End"
 
 OnMessage(WM_MOUSEMOVE  := 0x0200, OnMouseEvent)
 OnMessage(WM_MOUSELEAVE := 0x02A3, OnMouseEvent)
 
 ;***********************************************************
 ;globals for GameInfo display
-global gGui := {}
 global guiGameInfo := ""
 global g_sCurrentROM := ""
 global g_color_edit_bg := "0x1F1F1F"
@@ -261,7 +260,7 @@ DoFileAudit()
 
 	;.\Resources folder files
 	if (!FileExist(g_sVFEIconFile))
-		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " g_sMame2014 "`n")  
+		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " g_sVFEIconFile "`n")  
 	if (!FileExist(g_sVFEImageFile))
 		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " g_sVFEImageFile "`n")
 
@@ -1363,7 +1362,7 @@ ShowSplash()
 	gcSplashVer.SetFont("s19 w600", "Courier New")
 
 	sArcade := IniRead(g_sIniFile, "General", "Arcade", "")
-	sArcade := sArcade == "Other" || !sArcade ? "The Arcade Virtual Front End" : "for " sArcade
+	sArcade := sArcade == "Other" || !sArcade ? "The Virtual Arcade Front End" : "for " sArcade
 	global gcSplashSubtitle := guiSplash.AddText("x" x1 + 37 + iconW " y" y1 + 60 " w" iWidth " h" iHeight, sArcade)
 	gcSplashSubtitle.SetFont("s10 w700", "Courier New")
 
