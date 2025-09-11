@@ -64,7 +64,7 @@ Use **arcadeVFE** to quickly install the correct roms into **Arcade Time Capsule
 
 2. Ensure the **ROM folder to monitor** field contains a path to the (empty) ATC roms folder on your PC.
 > [!TIP]
->  _If you press the **Audit ROMs...** button now, while the folder is still empty, you can get a list of all roms required by ATC and their **MAME** versions._)_
+>  _If you press the **Audit ROMs...** button now, while the folder is still empty, you can get a list of all roms required by ATC and their **MAME** versions._
 4. Press the **Copy Roms...** button.
 <img width="200" height="165" alt="Copy Roms" src="https://github.com/user-attachments/assets/f18ad5f6-8d6b-4573-8d55-2adb496d7a57" />
 
