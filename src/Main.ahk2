@@ -138,9 +138,11 @@ global g_sMame2014 := g_sAuditFolder "\mame2014\mame64.exe" ;For MAME 2014 / 0.1
 
 ;Make file updates effective with ver. 1.2)
 if (FileExist(g_sConfigFolder "\arcadeVFE.ini"))
-	FileMove(g_sConfigFolder "\arcadeVFE.ini", g_sConfigFolder "\vfe.ini")
+	try FileMove(g_sConfigFolder "\arcadeVFE.ini", g_sConfigFolder "\vfe.ini")
 if (FileExist(g_sGameInfoFolder "\void.png"))
-	FileDelete(g_sGameInfoFolder "\void.png")
+	try FileDelete(g_sGameInfoFolder "\void.png")
+if (FileExist(g_sArcadeFolder "\Arcade Time Capsule 3.6.Locations.ini"))
+	try FileMove(g_sArcadeFolder "\Arcade Time Capsule 3.6.Locations.ini", g_sArcadeFolder "\Arcade Time Capsule 3.6.Directory.ini")
 
 ;arcade globals
 ;get initialized and set in Setup.PopulateFields() and Setup_ApplyButton_Click()
@@ -267,8 +269,8 @@ DoFileAudit()
 	;.\Arcade folder files
 	if (!FileExist(A_ScriptDir "\Arcade\Arcade Time Capsule 3.6.Floors.json"))
 		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " A_ScriptDir "\Arcade\Arcade Time Capsule 3.6.Floors.json" "`n")
-	if (!FileExist(A_ScriptDir "\Arcade\Arcade Time Capsule 3.6.Locations.ini"))
-		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " A_ScriptDir "\Arcade\Arcade Time Capsule 3.6.Locations.ini" "`n")
+	if (!FileExist(A_ScriptDir "\Arcade\Arcade Time Capsule 3.6.Directory.ini"))
+		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " A_ScriptDir "\Arcade\Arcade Time Capsule 3.6.Directory.ini" "`n")
 	if (!FileExist(A_ScriptDir "\Arcade\Arcade Time Capsule 3.6.RomList.json"))
 		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " A_ScriptDir "\Arcade\Arcade Time Capsule 3.6.RomList.json" "`n")
 	if (!FileExist(A_ScriptDir "\Arcade\Arcade Time Capsule 3.6.Vicinities.json"))

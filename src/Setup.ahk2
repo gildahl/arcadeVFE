@@ -139,7 +139,7 @@ class Setup
         global g_sArcadeString := gcArcadeDropDown.Text
         global g_sApplicationName := gcApplicationEdit.Text
         global g_sROMMonitorFolder := gcROMMonitorFolderEdit.Text 
-        global g_sDirectoryFile := g_sArcadeFolder "\" g_sArcadeString ".Locations.ini"
+        global g_sDirectoryFile := g_sArcadeFolder "\" g_sArcadeString ".Directory.ini"
         global g_sFloorsFile := g_sArcadeFolder "\" g_sArcadeString ".Floors.json"
         global g_sVicinitiesFile := g_sArcadeFolder "\" g_sArcadeString ".Vicinities.json"
 
@@ -454,7 +454,7 @@ class Setup
             global g_sArcadeString := gcArcadeDropDown.Text
             global g_sApplicationName := gcApplicationEdit.Text
             global g_sROMMonitorFolder := gcROMMonitorFolderEdit.Text 
-            global g_sDirectoryFile := g_sArcadeFolder "\" g_sArcadeString ".Locations.ini"
+            global g_sDirectoryFile := g_sArcadeFolder "\" g_sArcadeString ".Directory.ini"
             global g_sFloorsFile := g_sArcadeFolder "\" g_sArcadeString ".Floors.json"
             global g_sVicinitiesFile := g_sArcadeFolder "\" g_sArcadeString ".Vicinities.json"
 
