@@ -1,19 +1,5 @@
 arcadeVFE v.1.2
 
-To update from version 1.1, right click on the zip file, choose Properties, 
-check the Unblock checkbox at the bottom, then click Apply. After doing this,
-extract all files and folders from the zip into your 1.1 folder and allow
-Windows to overwrite all files. No user files should be overwritten in the
-process with the following two possible exceptions.
-
-Note 1: If you made any changes to the machine directory, backup the file
-.\Arcade\Arcade Time Capsule 3.6.Locations.ini prior to overwriting files, 
-and restore when completed.
-
-Note 2: If you made any changes to the Command template list, backup the
-file .\Config\templates.json prior to overwriting files, and restore when 
-completed.
-
 * (Fix) If you started with Other selected as the arcade type, the software
   could crash when selecting a rom.
 * (Fix) If you used GameInfo and started a new machine in the arcade too 
@@ -43,7 +29,7 @@ completed.
 * (New) Added game logo to GameInfo startup.
 * (New) Added progress bar to GameInfo startup.
 * (New) Added the MAME version used by ATC for the rom above the rom list.
-* (New) May set the monitor that GameInfo uses in vfe.ini
+* (New) May set the monitor that GameInfo uses.
 * (New) May set whether to hide the mouse curser for GameInfo in vfe.ini
 * (Improvement) GameInfo loads game data much more quickly now.
 * (Improvement) GameInfo now appends base rom information for export roms.
