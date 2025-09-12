@@ -44,7 +44,7 @@ Tested Software
 Installation
 ============
 <!--
-To install arcadeVFE for use with Arcade Time Capsule, follow these four simple steps:
+To install arcadeVFE for use with Arcade Time Capsule 3.6, follow these four simple steps:
 1. Download the installer (`arcadeVFE 1.2 Setup.exe`),
 2. Run the installer and follow the prompts.
 3. At the end of the install, accept the option to run **arcadeVFE**.
