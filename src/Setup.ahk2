@@ -30,7 +30,7 @@ class Setup
 
         local nIconButtonWidth := 40
         local nButtonWidth := 70
-        local sSetupTitle := "arcadeVFE " CodeVersion " - Initial Setup"
+        local sSetupTitle := "arcadeVFE " g_sCodeVersion " - Initial Setup"
 
         Setup.mSetup.Width := 550
 		Setup.mSetup.Height := 210

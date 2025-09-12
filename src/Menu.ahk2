@@ -52,7 +52,7 @@ class TrayMenu
 	{
 		global g_bCancelPoll := true
 
-		if (WinExist("arcadeVFE " CodeVersion " - Settings"))
+		if (WinExist("arcadeVFE " g_sCodeVersion " - Settings"))
 			return
 
 		Settings.RefreshList()
@@ -69,7 +69,7 @@ class TrayMenu
 		if (WinExist("About arcadeVFE"))
 			return
 
-		sAboutTitle := "About arcadeVFE"
+		sAboutTitle := "About arcadeVFE " g_sCodeVersion
 
 		mAbout := Map()
 		mAbout.Width := 270
@@ -79,7 +79,7 @@ class TrayMenu
 
 		guiAbout := Gui("-MaximizeBox -MinimizeBox", sAboutTitle) 
 		guiAbout.AddPicture("x" 10 " y" 0 " h" 90 " w" 90, g_sVFEImageFile)
-		guiAbout.AddText("x" 110 " y" 10, "arcadeVFE`nThe Virtual Arcade Front End`nVersion " CodeVersion "`n`n© 2025 David G. Dahlstrom")
+		guiAbout.AddText("x" 110 " y" 10, "arcadeVFE`nThe Virtual Arcade Front End`nVersion " g_sCodeVersion "`n`n© 2025 David G. Dahlstrom")
 		gcAboutExitButton := guiAbout.AddButton("Default W" 50, "OK")
 		gcAboutExitButton.OnEvent("Click", About_Close)
 

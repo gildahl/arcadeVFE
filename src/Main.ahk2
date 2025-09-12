@@ -15,7 +15,7 @@
 /***********************************************************************
 * Compiler directives
 ************************************************************************/
-global CodeVersion := "1.2"
+global CodeVersion := "1.2.0.0"
 ;@Ahk2Exe-Let version = %A_PriorLine~U)^(.+"){1}(.+)".*$~$2%
 ;@Ahk2Exe-SetCopyright © 2025 David G. Dahlstrom
 ;@Ahk2Exe-SetProductName arcadeVFE
@@ -47,6 +47,8 @@ global CodeVersion := "1.2"
 ;Turn test mode on/off
 global bTestMode := 0
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+global g_sCodeVersion := SubStr(CodeVersion, 1, InStr(CodeVersion, ".",,,2)-1)
 
 global g_iTickCount := A_TickCount
 global g_sResourceFolder := A_ScriptDir "\Resources"
@@ -1360,7 +1362,7 @@ ShowSplash()
 	global gcSplashTitle := guiSplash.AddText("x" x1 + 35 + iconW " y" y1 + 22 " w" iWidth " h" iHeight, "arcadeVFE")
 	gcSplashTitle.SetFont("s26 w700", "Courier New")
 
-	global gcSplashVer := guiSplash.AddText("x" x1 + 235 + iconW " y" y1 + 24 " w" iWidth " h" iHeight, CodeVersion)
+	global gcSplashVer := guiSplash.AddText("x" x1 + 235 + iconW " y" y1 + 24 " w" iWidth " h" iHeight, g_sCodeVersion)
 	gcSplashVer.SetFont("s19 w600", "Courier New")
 
 	sArcade := IniRead(g_sIniFile, "General", "Arcade", "")
