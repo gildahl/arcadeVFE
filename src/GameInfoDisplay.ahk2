@@ -34,8 +34,8 @@ class GameInfoDisplay
 
 	CreateGameInfoScreen(sRom)
 	{
-		;Read ini in case user updated during runtime.
-		global g_iMonitor := Integer(IniRead(g_sIniFile, "GameInfo", "Monitor", g_iMonitor))
+		iMonitorCount := SysGet(80)
+		global g_iMonitor := iMonitorCount < g_iMonitor ? 1 : g_iMonitor
 
 		;Get the relative bounds of the monitor we will be using for GameInfo.
 		;For multimonitor support, note that we only need to move the gui to the
@@ -364,8 +364,7 @@ class GameInfoDisplay
 
 			;These two "test" controls are used to discover the height of a single row in the edit control
 			;-E0x200 hides the border (corresponds to WS_EX_CLIENTEDGE)
-			iGameInfoFontSize := Integer(IniRead(g_sIniFile, "General", "GameInfoFontSize", g_iDefaultGameInfoFontSize))
-			this.guiGameInfo.SetFont("s" iGameInfoFontSize, "Tahoma")
+			this.guiGameInfo.SetFont("s" g_iGameInfoFontSize, "Tahoma")
 			this.guiGameInfo_Test1 := this.guiGameInfo.AddEdit("x0 y0 Hidden -VScroll -HScroll -E0x200 vTest1 R1") ;A one row edit control
 			Tst1 := this.guiGameInfo_Test1.Hwnd
 

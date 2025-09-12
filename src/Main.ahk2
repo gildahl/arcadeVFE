@@ -76,13 +76,13 @@ global g_sBaseRomsFile := g_sGameInfoFolder "\baseroms.ini"
 global g_sLogoFolder := A_ScriptDir "\GameInfo\Logo"
 global g_oMameData := MAMEData(g_sMameInfoFile, g_sMameHistoryFile)
 global g_oGameInfoDisplay := GameInfoDisplay()
-global g_iDefaultGameInfoFontSize := 18 
 global g_aImageOrder := Array()     
 global g_sGameInfoSettingsExitKey := "Escape"
 global g_sGameInfoSettingsRightKey := "Right"
 global g_sGameInfoSettingsLeftKey := "Left"
 global g_sImageOrder := "cabinets,cpanel,instructions,instructions_2,flyers,flyers_back,pcb"  
 global g_bHideCursor := 0
+global g_iGameInfoFontSize := 18
 global g_iMonitor := 1
 ;***********************************************************
 
@@ -1325,7 +1325,7 @@ ShowSplash()
 
 	dpi := 96 / A_ScreenDPI
 	guiSplash.Opt("-Caption +ToolWindow +LastFound +AlwaysOnTop")
-	guiSplash.BackColor := g_color_edit_text
+	guiSplash.BackColor := "white"
 
 	iHeight := 100
 	iWidth := 400

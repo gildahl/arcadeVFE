@@ -299,7 +299,7 @@ class Settings
 
 		gcApplication_Checkbox := guiSettings.AddCheckbox("x" 45 " y" 653 " w" 220, "Monitor only when the arcade is running")
 		gcApplication_Checkbox.OnEvent("Click", (*) => Settings.Application_Checkbox_Click())
-		gcApplication_Checkbox.TT := "Keep arcadeVFE paused while the arcade emulator system`nsoftware is not running (recommended).`n`nTurning this off is primarily intended for testing. Note that`nyou will need to restart arcadeVFE after changing this setting."
+		gcApplication_Checkbox.TT := "Keep arcadeVFE inactive while the arcade emulator system`nsoftware is not running (recommended).`n`nTurning this off is primarily intended for testing. You will`nnot have access to GameInfo or RawAccel when turned off`nand may experience side effects in other applications. Note`nthat you will need to restart arcadeVFE after changing this setting."
 
 		try gcApplication_Checkbox.Value := Integer(IniRead(g_sIniFile, "General", "MonitorApplication", 1))
 		
@@ -316,9 +316,16 @@ class Settings
 		try gcBeep_Checkbox.Value := Integer(IniRead(g_sIniFile, "General", "BeepOnProfileChange", 0))	
 		gcBeep_Checkbox.TT := "Checked:        Beep whenever an action is performed.`nUnchecked:    Never beep (off)"
 
-		gcRawAccel_Checkbox := guiSettings.AddCheckbox("x" 280 " y" 700, "Run RawAccel")
+		gcShowLocations_Checkbox := guiSettings.AddCheckbox("x" 275 " y" 653, "Edit Directory")
+		gcShowLocations_Checkbox.OnEvent("Click", (*) => Settings.ShowLocations_Checkbox_Click())
+		gcShowLocations_Checkbox.Value := IniRead(g_sIniFile, "General", "EditLocations", 0)	
+		gcShowLocations_Checkbox.TT := "Enable editing the machine location`ninformation under the ROM list."
+
+		gcShowLocations_Checkbox.Enabled := g_sArcadeString == "Other" ? false : true
+
+		gcRawAccel_Checkbox := guiSettings.AddCheckbox("x" 275 " y" 677, "Run RawAccel")
 		gcRawAccel_Checkbox.OnEvent("Click", (*) => Settings.RawAccel_Checkbox_Click())
-		try gcRawAccel_Checkbox.Value := Integer((g_sIniFile, "General", "LoadRawAccel", 0))
+		try gcRawAccel_Checkbox.Value := Integer(IniRead(g_sIniFile, "General", "LoadRawAccel", 0))
 		gcRawAccel_Checkbox.TT := "Run RawAccel when the arcade application starts`nand close it when the application terminates.`n`nRawAccel is expected to be in a subfolder called`n\RawAccel within the arcadeVFE folder."
 
 		if (!FileExist(A_ScriptDir "\RawAccel\rawaccel.exe") || gcApplicationEdit.Text == '' || gcApplication_Checkbox.Value == 0)
@@ -326,48 +333,63 @@ class Settings
         
 		try global g_sRawAccelExe := IniRead(g_sIniFile, "General", "RawAccelExe", g_sRawAccelExe)
 
-		gcShowGameInfo_Checkbox := guiSettings.AddCheckbox("x" 280 " y" 653, "Use GameInfo Overlay")
-		gcShowGameInfo_Checkbox.OnEvent("Click", (*) => Settings.ShowGameInfo_Checkbox_Click())
-		try gcShowGameInfo_Checkbox.Value := IniRead(g_sIniFile, "General", "ShowGameInfo", 0)	
-		gcShowGameInfo_Checkbox.TT := "Show GameInfo overlay on the desktop when the arcade application`nstarts and close it when the application terminates.`n`nNote that if you use mouse clicks as your fire button, these may not work`nwhile the overlay is covering the emulator's screen. To fix this you may:`n(1) turn off this feature,`n(2) map your fire button to a controller button, or `n(3) display GameInfo on another monitor using the Monitor setting`n     in vfe.ini (try Monitor=2)."
-
-		if (gcApplication_Checkbox.Value == 0)
-			gcShowGameInfo_Checkbox.Enabled := false
-	
-		gcGameInfoFontSizeLabel := guiSettings.AddText("x" 330 " y" 673 " w" 100 " h" 20, "Font Size")
-		gcGameInfoFontSizeLabel.SetFont("s7")
-
-		try iGameInfoFontSize := IniRead(g_sIniFile, "General", "GameInfoFontSize", g_iDefaultGameInfoFontSize)
-		gcGameInfoFontSizeEdit := guiSettings.AddEdit("x" 295 " y" 670 " w" 30 " +BackgroundWhite", iGameInfoFontSize)
-		gcGameInfoFontSizeEdit.OnEvent("Change", (*) => Settings.GameInfoFontSizeEdit_Change())
-		gcGameInfoFontSizeEdit.TT := "Enter the font size to be used`nfor the GameInfo screen."
-
-		gcShowLocations_Checkbox := guiSettings.AddCheckbox("x" 440 " y" 653, "Edit Directory")
-		gcShowLocations_Checkbox.OnEvent("Click", (*) => Settings.ShowLocations_Checkbox_Click())
-		gcShowLocations_Checkbox.Value := IniRead(g_sIniFile, "General", "EditLocations", 0)	
-		gcShowLocations_Checkbox.TT := "Enable editing the machine location`ninformation under the ROM list."
-
-		gcShowLocations_Checkbox.Enabled := g_sArcadeString == "Other" ? false : true
-
-		gcToolTip_Checkbox := guiSettings.AddCheckbox("x" 440 " y" 700, "Show Tooltips")
+		gcToolTip_Checkbox := guiSettings.AddCheckbox("x" 275 " y" 700, "Show Tooltips")
 		gcToolTip_Checkbox.OnEvent("Click", (*) => Settings.ToolTip_Checkbox_Click())
 		try gcToolTip_Checkbox.Value := Integer(IniRead(g_sIniFile, "General", "ShowToolTips", 1))
 		gcToolTip_Checkbox.TT := "Show or hide tooltips on this screen."
-        
-		try global g_sRawAccelExe := IniRead(g_sIniFile, "General", "RawAccelExe", g_sRawAccelExe)
 
-		gcSettingsMessageLabel := guiSettings.AddText("x" Settings.mMetrics.Width - 330 " y" 640 " w" 300, "arcadeVFE is currently **PAUSED**. Close this dialog when`nyou have completed configuration to begin active monitoring.")
+		gcShowGameInfo_Checkbox := guiSettings.AddCheckbox("x" 400 " y" 653, "Use GameInfo Overlay")
+		gcShowGameInfo_Checkbox.OnEvent("Click", (*) => Settings.ShowGameInfo_Checkbox_Click())
+		try gcShowGameInfo_Checkbox.Value := IniRead(g_sIniFile, "General", "ShowGameInfo", 0)	
+		gcShowGameInfo_Checkbox.TT := "Show GameInfo overlay on the desktop when the arcade application`nstarts and close it when the application terminates.`n`nNote that if you use mouse clicks as your fire button, these may not work`nwhile the overlay is covering the emulator's screen. To fix this you may:`n(1) turn off this feature,`n(2) map your fire button to a controller button, or `n(3) display GameInfo on another monitor if you have one using the`n      monitor setting below (try Monitor=2)."
+	
+		gcGameInfoFontSizeLabel := guiSettings.AddText("x" 465 " y" 673 " w" 60 " h" 20, "Font Size")
+		gcGameInfoFontSizeLabel.SetFont("s7")
+
+		try g_iGameInfoFontSize := IniRead(g_sIniFile, "GameInfo", "GameInfoFontSize", g_iGameInfoFontSize)
+		gcGameInfoFontSizeEdit := guiSettings.AddEdit("x" 420 " y" 670 " w" 40 " +BackgroundWhite", g_iGameInfoFontSize)
+		gcGameInfoFontSizeEdit.OnEvent("Change", (*) => Settings.GameInfoFontSizeEdit_Change())
+		gcGameInfoFontSizeEdit.TT := "Enter the font size to be used`nfor the GameInfo screen."
+
+		gcGameInfoMonitorDropDownLabel := guiSettings.AddText("x" 465 " y" 698 " w" 80, "Choose Monitor")
+		gcGameInfoMonitorDropDownLabel.SetFont("s7")
+
+		gcGameInfoMonitorDropDown := guiSettings.AddDropDownList("x" 420 " y" 695 " w" 40 " +BackgroundWhite",)
+		gcGameInfoMonitorDropDown.OnEvent("Change", (*) => Settings.GameInfoMonitorDropDown_Change())
+		gcGameInfoMonitorDropDown.TT := "Select monitor on which`nto display the GameInfo."
+
+		if (gcApplication_Checkbox.Value == 0)
+		{
+			gcShowGameInfo_Checkbox.Enabled := false
+			gcGameInfoFontSizeEdit.Enabled := false
+			gcGameInfoMonitorDropDown.Enabled := false
+		}
+
+		try global g_iMonitor := IniRead(g_sIniFile, "GameInfo", "Monitor", g_iMonitor)
+
+		iMonitorCount := SysGet(80)
+		Loop iMonitorCount
+			gcGameInfoMonitorDropDown.Add([A_Index])
+
+		try {
+			gcGameInfoMonitorDropDown.Value := g_iMonitor
+		}
+		catch {
+			gcGameInfoMonitorDropDown.Value := 1
+		}
+
+		gcSettingsMessageLabel := guiSettings.AddText("x" Settings.mMetrics.Width - 330 " y" 635 " w" 300, "arcadeVFE is currently **PAUSED**. Close this dialog when`nyou have completed configuration to begin active monitoring.")
 		
-		gcViewGameInfoButton := guiSettings.AddButton("x" Settings.mMetrics.Width - nButtonWidthBottom*3 - 40 " y" 690 " w" nButtonWidthBottom " h" 30, "View GameInfo...")
+		gcViewGameInfoButton := guiSettings.AddButton("x" Settings.mMetrics.Width - nButtonWidthBottom*3 - 40 " y" 685 " w" nButtonWidthBottom " h" 40, "Preview`n   GameInfo...")
 		gcViewGameInfoButton.OnEvent("Click", (*) => Settings.ViewGameInfoButton_Click())
-		gcViewGameInfoButton.TT := "View GameInfo for the selected game. Use left and right arrow`nkeyboard keys to navigate and Escape to exit.`n`nNote that when you use the GameInfo Overlay during gameplay`n(rather than this Settings dialog), navigation will use the keys or`nbuttons specified in the Action List."
+		gcViewGameInfoButton.TT := "Preview GameInfo for the selected game. Use left and right arrow`nkeyboard keys to navigate and Escape to exit. You may adjust the`nfont size and monitor that the GameInfo appears on using the`nsettings to the left.`n`nNote that when you use the GameInfo Overlay during gameplay`n(rather than this Settings dialog), navigation will use the keys or`nbuttons specified in the Action List."
 		gcViewGameInfoButton.Enabled := false
 
-		gcSetupButton := guiSettings.AddButton("x" Settings.mMetrics.Width - nButtonWidthBottom*2 - 35 " y" 690 " w" nButtonWidthBottom " h" 30, "Initial Setup...")
+		gcSetupButton := guiSettings.AddButton("x" Settings.mMetrics.Width - nButtonWidthBottom*2 - 35 " y" 685 " w" nButtonWidthBottom " h" 40, "Initial`n   Setup...")
 		gcSetupButton.OnEvent("Click", (*) => Settings.SetupButton_Click())
 		gcSetupButton.TT := "Open the intial setup`nand rom tools dialog."
 
-		gcCloseButton := guiSettings.AddButton("x" Settings.mMetrics.Width - nButtonWidthBottom - 30 " y" 690 " w" nButtonWidthBottom " h" 30, "Close")
+		gcCloseButton := guiSettings.AddButton("x" Settings.mMetrics.Width - nButtonWidthBottom - 30 " y" 685 " w" nButtonWidthBottom " h" 40, "Close")
 		gcCloseButton.OnEvent("Click", (*) => Settings.CloseButton_Click())
 		gcCloseButton.TT := "Close this Settings dialog to begin active`nmonitoring.`n`nTo exit arcadeVFE completely, right-click`non its tray icon and choose Exit."
 
@@ -1478,17 +1500,28 @@ class Settings
 
 	static Application_Checkbox_Click(*)
 	{
-		IniWrite(gcApplication_Checkbox.Value, g_sIniFile, "General", "MonitorApplication")
-		global g_bOnlyMonitorWhenArcadeIsLoaded := gcApplication_Checkbox.Enabled && gcApplication_Checkbox.Value == 1
-
-		gcRawAccel_Checkbox.Enabled := FileExist(A_ScriptDir "\RawAccel\rawaccel.exe") && gcApplicationEdit.Text && gcApplication_Checkbox.Value ? true : false
-		gcShowGameInfo_Checkbox.Enabled := gcApplicationEdit.Text && gcApplication_Checkbox.Value ? true : false
+		gcApplication_Checkbox.Value := !gcApplication_Checkbox.Value
 
 		;Post restart warning
 		result := "Yes"
-		result := MsgBox("It is recommended to restart arcadeVFE after`nchanging this setting.`n`nWould you like to exit this application now?", "Exit arcadeVFE?", 4132)
+		if (g_bOnlyMonitorWhenArcadeIsLoaded) 
+			result := MsgBox("Turning this setting off is intended for testing only.`nYou will not have access to GameInfo or RawAccel in this`nmode and may experience side effects in other applications.`nIt is required to restart arcadeVFE after changing this setting.`n`nWould you like to turn this off and exit arcadeVFE now?", "Exit arcadeVFE?", 4132)
+		else
+			result := MsgBox("It is required to restart arcadeVFE after changing this setting.`n`nWould you like to turn this on and exit arcadeVFE now?", "Exit arcadeVFE?", 4132)
+
 		if (result == "Yes")
+		{
+			gcApplication_Checkbox.Value := !gcApplication_Checkbox.Value
+			IniWrite(gcApplication_Checkbox.Value, g_sIniFile, "General", "MonitorApplication")
+			global g_bOnlyMonitorWhenArcadeIsLoaded := gcApplication_Checkbox.Value
+
+			gcRawAccel_Checkbox.Enabled := FileExist(A_ScriptDir "\RawAccel\rawaccel.exe") && gcApplicationEdit.Text && gcApplication_Checkbox.Value ? true : false
+			gcShowGameInfo_Checkbox.Enabled := gcApplicationEdit.Text && gcApplication_Checkbox.Value ? true : false
+			gcGameInfoFontSizeEdit.Enabled := gcApplicationEdit.Text && gcApplication_Checkbox.Value ? true : false
+			gcGameInfoMonitorDropDown.Enabled := gcApplicationEdit.Text && gcApplication_Checkbox.Value ? true : false
+			
 			ExitApp
+		}
 
 		return
 	}
@@ -1505,7 +1538,14 @@ class Settings
 
 	static GameInfoFontSizeEdit_Change(*)
 	{
-		IniWrite(gcGameInfoFontSizeEdit.Value, g_sIniFile, "General", "GameInfoFontSize")
+		IniWrite(gcGameInfoFontSizeEdit.Value, g_sIniFile, "GameInfo", "GameInfoFontSize")
+		global g_iGameInfoFontSize := gcGameInfoFontSizeEdit.Value
+	}
+
+	static GameInfoMonitorDropDown_Change()
+	{
+		IniWrite(gcGameInfoMonitorDropDown.Value, g_sIniFile, "GameInfo", "Monitor")
+		global g_iMonitor := gcGameInfoMonitorDropDown.Value
 	}
 
 	static ActionListNameEdit_Change(*)
