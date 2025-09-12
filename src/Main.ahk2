@@ -1327,7 +1327,7 @@ ShowSplash()
 
 	dpi := 96 / A_ScreenDPI
 	guiSplash.Opt("-Caption +ToolWindow +LastFound +AlwaysOnTop")
-	guiSplash.BackColor := "white"
+	guiSplash.BackColor := g_color_edit_text
 
 	iHeight := 100
 	iWidth := 400
