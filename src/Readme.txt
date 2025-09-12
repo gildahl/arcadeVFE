@@ -1,5 +1,5 @@
 arcadeVFE 1.2
-The Arcade Virtual Front End
+The Virtual Arcade Front End
 ============================
 
 For full install and configuration instructions, see documentation at
