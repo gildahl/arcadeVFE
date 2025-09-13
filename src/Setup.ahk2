@@ -220,6 +220,10 @@ class Setup
                     try DirCopy(sFolder "\" sRom, gcROMMonitorFolderEdit.Text "\" sRom, 1)
             }
 
+            ;Reset all the rom access timestamps since they were just touched.
+            FileSetTime DateAdd(A_Now, -7, "days"), g_sROMMonitorFolder "\*.zip", "A"
+            g_oLog("INFO: Updated all rom access timestamps after rom copy operation.`n")
+
             gcAuditProgress.Visible := false
             gcAuditProgress.Value := 0
         }
@@ -366,6 +370,10 @@ class Setup
         g_oAuditLog.LogLine("INFO: Completed audit of " g_oArcadeRomList.Count " rom files. " iErrorCount " " sAnomalyPhrase "`n")
         g_oAuditLog.LogLine("INFO: Please note that ROMs reporting anomalies may still work, but should be tested.`n")
 
+        ;Reset all the rom access timestamps since mame just touched them all.
+        FileSetTime DateAdd(A_Now, -7, "days"), g_sROMMonitorFolder "\*.zip", "A"
+        g_oLog("INFO: Updated all rom access timestamps after audit.`n")
+
         gcAuditProgress.Visible := false
         gcAuditProgress.Value := 0
 
@@ -375,9 +383,6 @@ class Setup
         gcSetup_CloseButton.Enabled := true
 
         DetectHiddenWindows OG_DetectHiddenWindows
-
-        ;Reset all the rom access timestamps since mame just touched them all.
-        FileSetTime DateAdd(A_Now, -7, "days"), g_sROMMonitorFolder "\*.zip", "A"
     }
 
     static ShowSetupDialog()
