@@ -17,7 +17,7 @@ To this end, **arcadeVFE** includes these features:
 * A rom copy feature that can simplify installation of the correct roms into **Arcade Time Capsule**.
 * A rom audit feature that can determine whether your rom set is suitable for **Arcade Time Capsule**.
 * Voice notification of game control layout changes.
-* Automatically run RawAccel if you need it.
+* Automatically run **RawAccel** if you need it.
 
 Resources
 =========
