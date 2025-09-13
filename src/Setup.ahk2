@@ -299,7 +299,7 @@ class Setup
         catch as e
         {		
             g_oAuditLog.LogLine("ERROR: Attaching console for GetHi2TxtScores(): " g_oAuditLog.FormatErrorMessage(e) "`n")
-            ExitApp
+            ExitApp(-1)
         }
 
         ;Loop through each file in the rom list for this arcade, doing a version-specific validation of each.
@@ -428,7 +428,7 @@ class Setup
             return
         }
         else if (Setup.bAutoshow)
-            ExitApp()
+            ExitApp(0)
 
         guiSettings.Opt("-Disabled")
         guiSetup.Hide()

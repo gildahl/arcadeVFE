@@ -99,7 +99,7 @@ class TrayMenu
 
 	static FileExit(*)
 	{
-		ExitApp()
+		ExitApp(0)
 	}
 
 	static SetMenuName(sOldMenuItem, sNewMenuItem)

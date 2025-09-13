@@ -175,6 +175,20 @@ global g_oLog := AppLog()
 g_oLog.Init(g_sLogFolder "\log.txt", "arcadeVFE") ;initialize the application log
 OnError LogError ;deal with unhandled exceptions
 
+OnExit ExitArcadeVFE
+ExitArcadeVFE(ExitReason, ExitCode)
+{
+	Switch ExitCode
+	{
+		Case 0:
+			g_oLog.LogLine("INFO: Exited arcadeVFE normally, Reason: " ExitReason ", Code: " ExitCode "`n")
+		Case -1:
+			g_oLog.LogLine("INFO: Exited arcadeVFE abnormally, Reason: " ExitReason ", Code: " ExitCode "`n")
+		Case 1:
+			g_oLog.LogLine("INFO: Exited arcadeVFE normally (forced), Reason: " ExitReason ", Code: " ExitCode "`n")
+	}	
+}
+
 global g_oAuditLog := AppLog()
 
 ;Create configuration folder if it doesn't already exist
@@ -1393,5 +1407,5 @@ LogError(e, mode)
 	sErr := "ERROR: Unhandled exception: " g_oLog.FormatErrorMessage(e)
     g_oLog.LogLine(sErr "`n")
 	OutputDebug sErr
-    ExitApp
+    ExitApp(-1)
 }

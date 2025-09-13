@@ -1518,7 +1518,7 @@ class Settings
 			gcGameInfoFontSizeEdit.Enabled := gcApplicationEdit.Text && gcApplication_Checkbox.Value ? true : false
 			gcGameInfoMonitorDropDown.Enabled := gcApplicationEdit.Text && gcApplication_Checkbox.Value ? true : false
 			
-			ExitApp
+			ExitApp(1) ;1 indicates user forced shutdown
 		}
 
 		return
