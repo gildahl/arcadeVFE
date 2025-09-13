@@ -217,14 +217,14 @@ This option will sound a beep whenever a command action happens. This can be use
 This option will enable the edit controls under the Choose ROM list containing the locations of arcade machines in the virtual arcade. You may edit these as you please. 
 
 ### Run RawAccel
-**RawAccel** is a utility that can be found on GitHub at `https://github.com/RawAccelOfficial/rawaccel`. This software may be needed to tune some trackballs to have additional sensitivity. For example, I need it to make my **Ultimarc U-Trak** trackball work correctly in **Arcade Time Capsule**. To integrate **RawAccel** with **arcadeVFE**, simply install it anywhere you like on your PC, and then open the `.\Config` folder inside your arcadeVFE folder and open the `plugins.ini` file in a text editor. Finally, add the path to your RawAccel folder to the `Path=` line in the `[RawAccel]` section. For example:
+**RawAccel** is a utility that can be found on GitHub at `https://github.com/RawAccelOfficial/rawaccel`. This software may be needed to tune some trackballs to have additional sensitivity. For example, I need it to make my **Ultimarc U-Trak** trackball work correctly in **Arcade Time Capsule**. To integrate **RawAccel** with **arcadeVFE**, simply install it anywhere you like on your PC, then open the `plugins.ini` file in a text editor (located in the `\Config` subfolder of arcadeVFE). Finally, add the path to your RawAccel folder to the `Path=` line in the `[RawAccel]` section. For example:
 
 ```
 [RawAccel]
 Path=E:\Utilities\RawAccel
 ```
 
-This option is only available when the **Monitor only when the arcade is running** above setting is configured. When this option is turned on VFE will automatically load **RawAccel** when the arcade is running, and will close **RawAccel** when the arcade is closed. It is up to the user to configure **RawAccel** properly for their trackball before use. 
+Once you've done this, close and restart arcadeVFE if it was running, then check the **Run RawAccel** checkbox option at the bottom of the **Settings** dialog (note that **Monitor only when the arcade is running** must also be turned on). Once you have done this, VFE will automatically load **RawAccel** when the arcade is running, and will close **RawAccel** when the arcade is closed. It is up to the user to configure **RawAccel** properly for their trackball before use. 
 
 ### Show Tooltips
 In addition to this documentation file, the **Settings** screen implements tooltips on all controls to explain their operation. If you no longer need the tooltips, you can turn them off by unchecking the **Show Tooltips** checkbox.
