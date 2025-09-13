@@ -233,10 +233,7 @@ To navigate through the **GameInfo** screens, you will want to assign at least t
 Set the font size used in the **GameInfo** screen. If you revise the font size, you may preview it by pressing the **Preview GameInfo...** button.
 
 #### Choose Monitor
-If you use mouse clicks as a fire button, these will not work if the overlay is covering the emulator's screen. One way to address this is to move the overlay to another screen if you have one. To do this, just change this setting to present the **GameInfo** on a different monitor.
-
-> [!NOTE]
-> _Be aware that the **GameInfo** overlay feature is NOT compatible with spinner and trackball games **IF** you use mouse clicks for game input (such as for your fire button), and **IF** the **GameInfo** screen is allowed to overlay the emulator. To address this, either turn off this feature or use a game controller button for your fire button instead. See the [Limitations](#Limitations) section at the bottom of this document for more information about this potential issue._
+If you use mouse clicks as a fire button, these will not work if the overlay is covering the emulator's screen. One way to address this is to move the overlay to another screen if you have one. To do this, just change this setting to present the **GameInfo** on a different monitor. See @2 in the [Limitations](#Limitations) section below for more information about this.
 
 Limitations
 ===========
