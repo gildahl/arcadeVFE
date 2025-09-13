@@ -375,6 +375,9 @@ class Setup
         gcSetup_CloseButton.Enabled := true
 
         DetectHiddenWindows OG_DetectHiddenWindows
+
+        ;Reset all the rom access timestamps since mame just touched them all.
+        FileSetTime DateAdd(A_Now, -7, "days"), g_sROMMonitorFolder "\*.zip", "A"
     }
 
     static ShowSetupDialog()

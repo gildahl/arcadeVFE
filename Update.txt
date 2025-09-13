@@ -16,6 +16,7 @@ arcadeVFE v.1.2
 * (Fixed) Removed redundant lower case letters from "Map a keypress".
 * (Fixed) "Copy ROMs" function now copies \chd folders.
 * (Fixed) Clear the current rom when arcade exits to avoid side effects.
+* (Fixed) State could be lost after performing a rom audit.
 * (New) Windows Installer based setup is now used instead of a zip file.
 * (New) Can now preview GameInfo directly from the Settings dialog.
 * (New) Added default GameInfo navigation key mappings.
