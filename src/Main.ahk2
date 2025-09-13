@@ -127,6 +127,7 @@ global g_sUserFolder := A_ScriptDir "\User"
 global g_sLogFolder := A_ScriptDir "\Log"
 global g_sAuditFolder := A_ScriptDir "\Audit"
 global g_sArcadeFolder := A_ScriptDir "\Arcade"
+global g_sRawAccelFolder := "" ;plugin
 
 ;filename defaults
 global g_sIniFile := g_sConfigFolder "\vfe.ini"
@@ -135,30 +136,7 @@ global g_sTemplatesFile := g_sConfigFolder "\templates.json"
 global g_sTweaksFile := g_sConfigFolder "\tweaks.json"
 global g_sMame2010 := g_sAuditFolder "\mame2010\mame64.exe" ;For MAME 2010 / 0.139 rom file audits
 global g_sMame2014 := g_sAuditFolder "\mame2014\mame64.exe" ;For MAME 2014 / 0.159 rom file audits
-
-;plugins (RawAccel)
-;RawAccel may be installed by either creating a "RawExcel=<path>" entry to the vfe.ini [Plugins] section
-;or added into a subfolder of arcadeVFE called "RawAccel". If both are done, the Plug-in path wins
-global g_sRawAccelFolder := ""
-global g_sRawAccelExe := ""
-g_sRawAccelFolder := IniRead(g_sIniFile, "Plugins", "RawAccel", g_sRawAccelFolder)
-if (!g_sRawAccelFolder)
-	IniWrite("<Add a path to RawAccel here>", g_sIniFile, "Plugins", "RawAccel")
-if (DirExist(g_sRawAccelFolder) && FileExist(g_sRawAccelFolder "\rawaccel.exe"))
-	g_sRawAccelExe := g_sRawAccelFolder "\rawaccel.exe"
-else if FileExist(g_sRawAccelFolder) ;if a path including the exe was entered...
-{
-	SplitPath(g_sRawAccelFolder, &OutName, &OutDir)
-	g_sRawAccelFolder := OutDir
-	g_sRawAccelExe := OutDir "\" OutName
-}
-
-;handle case where RawAccel is installed as a local folder (1.1 style)
-if (!g_sRawAccelExe && FileExist(A_ScriptDir "\RawAccel\rawaccel.exe"))
-{
-	g_sRawAccelFolder := A_ScriptDir "\RawAccel"
-	g_sRawAccelExe := g_sRawAccelFolder "\rawaccel.exe"
-}
+global g_sRawAccelExe := "" ;plugin
 
 ;Make file updates effective with ver. 1.2)
 if (FileExist(g_sConfigFolder "\arcadeVFE.ini"))
@@ -442,6 +420,30 @@ LoadConfig()
 	}
 	catch {
 		IniWrite(g_iCommandLineDelay, g_sIniFile, "General", "CommandLineDelay")
+	}
+
+	;******************************* plugins (RawAccel) **************************************
+	;RawAccel may be installed by either creating a "RawExcel=<path>" entry to the vfe.ini [Plugins] section
+	;or added into a subfolder of arcadeVFE called "RawAccel". If both are done, the Plug-in path wins
+	global g_sRawAccelFolder := ""
+	global g_sRawAccelExe := ""
+	g_sRawAccelFolder := IniRead(g_sIniFile, "Plugins", "RawAccel", g_sRawAccelFolder)
+	if (!g_sRawAccelFolder)
+		IniWrite("<Add a path to RawAccel here>", g_sIniFile, "Plugins", "RawAccel")
+	if (DirExist(g_sRawAccelFolder) && FileExist(g_sRawAccelFolder "\rawaccel.exe"))
+		g_sRawAccelExe := g_sRawAccelFolder "\rawaccel.exe"
+	else if FileExist(g_sRawAccelFolder) ;if a path including the exe was entered...
+	{
+		SplitPath(g_sRawAccelFolder, &OutName, &OutDir)
+		g_sRawAccelFolder := OutDir
+		g_sRawAccelExe := OutDir "\" OutName
+	}
+
+	;handle case where RawAccel is installed as a local folder (1.1 style)
+	if (!g_sRawAccelExe && FileExist(A_ScriptDir "\RawAccel\rawaccel.exe"))
+	{
+		g_sRawAccelFolder := A_ScriptDir "\RawAccel"
+		g_sRawAccelExe := g_sRawAccelFolder "\rawaccel.exe"
 	}
 }
 
