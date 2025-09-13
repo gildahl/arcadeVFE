@@ -49,7 +49,7 @@ Before pressing **Close** to complete the installation, you may wish to press th
 
 >[!NOTE]
 > * If you have a previous versions of **arcadeVFE**, you _may_ install 1.2 into the same folder, which will upgrade it; however, it is **strongly** recommended to install 1.2 into a new folder due to the use of a new installer, new defaults, and new plug-in architecture. 
-> * arcadeVFE has only been tested with ATC 3.6; however, if you wish to try it with other arcade software, you may chose the "Other" option in the **Initial Setup Dialog**, though some features are disabled in this mode. There are also no guarantees on how well it will work, but please feel free to report your findings.
+> * arcadeVFE has only been tested with ATC 3.6; however, if you wish to try it with other arcade software, you may chose the **Other** option in the **Initial Setup Dialog**, though some features are disabled in this mode. There are also no guarantees on how well it will work, but please feel free to report your findings.
 
 Quick Tour
 ==========
