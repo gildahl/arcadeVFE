@@ -32,6 +32,8 @@ arcadeVFE v.1.2
 * (New) Added the MAME version used by ATC for the rom above the rom list.
 * (New) Added new option to set the monitor that GameInfo uses.
 * (New) May set whether to hide the mouse curser for GameInfo in vfe.ini
+* (Improvement) RawAccel can now be referenced in place using the plugin
+  section of vfe.ini
 * (Improvement) GameInfo loads game data much more quickly now.
 * (Improvement) GameInfo now appends base rom information for export roms.
 * (Improvement) "Show Directory" option changed to "Edit Directory".

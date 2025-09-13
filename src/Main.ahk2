@@ -142,8 +142,16 @@ global g_sMame2014 := g_sAuditFolder "\mame2014\mame64.exe" ;For MAME 2014 / 0.1
 global g_sRawAccelFolder := ""
 global g_sRawAccelExe := ""
 g_sRawAccelFolder := IniRead(g_sIniFile, "Plugins", "RawAccel", g_sRawAccelFolder)
+if (!g_sRawAccelFolder)
+	IniWrite("<Add a path to RawAccel here>", g_sIniFile, "Plugins", "RawAccel")
 if (DirExist(g_sRawAccelFolder) && FileExist(g_sRawAccelFolder "\rawaccel.exe"))
 	g_sRawAccelExe := g_sRawAccelFolder "\rawaccel.exe"
+else if FileExist(g_sRawAccelFolder) ;if a path including the exe was entered...
+{
+	SplitPath(g_sRawAccelFolder, &OutName, &OutDir)
+	g_sRawAccelFolder := OutDir
+	g_sRawAccelExe := OutDir "\" OutName
+}
 
 ;handle case where RawAccel is installed as a local folder (1.1 style)
 if (!g_sRawAccelExe && FileExist(A_ScriptDir "\RawAccel\rawaccel.exe"))
