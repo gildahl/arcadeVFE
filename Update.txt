@@ -1,35 +1,36 @@
 arcadeVFE v.1.2
 
-* (Fix) If you started with Other selected as the arcade type, the software
-  could crash when selecting a rom.
-* (Fix) If you used GameInfo and started a new machine in the arcade too 
+* (Fixed) If you started arcadeVFE with Other selected as the arcade type, 
+  the software could crash when selecting a rom.
+* (Fixed) If you used GameInfo and then started a new machine in the arcade too 
   quickly after starting the previous one (usually between 2 to 10 seconds),
   VFE could lose state and not operate with these machines anymore until a
   restart.
-* (Fix) Copy ROMs function did not copy \chd folders.
-* (Fix) Added warning to restart the application when toggling the "Operate
-  only when arcade is running" setting to avoid indeterminate state.
-* (Fix) Combo boxes were not re-initialized when switching from a controller
+* (Fixed) Copy ROMs function did not copy \chd folders.
+* (Fixed) Added warning to restart the application when toggling the "Operate
+  only when arcade is running" setting to avoid an indeterminate state.
+* (Fixed) Combo boxes were not re-initialized when switching from a controller
   device to a keyboard device resulting in possible wrong/unintended keyboard
   assignments being made to the action table.
-* (Fix) Keyboard mapping did not permit combining keys with Ctrl, Alt, etc.
-* (Fix) Removed redundant lower case letters from "Map a keypress".
-* (Fix) "Copy ROMs" function now copies \chd folders as well.
-* (Fix) Clear the current rom when arcade exits to avoid side effects.
-* (New) Installer based setup is now available in addition to .zip file.
-* (New) Can now view GameInfo from the Settings dialog.
+* (Fixed) Keyboard mapping did not permit combining keys with Ctrl, Alt, etc.
+* (Fixed) Removed redundant lower case letters from "Map a keypress".
+* (Fixed) "Copy ROMs" function now copies \chd folders.
+* (Fixed) Clear the current rom when arcade exits to avoid side effects.
+* (New) Windows Installer based setup is now used instead of a zip file.
+* (New) Can now preview GameInfo directly from the Settings dialog.
 * (New) Added default GameInfo navigation key mappings.
-* (New) GameInfo's data/history now use most up-to-date files (0.208).
+* (New) GameInfo's data/history now use more recent history.xml and
+  Mameinfo.dat files (version 0.208).
 * (New) Added a large number of new images corresponding to ATC roms.
 * (New) Provided a method to specify image order in GameInfo.
-* (New) Added some formatting to the GameInfo text.
+* (New) Added formatting to the GameInfo text to make it easier to read.
 * (New) Now possible to use keyboard keypresses to GameInfo navigation 
   actions (not just controller buttons).
 * (New) Added title splash screen at application startup.
 * (New) Added game logo to GameInfo startup.
 * (New) Added progress bar to GameInfo startup.
 * (New) Added the MAME version used by ATC for the rom above the rom list.
-* (New) May set the monitor that GameInfo uses.
+* (New) Added new option to set the monitor that GameInfo uses.
 * (New) May set whether to hide the mouse curser for GameInfo in vfe.ini
 * (Improvement) GameInfo loads game data much more quickly now.
 * (Improvement) GameInfo now appends base rom information for export roms.
