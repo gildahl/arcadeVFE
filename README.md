@@ -217,7 +217,7 @@ This option will sound a beep whenever a command action happens. This can be use
 This option will enable the edit controls under the Choose ROM list containing the locations of arcade machines in the virtual arcade. You may edit these as you please. 
 
 ### Run RawAccel
-**RawAccel** is a utility that can be found on GitHub at `https://github.com/RawAccelOfficial/rawaccel`. This software may be needed to tune some trackballs to have additional sensitivity. For example, I need it to make my **Ultimarc U-Trak** trackball work correctly in **Arcade Time Capsule**. To integrate **RawAccel** with **arcadeVFE**, simply install it anywhere you like on your PC, then open the `plugins.ini` file in a text editor (located in the `\Config` subfolder of arcadeVFE). Finally, add the path to your RawAccel folder to the `Path=` line in the `[RawAccel]` section. For example:
+**RawAccel** is a utility that can be found on GitHub at `https://github.com/RawAccelOfficial/rawaccel`. This software may be needed to tune some trackballs to have additional sensitivity. For example, I need it to make my **Ultimarc U-Trak** trackball work correctly in **Arcade Time Capsule**. To integrate **RawAccel** with **arcadeVFE**, simply install it anywhere you like on your PC, then find the `plugins.ini` file located in the `\Config` subfolder of **arcadeVFE**, load it in an text editor like **Notepad**, and then add the path to your RawAccel folder to the `Path=` line in the `[RawAccel]` section. For example:
 
 ```
 [RawAccel]
