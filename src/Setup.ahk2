@@ -222,7 +222,7 @@ class Setup
 
             ;Reset all the rom access timestamps since they were just touched.
             FileSetTime DateAdd(A_Now, -7, "days"), g_sROMMonitorFolder "\*.zip", "A"
-            g_oLog("INFO: Updated all rom access timestamps after rom copy operation.`n")
+            g_oLog.LogLine("INFO: Updated all rom access timestamps after rom copy operation.`n")
 
             gcAuditProgress.Visible := false
             gcAuditProgress.Value := 0
@@ -372,7 +372,7 @@ class Setup
 
         ;Reset all the rom access timestamps since mame just touched them all.
         FileSetTime DateAdd(A_Now, -7, "days"), g_sROMMonitorFolder "\*.zip", "A"
-        g_oLog("INFO: Updated all rom access timestamps after audit.`n")
+        g_oLog.LogLine("INFO: Updated all rom access timestamps after audit.`n")
 
         gcAuditProgress.Visible := false
         gcAuditProgress.Value := 0
