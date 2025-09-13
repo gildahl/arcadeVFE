@@ -52,9 +52,9 @@ To install arcadeVFE for use with Arcade Time Capsule 3.6, follow these four sim
 
 Before pressing **Close** to complete the installation, you may wish to press the **Audit ROMs*** button to perform a quick validation of your rom collection. If you are new to ATC and have not yet installed any roms, you may refer to the next section, [Copy ROMs to ATC](#Copy-ROMs-to-ATC) for a streamlined method of doing this.
 
-Once you apply these settings and close the dialog, you will be taken directly to the **Settings** screen. As a first action to confirm proper installation, 
+Once you apply these settings and close the dialog, you will be taken directly to the **Settings** screen. To confirm proper installation, perform these actions: 
 1. Select a game from the **Choose ROM** list on the top right and select a game of your choice. You should see its location in the arcade directly underneath.
-2. Next, press the **Preview GameInfo...** at the bottom of the dialog. This will display game information that you can navigate through using the left and right arrow buttons and exit using the Escape key.
+2. With a game selected, press the **Preview GameInfo...** button at the bottom of the dialog. This will display game information that you can navigate through using the left and right arrow buttons and exit using the Escape key.
 
 After returning back to the Settings screen, you may continue with futher configuration by following the instructions in the [General Configuration](#General-Configuration-(Settings-dialog)) section below.
 
@@ -237,13 +237,13 @@ In addition to this documentation file, the **Settings** screen implements toolt
 This feature will display an overlay monitor showing detailed game information, including pictures, associated with the game currently running in the arcade. This information may be easily viewed while you are in VR by using your favorite desktop viewport (third party, or one provided with your headset). The text information comes from the `mameinfo.dat` and `history.xml` files in the `\GameInfo` folder. This overlay will automatically unload when the arcade is closed (which is why this feature is only available when the **Monitor only when the arcade is running** setting is configured).
 
 To navigate through the **GameInfo** screens, you will want to assign at least the `Right` action in the game controller button configuration (and optionally, the `Left`, `Start`, and `Exit` options), using the **GameInfo navigation** radio switch at the top of the screen. If you would like custom pictures to be displayed along with the text information, you may create additional folders within the `..\GameInfo\Assets` subfolder of **arcadeVFE**, and fill it with `*.jpg` or `*.png` files having root names that are the same as the roms you would like to associate them with. Examples are provided in the `..\GameInfo\Assets\cabinets` folder along with a few others. Feel free to add additional folders as you like.
-
+<!--
 #### Font Size
-Set the font size used in the **GameInfo** screen.
+Set the font size used in the **GameInfo** screen. If you revise the font size, you may preview it by pressing the **Preview GameInfo...** button.
 
 #### Choose Monitor
-Choose the monitor on which to display the **GameInfo** screen.
-
+If you use mouse clicks as a fire button, these will not work if the overlay is covering the emulator's screen. One way to address this is to move the overlay to another screen if you have one. To do this, just change this setting to present the **GameInfo** on a different monitor.
+-->
 > [!NOTE]
 > _Be aware that the **GameInfo** overlay feature is NOT compatible with spinner and trackball games **IF** you use mouse clicks for game input (such as for your fire button). To address this, either turn off this feature or use a game controller button for your fire button instead. See the [Limitations](#Limitations) section at the bottom of this document for more information about this potential issue._
 
