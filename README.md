@@ -2,12 +2,6 @@
 ### The Virtual Arcade Front End
 <img width="128" height="128" alt="furry_elephant_vr_arcade_128x128" src="https://github.com/user-attachments/assets/9e708a1a-9422-46ff-91c3-864eef4868a9" />
 By David Dahlstrom
-<!--
-ToDo:
-- Add splash screen
-- Add Virtual Controller button
-- Add Physical Deployment to guide
--->
 
 Summary
 =======
@@ -44,27 +38,29 @@ Tested Software
 Installation
 ============
 <!--
-To install arcadeVFE for use with Arcade Time Capsule, follow these four simple steps:
-1. Download the installer (`arcadeVFE 1.2 Setup.exe`),
+To install arcadeVFE 1.2, follow these four steps:
+1. Download the Windows installer (`arcadeVFE_v.1.2 Setup.exe`),
 2. Run the installer and follow the prompts.
-3. At the end of the install, accept the option to run **arcadeVFE**.
-4. In the **Initial Setup Dialog**, enter ATC's rom folder in the bottom field, then press **Apply**.
+3. At the end of the install, accept the option to start **arcadeVFE**.
+4. In the **Initial Setup Dialog** that follows, enter ATC's rom folder in the bottom field, then press **Apply**.
 
 Before pressing **Close** to complete the installation, you may wish to press the **Audit ROMs*** button to perform a quick validation of your rom collection. If you are new to ATC and have not yet installed any roms, you may refer to the next section, [Copy ROMs to ATC](#Copy-ROMs-to-ATC) for a streamlined method of doing this.
 
-Once you apply these settings and close the dialog, you will be taken directly to the **Settings** screen. As a first action to confirm proper installation, 
-1. Select a game from the **Choose ROM** list on the top right and select a game of your choice. You should see its location in the arcade directly underneath.
-2. Next, press the **Preview GameInfo...** at the bottom of the dialog. This will display game information that you can navigate through using the left and right arrow buttons and exit using the Escape key.
+>[!NOTE]
+> * If you have a previous versions of arcadeVFE, you __may__ install 1.2 into the same folder, which will upgrade it; however, it is strongly recommended to install 1.2 into a new folder due to the use of a new installer and new defaults. 
+> * arcadeVFE has only been tested with ATC 3.6, however, if you wish to try it with other arcade software, you may chose the "Other" option in the **Initial Setup Dialog**, though some features are disabled in this mode. There are also no guarantees on how well it will work, but please feel free to report your findings.
+
+Introduction
+============
+Once you apply these settings and close the dialog, you will be taken directly to the **Settings** screen. To confirm proper installation, and take a short tour, perform these actions: 
+1. Select a game from the **Choose ROM** list on the top right. You should see its location in the arcade directly underneath. If you ever wish to edit these locations, click on the **Edit Directory* checkbox in the **User Preferences** area at the bottom of the screen.
+2. With a game selected, press the **Preview GameInfo...** button at the bottom of the dialog. This will display game information that you can navigate through using the left and right arrow buttons. Exit using the Escape key.
 
 After returning back to the Settings screen, you may continue with futher configuration by following the instructions in the [General Configuration](#General-Configuration-(Settings-dialog)) section below.
 
-Note that in the future, whenever you start **arcadeVFE**, you will not see anything on the screen, but rather it will create an arcade machine icon in the Windows Tray indicating normal background mode is active. If you need to return to the **Settings** dialog, just right-click on this icon and choose **Settings...**. You can also click on the **Initial Setup** button in the **Settings** screen to re-invoke the **Initial Setup** dialog to perform audits and rom copy operations.
+Note that in the future, whenever you start **arcadeVFE**, you will not see anything on the screen, but rather it will create an icon in the Windows Tray indicating that normal background mode is active. Whenever you need to return to the **Settings** dialog, right-click on this icon and choose **Settings...**. You can also click on the **Initial Setup** button in the **Settings** screen to re-invoke the **Initial Setup** dialog to perform audits and rom copy operations.
 
-Just remember to close the **Settings** screen when you use your virtual arcade since **arcadeVFE** pauses normal operation while the **Settings** screen is open. To fully close **arcadeVFE**, right-click on its icon in the Windows Tray and select **Exit**.
-
->[!NOTE]
-> * arcadeVFE has only been tested with ATC 3.6, however, if you wish to try it with other arcade software, you may wish to use the "Other" option in the **Initial Setup Dialog**, though some features are disabled in this mode.
-> * If you used previous versions of arcadeVFE such as version 1.1, it is recommended to install 1.2 into a new folder due to the use of a new installer and new defaults. Future versions or patches are hoped to permit in situ updates.   
+Remember to close the **Settings** screen before you enter your virtual arcade since **arcadeVFE** pauses normal operation while the **Settings** screen is open. If at any time you wisht to exit **arcadeVFE** completely, right-click on its icon in the Windows Tray and select **Exit**.   
 -->
 After downloading the distribution zip file, right-click on it, choose Properties, check the **Unblock** checkbox at the bottom if present, then click **Apply**. After doing this, extract all files and folders from the zip into an empty folder on your PC that has read/write access.
 
@@ -237,7 +233,13 @@ In addition to this documentation file, the **Settings** screen implements toolt
 This feature will display an overlay monitor showing detailed game information, including pictures, associated with the game currently running in the arcade. This information may be easily viewed while you are in VR by using your favorite desktop viewport (third party, or one provided with your headset). The text information comes from the `mameinfo.dat` and `history.xml` files in the `\GameInfo` folder. This overlay will automatically unload when the arcade is closed (which is why this feature is only available when the **Monitor only when the arcade is running** setting is configured).
 
 To navigate through the **GameInfo** screens, you will want to assign at least the `Right` action in the game controller button configuration (and optionally, the `Left`, `Start`, and `Exit` options), using the **GameInfo navigation** radio switch at the top of the screen. If you would like custom pictures to be displayed along with the text information, you may create additional folders within the `..\GameInfo\Assets` subfolder of **arcadeVFE**, and fill it with `*.jpg` or `*.png` files having root names that are the same as the roms you would like to associate them with. Examples are provided in the `..\GameInfo\Assets\cabinets` folder along with a few others. Feel free to add additional folders as you like.
+<!--
+#### Font Size
+Set the font size used in the **GameInfo** screen. If you revise the font size, you may preview it by pressing the **Preview GameInfo...** button.
 
+#### Choose Monitor
+If you use mouse clicks as a fire button, these will not work if the overlay is covering the emulator's screen. One way to address this is to move the overlay to another screen if you have one. To do this, just change this setting to present the **GameInfo** on a different monitor.
+-->
 > [!NOTE]
 > _Be aware that the **GameInfo** overlay feature is NOT compatible with spinner and trackball games **IF** you use mouse clicks for game input (such as for your fire button). To address this, either turn off this feature or use a game controller button for your fire button instead. See the [Limitations](#Limitations) section at the bottom of this document for more information about this potential issue._
 
