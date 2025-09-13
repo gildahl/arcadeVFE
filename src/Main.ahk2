@@ -287,11 +287,6 @@ DoFileAudit()
 	Loop Files A_ScriptDir "\User\*.json" {
 		g_oLog.LogLine("INFO: Found action list file(s): " A_LoopFileName "`n")
 	}
-
-	if (FileExist(g_sRawAccelExe))
-		g_oLog.LogLine("INFO: RawAccel is present.`n")
-	else
-		g_oLog.LogLine("INFO: RawAccel is not present.`n")
 }
 
 CreateDefaultActionList()
@@ -450,6 +445,12 @@ LoadPlugins()
 		g_sRawAccelFolder := A_ScriptDir "\RawAccel"
 		g_sRawAccelExe := g_sRawAccelFolder "\rawaccel.exe"
 	}
+
+	;perform plug-in audit
+	if (FileExist(g_sRawAccelExe))
+		g_oLog.LogLine("INFO: Plug-in RawAccel is present.`n")
+	else
+		g_oLog.LogLine("INFO: Plug-in RawAccel is not present.`n")
 }
 
 /**
