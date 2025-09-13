@@ -238,6 +238,12 @@ This feature will display an overlay monitor showing detailed game information, 
 
 To navigate through the **GameInfo** screens, you will want to assign at least the `Right` action in the game controller button configuration (and optionally, the `Left`, `Start`, and `Exit` options), using the **GameInfo navigation** radio switch at the top of the screen. If you would like custom pictures to be displayed along with the text information, you may create additional folders within the `..\GameInfo\Assets` subfolder of **arcadeVFE**, and fill it with `*.jpg` or `*.png` files having root names that are the same as the roms you would like to associate them with. Examples are provided in the `..\GameInfo\Assets\cabinets` folder along with a few others. Feel free to add additional folders as you like.
 
+#### Font Size
+Set the font size used in the **GameInfo** screen.
+
+#### Choose Monitor
+Choose the monitor on which to display the **GameInfo** screen.
+
 > [!NOTE]
 > _Be aware that the **GameInfo** overlay feature is NOT compatible with spinner and trackball games **IF** you use mouse clicks for game input (such as for your fire button). To address this, either turn off this feature or use a game controller button for your fire button instead. See the [Limitations](#Limitations) section at the bottom of this document for more information about this potential issue._
 
