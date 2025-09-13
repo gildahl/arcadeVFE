@@ -235,6 +235,13 @@ Set the font size used in the **GameInfo** screen. If you revise the font size, 
 #### Choose Monitor
 If you use mouse clicks as a fire button, these will not work if the overlay is covering the emulator's screen. One way to address this is to move the overlay to another screen if you have one. To do this, just change this setting to present the **GameInfo** on a different monitor. See @2 in the [Limitations](#Limitations) section below for more information about this.
 
+vfe.ini Settings
+================
+Most of the settings stored in the `.\Config\vfe.ini` file are set in the user interface, so most users will never need to access or modify this file directly. However, there are a few settings that can only be changed in this file that some users may have an interest in. All of these are in the `[GameInfo]` section.
+1. `ImageOrder=`: To change the order that images are displayed in **GameInfo**, you may modify the comma separated string containing the image subfolder names found in `.\GameInfo\Assets. Having extra or missing folders in this list is allowed.
+2. `HideCursor=`: To hide the mouse cursor when displaying the **GameInfo** screen, you may change this value from 0 to 1.
+3. `SettingsExitKey=`, `SettingsRightKey=`, and `SettingsLeftKey=`: These may be used to change the keys that are used for navigation in the **GameInfo** screen when it is accessed via the **Preview GameInfo...** button. Note that this does not change the keys/buttons that are used during gameplay as those are set as **Actions** in the **Actions List**.
+
 Limitations
 ===========
 Because this software is not code-integrated with the host emulator, but relies on external interop techniques, there are a few limitations that should be noted. These may rarely be noticed, but they are good to be aware of.
