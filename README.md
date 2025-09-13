@@ -235,7 +235,7 @@ This feature will display a screen showing detailed game information, including 
 To navigate through the **GameInfo** screens, you will want to assign at least the `Right` action in the game controller button configuration (and optionally, the `Left`, `Start`, and `Exit` options), using the **GameInfo navigation** radio switch at the top of the screen. If you would like custom pictures to be displayed along with the text information, you may create additional folders within the `..\GameInfo\Assets` subfolder of **arcadeVFE**, and fill them with `*.jpg` or `*.png` files having root names that are the same as the roms you would like to associate them with. Examples are provided in the `..\GameInfo\Assets\cabinets` folder along with a few others. Feel free to add additional folders as you like.
 
 #### Font Size
-Set the font size used in the **GameInfo** screen. If you revise the font size, you may preview it by pressing the **Preview GameInfo...** button.
+Set the font size used in the **GameInfo** screen, and useful for optimizing text size based on the resolution of your VR headset. If you revise the font size, you may preview it by pressing the **Preview GameInfo...** button.
 
 #### Choose Monitor
 If you use mouse clicks as a fire button, these will not work if the **GameInfo** overlay is covering the emulator's screen. One way to address this is to move the overlay to another screen if you have one. To do this, just change the **Choose Monitor** setting to display the **GameInfo** overlay on a different monitor. See #2 in the [Limitations](#Limitations) section below for more information about this.
