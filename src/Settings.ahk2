@@ -61,7 +61,7 @@ class Settings
 
 		gcDevices := guiSettings.AddDropDownList("x" 30 " y" 25 " w" 320 " +BackgroundWhite",)
 		gcDevices.OnEvent("Change", (*) => Settings.Devices_Change())
-		gcDevices.TT := "Select a device or method that will trigger an action."
+		gcDevices.TT := "Select a device or method that will trigger`nthe command action(s) that you define below."
 
 		;********************************************************************************************************
 		;  Keyboard and Controller Device options
@@ -145,83 +145,99 @@ class Settings
 		;********************************************************************************************************
 		;  Profiles and Templates
 		;********************************************************************************************************
-		gcProfileLabel := guiSettings.AddText("x" 60 " y" 123 " w" 80 " 0x2", "Profile")
-		gcProfileEdit := guiSettings.AddEdit("x" 150 " y" 120 " w" 602 " +BackgroundWhite",)
+		gcAnnunciationEdit.GetPos(,&ae_posY,,&ae_posH)
+		iOffsetFromAnnunc_Y := 20 ;Y offset of the Command groupbox from the annunciation edit field
+		gcCommandGroupBox := guiSettings.AddGroupBox("x" 30 " y" ae_posY + ae_posH + iOffsetFromAnnunc_Y " w" Settings.mMetrics.Width - 60 " h" 225, "Command Actions")
+		
+		gcCommandGroupBox.GetPos(,&gb_posY,,&gb_posH)
+
+		iCmdLabelOffset_X := 60 ;X offset of label from dialog left margin
+		iCmdEditOffset_X := 140 ;X offset of edit box from dialog left margin
+
+		iCmdProfOffset_Y := gb_posY + 27 ;Y offset of the top profile edit field from top of groupbox
+		iEditProfSep_Y := 27  ;Y separation between the profile edit box and the template edit box
+		iProfProfSep_Y := 67  ;Y separation between the profile edit box and the next profile edit box
+
+		gcProfileLabel := guiSettings.AddText("x" iCmdLabelOffset_X " y" iCmdProfOffset_Y " w" 70 " 0x2", "Profile")
+		gcProfileEdit := guiSettings.AddEdit("x" iCmdEditOffset_X " y" iCmdProfOffset_Y - 3 " w" 602 " +BackgroundWhite",)
 		gcProfileEdit.OnEvent("Change", (*) => Settings.ProfileEdit_Change())
 		gcProfileEdit.TT := "Enter a profile file and/or path to insert into the [profile_name] or`n[profile_full_name] field tag(s) of a command. If there are no field`ntags in the Command, you may leave this field blank."
 		
-		gcProfileBrowseButton := guiSettings.AddButton("x" Settings.mMetrics.Width - nIconButtonWidth*3 - 30 - 4 " y" 119 " w" nIconButtonWidth)
+		gcProfileEdit.GetPos(&ae_posX,,&ae_posW)
+		iEditOffset_X := ae_posX + ae_posW
+
+		gcProfileBrowseButton := guiSettings.AddButton("x" iEditOffset_X + 4 " y" iCmdProfOffset_Y - 4 " w" nIconButtonWidth)
 		gcProfileBrowseButton.OnEvent("Click", (*) => Settings.ProfileBrowseButton_Click())
 		gcProfileBrowseButton.TT := "Browse for a profile to insert into the [profile_name] or`n[profile_full_name] field tag(s) of the command."
 		GuiButtonIcon(gcProfileBrowseButton, 'imageres.dll', 206, 's16')
 
-		gcTemplateLabel := guiSettings.AddText("x" 60 " y" 153 " w" 80 " 0x2", "Command")
-		gcTemplateEdit := guiSettings.AddComboBox("x" 150 " y" 150 " w" 602 " +BackgroundWhite",)
+		gcTemplateLabel := guiSettings.AddText("x" iCmdLabelOffset_X " y" iCmdProfOffset_Y + iEditProfSep_Y " w" 70 " 0x2", "Command")
+		gcTemplateEdit := guiSettings.AddComboBox("x" iCmdEditOffset_X " y" iCmdProfOffset_Y + iEditProfSep_Y - 3 " w" 602 " +BackgroundWhite",)
 		gcTemplateEdit.OnEvent("Change", (*) => Settings.TemplateEdit_Change())
 		gcTemplateEdit.TT := "A command or command line template for this action. Templates may include`nfield tags such as [profile_name] and [profile_full_name] which will be replaced`nby the contents of the Profile field.`n`n[profile_name]`          will be replaced by the filename in the Profile field`n[profile_full_name]   will be replaced by the full path and filename in the Profile field."
 
-		gcAddTemplateButton := guiSettings.AddButton("x" Settings.mMetrics.Width - nIconButtonWidth*2 - 30 - 2 " y" 149 " w" nIconButtonWidth)
+		gcTestTemplateButton := guiSettings.AddButton("x" iEditOffset_X + 4 " y" iCmdProfOffset_Y + iEditProfSep_Y - 4 " w" nIconButtonWidth)
+		gcTestTemplateButton.OnEvent("Click", (*) => Settings.TestTemplateButton_Click())
+		GuiButtonIcon(gcTestTemplateButton, 'icons.dll', 32, 's16') ;gear icon
+
+		gcAddTemplateButton := guiSettings.AddButton("x" iEditOffset_X + nIconButtonWidth + 6 " y" iCmdProfOffset_Y + iEditProfSep_Y - 4 " w" nIconButtonWidth)
 		gcAddTemplateButton.OnEvent("Click", (*) => Settings.AddTemplateButton_Click())
 		gcAddTemplateButton.TT := "Add this template definition to the list. It will also`nbe added to the Command 2 and 3 lists."
 		gcAddTemplateButton.Enabled := false
 		GuiButtonIcon(gcAddTemplateButton, 'icons.dll', 127, 's16') ;add (+) icon
 
-		gcRemoveTemplateButton := guiSettings.AddButton("x" Settings.mMetrics.Width - nIconButtonWidth - 30 " y" 149 " w" nIconButtonWidth)
+		gcRemoveTemplateButton := guiSettings.AddButton("x" iEditOffset_X + nIconButtonWidth*2 + 8 " y" iCmdProfOffset_Y + iEditProfSep_Y - 4 " w" nIconButtonWidth)
 		gcRemoveTemplateButton.OnEvent("Click", (*) => Settings.RemoveTemplateButton_Click())
 		gcRemoveTemplateButton.TT := "Delete this template definition from the list. It will also`nbe deleted from the Command Line 2 and 3 template lists."
 		GuiButtonIcon(gcRemoveTemplateButton, 'icons.dll', 130, 's16') ;remove (-) icon
 
-		gcTestTemplateButton := guiSettings.AddButton("x" Settings.mMetrics.Width - nIconButtonWidth*3 - 30 - 4 " y" 149 " w" nIconButtonWidth)
-		gcTestTemplateButton.OnEvent("Click", (*) => Settings.TestTemplateButton_Click())
-		GuiButtonIcon(gcTestTemplateButton, 'icons.dll', 32, 's16') ;gear icon
-
-		gcProfile_2_Checkbox := guiSettings.AddCheckbox("x" 40 " y" 193)
+		gcProfile_2_Checkbox := guiSettings.AddCheckbox("x" 45 " y" iCmdProfOffset_Y + iProfProfSep_Y)
 		gcProfile_2_Checkbox.OnEvent("Click", (*) => Settings.Profile_2_Checkbox_Click())
 		gcProfile_2_Checkbox.TT := "Check this to enable configuration of`na second command for the action."
 
-		gcProfileLabel_2 := guiSettings.AddText("x" 60 " y" 193 " w" 80 " 0x2", "Profile 2")
-		gcProfileEdit_2 := guiSettings.AddEdit("x" 150 " y" 190 " w" 602 " +BackgroundWhite",)
+		gcProfileLabel_2 := guiSettings.AddText("x" iCmdLabelOffset_X " y" iCmdProfOffset_Y + iProfProfSep_Y " w" 70 " 0x2", "Profile 2")
+		gcProfileEdit_2 := guiSettings.AddEdit("x" iCmdEditOffset_X " y" iCmdProfOffset_Y + iProfProfSep_Y - 3 " w" 602 " +BackgroundWhite",)
 		gcProfileEdit_2.OnEvent("Change", (*) => Settings.ProfileEdit_2_Change())
 		gcProfileEdit_2.TT := "Enter a profile for a second command."
 
-		gcProfileBrowseButton_2 := guiSettings.AddButton("x" Settings.mMetrics.Width - nIconButtonWidth*3 - 30 - 4 " y" 189 " w" nIconButtonWidth)
+		gcProfileBrowseButton_2 := guiSettings.AddButton("x" iEditOffset_X + 4 " y" iCmdProfOffset_Y + iProfProfSep_Y - 4 " w" nIconButtonWidth)
 		gcProfileBrowseButton_2.OnEvent("Click", (*) => Settings.ProfileBrowseButton_2_Click())
 		gcProfileBrowseButton_2.TT := "Browse for a profile to insert into the [profile_name] or`n[profile_full_name] field tag(s) of`nCommand 2."
 		GuiButtonIcon(gcProfileBrowseButton_2, 'imageres.dll', 206, 's16')
 
-		gcTemplateLabel_2 := guiSettings.AddText("x" 60 " y" 223 " w" 80 " 0x2", "Command 2")
-		gcTemplateEdit_2 := guiSettings.AddComboBox("x" 150 " y" 220 " w" 602 " +BackgroundWhite",)
+		gcTemplateLabel_2 := guiSettings.AddText("x" iCmdLabelOffset_X " y" iCmdProfOffset_Y + iProfProfSep_Y + iEditProfSep_Y " w" 70 " 0x2", "Command 2")
+		gcTemplateEdit_2 := guiSettings.AddComboBox("x" iCmdEditOffset_X " y" iCmdProfOffset_Y + iProfProfSep_Y + iEditProfSep_Y - 3 " w" 602 " +BackgroundWhite",)
 		gcTemplateEdit_2.OnEvent("Change", (*) => Settings.TemplateEdit_2_Change())
 		gcTemplateEdit_2.TT := "A second command that will execute after the first."
 
-		gcTestTemplateButton_2 := guiSettings.AddButton("x" Settings.mMetrics.Width - nIconButtonWidth*3 - 30 - 4 " y" 219 " w" nIconButtonWidth)
+		gcTestTemplateButton_2 := guiSettings.AddButton("x" iEditOffset_X + 4 " y" iCmdProfOffset_Y + iProfProfSep_Y + iEditProfSep_Y - 4 " w" nIconButtonWidth)
 		gcTestTemplateButton_2.OnEvent("Click", (*) => Settings.TestTemplateButton_2_Click())
 		gcTestTemplateButton_2.Enabled := false
 		GuiButtonIcon(gcTestTemplateButton_2, 'icons.dll', 32, 's16') ;gear icon
 
 		gcProfileLabel_2.Enabled := gcProfileEdit_2.Enabled := gcProfileBrowseButton_2.Enabled := gcTemplateLabel_2.Enabled := gcTemplateEdit_2.Enabled := false
 
-		gcProfile_3_Checkbox := guiSettings.AddCheckbox("x" 40 " y" 263)
+		gcProfile_3_Checkbox := guiSettings.AddCheckbox("x" 45 " y" iCmdProfOffset_Y + iProfProfSep_Y*2)
 		gcProfile_3_Checkbox.OnEvent("Click", (*) => Settings.Profile_3_Checkbox_Click())
 		gcProfile_3_Checkbox.TT := "Check this to enable configuration of`na third command for the action."
 		gcProfile_3_Checkbox.Enabled := false
 
-		gcProfileLabel_3 := guiSettings.AddText("x" 60 " y" 263 " w" 80 " 0x2", "Profile 3")
-		gcProfileEdit_3 := guiSettings.AddEdit("x" 150 " y" 260 " w" 602 " +BackgroundWhite",)
+		gcProfileLabel_3 := guiSettings.AddText("x" iCmdLabelOffset_X " y" iCmdProfOffset_Y + iProfProfSep_Y*2 " w" 70 " 0x2", "Profile 3")
+		gcProfileEdit_3 := guiSettings.AddEdit("x" iCmdEditOffset_X " y" iCmdProfOffset_Y + iProfProfSep_Y*2 - 3 " w" 602 " +BackgroundWhite",)
 		gcProfileEdit_3.OnEvent("Change", (*) => Settings.ProfileEdit_3_Change())
 		gcProfileEdit_3.TT := "Enter a profile for a third command."
 
-		gcProfileBrowseButton_3 := guiSettings.AddButton("x" Settings.mMetrics.Width - nIconButtonWidth*3 - 30 - 4 " y" 259 " w" nIconButtonWidth)
+		gcProfileBrowseButton_3 := guiSettings.AddButton("x" iEditOffset_X + 4 " y" iCmdProfOffset_Y + iProfProfSep_Y*2 - 4 " w" nIconButtonWidth)
 		gcProfileBrowseButton_3.OnEvent("Click", (*) => Settings.ProfileBrowseButton_3_Click())
 		gcProfileBrowseButton_3.TT := "Browse for a profile to insert into the [profile_name] or`n[profile_full_name] field tag(s) of`nthe Command Line 3 template."
 		GuiButtonIcon(gcProfileBrowseButton_3, 'imageres.dll', 206, 's16')
 
-		gcTemplateLabel_3 := guiSettings.AddText("x" 60 " y" 293 " w" 80 " 0x2", "Command 3")
-		gcTemplateEdit_3 := guiSettings.AddComboBox("x" 150 " y" 290 " w" 602 " +BackgroundWhite",)
+		gcTemplateLabel_3 := guiSettings.AddText("x" iCmdLabelOffset_X " y" iCmdProfOffset_Y + iProfProfSep_Y*2 + iEditProfSep_Y " w" 70 " 0x2", "Command 3")
+		gcTemplateEdit_3 := guiSettings.AddComboBox("x" iCmdEditOffset_X " y" iCmdProfOffset_Y + iProfProfSep_Y*2 + iEditProfSep_Y - 3 " w" 602 " +BackgroundWhite")
 		gcTemplateEdit_3.OnEvent("Change", (*) => Settings.TemplateEdit_3_Change())
 		gcTemplateEdit_3.TT := "A third command that will execute after the second."
 
-		gcTestTemplateButton_3 := guiSettings.AddButton("x" Settings.mMetrics.Width - nIconButtonWidth*3 - 30 - 4 " y" 289 " w" nIconButtonWidth)
+		gcTestTemplateButton_3 := guiSettings.AddButton("x" iEditOffset_X + 4 " y" iCmdProfOffset_Y + iProfProfSep_Y*2 + iEditProfSep_Y - 4 " w" nIconButtonWidth)
 		gcTestTemplateButton_3.OnEvent("Click", (*) => Settings.TestTemplateButton_3_Click())
 		gcTestTemplateButton_3.Enabled := false
 		GuiButtonIcon(gcTestTemplateButton_3, 'icons.dll', 32, 's16') ;gear icon
@@ -231,20 +247,22 @@ class Settings
 		;********************************************************************************************************
 		;  Action Table
 		;********************************************************************************************************
-		gcStatusLabel := guiSettings.AddText("Center " "x" 250 " y" 325 " w" 400 " h" 20)
+		iAssignButtonOffset := gb_posY + gb_posH + 15 ;offset between bottom of command groupbox and action list assign button
+		
+		gcStatusLabel := guiSettings.AddText("Center " "x" 250 " y" iAssignButtonOffset " w" 400 " h" 20)
 		gcStatusLabel.SetFont("cRed s10 w600")
 
-		gcAssignButton := guiSettings.AddButton("x" 30 " y" 338 " w" nButtonWidthWide " h" 35, "Assign ROM")
+		gcAssignButton := guiSettings.AddButton("x" 30 " y" iAssignButtonOffset " w" nButtonWidthWide " h" 35, "Assign ROM")
 		gcAssignButton.OnEvent("Click", (*) => Settings.AssignButton_Click())
-		gcAssignButton.TT := "Press to add the ROM Monitor command set defined above`nas an action to the table."
+		gcAssignButton.TT := "Press to add the ROM Monitor Command Action(s) defined`nabove to the Action Table below."
 
-		gcCancelAssignButton := guiSettings.AddButton("x" 30 + nButtonWidthWide + 5 " y" 338 " w" nButtonWidthWide " h" 35, "Cancel")
+		gcCancelAssignButton := guiSettings.AddButton("x" 30 + nButtonWidthWide + 5 " y" iAssignButtonOffset " w" nButtonWidthWide " h" 35, "Cancel")
 		gcCancelAssignButton.OnEvent("Click", (*) => Settings.CancelAssignButton_Click())
 		gcCancelAssignButton.Enabled := false
 		gcCancelAssignButton.TT := "Cancel the current Assign operation."
 
-		gcActionListNameLabel := guiSettings.AddText("x" Settings.mMetrics.Width - 150 - 30 - 100 - 5 " y" 353 " w" 100 " 0x2", "Action list name:")
-		gcActionListNameEdit := guiSettings.AddEdit("x" Settings.mMetrics.Width - 150 - 30 " y" 350 " w" 150 " +BackgroundWhite",)
+		gcActionListNameLabel := guiSettings.AddText("x" Settings.mMetrics.Width - 150 - 30 - 100 - 5 " y" iAssignButtonOffset + 15 " w" 100 " 0x2", "Action list name:")
+		gcActionListNameEdit := guiSettings.AddEdit("x" Settings.mMetrics.Width - 150 - 30 " y" iAssignButtonOffset + 12 " w" 150 " +BackgroundWhite",)
 		gcActionListNameEdit.OnEvent("Change", (*) => Settings.ActionListNameEdit_Change())
 		gcActionListNameEdit.OnEvent("LoseFocus", (*) => Settings.ActionListNameEdit_LoseFocus())
 		gcActionListNameEdit.TT := "This is the name that the Action List will be saved as. If you rename this,`nand save it as a new list, you may load it later by launching arcadeVFE with`nthe command line: vfe.exe <list name>."
@@ -257,13 +275,15 @@ class Settings
 		g_oLog.LogLine("INFO: Loaded Arcade is: `"" g_sArcadeString "`"`n")
 		g_oLog.LogLine("INFO: Loaded Action List is: `"" gcActionListNameEdit.Text "`"`n")
 
-		gcListView := guiSettings.AddListView("-Multi" " r" 10 " x" 30 " y" 380 " w" Settings.mMetrics.Width - 30*2 " Grid", ["Device", "Action", "Sequence", "Voice Phrase", "", "Command", "", "Command 2", "", "", "", "", "Command 3"])
+		gcAssignButton.GetPos(,&ab_posY,,&ab_posH)
+
+		gcListView := guiSettings.AddListView("-Multi" " r" 10 " x" 30 " y" ab_posY + ab_posH + 8 " w" Settings.mMetrics.Width - 30*2 " Grid", ["Device", "Action", "Sequence", "Voice Phrase", "", "Command", "", "Command 2", "", "", "", "", "Command 3"])
 		fListView_ItemSelect := Settings.ListView_ItemSelect.Bind()
 		gcListView.OnEvent("ItemSelect", fListView_ItemSelect)
 		Settings.ResizeColumns()
 
 		gcListView.GetPos(&lv_posX, &lv_posY, &lv_posW, &lv_posH)
-		iLVBaseOffset_Y1 := lv_posY + lv_posH + 10 ;Button row under LV
+		iLVBaseOffset_Y1 := lv_posY + lv_posH + 8 ;Button row under LV
 		iLVBaseOffset_Y2 := iLVBaseOffset_Y1 + 50  ;User Preferences
 		iLVBaseOffset_Y3 := iLVBaseOffset_Y2 + 23  ;Checkboxes first row
 		iLVBaseOffset_Y4 := iLVBaseOffset_Y3 + 23  ;Checkboxes second row
@@ -279,39 +299,39 @@ class Settings
 		gcMoveDownButton.Enabled := false
 		gcMoveDownButton.TT := "Move the selected row down. If the action is part of a`nsequenced set, its sequence will be incremented."
 
-		gcClearButton := guiSettings.AddButton("x" Settings.mMetrics.Width - nButtonWidthWide*4 - 30 - 5*3 " y" iLVBaseOffset_Y1 " w" nButtonWidthWide, "Clear all")
-		gcClearButton.OnEvent("Click", (*) => Settings.ClearButton_Click())
-		gcClearButton.Enabled := false
-		gcClearButton.TT := "Clear all actions from the table."
+		gcClearActionListButton := guiSettings.AddButton("x" Settings.mMetrics.Width - nButtonWidthWide*4 - 30 - 5*3 " y" iLVBaseOffset_Y1 " w" nButtonWidthWide, "Clear all")
+		gcClearActionListButton.OnEvent("Click", (*) => Settings.ClearActionListButton_Click())
+		gcClearActionListButton.Enabled := false
+		gcClearActionListButton.TT := "Clear all actions from the table."
 
-		gcEditButton := guiSettings.AddButton("x" Settings.mMetrics.Width - nButtonWidthWide*3 - 30 - 5*2 " y" iLVBaseOffset_Y1 " w" nButtonWidthWide, "Copy action")
-		gcEditButton.OnEvent("Click", (*) => Settings.EditButton_Click())
-		gcEditButton.Enabled := false
-		gcEditButton.TT := "Copy columns from the selected`nrow back into their edit fields."
+		gcCopyActionButton := guiSettings.AddButton("x" Settings.mMetrics.Width - nButtonWidthWide*3 - 30 - 5*2 " y" iLVBaseOffset_Y1 " w" nButtonWidthWide, "Copy action")
+		gcCopyActionButton.OnEvent("Click", (*) => Settings.CopyAction_Click())
+		gcCopyActionButton.Enabled := false
+		gcCopyActionButton.TT := "Copy columns from the selected`nrow back into their edit fields."
 
-		gcDeleteButton := guiSettings.AddButton("x" Settings.mMetrics.Width - nButtonWidthWide*2 - 30 - 5 " y" iLVBaseOffset_Y1 " w" nButtonWidthWide, "Delete action")
-		gcDeleteButton.OnEvent("Click", (*) => Settings.DeleteButton_Click())
-		gcDeleteButton.Enabled := false
-		gcDeleteButton.TT := "Delete the selected row from the table."
+		gcDeleteActionButton := guiSettings.AddButton("x" Settings.mMetrics.Width - nButtonWidthWide*2 - 30 - 5 " y" iLVBaseOffset_Y1 " w" nButtonWidthWide, "Delete action")
+		gcDeleteActionButton.OnEvent("Click", (*) => Settings.DeleteActionButton_Click())
+		gcDeleteActionButton.Enabled := false
+		gcDeleteActionButton.TT := "Delete the selected row from the table."
 
-		gcSaveButton := guiSettings.AddButton("x"  Settings.mMetrics.Width - nButtonWidthWide - 30 " y" iLVBaseOffset_Y1 " w" nButtonWidthWide, "Save list")
-		gcSaveButton.OnEvent("Click", (*) => Settings.SaveButton_Click())
-		gcSaveButton.Enabled := false
-		gcSaveButton.TT := "Save the Action List table."
+		gcSaveActionListButton := guiSettings.AddButton("x"  Settings.mMetrics.Width - nButtonWidthWide - 30 " y" iLVBaseOffset_Y1 " w" nButtonWidthWide, "Save list")
+		gcSaveActionListButton.OnEvent("Click", (*) => Settings.SaveActionListButton_Click())
+		gcSaveActionListButton.Enabled := false
+		gcSaveActionListButton.TT := "Save the Action List table."
 
 		;********************************************************************************************************
 		;  User Preferences
 		;********************************************************************************************************
 		gcUserPreferencesGroupBox := guiSettings.AddGroupBox("x" 30 " y" iLVBaseOffset_Y2 " w" 530 " h" 95, "User Preferences")
 
-		gcApplication_Checkbox := guiSettings.AddCheckbox("x" 45 " y" iLVBaseOffset_Y3 " w" 220, "Monitor only when the arcade is running")
-		gcApplication_Checkbox.OnEvent("Click", (*) => Settings.Application_Checkbox_Click())
-		gcApplication_Checkbox.TT := "Keep arcadeVFE inactive while the arcade emulator system`nsoftware is not running (recommended).`n`nTurning this off is primarily intended for testing. You will`nnot have access to GameInfo or RawAccel when turned off`nand may experience side effects in other applications. Note`nthat you will need to restart arcadeVFE after changing this setting."
+		gcOnlyWhenArcadeActive_Checkbox := guiSettings.AddCheckbox("x" 45 " y" iLVBaseOffset_Y3 " w" 220, "Monitor only when the arcade is running")
+		gcOnlyWhenArcadeActive_Checkbox.OnEvent("Click", (*) => Settings.OnlyWhenArcadeActive_Checkbox_Click())
+		gcOnlyWhenArcadeActive_Checkbox.TT := "Keep arcadeVFE inactive while the arcade emulator system`nsoftware is not running (recommended).`n`nTurning this off is primarily intended for testing. You will`nnot have access to GameInfo or RawAccel when turned off`nand may experience side effects in other applications. Note`nthat you will need to restart arcadeVFE after changing this setting."
 
-		try gcApplication_Checkbox.Value := Integer(IniRead(g_sIniFile, "General", "MonitorApplication", 1))
+		try gcOnlyWhenArcadeActive_Checkbox.Value := Integer(IniRead(g_sIniFile, "General", "MonitorApplication", 1))
 		
-		gcApplication_Checkbox.Enabled := gcApplicationEdit.Text ? true : false
-		global g_bOnlyMonitorWhenArcadeIsLoaded := gcApplication_Checkbox.Enabled && gcApplication_Checkbox.Value == 1
+		gcOnlyWhenArcadeActive_Checkbox.Enabled := gcApplicationEdit.Text ? true : false
+		global g_bOnlyMonitorWhenArcadeIsLoaded := gcOnlyWhenArcadeActive_Checkbox.Enabled && gcOnlyWhenArcadeActive_Checkbox.Value == 1
 
 		gcAlwaysAnnunciate_Checkbox := guiSettings.AddCheckbox("x" 45 " y" iLVBaseOffset_Y4 " Check3", "Always voice notify")
 		gcAlwaysAnnunciate_Checkbox.OnEvent("Click", (*) => Settings.AlwaysAnnunciate_Checkbox_Click())
@@ -335,7 +355,7 @@ class Settings
 		try gcRawAccel_Checkbox.Value := Integer(IniRead(g_sIniFile, "General", "LoadRawAccel", 0))
 		gcRawAccel_Checkbox.TT := "Run the RawAccel plugin when the arcade application`nstarts and close it when the application terminates."
 
-		if (!FileExist(g_sRawAccelExe) || gcApplicationEdit.Text == '' || gcApplication_Checkbox.Value == 0)
+		if (!FileExist(g_sRawAccelExe) || gcApplicationEdit.Text == '' || gcOnlyWhenArcadeActive_Checkbox.Value == 0)
 			gcRawAccel_Checkbox.Enabled := false
 
 		gcToolTip_Checkbox := guiSettings.AddCheckbox("x" 275 " y" iLVBaseOffset_Y5, "Show Tooltips")
@@ -363,7 +383,7 @@ class Settings
 		gcGameInfoMonitorDropDown.OnEvent("Change", (*) => Settings.GameInfoMonitorDropDown_Change())
 		gcGameInfoMonitorDropDown.TT := "Select monitor on which`nto display the GameInfo."
 
-		if (gcApplication_Checkbox.Value == 0)
+		if (gcOnlyWhenArcadeActive_Checkbox.Value == 0)
 		{
 			gcShowGameInfo_Checkbox.Enabled := false
 			gcGameInfoFontSizeEdit.Enabled := false
@@ -583,19 +603,28 @@ class Settings
 			Settings.ResizeColumns()
 
 			if (gcListView.GetCount() > 0)
-				gcClearButton.Enabled := true
+				gcClearActionListButton.Enabled := true
 			else
-				gcClearButton.Enabled := false
+				gcClearActionListButton.Enabled := false
 		}
 	}
 
 	/**
 	 * Clear all entries in the Actions table
 	 */
-	static ClearTable()
+	static ClearTable(bForce:=false)
 	{
+		if (!bForce)
+		{
+			result := "Yes"
+			result := MsgBox("Are you sure you would like to clear the Action List?`n`nPress 'Yes' clear or 'No' to exit this dialog.`n`nNote that clearing this list is not permanent until you press save the list.", "Close Settings?", 36)
+
+			if (result == "No")
+				return
+		}
+
 		gcListView.Delete()
-		gcClearButton.Enabled := false
+		gcClearActionListButton.Enabled := false
 
 		Settings.ResizeColumns()
 	}
@@ -613,7 +642,7 @@ class Settings
 		Settings.CancelAssign()
 
 		result := "Yes"
-		if (gcSaveButton.Enabled)
+		if (gcSaveActionListButton.Enabled)
 		{
 			result := MsgBox("There unsaved changes to the Action List. Are you sure you want to exit?`n`nPress 'Yes' to exit without saving or 'No' to return to this screen.", "Close Settings?", 36)
 		}
@@ -636,7 +665,7 @@ class Settings
 
 		if (result == "Yes")
 		{
-			gcSaveButton.Enabled := false
+			gcSaveActionListButton.Enabled := false
 			guiSettings.Hide()
 			g_oLog.LogLine("INFO: Closed Settings dialog.`n")
 			ToolTip("") ;kill any tooltips
@@ -761,7 +790,7 @@ class Settings
 	/**
 	 * Save the button configurations in the ListView to a JSON configuration file. 
 	 */
-	static SaveButton_Click(*)
+	static SaveActionListButton_Click(*)
 	{
 		global g_bCancelAssign := true
 
@@ -833,7 +862,7 @@ class Settings
 		sJSON := FileRead(g_sUserFile)
 		global g_oActions := JSON.parse(sJSON)
 
-		gcSaveButton.Enabled := false
+		gcSaveActionListButton.Enabled := false
 
 		Settings.RefreshList()
 
@@ -863,14 +892,14 @@ class Settings
 		if (gcDevices.Text == "ROM Monitor")
 		{
 			gcAssignButton.Text := "Assign ROM"
-			gcAssignButton.TT := "Press to add the ROM Monitor command set defined above`nfor the " g_mRomsByName[gcROMDropDown.Text] " rom as an action to the table below."
+			gcAssignButton.TT := "Press to add the ROM Monitor Command Action(s) defined`nabove for the " g_mRomsByName[gcROMDropDown.Text] " rom to the Action Table below."
 		}
 		else
 		{
 			if (gcDevices.Text == "Keyboard")
 			{
 				gcAssignButton.Text := "Assign Key"
-				gcAssignButton.TT := "Press to assign a key or key combination,`nas the trigger for the commands defined above."
+				gcAssignButton.TT := "Press to assign a key or key combination, as the`ntrigger for the Command Action(s) defined above,`nand add the Action(s) to the Action Table below."
 				bGameControlVisible := true
 			}
 			else if (gcDevices.Text == "Mouse")
@@ -884,7 +913,7 @@ class Settings
 			else ;must be a game controller
 			{
 				gcAssignButton.Text := "Assign Button"
-				gcAssignButton.TT := "Press to assign button from the " gcDevices.Text " device,`nas the trigger for the commands defined above."
+				gcAssignButton.TT := "Press to Assign Button from the " gcDevices.Text " device,`nas the trigger for the Command Action(s) defined above,`nand add the Action(s) to the Action Table below."
 				bGameControlVisible := true
 
 				Settings.RadioButtonStateUpdate()
@@ -1052,7 +1081,7 @@ class Settings
 
 		Settings.ResequenceList()
 
-		gcSaveButton.Enabled := true
+		gcSaveActionListButton.Enabled := true
 	}
 
 	static AddTemplateButton_Click(*)
@@ -1211,8 +1240,8 @@ class Settings
 	{
 		if (gcListView.GetNext())
 		{
-			gcDeleteButton.Enabled := true
-			gcEditButton.Enabled := true
+			gcDeleteActionButton.Enabled := true
+			gcCopyActionButton.Enabled := true
 			gcMoveUpButton.Enabled := true
 			gcMoveDownButton.Enabled := true
 		}
@@ -1225,32 +1254,32 @@ class Settings
 			}
 			else
 			{
-				gcDeleteButton.Enabled := false
-				gcEditButton.Enabled := false
+				gcDeleteActionButton.Enabled := false
+				gcCopyActionButton.Enabled := false
 				gcMoveUpButton.Enabled := false
 				gcMoveDownButton.Enabled := false
 			}
 		}
 	}
 
-	static ClearButton_Click(*)
+	static ClearActionListButton_Click(*)
 	{
 		Settings.ClearTable()
-		gcSaveButton.Enabled := true
+		gcSaveActionListButton.Enabled := true
 
-		gcEditButton.Enabled := false
-		gcDeleteButton.Enabled := false
+		gcCopyActionButton.Enabled := false
+		gcDeleteActionButton.Enabled := false
 	}
 
-	static DeleteButton_Click(*)
+	static DeleteActionButton_Click(*)
 	{
 		iRow := gcListView.GetNext()
 
 		gcListView.Delete(gcListView.GetNext())
 		if (gcListView.GetCount() == 0)
-			gcSaveButton.Enabled := false
+			gcSaveActionListButton.Enabled := false
 		else
-			gcSaveButton.Enabled := true
+			gcSaveActionListButton.Enabled := true
 
 		if gcListView.GetCount() > 0
 		{
@@ -1258,12 +1287,12 @@ class Settings
 			Settings.ResequenceList()
 		}
 		else
-			gcClearButton.Enabled := false
+			gcClearActionListButton.Enabled := false
 
 		Settings.ResizeColumns()
 	}
 
-	static EditButton_Click(*)
+	static CopyAction_Click(*)
 	{
 		iRow := gcListView.GetNext()
 
@@ -1510,9 +1539,9 @@ class Settings
 		Settings.CancelAssign()
 	}
 
-	static Application_Checkbox_Click(*)
+	static OnlyWhenArcadeActive_Checkbox_Click(*)
 	{
-		gcApplication_Checkbox.Value := !gcApplication_Checkbox.Value
+		gcOnlyWhenArcadeActive_Checkbox.Value := !gcOnlyWhenArcadeActive_Checkbox.Value
 
 		;Post restart warning
 		result := "Yes"
@@ -1523,14 +1552,14 @@ class Settings
 
 		if (result == "Yes")
 		{
-			gcApplication_Checkbox.Value := !gcApplication_Checkbox.Value
-			IniWrite(gcApplication_Checkbox.Value, g_sIniFile, "General", "MonitorApplication")
-			global g_bOnlyMonitorWhenArcadeIsLoaded := gcApplication_Checkbox.Value
+			gcOnlyWhenArcadeActive_Checkbox.Value := !gcOnlyWhenArcadeActive_Checkbox.Value
+			IniWrite(gcOnlyWhenArcadeActive_Checkbox.Value, g_sIniFile, "General", "MonitorApplication")
+			global g_bOnlyMonitorWhenArcadeIsLoaded := gcOnlyWhenArcadeActive_Checkbox.Value
 
-			gcRawAccel_Checkbox.Enabled := FileExist(g_sRawAccelExe) && gcApplicationEdit.Text && gcApplication_Checkbox.Value ? true : false
-			gcShowGameInfo_Checkbox.Enabled := gcApplicationEdit.Text && gcApplication_Checkbox.Value ? true : false
-			gcGameInfoFontSizeEdit.Enabled := gcApplicationEdit.Text && gcApplication_Checkbox.Value ? true : false
-			gcGameInfoMonitorDropDown.Enabled := gcApplicationEdit.Text && gcApplication_Checkbox.Value ? true : false
+			gcRawAccel_Checkbox.Enabled := FileExist(g_sRawAccelExe) && gcApplicationEdit.Text && gcOnlyWhenArcadeActive_Checkbox.Value ? true : false
+			gcShowGameInfo_Checkbox.Enabled := gcApplicationEdit.Text && gcOnlyWhenArcadeActive_Checkbox.Value ? true : false
+			gcGameInfoFontSizeEdit.Enabled := gcApplicationEdit.Text && gcOnlyWhenArcadeActive_Checkbox.Value ? true : false
+			gcGameInfoMonitorDropDown.Enabled := gcApplicationEdit.Text && gcOnlyWhenArcadeActive_Checkbox.Value ? true : false
 			
 			ExitApp(1) ;1 indicates user forced shutdown
 		}
@@ -1769,8 +1798,8 @@ class Settings
 			gcStatusLabel.Text := sOGMessage
 			gcListView.Modify(iRow, "+Select") ;selecte the duplicate item in the list
 			gcListView.Modify(iRow, "Vis")
-			gcEditButton.Enabled := true
-			gcDeleteButton.Enabled := true
+			gcCopyActionButton.Enabled := true
+			gcDeleteActionButton.Enabled := true
 			return 0
 		}
 
@@ -1780,13 +1809,13 @@ class Settings
 			iRow := gcListView.Insert(1000,, sDevice, sAction, , gcAnnunciationEdit.Text, pe, cl, pe_2, cl_2, te, te_2, te_3, pe_3, cl_3)
 			
 			Settings.ResizeColumns()
-			gcSaveButton.Enabled := true
-			gcClearButton.Enabled := true
+			gcSaveActionListButton.Enabled := true
+			gcClearActionListButton.Enabled := true
 			Settings.ResequenceList()
 			gcListView.Modify(Settings.ItemInList(sDevice, sAction, cl, cl_2, cl_3), "+Select") ;select the item just added
 			gcListView.Modify(iRow, "Vis")
-			gcEditButton.Enabled := true
-			gcDeleteButton.Enabled := true
+			gcCopyActionButton.Enabled := true
+			gcDeleteActionButton.Enabled := true
 			
 			if (gcListView.GetCount() > 1)
 			{
@@ -2041,7 +2070,7 @@ class Settings
 
 	static RefreshList()
 	{
-		Settings.ClearTable()
+		Settings.ClearTable(true)
 		Settings.ReadActionList()
 
 		gcDevices.Value := 1
@@ -2142,7 +2171,7 @@ class Settings
 				gcROMDropDownController.Text := sControl
 		}
 
-		gcAssignButton.TT := "Press to add the ROM Monitor command set defined above for`nthe " g_mRomsByName[gcROMDropDown.Text] " rom as an action to the table below."
+		gcAssignButton.TT := "Press to add the ROM Monitor Command Action(s) defined`nabove for the " g_mRomsByName[gcROMDropDown.Text] " rom to the Action Table below."
 
 		gcViewGameInfoButton.Enabled := Settings.bIsRom ? true : false
 	
