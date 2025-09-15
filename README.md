@@ -1,4 +1,4 @@
-# arcadeVFE 1.1
+# arcadeVFE 1.2
 ### The Virtual Arcade Front End
 <img width="128" height="128" alt="furry_elephant_vr_arcade_128x128" src="https://github.com/user-attachments/assets/9e708a1a-9422-46ff-91c3-864eef4868a9" />
 By David Dahlstrom
@@ -9,15 +9,15 @@ Virtual Reality arcades based on **MAME** such as **Arcade Time Capsule**, do no
 
 To this end, **arcadeVFE** includes these features: 
 
-* Ability to automatically execute one or more command line application calls upon the start of each game in the arcade. This can be used to call applications like **Virtual Controller** or other programmable game controller software to create game-specific custom configurations. This makes possible the ability to do anything from tweaking the button layout of a gamepad or fightstick on a per-game basis, combining two or more controllers into one, or building an advanced composite control panel that adjusts to every game in the virtual arcade, just like the sophisticated panels in conventional multicade arcade machines.
-* A detailed game information overlay that can be viewed in VR using one's favorite desktop portal. This information comes from **MAME** [`history.xml`](https://www.arcade-history.com/index.php?page=download) and [`gameinfo.dat`](https://mameinfo.mameworld.info/) files, and can also include pictures of your choice--for example, flyers, pcbs, or pictures of real cab control panels (which can be very handy as a reference in the Candy Cab rooms of ATC).
-* Manual execution of command line actions whenever a particular keyboard key or game controller button is pressed.
-* Mapping of controller buttons to keyboard keys in order to, for example, better facilitate access to the **MAME** tab configuration menus while in VR.
+* Ability to automatically execute one or more command line application calls upon the start of each game in the arcade. This can be used to call applications like **Virtual Controller** or other programmable game controller software to create game-specific custom configurations. This makes possible the ability to do anything from tweaking the button layout of a gamepad or fightstick on a per-game basis, combining two or more controllers into one, or building an advanced composite control panel that adjusts to every game in the virtual arcade, just like the more advanced panels used in many conventional multicade arcade machines.
+* A detailed game information overlay that can be viewed in VR using one's favorite desktop portal. This information comes from the included files, [`history.xml`](https://www.arcade-history.com/index.php?page=download) and [`gameinfo.dat`](https://mameinfo.mameworld.info/), and can also include pictures of your choice--for example, flyers, pcbs, or pictures of real cab control panels (which can be very handy as a reference in the Candy Cab rooms of ATC).
 * An arcade machine location directory and editor to more easily locate your favorite machines in the virtual arcade.
 * A rom copy feature that can simplify installation of the correct roms into **Arcade Time Capsule**.
-* A rom audit feature that can determine whether your rom set is suitable for **Arcade Time Capsule**.
+* A rom audit feature that can help determine whether your rom set is suitable for **Arcade Time Capsule**.
+* Manual execution of command line actions whenever a particular keyboard key or game controller button is pressed.
+* Mapping of controller buttons to keyboard keys in order to, for example, better facilitate access to the **MAME** tab configuration menus while in VR.
 * Voice notification of game control layout changes.
-* Automatically run RawAccel if you need it.
+* Automatically run **RawAccel** if you need it.
 
 Resources
 =========
@@ -37,38 +37,32 @@ Tested Software
 
 Installation
 ============
-<!--
 To install arcadeVFE 1.2, follow these four steps:
-1. Download the Windows installer (`arcadeVFE_v.1.2 Setup.exe`),
+1. Download the Windows installer from the [Releases](https://github.com/gildahl/arcadeVFE/releases/tag/v1.2.0.0) page.
 2. Run the installer and follow the prompts.
 3. At the end of the install, accept the option to launch **arcadeVFE**.
 4. In the **Initial Setup Dialog** that follows, enter ATC's rom folder in the bottom field, then press **Apply**.
+<img width="400" alt="Initial Setup" src="https://github.com/user-attachments/assets/61cc18f0-f2f9-4f76-890e-0013a257179e" />
 
-Before pressing **Close** to complete the installation, you may wish to press the **Audit ROMs*** button to perform a quick validation of your rom collection. If you are new to ATC and have not yet installed any roms, you may refer to the next section, [Copy ROMs to ATC](#Copy-ROMs-to-ATC) for a streamlined method of doing this.
+Before pressing **Close** to complete the installation, you may wish to press the **Audit ROMs** button to perform a quick validation of your rom collection. If you are new to ATC and have not yet installed any roms, you may refer to the next section, [Copy ROMs to ATC](#Copy-ROMs-to-ATC) for a streamlined method of doing this.
 
 >[!NOTE]
-> * If you have a previous versions of arcadeVFE, you __may__ install 1.2 into the same folder, which will upgrade it; however, it is strongly recommended to install 1.2 into a new folder due to the use of a new installer and new defaults. 
-> * arcadeVFE has only been tested with ATC 3.6, however, if you wish to try it with other arcade software, you may chose the "Other" option in the **Initial Setup Dialog**, though some features are disabled in this mode. There are also no guarantees on how well it will work, but please feel free to report your findings.
+> * If you have a previous version of **arcadeVFE**, you _may_ install 1.2 into the same folder, which will upgrade it; however, it is **strongly** recommended to install 1.2 into a new folder due to the use of a new installer, new defaults, and new plug-in architecture. 
+> * arcadeVFE has only been tested with ATC 3.6; however, if you wish to try it with other arcade software, you may chose the **Other** option in the **Initial Setup Dialog** under **Choose your arcade software**, though some features are disabled in this mode. There are also no guarantees on how well it will work, but feel free to report your findings.
 
-Introduction
-============
-Once you apply these settings and close the dialog, you will be taken directly to the **Settings** screen. To confirm proper installation, and take a short tour, perform these actions: 
-1. Select a game from the **Choose ROM** list on the top right. You should see its location in the arcade directly underneath. If you ever wish to edit these locations, click on the **Edit Directory* checkbox in the **User Preferences** area at the bottom of the screen.
-2. With a game selected, press the **Preview GameInfo...** button at the bottom of the dialog. This will display game information that you can navigate through using the left and right arrow buttons. Exit using the Escape key.
+Quick Tour
+==========
+Once you close the **Initial Setup** dialog, you will be taken directly to the **Settings** screen. To confirm proper installation, take a quick tour by performing these actions: 
+1. Select a game from the **Choose ROM** list on the top right. You should see its location in the arcade directly beneath. If you ever wish to edit these locations, check the **Edit Directory** checkbox in the **User Preferences** area at the bottom of the screen.
+2. With a game selected, press the **Preview GameInfo...** button at the bottom of the dialog. This will display game information that you can navigate through using the left and right arrow buttons. To Exit use the `Escape` key.
+<img width="700" alt="Settings" src="https://github.com/user-attachments/assets/4250d53b-ee5a-45b0-86ee-44603fecee74" />
 
-After returning back to the Settings screen, you may continue with futher configuration by following the instructions in the [General Configuration](#General-Configuration-(Settings-dialog)) section below.
+After returning to the Settings screen, you may continue with futher configuration by following the instructions in the [General Configuration](#General-Configuration-(Settings-dialog)) section below.
 
-Note that in the future, whenever you start **arcadeVFE**, you will not see anything on the screen, but rather it will create an icon in the Windows Tray indicating that normal background mode is active. Whenever you need to return to the **Settings** dialog, right-click on this icon and choose **Settings...**. You can also click on the **Initial Setup** button in the **Settings** screen to re-invoke the **Initial Setup** dialog to perform audits and rom copy operations.
+Note that in the future, whenever you start **arcadeVFE**, you will see nothing immediately on the screen (other than a splash screen), but rather it will create an icon in the Windows Tray indicating that normal background mode is active. Whenever you need to return to the **Settings** dialog, right-click on this icon and choose **Settings...**. You can also click on the **Initial Setup** button in the **Settings** screen to re-invoke the **Initial Setup** dialog to perform audits and rom copy operations.
 
-Remember to close the **Settings** screen before you enter your virtual arcade since **arcadeVFE** pauses normal operation while the **Settings** screen is open. If at any time you wisht to exit **arcadeVFE** completely, right-click on its icon in the Windows Tray and select **Exit**.   
--->
-After downloading the distribution zip file, right-click on it, choose Properties, check the **Unblock** checkbox at the bottom if present, then click **Apply**. After doing this, extract all files and folders from the zip into an empty folder on your PC that has read/write access.
-
-When you launch the executable (`vfe.exe`) for the first time, it will display a small **Initial Setup** dialog in which you will choose your virtual arcade (**Arcade Time Capsule 3.6** by default), the virtual arcade's executable, and the virtual arcade's rom folder. Once you've set the rom folder, you can also do a quick audit of the roms by pressing the **Audit ROMs...** button. If you use **Arcade Time Capsule** and haven't yet installed its roms, see the next section, [Copy ROMs to ATC](#Copy-ROMs-to-ATC) for a streamlined method of doing this.
-
-Once you apply these settings and close the dialog, you will be taken directly to the **Settings** screen where you can begin configuration. Note that in the future, whenever you start **arcadeVFE**, you will not see anything on the screen, but rather it will create a joystick icon in the Windows Tray indicating normal background mode is active. If you need to return to the **Settings** dialog, just right-click on this icon and choose **Settings...**. You can also click on the **Initial Setup** button in the **Settings** screen to re-invoke the **Initial Setup** dialog.
-
-Just remember to close the **Settings** screen when you use your virtual arcade since **arcadeVFE** pauses normal operation while the **Settings** screen is open. To fully close **arcadeVFE**, right-click on its icon in the Windows Tray and select **Exit**.
+> [!IMPORTANT]
+> _Remember to close the **Settings** screen before you enter your virtual arcade since **arcadeVFE** pauses normal operation while the **Settings** screen is open. If at any time you wisht to exit **arcadeVFE** completely, right-click on its icon in the Windows Tray and select **Exit**._  
 
 Copy ROMs to ATC
 ================
@@ -80,9 +74,10 @@ Use **arcadeVFE** to quickly install the correct roms into **Arcade Time Capsule
 
 **Copy the ROMS:**
 1. Run arcadeVFE and go to the **Initial Setup** dialog.
- <img width="500" alt="Initial Setup" src="https://github.com/user-attachments/assets/61cc18f0-f2f9-4f76-890e-0013a257179e" /> 
+<img width="400" alt="Initial Setup" src="https://github.com/user-attachments/assets/61cc18f0-f2f9-4f76-890e-0013a257179e" />
+   
+3. Ensure the **ROM folder to monitor** field contains a path to the (empty) ATC roms folder on your PC.
 
-2. Ensure the **ROM folder to monitor** field contains a path to the (empty) ATC roms folder on your PC.
 > [!TIP]
 >  _If you press the **Audit ROMs...** button now, while the folder is still empty, you can get a list of all roms required by ATC and their **MAME** versions._
 4. Press the **Copy Roms...** button.
@@ -222,42 +217,37 @@ This option will sound a beep whenever a command action happens. This can be use
 This option will enable the edit controls under the Choose ROM list containing the locations of arcade machines in the virtual arcade. You may edit these as you please. 
 
 ### Run RawAccel
-**RawAccel** is a utility that can be found on GitHub at `https://github.com/RawAccelOfficial/rawaccel`. This software may be needed to tune some trackballs to have additional sensitivity. For example, I need it to make my **Ultimarc U-Trak** trackball work correctly in **Arcade Time Capsule**. To integrate **RawAccel** with **arcadeVFE**, simply install it to a subfolder of VFE called `..\RawAccel`.
+**RawAccel** is a utility that can be found on GitHub at `https://github.com/RawAccelOfficial/rawaccel`. This software may be needed to tune some trackballs to have additional sensitivity. For example, I need it to make my **Ultimarc U-Trak** trackball work correctly in **Arcade Time Capsule**. To integrate **RawAccel** with **arcadeVFE**, simply install it anywhere you like on your PC, then find the `plugins.ini` file located in the `\Config` subfolder of **arcadeVFE**, load it in an text editor like **Notepad**, and then add the path to your RawAccel folder to the `Path=` line in the `[RawAccel]` section. For example:
 
-This option is only available when the **Monitor only when the arcade is running** above setting is configured. When this option is turned on VFE will automatically load **RawAccel** when the arcade is running, and will close **RawAccel** when the arcade is closed. It is up to the user to configure **RawAccel** properly for their trackball before use. 
+```
+[RawAccel]
+Path=E:\Utilities\RawAccel
+```
+
+Once you've done this, close and restart arcadeVFE if it was running, then check the **Run RawAccel** checkbox option at the bottom of the **Settings** dialog (note that **Monitor only when the arcade is running** must also be turned on). Once you have done this, VFE will automatically load **RawAccel** when the arcade is running, and will close **RawAccel** when the arcade is closed. It is up to the user to configure **RawAccel** properly for their trackball before use. 
 
 ### Show Tooltips
 In addition to this documentation file, the **Settings** screen implements tooltips on all controls to explain their operation. If you no longer need the tooltips, you can turn them off by unchecking the **Show Tooltips** checkbox.
 
 ### Use GameInfo Overlay
-This feature will display an overlay monitor showing detailed game information, including pictures, associated with the game currently running in the arcade. This information may be easily viewed while you are in VR by using your favorite desktop viewport (third party, or one provided with your headset). The text information comes from the `mameinfo.dat` and `history.xml` files in the `\GameInfo` folder. This overlay will automatically unload when the arcade is closed (which is why this feature is only available when the **Monitor only when the arcade is running** setting is configured).
+This feature will display a screen showing detailed game information, including pictures, associated with the game currently running in the arcade. This information may be easily viewed while you are in VR by using your favorite desktop viewport (third party, or one provided with your headset). The text information comes from the `mameinfo.dat` and `history.xml` files in the `\GameInfo` folder. This overlay will automatically unload when the arcade is closed (which is why this feature is only available when the **Monitor only when the arcade is running** setting is configured).
 
-To navigate through the **GameInfo** screens, you will want to assign at least the `Right` action in the game controller button configuration (and optionally, the `Left`, `Start`, and `Exit` options), using the **GameInfo navigation** radio switch at the top of the screen. If you would like custom pictures to be displayed along with the text information, you may create additional folders within the `..\GameInfo\Assets` subfolder of **arcadeVFE**, and fill it with `*.jpg` or `*.png` files having root names that are the same as the roms you would like to associate them with. Examples are provided in the `..\GameInfo\Assets\cabinets` folder along with a few others. Feel free to add additional folders as you like.
-<!--
+To navigate through the **GameInfo** screens, you will want to assign at least the `Right` action in the game controller button configuration (and optionally, the `Left`, `Start`, and `Exit` options), using the **GameInfo navigation** radio switch at the top of the screen. If you would like custom pictures to be displayed along with the text information, you may create additional folders within the `..\GameInfo\Assets` subfolder of **arcadeVFE**, and fill them with `*.jpg` or `*.png` files having root names that are the same as the roms you would like to associate them with. Examples are provided in the `..\GameInfo\Assets\cabinets` folder along with a few others. Feel free to add additional folders as you like.
+
 #### Font Size
-Set the font size used in the **GameInfo** screen. If you revise the font size, you may preview it by pressing the **Preview GameInfo...** button.
+Sets the font size used in the **GameInfo** screen. This can be used to optimize text size based on the resolution of your VR headset. If you revise the font size, you may preview it by pressing the **Preview GameInfo...** button.
 
 #### Choose Monitor
-If you use mouse clicks as a fire button, these will not work if the overlay is covering the emulator's screen. One way to address this is to move the overlay to another screen if you have one. To do this, just change this setting to present the **GameInfo** on a different monitor.
--->
-> [!NOTE]
-> _Be aware that the **GameInfo** overlay feature is NOT compatible with spinner and trackball games **IF** you use mouse clicks for game input (such as for your fire button). To address this, either turn off this feature or use a game controller button for your fire button instead. See the [Limitations](#Limitations) section at the bottom of this document for more information about this potential issue._
+If you use mouse clicks as a fire button, these will not work if the **GameInfo** overlay is covering the emulator's screen. One way to address this is to move the overlay to another screen if you have one. To do this, just change the **Choose Monitor** setting to display the **GameInfo** overlay on a different monitor. See #2 in the [Limitations](#Limitations) section below for more information about this.
 
-Known Bugs
-==========
-There are currently some known bugs in version 1.1 that will be fixed in 1.2.
+vfe.ini Settings
+================
+Most of the settings stored in the `.\Config\vfe.ini` file are set in the user interface, so most users will never need to access or modify this file directly. However, there are a few settings that can only be changed in this file that some users may have an interest in. All of these are in the `[GameInfo]` section.
+1. `ImageOrder=`: To change the order that images are displayed in **GameInfo**, you may modify the comma separated string containing the image subfolder names found in `.\GameInfo\Assets`. Having extra or missing folders in this list is allowed.
+2. `HideCursor=`: To hide the mouse cursor when displaying the **GameInfo** screen, you may change this value from 0 to 1.
+3. `SettingsExitKey=`, `SettingsRightKey=`, and `SettingsLeftKey=`: These may be used to change the keys that are used for navigation in the **GameInfo** screen when it is accessed via the **Preview GameInfo...** button in the **Settings** dialog. Note that this does not change the keys/buttons that are used during gameplay as those are set as **Actions** in the **Actions List**.
 
-* If you start with `Other` selected as the arcade type, the software may crash when selecting a rom.
-
-* If you use **GameInfo** and start a new machine in the arcade too quickly after starting the previous one (usually between 2 to 10 seconds), VFE may lose state and not operate with these machines anymore until a restart.
-
-* **Copy ROMs** does not currently copy the `\chd` folders 
-
-* Toggling the **Operate only when the arcade is running** option may require a restart before the new behavior will take effect, but there is no warning.
-
-* Combo boxes are not re-initialized when switching from a controller device to a keyboard device resulting in possible wrong/unintended keyboard assignments being made to the action table.
-
-* Keyboard mapping does not currently accommodate combining a key with Ctrl, Alt, etc.
+_Note that if you change any of these settings, you must fully exit and then restart arcadeVFE in order for them to become effective._
 
 Limitations
 ===========
@@ -265,7 +255,7 @@ Because this software is not code-integrated with the host emulator, but relies 
 
 1. **arcadeVFE** can only tell when a new game is loaded, but not when it is exited. Therefore, it can only surmise that you have exited a game when it detects that you have started a new and different game. Consequently, if you exit a game and re-enter the SAME game, **arcadeVFE** will not know that you did this. This should not affect practical operation since whatever state was loaded when you originally started the game will still be in effect. However, **arcadeVFE** will not be able to provide feedback (such as a beep or voice notification) when restarting the game. Only upon starting a new game.
 
-2. The **GameInfo** window that **arcadeVFE** overlays on top of the virtual arcade desktop display is specifically designed to not take the focus. However, as an overlay it still has the effect of preventing mouse clicks from passing through to the application (whether or not you are actually viewing it). The consequence is that if you use the mouse button as a fire button in some games, it will not work while using the **GameInfo** feature. The solution to this is to either keep the **GameInfo** feature turned off, or ensure that you map a (non-mouse) game controller button as your fire button, in which case, everything should work as intended (_Note: A better solution/workaround for this is being worked on for version 1.2)_.   
+2. The **GameInfo** window that **arcadeVFE** overlays on top of the virtual arcade desktop display is specifically designed to not take the focus. However, as an overlay it still has the effect of preventing mouse clicks from passing through to the application (whether or not you are actually viewing it). The consequence is that if you use the mouse button as a fire button in some games, it may not work while using the **GameInfo** feature. The solution to this is to either keep the **GameInfo** feature turned off, or ensure that you map a (non-mouse) game controller button as your fire button. Another solution, if you have two or more monitors, is to simply move **GameInfo** to another monitor by using the **Monitor** option in **User Preferences**. This will prevent the overlay from blocking ATC while displayed and should allow the mouse to work as expected.   
 
 3. **arcadeVFE** pauses operation while the **Settings** screen is displayed. Therefore, if you open your arcade software while the **Setting** screen is open, **arcadeVFE** will not perform any monitoring. If this happens, close both your arcade software and **arcadeVFE**, then restart.
 
