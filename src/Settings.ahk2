@@ -115,8 +115,8 @@ class Settings
 		gcROMDropDownMAMEVersion := guiSettings.AddText("BackgroundTrans x" 370 " y" 10 " w" 480 " 0x1", "")   ;0x1 is for center justification
 		gcROMDropDownController := guiSettings.AddText("BackgroundTrans x" 370 " y" 10 " w" 480 " 0x2", "") ;0x2 is for right justification
 		gcROMDropDownGameRom := guiSettings.AddText("BackgroundTrans x" 373 " y" 45 " w" 480, "")
-		gcROMDropDownGameInfo := guiSettings.AddText("BackgroundTrans x" 370 " y" 47 " w" 480 " 0x1", "")   ;0x1 is for center justification
-		gcROMDropDownGameVersion := guiSettings.AddText("BackgroundTrans x" 370 " y" 47 " w" 480 " 0x2", "")
+		gcROMDropDownGameInfo := guiSettings.AddText("BackgroundTrans x" 370 " y" 45 " w" 480 " 0x1", "")   ;0x1 is for center justification
+		gcROMDropDownGameVersion := guiSettings.AddText("BackgroundTrans x" 370 " y" 45 " w" 480 " 0x2", "")
 
 		gcFloorLabel := guiSettings.AddText("x" 370 " y" 73 " w" 20, "Floor:")
 		gcFloorDropDown := guiSettings.AddDropDownList("x" 402 " y" 70 " w" 100 " +BackgroundWhite",)
@@ -262,32 +262,39 @@ class Settings
 		gcListView.OnEvent("ItemSelect", fListView_ItemSelect)
 		Settings.ResizeColumns()
 
-		gcMoveUpButton := guiSettings.AddButton("x" 30 " y" 585 " w" nButtonWidthWide, "Move Up")
+		gcListView.GetPos(&lv_posX, &lv_posY, &lv_posW, &lv_posH)
+		iLVBaseOffset_Y1 := lv_posY + lv_posH + 10 ;Button row under LV
+		iLVBaseOffset_Y2 := iLVBaseOffset_Y1 + 50  ;User Preferences
+		iLVBaseOffset_Y3 := iLVBaseOffset_Y2 + 23  ;Checkboxes first row
+		iLVBaseOffset_Y4 := iLVBaseOffset_Y3 + 23  ;Checkboxes second row
+		iLVBaseOffset_Y5 := iLVBaseOffset_Y4 + 23  ;Checkboxes third row
+
+		gcMoveUpButton := guiSettings.AddButton("x" 30 " y" iLVBaseOffset_Y1 " w" nButtonWidthWide, "Move Up")
 		gcMoveUpButton.OnEvent("Click", (*) => Settings.MoveUpButton_Click())
 		gcMoveUpButton.Enabled := false
 		gcMoveUpButton.TT := "Move the selected row up. If the action is part of a`nsequenced set, its sequence will be decremented."
 
-		gcMoveDownButton := guiSettings.AddButton("x" 30 + nButtonWidthWide + 5 " y" 585 " w" nButtonWidthWide, "Move Down")
+		gcMoveDownButton := guiSettings.AddButton("x" 30 + nButtonWidthWide + 5 " y" iLVBaseOffset_Y1 " w" nButtonWidthWide, "Move Down")
 		gcMoveDownButton.OnEvent("Click", (*) => Settings.MoveDownButton_Click())
 		gcMoveDownButton.Enabled := false
 		gcMoveDownButton.TT := "Move the selected row down. If the action is part of a`nsequenced set, its sequence will be incremented."
 
-		gcClearButton := guiSettings.AddButton("x" Settings.mMetrics.Width - nButtonWidthWide*4 - 30 - 5*3 " y" 585 " w" nButtonWidthWide, "Clear all")
+		gcClearButton := guiSettings.AddButton("x" Settings.mMetrics.Width - nButtonWidthWide*4 - 30 - 5*3 " y" iLVBaseOffset_Y1 " w" nButtonWidthWide, "Clear all")
 		gcClearButton.OnEvent("Click", (*) => Settings.ClearButton_Click())
 		gcClearButton.Enabled := false
 		gcClearButton.TT := "Clear all actions from the table."
 
-		gcEditButton := guiSettings.AddButton("x" Settings.mMetrics.Width - nButtonWidthWide*3 - 30 - 5*2 " y" 585 " w" nButtonWidthWide, "Copy action")
+		gcEditButton := guiSettings.AddButton("x" Settings.mMetrics.Width - nButtonWidthWide*3 - 30 - 5*2 " y" iLVBaseOffset_Y1 " w" nButtonWidthWide, "Copy action")
 		gcEditButton.OnEvent("Click", (*) => Settings.EditButton_Click())
 		gcEditButton.Enabled := false
 		gcEditButton.TT := "Copy columns from the selected`nrow back into their edit fields."
 
-		gcDeleteButton := guiSettings.AddButton("x" Settings.mMetrics.Width - nButtonWidthWide*2 - 30 - 5 " y" 585 " w" nButtonWidthWide, "Delete action")
+		gcDeleteButton := guiSettings.AddButton("x" Settings.mMetrics.Width - nButtonWidthWide*2 - 30 - 5 " y" iLVBaseOffset_Y1 " w" nButtonWidthWide, "Delete action")
 		gcDeleteButton.OnEvent("Click", (*) => Settings.DeleteButton_Click())
 		gcDeleteButton.Enabled := false
 		gcDeleteButton.TT := "Delete the selected row from the table."
 
-		gcSaveButton := guiSettings.AddButton("x"  Settings.mMetrics.Width - nButtonWidthWide - 30 " y" 585 " w" nButtonWidthWide, "Save list")
+		gcSaveButton := guiSettings.AddButton("x"  Settings.mMetrics.Width - nButtonWidthWide - 30 " y" iLVBaseOffset_Y1 " w" nButtonWidthWide, "Save list")
 		gcSaveButton.OnEvent("Click", (*) => Settings.SaveButton_Click())
 		gcSaveButton.Enabled := false
 		gcSaveButton.TT := "Save the Action List table."
@@ -295,9 +302,9 @@ class Settings
 		;********************************************************************************************************
 		;  User Preferences
 		;********************************************************************************************************
-		gcUserPreferencesGroupBox := guiSettings.AddGroupBox("x" 30 " y" 630 " w" 530 " h" 95, "User Preferences")
+		gcUserPreferencesGroupBox := guiSettings.AddGroupBox("x" 30 " y" iLVBaseOffset_Y2 " w" 530 " h" 95, "User Preferences")
 
-		gcApplication_Checkbox := guiSettings.AddCheckbox("x" 45 " y" 653 " w" 220, "Monitor only when the arcade is running")
+		gcApplication_Checkbox := guiSettings.AddCheckbox("x" 45 " y" iLVBaseOffset_Y3 " w" 220, "Monitor only when the arcade is running")
 		gcApplication_Checkbox.OnEvent("Click", (*) => Settings.Application_Checkbox_Click())
 		gcApplication_Checkbox.TT := "Keep arcadeVFE inactive while the arcade emulator system`nsoftware is not running (recommended).`n`nTurning this off is primarily intended for testing. You will`nnot have access to GameInfo or RawAccel when turned off`nand may experience side effects in other applications. Note`nthat you will need to restart arcadeVFE after changing this setting."
 
@@ -306,24 +313,24 @@ class Settings
 		gcApplication_Checkbox.Enabled := gcApplicationEdit.Text ? true : false
 		global g_bOnlyMonitorWhenArcadeIsLoaded := gcApplication_Checkbox.Enabled && gcApplication_Checkbox.Value == 1
 
-		gcAlwaysAnnunciate_Checkbox := guiSettings.AddCheckbox("x" 45 " y" 677 " Check3", "Always voice notify")
+		gcAlwaysAnnunciate_Checkbox := guiSettings.AddCheckbox("x" 45 " y" iLVBaseOffset_Y4 " Check3", "Always voice notify")
 		gcAlwaysAnnunciate_Checkbox.OnEvent("Click", (*) => Settings.AlwaysAnnunciate_Checkbox_Click())
 		try gcAlwaysAnnunciate_Checkbox.Value := Integer(IniRead(g_sIniFile, "General", "AlwaysAnnunciate", 1))	
 		gcAlwaysAnnunciate_Checkbox.TT := "Adjust when voice notification is used.`n`nChecked:      Always notify upon new game start.`nUnchecked:  Never notify (off).`nMinus:          Only notify when an action is performed."
 
-		gcBeep_Checkbox := guiSettings.AddCheckbox("x" 45 " y" 700, "Beep on action")
+		gcBeep_Checkbox := guiSettings.AddCheckbox("x" 45 " y" iLVBaseOffset_Y5, "Beep on action")
 		gcBeep_Checkbox.OnEvent("Click", (*) => Settings.Beep_Checkbox_Click())
 		try gcBeep_Checkbox.Value := Integer(IniRead(g_sIniFile, "General", "BeepOnProfileChange", 0))	
 		gcBeep_Checkbox.TT := "Checked:        Beep whenever an action is performed.`nUnchecked:    Never beep (off)"
 
-		gcShowLocations_Checkbox := guiSettings.AddCheckbox("x" 275 " y" 653, "Edit Directory")
-		gcShowLocations_Checkbox.OnEvent("Click", (*) => Settings.ShowLocations_Checkbox_Click())
-		gcShowLocations_Checkbox.Value := IniRead(g_sIniFile, "General", "EditLocations", 0)	
-		gcShowLocations_Checkbox.TT := "Enable editing the machine location`ninformation under the ROM list."
+		gcEditDirectory_Checkbox := guiSettings.AddCheckbox("x" 275 " y" iLVBaseOffset_Y3, "Edit Directory")
+		gcEditDirectory_Checkbox.OnEvent("Click", (*) => Settings.EditDirectory_Checkbox_Click())
+		gcEditDirectory_Checkbox.Value := IniRead(g_sIniFile, "General", "EditLocations", 0)	
+		gcEditDirectory_Checkbox.TT := "Enable editing the machine location`ninformation under the ROM list."
 
-		gcShowLocations_Checkbox.Enabled := g_sArcadeString == "Other" ? false : true
+		gcEditDirectory_Checkbox.Enabled := g_sArcadeString == "Other" ? false : true
 
-		gcRawAccel_Checkbox := guiSettings.AddCheckbox("x" 275 " y" 677, "Run RawAccel")
+		gcRawAccel_Checkbox := guiSettings.AddCheckbox("x" 275 " y" iLVBaseOffset_Y4, "Run RawAccel")
 		gcRawAccel_Checkbox.OnEvent("Click", (*) => Settings.RawAccel_Checkbox_Click())
 		try gcRawAccel_Checkbox.Value := Integer(IniRead(g_sIniFile, "General", "LoadRawAccel", 0))
 		gcRawAccel_Checkbox.TT := "Run the RawAccel plugin when the arcade application`nstarts and close it when the application terminates."
@@ -331,28 +338,28 @@ class Settings
 		if (!FileExist(g_sRawAccelExe) || gcApplicationEdit.Text == '' || gcApplication_Checkbox.Value == 0)
 			gcRawAccel_Checkbox.Enabled := false
 
-		gcToolTip_Checkbox := guiSettings.AddCheckbox("x" 275 " y" 700, "Show Tooltips")
+		gcToolTip_Checkbox := guiSettings.AddCheckbox("x" 275 " y" iLVBaseOffset_Y5, "Show Tooltips")
 		gcToolTip_Checkbox.OnEvent("Click", (*) => Settings.ToolTip_Checkbox_Click())
 		try gcToolTip_Checkbox.Value := Integer(IniRead(g_sIniFile, "General", "ShowToolTips", 1))
 		gcToolTip_Checkbox.TT := "Show or hide tooltips on this screen."
 
-		gcShowGameInfo_Checkbox := guiSettings.AddCheckbox("x" 400 " y" 653, "Use GameInfo Overlay")
+		gcShowGameInfo_Checkbox := guiSettings.AddCheckbox("x" 400 " y" iLVBaseOffset_Y3, "Use GameInfo Overlay")
 		gcShowGameInfo_Checkbox.OnEvent("Click", (*) => Settings.ShowGameInfo_Checkbox_Click())
 		try gcShowGameInfo_Checkbox.Value := IniRead(g_sIniFile, "General", "ShowGameInfo", 0)	
 		gcShowGameInfo_Checkbox.TT := "Show GameInfo overlay on the desktop when the arcade application`nstarts and close it when the application terminates.`n`nNote that if you use mouse clicks as your fire button, these may not work`nwhile the overlay is covering the emulator's screen. To fix this you may:`n(1) turn off this feature,`n(2) map your fire button to a controller button, or `n(3) display GameInfo on another monitor if you have one using the`n      monitor setting below (try Monitor=2)."
 	
-		gcGameInfoFontSizeLabel := guiSettings.AddText("x" 465 " y" 673 " w" 60 " h" 20, "Font Size")
+		gcGameInfoFontSizeLabel := guiSettings.AddText("x" 465 " y" iLVBaseOffset_Y4 - 2 " w" 60 " h" 20, "Font Size")
 		gcGameInfoFontSizeLabel.SetFont("s7")
 
 		try g_iGameInfoFontSize := IniRead(g_sIniFile, "GameInfo", "GameInfoFontSize", g_iGameInfoFontSize)
-		gcGameInfoFontSizeEdit := guiSettings.AddEdit("x" 420 " y" 670 " w" 40 " +BackgroundWhite", g_iGameInfoFontSize)
+		gcGameInfoFontSizeEdit := guiSettings.AddEdit("x" 420 " y" iLVBaseOffset_Y4 - 7 " w" 40 " +BackgroundWhite", g_iGameInfoFontSize)
 		gcGameInfoFontSizeEdit.OnEvent("Change", (*) => Settings.GameInfoFontSizeEdit_Change())
 		gcGameInfoFontSizeEdit.TT := "Enter the font size to be used`nfor the GameInfo screen."
 
-		gcGameInfoMonitorDropDownLabel := guiSettings.AddText("x" 465 " y" 698 " w" 80, "Choose Monitor")
+		gcGameInfoMonitorDropDownLabel := guiSettings.AddText("x" 465 " y" iLVBaseOffset_Y5 " w" 80, "Choose Monitor")
 		gcGameInfoMonitorDropDownLabel.SetFont("s7")
 
-		gcGameInfoMonitorDropDown := guiSettings.AddDropDownList("x" 420 " y" 695 " w" 40 " +BackgroundWhite",)
+		gcGameInfoMonitorDropDown := guiSettings.AddDropDownList("x" 420 " y" iLVBaseOffset_Y5 - 4 " w" 40 " +BackgroundWhite",)
 		gcGameInfoMonitorDropDown.OnEvent("Change", (*) => Settings.GameInfoMonitorDropDown_Change())
 		gcGameInfoMonitorDropDown.TT := "Select monitor on which`nto display the GameInfo."
 
@@ -376,20 +383,27 @@ class Settings
 			gcGameInfoMonitorDropDown.Value := 1
 		}
 
-		gcSettingsMessageLabel := guiSettings.AddText("x" Settings.mMetrics.Width - 330 " y" 635 " w" 300, "arcadeVFE is currently **PAUSED**. Close this dialog when`nyou have completed configuration to begin active monitoring.")
+		gcSettingsMessageLabel := guiSettings.AddText("x" Settings.mMetrics.Width - 330 " y" iLVBaseOffset_Y2 " w" 300, "arcadeVFE is currently **PAUSED**. Close this dialog when`nyou have completed configuration to begin active monitoring.")
 		
 		gcViewGameInfoButton := guiSettings.AddButton("x" Settings.mMetrics.Width - nButtonWidthBottom*3 - 40 " y" 685 " w" nButtonWidthBottom " h" 40, "Preview`n   GameInfo...")
 		gcViewGameInfoButton.OnEvent("Click", (*) => Settings.ViewGameInfoButton_Click())
 		gcViewGameInfoButton.TT := "Preview GameInfo for the selected game. Use left and right arrow`nkeyboard keys to navigate and Escape to exit. You may adjust the`nfont size and monitor that the GameInfo appears on using the`nsettings to the left.`n`nNote that when you use the GameInfo Overlay during gameplay`n(rather than this Settings dialog), navigation will use the keys or`nbuttons specified in the Action List."
+		gcUserPreferencesGroupBox.GetPos(,&gb_posY,,&gb_posH)
+		gcViewGameInfoButton.GetPos(,,,&bt_posH)
+		gcViewGameInfoButton.Move(, gb_posY + gb_posH - bt_posH)
 		gcViewGameInfoButton.Enabled := false
 
 		gcSetupButton := guiSettings.AddButton("x" Settings.mMetrics.Width - nButtonWidthBottom*2 - 35 " y" 685 " w" nButtonWidthBottom " h" 40, "Initial`n   Setup...")
 		gcSetupButton.OnEvent("Click", (*) => Settings.SetupButton_Click())
 		gcSetupButton.TT := "Open the intial setup`nand rom tools dialog."
+		gcSetupButton.Move(, gb_posY + gb_posH - bt_posH)
 
 		gcCloseButton := guiSettings.AddButton("x" Settings.mMetrics.Width - nButtonWidthBottom - 30 " y" 685 " w" nButtonWidthBottom " h" 40, "Close")
 		gcCloseButton.OnEvent("Click", (*) => Settings.CloseButton_Click())
 		gcCloseButton.TT := "Close this Settings dialog to begin active`nmonitoring.`n`nTo exit arcadeVFE completely, right-click`non its tray icon and choose Exit."
+		gcCloseButton.Move(, gb_posY + gb_posH - bt_posH)
+
+		Settings.mMetrics.Height := gb_posY + gb_posH + 20
 
 		;Complete initialization
 		Settings.InitDevices()            ;Get and populate the list of devices (a.k.a. Action Sources)
@@ -916,7 +930,7 @@ class Settings
 		bState := bState && !InStr(gcROMDropDown.Text,"[")
 
 		bShowLocations := false
-		try bShowLocations := (gcShowLocations_Checkbox.Value && gcShowLocations_Checkbox.Enabled)
+		try bShowLocations := (gcEditDirectory_Checkbox.Value && gcEditDirectory_Checkbox.Enabled)
 
 		if (!bShowLocations)
 			bState := false
@@ -930,17 +944,17 @@ class Settings
 		
 		try
 		{
-			if (gcShowLocations_Checkbox.Enabled && gcDevices.Text == "ROM Monitor" && !InStr(gcROMDropDown.Text,"["))
+			if (gcEditDirectory_Checkbox.Enabled && gcDevices.Text == "ROM Monitor" && !InStr(gcROMDropDown.Text,"["))
 			{
 				gcFloorLabel.Visible := true
 				gcFloorDropDown.Visible := true
 				gcVicinityLabel.Visible := true
 				gcVicinityComboBox.Visible := true
 
-				gcFloorDropDown.Enabled := gcShowLocations_Checkbox.Value
-				gcVicinityComboBox.Enabled := gcShowLocations_Checkbox.Value
-				gcAddVicinityButton.Visible := gcShowLocations_Checkbox.Value
-				gcRemoveVicinityButton.Visible := gcShowLocations_Checkbox.Value
+				gcFloorDropDown.Enabled := gcEditDirectory_Checkbox.Value
+				gcVicinityComboBox.Enabled := gcEditDirectory_Checkbox.Value
+				gcAddVicinityButton.Visible := gcEditDirectory_Checkbox.Value
+				gcRemoveVicinityButton.Visible := gcEditDirectory_Checkbox.Value
 			}
 		}	
 	}
@@ -1362,9 +1376,9 @@ class Settings
 		IniWrite(gcBeep_Checkbox.Value, g_sIniFile, "General", "BeepOnProfileChange")
 	}
 
-	static ShowLocations_Checkbox_Click(*)
+	static EditDirectory_Checkbox_Click(*)
 	{
-		IniWrite(gcShowLocations_Checkbox.Value, g_sIniFile, "General", "EditLocations")
+		IniWrite(gcEditDirectory_Checkbox.Value, g_sIniFile, "General", "EditLocations")
 
 	    Settings.Devices_Change()
 	}

@@ -473,7 +473,7 @@ class Setup
 
             ;Machine location editor is not supported for "Other" arcade
             ;Use try since this may be called before Settings is created
-            try gcShowLocations_Checkbox.Enabled := g_sArcadeString == "Other" ? false : true
+            try gcEditDirectory_Checkbox.Enabled := g_sArcadeString == "Other" ? false : true
 
             g_oLog.LogLine("INFO: Setup Apply Button pressed.`n")
         }
