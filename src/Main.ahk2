@@ -96,7 +96,8 @@ global g_oPacDrive := PacDriveDLL() ;Support for Ultimarc ServoStik rotation
 global g_color_light_green := "c4EC9A2"
 global g_color_dark_green := "c6A9955"
 global g_color_dark_blue := "c1F52B3"
-global g_color_light_blue := "c5da9ff"
+global g_color_light_blue := "c9cc9fd"
+global g_color_pale_yellow := "ccfaf9cd"
 
 ;global flags
 global g_bCancelAssign := false
@@ -115,7 +116,7 @@ global g_iCommandLineDelay := 500        ;Delay in between two consecutive comma
 global g_oVoice := voice_class()         ;initialize speech support
 global g_oTemplates                      ;Object used by the JSON parser to hold the Template list
 global g_oTweaks                         ;Object used by the JSON parser to hold the Tweaks list
-global g_oActions	:= Map()		       ;Object used by the JSON parser to hold the Actions list
+global g_oActions	:= Map()		     ;Object used by the JSON parser to hold the Actions list
 global g_aDevices := Array()             ;Holds the list of devices (a.k.a. Action Sources)
 global g_mDeviceIndex := Map()           ;Holds the indexes of the devices in the list
 global g_mDevices := Map()               ;Holds info for all devices in the list              ;
@@ -153,6 +154,15 @@ if (FileExist(g_sGameInfoFolder "\void.png"))
 	try FileDelete(g_sGameInfoFolder "\void.png")
 if (FileExist(g_sArcadeFolder "\Arcade Time Capsule 3.6.Locations.ini"))
 	try FileMove(g_sArcadeFolder "\Arcade Time Capsule 3.6.Locations.ini", g_sArcadeFolder "\Arcade Time Capsule 3.6.Directory.ini")
+sEditDir := "NA"
+try sEditDir := IniRead(g_sIniFile, "General", "ShowLocations")
+try sEditDir := IniRead(g_sIniFile, "General", "EditLocations")
+if (sEditDir != "NA") 
+{
+	IniWrite(sEditDir, g_sIniFile, "General", "EditDirectory")
+	try IniDelete(g_sIniFile, "General", "EditLocations")
+	try IniDelete(g_sIniFile, "General", "ShowLocations")
+}
 
 ;arcade globals
 ;get initialized and set in Setup.PopulateFields() and Setup_ApplyButton_Click()
@@ -444,12 +454,13 @@ LoadConfig()
 
 LoadPlugins()
 {
-	;RawAccel may be installed by either creating a "RawExcel=<path>" entry to the vfe.ini [Plugins] section
-	;or added into a subfolder of arcadeVFE called "RawAccel". If both are done, the Plug-in path wins
+	;RawAccel may be installed by either creating a "RawExcel=<path>" entry to the plugins.ini [RawAccel] section
+	;or added into a subfolder of arcadeVFE called "RawAccel". If both are done, the plugins.ini path wins
 	global g_sRawAccelFolder := ""
 	global g_sRawAccelExe := ""
+
 	g_sRawAccelFolder := IniRead(g_sPluginsFile, "RawAccel", "Path", g_sRawAccelFolder)
-		test := FileExist(g_sRawAccelFolder)
+
 	if (!g_sRawAccelFolder)
 		IniWrite("<Add a path to RawAccel here>", g_sPluginsFile, "RawAccel", "Path")
 	if (DirExist(g_sRawAccelFolder) && FileExist(g_sRawAccelFolder "\rawaccel.exe"))

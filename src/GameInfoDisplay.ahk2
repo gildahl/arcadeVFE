@@ -160,6 +160,7 @@ class GameInfoDisplay
 		try this.guiGameInfoOverlay.Destroy()
 
 		this._active := false
+		g_oLog.LogLine("INFO: GameInfo screen destroyed.`n")
 	}
 
 	/**
@@ -661,7 +662,7 @@ class GameInfoDisplay
 						{		
 							CreateField(idx, sControlType)
 							this.gcFormatField%idx%.Value := sText
-							this.gcFormatField%idx%.SetFont("cWhite w600", "Verdana")
+							this.gcFormatField%idx%.SetFont(g_color_pale_yellow " w600", "Verdana")
 						}
 
 						if (InStr(sText, "=====")) 

@@ -345,7 +345,7 @@ class Settings
 
 		gcEditDirectory_Checkbox := guiSettings.AddCheckbox("x" 275 " y" iLVBaseOffset_Y3, "Edit Directory")
 		gcEditDirectory_Checkbox.OnEvent("Click", (*) => Settings.EditDirectory_Checkbox_Click())
-		gcEditDirectory_Checkbox.Value := IniRead(g_sIniFile, "General", "EditLocations", 0)	
+		gcEditDirectory_Checkbox.Value := IniRead(g_sIniFile, "General", "EditDirectory", 0)	
 		gcEditDirectory_Checkbox.TT := "Enable editing the machine location`ninformation under the ROM list."
 
 		gcEditDirectory_Checkbox.Enabled := g_sArcadeString == "Other" ? false : true
@@ -611,6 +611,7 @@ class Settings
 
 	/**
 	 * Clear all entries in the Actions table
+	 * @param {Integer} bForce - skips dialog if true.
 	 */
 	static ClearTable(bForce:=false)
 	{
@@ -832,14 +833,14 @@ class Settings
 			{
 				mInfo := Map()
 				mInfo["annunciation"] := gcListView.GetText(A_Index, Settings.ANNUNC)
-				mInfo["profile"] := gcListView.GetText(A_Index, Settings.PROFILE) ;this is a hidden column
+				mInfo["profile"] := gcListView.GetText(A_Index, Settings.PROFILE)       ;this is a hidden column
 				mInfo["command_line"] := gcListView.GetText(A_Index, Settings.COMMAND)
-				mInfo["profile_2"] := gcListView.GetText(A_Index, Settings.PROFILE_2)  ;this is a hidden column
+				mInfo["profile_2"] := gcListView.GetText(A_Index, Settings.PROFILE_2)   ;this is a hidden column
 				mInfo["command_line_2"] := gcListView.GetText(A_Index, Settings.COMMAND_2)
-				mInfo["template"] := gcListView.GetText(A_Index, Settings.TEMPLATE)    ;this is a hidden column
+				mInfo["template"] := gcListView.GetText(A_Index, Settings.TEMPLATE)     ;this is a hidden column
 				mInfo["template_2"] := gcListView.GetText(A_Index, Settings.TEMPLATE_2) ;this is a hidden column
 				mInfo["template_3"] := gcListView.GetText(A_Index, Settings.TEMPLATE_3) ;this is a hidden column
-				mInfo["profile_3"] := gcListView.GetText(A_Index, Settings.PROFILE_3)  ;this is a hidden column
+				mInfo["profile_3"] := gcListView.GetText(A_Index, Settings.PROFILE_3)   ;this is a hidden column
 				mInfo["command_line_3"] := gcListView.GetText(A_Index, Settings.COMMAND_3)
 				if (!mConfig.Has(gcListView.GetText(A_Index, Settings.DEVICE))) 
 					mConfig[gcListView.GetText(A_Index, Settings.DEVICE)] := Map()
@@ -1407,7 +1408,7 @@ class Settings
 
 	static EditDirectory_Checkbox_Click(*)
 	{
-		IniWrite(gcEditDirectory_Checkbox.Value, g_sIniFile, "General", "EditLocations")
+		IniWrite(gcEditDirectory_Checkbox.Value, g_sIniFile, "General", "EditDirectory")
 
 	    Settings.Devices_Change()
 	}
