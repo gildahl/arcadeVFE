@@ -1,4 +1,4 @@
-arcadeVFE 1.2
+arcadeVFE 1.2.1
 The Virtual Arcade Front End
 ============================
 

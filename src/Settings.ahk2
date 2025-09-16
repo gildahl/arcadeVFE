@@ -47,7 +47,7 @@ class Settings
 		local nIconButtonWidth := 40
 		local nButtonWidthBottom := 100
 
-		sSettingsTitle := "arcadeVFE " g_sCodeVersion " - Settings"
+		sSettingsTitle := "arcadeVFE " g_sCodeVersionMinor " - Settings"
 
 		Settings.mMetrics.Width := 910
 		Settings.mMetrics.Height := 750

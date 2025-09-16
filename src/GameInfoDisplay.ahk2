@@ -30,6 +30,8 @@ class GameInfoDisplay
 		this._boundsRight := 0
 		this._boundsTop := 0
 		this._boundsBottom := 0
+		this._sNextStyle := ""
+		this._bLineGroup := false
 	}
 
 	CreateGameInfoScreen(sRom)
@@ -55,9 +57,14 @@ class GameInfoDisplay
 			g_oLog.LogLine("WARNING: Monitor=" g_iMonitor ", in " g_sIniFile " is invalid on this system. Using monitor 1 instead. Please specify a monitor number that exists on this machine.")
 		}
 
-		this.guiGameInfo := Gui(, "eipGui - guiGameInfo")
+		;Create the main GameInfo screen
+		this.guiGameInfo := Gui(, "vfeGui - guiGameInfo")
 		this.guiGameInfo.Opt("-Caption -DPIScale")
 		this.guiGameInfo.BackColor := "Black" 
+
+		;Also create an overlay to protect the GameInfo screen from mouse clicks
+		this.guiGameInfoOverlay := Gui(, "vfeGui - guiGameInfoOverlay")
+		this.guiGameInfoOverlay.Opt("-Caption -DPIScale")
 
 		this.guiGameInfo.SetFont("cWhite s50")
 		this.gcGameInfoPleaseWait := this.guiGameInfo.AddText("w" this._ScreenWidth " Center", "Preparing Game Information.`nPlease wait...")
@@ -132,8 +139,27 @@ class GameInfoDisplay
 		this.guiGameInfo.Opt("+AlwaysOnTop +E0x08000000") 
 		this.guiGameInfo.Show("X" this._boundsLeft " Y" this._boundsTop "W" this._ScreenWidth " H" this._ScreenHeight " NA")
 
+		;This overlay protects the underlying screen from receiving mouse clicks
+		this.guiGameInfoOverlay.Opt("+AlwaysOnTop +E0x08000000") 
+		this.guiGameInfoOverlay.Opt("+Owner" this.guiGameInfo.Hwnd)
+		this.guiGameInfoOverlay.Show("X" this._boundsLeft " Y" this._boundsTop "W" this._ScreenWidth " H" this._ScreenHeight " NA")
+		WinSetTransparent(1, "ahk_id " this.guiGameInfoOverlay.Hwnd) ;don't set this completely transparent (0) or mouse clicks will leak through
+
 		this._active := true
 		g_oLog.LogLine("INFO: Showing GameInfo screen.`n")
+	}
+
+		;Call this between each game
+	Clear()
+	{
+		this._currentPage := 1
+		this._totalPages := 0
+		this._pages := Map()
+
+		try this.guiGameInfo.Destroy()
+		try this.guiGameInfoOverlay.Destroy()
+
+		this._active := false
 	}
 
 	/**
@@ -325,18 +351,6 @@ class GameInfoDisplay
 		}
 	}
 
-	;Call this between each game
-	Clear()
-	{
-		this._currentPage := 1
-		this._totalPages := 0
-		this._pages := Map()
-
-		try this.guiGameInfo.Destroy()
-
-		this._active := false
-	}
-	
 	/**
 	 * ;Creates the actual image and info pages for each asset type
 	 * @param assetType - either "info" or a folder name that is a subfolder in .\GameInfo\Assets
@@ -522,12 +536,9 @@ class GameInfoDisplay
 				
 				;The edit control doesn't offer any options for formatting or coloring by individual
 				;line/word/character, so do this using overlays.
-				pages := this._pages								
+				pages := this._pages, iLineNum := 0, sText := "", sLastTitleFontSize := 0, sLastBaseRomTitleFontSize := 0							
 				Loop pages.Count
 				{
-					iLineNum := 0
-					sText := ""
-				
 					iLeftHwnd := this.guiGameInfo_GameInfo%A_Index * 2 - 1%.Hwnd
 					iRightHwnd := this.guiGameInfo_GameInfo%A_Index * 2%.Hwnd
 					iPage := A_Index
@@ -536,48 +547,128 @@ class GameInfoDisplay
 					FormatField(iRightHwnd, "control2Fields")
 				}
 
-				;This function handles the specific formatting requests
 				FormatField(iHwnd, sControlType)
 				{
-					Loop EditGetLineCount(iHwnd)
+					Loop EditGetLineCount(iHwnd)-1
 					{
-						iLineNum := A_Index	
-						idx := iPage "_" iLineNum
-						sText := EditGetLine(iLineNum, iHwnd)
+						;iLineNum := A_Index	
+						idx := iPage "_" A_Index
+						sText := EditGetLine(A_Index, iHwnd)
 
-						if (iPage == 1 && iLineNum == 1 && sControlType == "control1Fields")
+						if (iPage == 1 && A_Index == 1 && sControlType == "control1Fields")
 						{
 							CreateField(idx, sControlType)
 							this.gcFormatField%idx%.Value := sText
-							this.gcFormatField%idx%.SetFont("italic")
+							this.gcFormatField%idx%.SetFont("italic " g_color_light_blue)
+						} 						
+
+						;The order of the following group of statements must not be changed
+						;********************************************************************
+						
+						;Underline this line AND any that may immediately follow it
+						;(since these are titles that can be long and broken into more than one line)
+						if (this._sNextStyle == "underline")
+						{
+							if (sText)
+							{
+								this._bLineGroup := true ;start a line group								
+
+								fsz := 0
+								;use font size of last line if it had been changed
+								if (sLastBaseRomTitleFontSize) {
+									fsz := sLastBaseRomTitleFontSize
+									CreateField(idx, sControlType)
+								}
+								else
+								{
+									fsz := g_iGameInfoFontSize
+									nw := CreateField(idx, sControlType)
+									loop
+									{
+										tsz := GetTextExtentPoint(sText, "Verdana", fsz, true)
+										if (tsz < nw * 96/A_ScreenDPI)
+											break
+										else
+											fsz--
+									}
+								}
+
+								sLastBaseRomTitleFontSize := fsz
+
+								this.gcFormatField%idx%.Value := sText
+								this.gcFormatField%idx%.SetFont("s" fsz " " g_color_light_green " underline", "Verdana")
+							}
+
+							;an empy line means we have reached end of the line group
+							if (!sText && this._bLineGroup)
+							{
+								this._sNextStyle := "" 
+								this._bLineGroup := false
+							}
 						}
 
-						if (iPage == 1 && iLineNum == 3 && sControlType == "control1Fields")
+						;Italicize this line
+						if (this._sNextStyle == "italics" && sText)
 						{
 							CreateField(idx, sControlType)
 							this.gcFormatField%idx%.Value := sText
-							this.gcFormatField%idx%.SetFont("cWhite underline bold", "Verdana")
+							this.gcFormatField%idx%.SetFont("italic " g_color_light_blue)
+							this._sNextStyle := "underline" ;Next line with text will be underlined
+						}
+
+						if (InStr(sText, "Base ROM Game Information"))
+						{
+						    this._sNextStyle := "italics" ;Next line with text will be in italics
+						}
+
+						;********************************************************************
+
+						;Main game title
+						if (iPage == 1 && (A_Index == 3 || (A_Index == 4 && sText)) && sControlType == "control1Fields")
+						{
+							fsz := 0
+							;use font size of last line if it had been changed
+							if (sLastTitleFontSize) {
+								fsz := sLastTitleFontSize
+								CreateField(idx, sControlType)
+							}
+							else
+							{
+								fsz := g_iGameInfoFontSize
+								nw := CreateField(idx, sControlType)
+								loop
+								{
+									tsz := GetTextExtentPoint(sText, "Verdana", fsz, true)
+									if (tsz < nw * 96/A_ScreenDPI)
+										break
+									else
+										fsz--
+								}
+							}
+
+							sLastTitleFontSize := fsz
+
+							this.gcFormatField%idx%.Value := sText
+							this.gcFormatField%idx%.SetFont("s" fsz " " g_color_light_green " underline bold", "Verdana")
 						}
 							 
 						sPhrases := "
 						(
-						Bugs:,NOTE:,HOW TO PLAY:,STORY:,LEVELS:,SETUP:,TEST MODE:.WIP:,* CONSOLES:,* OTHERS:,* COMPUTERS:,
-						* HANDHELDS:,* TODO:,* GLITCH:,- TRIVIA -,- UPDATES -,- SCORING -,- CAST OF CHARACTERS -,
-						- STAFF -,- CONTRIBUTE -,- TECHNICAL -,- TIPS AND TRICKS -,- SERIES -,- PORTS -
+						Bugs:,NOTE:,WIP:,HOW TO PLAY:,STORY:,TEST MODE:,LEVELS:,SETUP:,TEST MODE:.WIP:,* CONSOLES:,* OTHERS:,* COMPUTERS:,* HANDHELDS:,* TODO:,* GLITCH:,- TRIVIA -,- UPDATES -,- SCORING -,- CAST OF CHARACTERS -,- STAFF -,- CONTRIBUTE -,- TECHNICAL -,- TIPS AND TRICKS -,- SERIES -,- PORTS -
 						)"
 
 						if (IsAnyInStr(sText, sPhrases))
 						{		
 							CreateField(idx, sControlType)
 							this.gcFormatField%idx%.Value := sText
-							this.gcFormatField%idx%.SetFont("cWhite w500", "Verdana")
+							this.gcFormatField%idx%.SetFont("cWhite w600", "Verdana")
 						}
 
 						if (InStr(sText, "=====")) 
 						{		
 							CreateField(idx, sControlType)
-							this.gcFormatField%idx%.Value := Trim(sText, " =")
-							this.gcFormatField%idx%.SetFont("cWhite bold", "Verdana")
+							this.gcFormatField%idx%.Value := sText 
+							this.gcFormatField%idx%.SetFont(g_color_light_blue " bold", "Futura")
 						}						
 					}
 				}
@@ -588,8 +679,9 @@ class GameInfoDisplay
 					margin := sControlType == "control1Fields" ? edit_margin : edit_width + edit_margin	
 					this.gcFormatField%idx% := this.guiGameInfo.AddEdit("c0xCCCCCC Background0x1F1F1F Hidden -VScroll -HScroll -E0x200 R1") ;A one row edit control
 					pages[iPage][sControlType].Push(this.gcFormatField%idx%) 
-					yPos := ht * (iLineNum - 1)
-					this.gcFormatField%idx%.Move(margin, yPos, edit_width - edit_margin, ht)
+					yPos := ht * (A_Index - 1)
+					this.gcFormatField%idx%.Move(margin, yPos, edit_width, ht)
+					return edit_width - edit_margin
 				}
 
 				iProg := this.gcGameInfoProgress.Value

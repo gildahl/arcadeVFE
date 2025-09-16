@@ -50,6 +50,8 @@ IsAnyInStr(sText, sList)
    	{
       	if (InStr(sText, sVal))
       	{
+			if (StrLen(sText) - StrLen(sVal) > 6)
+				continue
          	sFound := sVal
          	break
     	}
@@ -120,3 +122,31 @@ ChangeEncoding(&sStr, sFrom, sTo)
     StrPut(sStr, buf, sFrom)
     sStr := StrGet(buf, sTo)
 }
+
+ ;https://autohotkey.com/board/topic/27393-resize-text-control-to-fit-new-contents/  (converted to AHK2 by DGD)
+ ;Permits reszing of text based on height/width considerations.
+ GetTextExtentPoint(sString, sFaceName, nHeight := 9, bBold := False, bItalic := False, bUnderline := False, bStrikeOut := False, nCharSet := 0)
+ {
+    nSize := 0 ;initialize to avoid the warning
+ 
+    hDC := DllCall("GetDC", "Ptr", 0, "Ptr") 
+    nCaps := DllCall("GetDeviceCaps", "Uint", hDC, "Int", 90)
+    nHeight := -DllCall("MulDiv", "Int", nHeight, "Int", nCaps, "Int", 72)
+ 
+    hFont := DllCall("CreateFont", "Int", nHeight, "Int", 0, "Int", 0, "Int", 0, "Int", 400 + 300 * bBold, "Uint", bItalic, "Uint", bUnderline, "Uint", bStrikeOut, "Uint", nCharSet, "Uint", 0, "Uint", 0, "Uint", 0, "Uint", 0, "Str", sFaceName)
+    hFold := DllCall("SelectObject", "Uint", hDC, "Uint", hFont)
+ 
+    DllCall("GetTextExtentPoint32", "Uint", hDC, "Str", sString, "Int", StrLen(sString), "Int64P", &nSize)
+ 
+    DllCall("SelectObject", "Uint", hDC, "Uint", hFold)
+    DllCall("DeleteObject", "Uint", hFont)
+    DllCall("ReleaseDC", "Uint", 0, "Uint", hDC)
+ 
+    nWidth  := nSize & 0xFFFFFFFF
+    nHeight := nSize >> 32 & 0xFFFFFFFF
+ 
+    nWidth := nWidth * 96/A_ScreenDPI
+ 
+    Return nWidth
+ }
+ 

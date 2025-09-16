@@ -1,3 +1,13 @@
+arcadeVFE v.1.2.1
+
+* Minor refinements made to user interface.
+* Added a "Config Tools" button/feature/dialog to Initial Setup to permit
+  backup, restoration, reset, and patching of ATC *.cfg files.
+* Fixed issue with formatted text in GameInfo extending past margin and
+  added revised section highlighting.
+* Better protect GameInfo from mouse clicks and related side-effects.
+* Other minor text and documentation tweaks.
+
 arcadeVFE v.1.2
 
 * (Fixed) If you started arcadeVFE with Other selected as the arcade type, 

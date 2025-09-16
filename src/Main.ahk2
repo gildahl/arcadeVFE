@@ -49,6 +49,7 @@ global bTestMode := 0
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 global g_sCodeVersion := SubStr(CodeVersion, 1, InStr(CodeVersion, ".",,,2)-1)
+global g_sCodeVersionMinor := SubStr(CodeVersion, 1, InStr(CodeVersion, ".",,,3)-1)
 
 global g_iTickCount := A_TickCount
 global g_sResourceFolder := A_ScriptDir "\Resources"
@@ -90,6 +91,12 @@ global g_iMonitor := 1
 
 global g_oSDL2 := SDL2DLL() ;SDL library for game device discovery and polling
 global g_oPacDrive := PacDriveDLL() ;Support for Ultimarc ServoStik rotation
+
+;colors
+global g_color_light_green := "c4EC9A2"
+global g_color_dark_green := "c6A9955"
+global g_color_dark_blue := "c1F52B3"
+global g_color_light_blue := "c5da9ff"
 
 ;global flags
 global g_bCancelAssign := false
@@ -155,6 +162,7 @@ global g_sFloorsFile := ""
 global g_sVicinitiesFile := ""
 global g_sApplicationName := ""
 global g_sROMMonitorFolder := ""
+global g_sATCFolder := ""
 global g_oArcadeRomList := Map()         ;Holds the curated arcade rom list including rom versions 
 global g_oFloors                         ;initialized in Settings.ReadFloors()
 global g_oVicinities                     ;initialized in Settings.ReadVicinities()
