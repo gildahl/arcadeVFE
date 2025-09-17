@@ -1408,8 +1408,8 @@ ShowSplash()
 	global gcSplashTitle := guiSplash.AddText("x" x1 + 35 + iconW " y" y1 + 22 " w" iWidth " h" iHeight, "arcadeVFE")
 	gcSplashTitle.SetFont("s26 w700", "Courier New")
 
-	global gcSplashVer := guiSplash.AddText("x" x1 + 235 + iconW " y" y1 + 24 " w" iWidth " h" iHeight, g_sCodeVersion)
-	gcSplashVer.SetFont("s19 w600", "Courier New")
+	global gcSplashVer := guiSplash.AddText("x" x1 + 235 + iconW " y" y1 + 20 " w" iWidth " h" iHeight, g_sCodeVersionMinor)
+	gcSplashVer.SetFont("s14 w500", "Courier New")
 
 	sArcade := IniRead(g_sIniFile, "General", "Arcade", "")
 	sArcade := sArcade == "Other" || !sArcade ? "The Virtual Arcade Front End" : "for " sArcade
