@@ -107,7 +107,7 @@ The second mode provides the option to trigger actions manually when a **keyboar
 
 ROM Monitor:
 ------------
-To setup a new rom to be monitored, choose `ROM Monitor` from the **Device List** list in the **Settings** screen.</br/>
+To setup a new rom to be monitored, choose `ROM Monitor` from the **Device List** list in the **Settings** screen.<br/>
 
 <img width="800" height="95" alt="ROM Monitor mode" src="https://github.com/user-attachments/assets/d69d95d4-57fd-46ce-bd3c-184f5d67d052" /><br/>
 
