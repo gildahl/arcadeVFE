@@ -6,6 +6,7 @@ arcadeVFE v.1.2.1
 * Fixed issue with formatted text in GameInfo extending past margin and
   added revised section highlighting.
 * Better protect GameInfo from mouse clicks and related side-effects.
+* Added ddragon and karnov base rom cross ref. Fixed kingdmgp.
 * Other minor text and documentation tweaks.
 
 arcadeVFE v.1.2
