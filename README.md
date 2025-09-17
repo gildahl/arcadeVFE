@@ -102,17 +102,16 @@ See the `log.txt` file in the `\Log` subfolder if needed for troubleshooting. Th
 General Configuration (Settings dialog)
 =======================================
 **arcadeVFE** offers two different modes of operation. The first is a **ROM Monitor** mode that can execute game-specific actions whenever a game using a **MAME** rom file is played. This mode can provide fully automated game controller configuration in **MAME** environments like **Arcade Time Capsule**. 
-
-<img width="800" height="95" alt="ROM Monitor mode" src="https://github.com/user-attachments/assets/d69d95d4-57fd-46ce-bd3c-184f5d67d052" /><br/>
     
 The second mode provides the option to trigger actions manually when a **keyboard key** or **game controller** button is pressed. Both ROM Monitor and keyboard/button actions can be added to the action list in any combination and are simultaneously active whenever the virtual arcade is running. 
 
-<img width="781" height="96" alt="Keyboard mode" src="https://github.com/user-attachments/assets/b4575e9b-f229-4e01-84ab-f551be2c1042" />
-<img width="779" height="95" alt="Controller mode" src="https://github.com/user-attachments/assets/ba8541d1-2989-42f2-97ee-fc9c4c9878d0" /><br/>
-
 ROM Monitor:
 ------------
-To setup a new rom to be monitored, choose `ROM Monitor` from the **Device List** list in the **Settings** screen. Next, choose a rom from the **Choose ROM** list and then use the **Profile** and **Command** fields to configure the specific commands that should execute when that game is loaded. Finally, press the **Assign ROM** button to add your defined command(s) to the **Action List**. 
+To setup a new rom to be monitored, choose `ROM Monitor` from the **Device List** list in the **Settings** screen.</br/>
+
+<img width="800" height="95" alt="ROM Monitor mode" src="https://github.com/user-attachments/assets/d69d95d4-57fd-46ce-bd3c-184f5d67d052" /><br/>
+
+Next, choose a rom from the **Choose ROM** list and then use the **Profile** and **Command** fields to configure the specific commands that should execute when that game is loaded. Finally, press the **Assign ROM** button to add your defined command(s) to the **Action List**. 
 
 **Note 1**: If you choose one of the `[Group...]` options in the **Choose ROM** list, you can conveniently assign an action set to a whole group of similarly controlled games. If any of the games in that group need an alternate configuration on an exception basis, simply create another action for that specific rom, which will override the group setting. There is also a `[Default]` action which can be configured for cases where there is neither a rom-specific action nor group action to otherwise handle it.  The following are some examples of Groups.
 
@@ -124,7 +123,12 @@ To setup a new rom to be monitored, choose `ROM Monitor` from the **Device List*
 
 Buttons and Key Presses:
 ------------------------
-To setup a manual action that will run upon a particular button or key press, Choose `Keyboard` or one of the game controllers from the **Device List** in the Settings screen. Next, use the **Profile** and **Command** fields to configure the command line that will execute when the button or key is pressed. Finally, press the **Assign** button to choose the actual button or key you want to assign to the action and add it to the **Actions List**.
+To setup a manual action that will run upon a particular button or key press, Choose `Keyboard` or one of the game controllers from the **Device List** in the Settings screen.<br/>
+
+<img width="781" height="96" alt="Keyboard mode" src="https://github.com/user-attachments/assets/b4575e9b-f229-4e01-84ab-f551be2c1042" />
+<img width="779" height="95" alt="Controller mode" src="https://github.com/user-attachments/assets/ba8541d1-2989-42f2-97ee-fc9c4c9878d0" /><br/>
+
+Next, use the **Profile** and **Command** fields to configure the command line that will execute when the button or key is pressed. Finally, press the **Assign** button to choose the actual button or key you want to assign to the action and add it to the **Actions List**.
 
 **Note 1**: In addition to command line actions, game controller buttons can also be configured to send virtual keyboard key presses or perform game information screen navigation actions. These options can be configured by choosing the appropriate radio button at the top of the screen whenever a game controller is selected in the **Device List**.
 
