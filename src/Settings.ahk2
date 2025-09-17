@@ -1341,7 +1341,7 @@ class Settings
 			gcSendKey_Radio.Value := 1
 		}
 		;handle case where action is a GameInfo Navigation action
-		else if (gcListView.GetText(iRow, Settings.DEVICE) != "ROM Monitor" && gcListView.GetText(iRow, Settings.DEVICE) != "Keyboard" && InStr(gcListView.GetText(iRow, Settings.COMMAND), "GameInfo Navigation:"))
+		else if (gcListView.GetText(iRow, Settings.DEVICE) != "ROM Monitor" && InStr(gcListView.GetText(iRow, Settings.COMMAND), "GameInfo Navigation:"))
 		{   
 			iStartPos := InStr(gcListView.GetText(iRow, Settings.COMMAND), "{") + 1 
 			iEndPos := InStr(gcListView.GetText(iRow, Settings.COMMAND), "}")
