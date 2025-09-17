@@ -76,7 +76,7 @@ Use **arcadeVFE** to quickly install the correct roms into **Arcade Time Capsule
 
 **Preparation:**
 1. Ensure ATC's rom folder is empty: `\Arcade Time Capsule\Retro\VRArcade\Content\Roms`.
-2. Fill two source folders with _non-merged_ rom sets. One with roms for mame2010 (0.139) and one with roms for mame2014 (0.159). Don't forget to include the chd subfolders `\kinst` in your 2014 roms folder and `\kinst2` in your 2010 folder.
+2. Obtain and populate two source folders with _non-merged_ rom sets. One with roms for mame2010 (0.139) and one with roms for mame2014 (0.159). Don't forget to include the chd subfolders `\kinst` in your 2014 roms folder and `\kinst2` in your 2010 folder.
 
 **Copy the ROMS:**
 1. Run arcadeVFE and go to the **Initial Setup** dialog.<br/>
