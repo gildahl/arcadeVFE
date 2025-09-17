@@ -201,7 +201,8 @@ class Setup
                 g_oLog.LogLine("ERROR: Arcade rom list is empty!`n")
         }
 
-        gcCopyRomsButton.Enabled := gcAuditButton.Enabled := gcConfigToolsButton.Enabled := g_sArcadeString != "Other" && DirExist(gcROMMonitorFolderEdit.Text) ? true : false
+        gcCopyRomsButton.Enabled := gcAuditButton.Enabled := g_sArcadeString != "Other" && DirExist(gcROMMonitorFolderEdit.Text) ? true : false
+        gcConfigToolsButton.Enabled := g_sArcadeString != "Other" && DirExist(g_sATCFolder "\RetroVRArcade\Plugins\save") && DirExist(gcROMMonitorFolderEdit.Text "\..\..\..\RetroVRArcade\Plugins\save") && DirExist(gcROMMonitorFolderEdit.Text) ? true : false
 
         Setup.UpdateApplyButton()
     }
@@ -242,7 +243,10 @@ class Setup
 		ToolTip()
 
         result := "Yes"
-        result := MsgBox("Performing this *.cfg file backup will overwrite any previous backups.`n`nAre you sure you would like to proceed?`nPress 'Yes' to backup now, or press 'No' to abort.", "Perform *.cfg file backup?", 36)
+        if (FileExist(g_sArcadeFolder "\" g_sArcadeString "\Backup\cfg\.backup"))
+            result := MsgBox("Performing this *.cfg file backup will overwrite any previous backups.`n`nAre you sure you would like to proceed?`nPress 'Yes' to backup now, or press 'No' to abort.", "Perform *.cfg file backup?", 36)
+        else
+            result := MsgBox("Performing this operation will create a backup of all ATC *.cfg controller configuration files.`n`nAre you ready to proceed?`nPress 'Yes' to backup now, or press 'No' to abort.", "Perform *.cfg file backup?", 36)
 
         if (result == "No")
         {
@@ -730,6 +734,7 @@ class Setup
             ;Machine location editor is not supported for "Other" arcade
             ;Use try since this may be called before Settings is created
             try gcEditDirectory_Checkbox.Enabled := g_sArcadeString == "Other" ? false : true
+            gcConfigToolsButton.Enabled := g_sArcadeString != "Other" && DirExist(g_sATCFolder "\RetroVRArcade\Plugins\save") && DirExist(gcROMMonitorFolderEdit.Text "\..\..\..\RetroVRArcade\Plugins\save") && DirExist(gcROMMonitorFolderEdit.Text) ? true : false
 
             g_oLog.LogLine("INFO: Setup Apply Button pressed.`n")
         }
@@ -737,7 +742,8 @@ class Setup
 
     static ROMMonitorFolderEdit_Change(*)
     {
-        gcCopyRomsButton.Enabled := gcAuditButton.Enabled := gcConfigToolsButton.Enabled := g_sArcadeString != "Other" && DirExist(gcROMMonitorFolderEdit.Text) ? true : false
+        gcCopyRomsButton.Enabled := gcAuditButton.Enabled := g_sArcadeString != "Other" && DirExist(gcROMMonitorFolderEdit.Text) ? true : false
+        gcConfigToolsButton.Enabled := g_sArcadeString != "Other" && DirExist(g_sATCFolder "\RetroVRArcade\Plugins\save") && DirExist(gcROMMonitorFolderEdit.Text "\..\..\..\RetroVRArcade\Plugins\save") && DirExist(gcROMMonitorFolderEdit.Text) ? true : false
 
         Setup.UpdateApplyButton()
     }
@@ -760,7 +766,8 @@ class Setup
         
         gcROMMonitorFolderEdit.Value := sFolder
 
-        gcCopyRomsButton.Enabled := gcAuditButton.Enabled := gcConfigToolsButton.Enabled := g_sArcadeString != "Other" && DirExist(gcROMMonitorFolderEdit.Text) ? true : false
+        gcCopyRomsButton.Enabled := gcAuditButton.Enabled := g_sArcadeString != "Other" && DirExist(gcROMMonitorFolderEdit.Text) ? true : false
+        gcConfigToolsButton.Enabled := g_sArcadeString != "Other" && DirExist(g_sATCFolder "\RetroVRArcade\Plugins\save") && DirExist(gcROMMonitorFolderEdit.Text "\..\..\..\RetroVRArcade\Plugins\save") && DirExist(gcROMMonitorFolderEdit.Text) ? true : false
 
         Setup.UpdateApplyButton()
     }
