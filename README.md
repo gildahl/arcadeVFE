@@ -48,7 +48,7 @@ To install arcadeVFE 1.2.1, follow these four steps:
 
 Before pressing **Close** to complete the installation, you may wish to press the **Audit ROMs...** button to perform a quick validation of your rom collection. You may also want to click on **Config Tools...** and do a `*.cfg` file backup. 
 
-If you are new to ATC and have not yet installed any roms, you may refer to the next section, [Copy ROMs to ATC](#Copy-ROMs-to-ATC) for a streamlined method of doing this.
+If you are new to ATC and have not yet installed any roms, you may wish to refer to the next section, [Copy ROMs to ATC](#Copy-ROMs-to-ATC) for a streamlined method of doing this.
 
 >[!NOTE]
 > * If you are currently running version 1.2.0, just install version 1.2.1 to the same folder and you will be automatically upgraded. 
