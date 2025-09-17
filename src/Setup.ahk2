@@ -295,7 +295,7 @@ class Setup
 		ToolTip()
 
         result := "Yes"
-        result := MsgBox("Performing this *.cfg file restore will overwrite existing files in ATC with the ones you have previously backed-up.`n`nAre you sure you would like to proceed?`nPress 'Yes' to restore now, or press 'No' to abort.", "Perform *.cfg file restore?", 36)
+        result := MsgBox("Performing this *.cfg file restore will overwrite existing files in ATC with the ones you had previously backed-up.`n`nAre you sure you would like to proceed?`nPress 'Yes' to restore now, or press 'No' to abort.", "Perform *.cfg file restore?", 36)
 
         if (result == "No")
         {
