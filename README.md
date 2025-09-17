@@ -42,7 +42,7 @@ To install arcadeVFE 1.2, follow these four steps:
 2. Run the installer and follow the prompts.
 3. At the end of the install, accept the option to launch **arcadeVFE**.
 4. In the **Initial Setup Dialog** that follows, enter ATC's rom folder in the bottom field, then press **Apply**.
-<img width="400" alt="Initial Setup" src="https://github.com/user-attachments/assets/61cc18f0-f2f9-4f76-890e-0013a257179e" />
+<img width="400" alt="Initial Setup" src="https://github.com/user-attachments/assets/d5db6135-b82a-430c-9742-2ec80b9613bc" />
 
 Before pressing **Close** to complete the installation, you may wish to press the **Audit ROMs** button to perform a quick validation of your rom collection. If you are new to ATC and have not yet installed any roms, you may refer to the next section, [Copy ROMs to ATC](#Copy-ROMs-to-ATC) for a streamlined method of doing this.
 
@@ -55,7 +55,7 @@ Quick Tour
 Once you close the **Initial Setup** dialog, you will be taken directly to the **Settings** screen. To confirm proper installation, take a quick tour by performing these actions: 
 1. Select a game from the **Choose ROM** list on the top right. You should see its location in the arcade directly beneath. If you ever wish to edit these locations, check the **Edit Directory** checkbox in the **User Preferences** area at the bottom of the screen.
 2. With a game selected, press the **Preview GameInfo...** button at the bottom of the dialog. This will display game information that you can navigate through using the left and right arrow buttons. To Exit use the `Escape` key.
-<img width="700" alt="Settings" src="https://github.com/user-attachments/assets/4250d53b-ee5a-45b0-86ee-44603fecee74" />
+<img width="700" alt="Settings" src="https://github.com/user-attachments/assets/5ce6e1db-e812-4f48-8848-e6ad3f1bcf03" />
 
 After returning to the Settings screen, you may continue with futher configuration by following the instructions in the [General Configuration](#General-Configuration-(Settings-dialog)) section below.
 
