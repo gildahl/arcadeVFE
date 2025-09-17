@@ -79,7 +79,7 @@ Use **arcadeVFE** to quickly install the correct roms into **Arcade Time Capsule
 2. Obtain and populate two source folders with _non-merged_ rom sets. One with roms for mame2010 (0.139) and one with roms for mame2014 (0.159). Don't forget to include the chd subfolders `\kinst` in your 2014 roms folder and `\kinst2` in your 2010 folder.
 
 **Copy the ROMS:**
-1. Run arcadeVFE and go to the **Initial Setup** dialog.<br/>
+1. Run arcadeVFE and go to the **Initial Setup** dialog using the button at the bottom of the **Settings** screen.<br/>
 
 <img width="400" alt="Initial Setup" src="https://github.com/user-attachments/assets/d5db6135-b82a-430c-9742-2ec80b9613bc" /><br/>
    
