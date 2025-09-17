@@ -99,7 +99,7 @@ Log
 ===
 See the `log.txt` file in the `\Log` subfolder if needed for troubleshooting. This log is overwritten at the start of every run. Two beeps will be sounded whenever an error is written to the file. When reporting any issues, be sure to include the most recent log with your description of the problem. You may report errors on the Discord.
 
-General Configuration: Settings dialog
+General Configuration, Settings dialog
 ======================================
 **arcadeVFE** offers two different modes of operation. The first is a **ROM Monitor** mode that can execute game-specific actions whenever a game using a **MAME** rom file is played. This mode can provide fully automated game controller configuration in **MAME** environments like **Arcade Time Capsule**. 
 
