@@ -63,7 +63,7 @@ Once you close the **Initial Setup** dialog, you will be taken directly to the *
 
 <img width="700" alt="Settings" src="https://github.com/user-attachments/assets/5ce6e1db-e812-4f48-8848-e6ad3f1bcf03" /><br/>
 
-After returning to the Settings screen, you may continue with futher configuration by following the instructions in the [General Configuration](#General-Configuration-(Settings-dialog)) section below.
+After returning to the Settings screen, you may continue with futher configuration by following the instructions in the [General Configuration](#General-Configuration:-Settings-dialog) section below.
 
 Note that in the future, whenever you start **arcadeVFE**, you will see nothing immediately on the screen (other than a splash screen), but rather it will create an icon in the Windows Tray indicating that normal background mode is active. Whenever you need to return to the **Settings** dialog, right-click on this icon and choose **Settings...**. You can also click on the **Initial Setup** button in the **Settings** screen to re-invoke the **Initial Setup** dialog to perform audits and rom copy operations.
 
@@ -99,8 +99,8 @@ Log
 ===
 See the `log.txt` file in the `\Log` subfolder if needed for troubleshooting. This log is overwritten at the start of every run. Two beeps will be sounded whenever an error is written to the file. When reporting any issues, be sure to include the most recent log with your description of the problem. You may report errors on the Discord.
 
-General Configuration (Settings dialog)
-=======================================
+General Configuration: Settings dialog
+======================================
 **arcadeVFE** offers two different modes of operation. The first is a **ROM Monitor** mode that can execute game-specific actions whenever a game using a **MAME** rom file is played. This mode can provide fully automated game controller configuration in **MAME** environments like **Arcade Time Capsule**. 
 
 <img width="800" height="95" alt="ROM Monitor mode" src="https://github.com/user-attachments/assets/d69d95d4-57fd-46ce-bd3c-184f5d67d052" /><br/>
