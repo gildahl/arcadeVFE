@@ -128,7 +128,7 @@ To setup a manual action that will run upon a particular button or key press, Ch
 <img width="781" height="96" alt="Keyboard mode" src="https://github.com/user-attachments/assets/b4575e9b-f229-4e01-84ab-f551be2c1042" />
 <img width="779" height="95" alt="Controller mode" src="https://github.com/user-attachments/assets/ba8541d1-2989-42f2-97ee-fc9c4c9878d0" /><br/>
 
-Next, use the **Profile** and **Command** fields to configure the command line that will execute when the button or key is pressed. Finally, press the **Assign** button to choose the actual button or key you want to assign to the action and add it to the **Actions List**.
+Next, use the **Profile** and **Command** fields to configure a key press or GameInfo navigation action or a command line that will execute when the button or key is pressed. Finally, press the **Assign** button to choose the actual button or key you want to assign to the action and add it to the **Actions List**.
 
 **Note 1**: In addition to command line actions, game controller buttons can also be configured to send virtual keyboard key presses or perform game information screen navigation actions. These options can be configured by choosing the appropriate radio button at the top of the screen whenever a game controller is selected in the **Device List**.
 
