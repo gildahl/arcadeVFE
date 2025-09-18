@@ -68,7 +68,7 @@ After returning to the Settings screen, you may configure your controllers by fo
 Note that in the future, whenever you start **arcadeVFE**, you will see nothing immediately on the screen (other than a splash screen), but rather it will create an icon in the Windows Tray indicating that normal background mode is active. Whenever you need to return to the **Settings** dialog, right-click on this icon and choose **Settings...**. You can also click on the **Initial Setup** button in the **Settings** screen to re-invoke the **Initial Setup** dialog to perform audits, rom copy operations or `*.cfg` file operations.
 
 > [!IMPORTANT]
-> _Remember to close the **Settings** screen before you enter your virtual arcade since **arcadeVFE** pauses normal operation while the **Settings** screen is open. If at any time you wisht to exit **arcadeVFE** completely, right-click on its icon in the Windows Tray and select **Exit**._  
+> _Remember to close the **Settings** screen before you enter your virtual arcade since **arcadeVFE** pauses normal operation while the **Settings** screen is open. If at any time you wish to exit **arcadeVFE** completely, right-click on its icon in the Windows Tray and select **Exit**._  
 
 Copy ROMs to ATC
 ================
