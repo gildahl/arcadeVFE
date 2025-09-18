@@ -265,11 +265,11 @@ If you use mouse clicks as a fire button, these will not work if the **GameInfo*
 
 Config Tools
 ============
-Whenever you change controller settings using the **MAME** `Tab` menu within games in ATC, these changes will be stored in `*.cfg` files inside ATC's `\Arcade Time Capsule\RetroVRArcade\Plugins\save\mame*` folders. The risk making such changes is that as soon as you do so, your change is saved immediately, overwriting previous settings, which can sometimes take some effort to undo if you make a mistake--or sometimes you just want to make experimental changes without concern about reverting. To assist with this, within the **Initial Setup** dialog is a button called **Config Tools...** that will permit you perform the following actions:
+Whenever you change controller settings using the **MAME** `Tab` menu within games in ATC, these changes will be stored in `*.cfg` files inside ATC's `\Arcade Time Capsule\RetroVRArcade\Plugins\save\mame*` folders. The risk in making such changes is that as soon as you do so, your change is saved immediately, overwriting previous settings, which can sometimes take some effort to undo if you make a mistake--or sometimes you just want to make experimental changes without concern about reverting. To assist with this, within the **Initial Setup** dialog there is a button called **Config Tools...** that will permit you perform the following actions:
 
 1. **Backup**: This button backs-up all `*.cfg` files in ATC.
-2. **Restore**: This button restores all `*.cfg` files from the backup you made, overwriting all existing `*.cfg` files in ATC with the backed-up ones.
-3. **Delete**: This button deletes all `*.cfg` files in ATC. This has the effect of returning all games to their default settings (since ATC will just regenerate them).
+2. **Restore**: This button restores all `*.cfg` files from the backup you made, overwriting existing `*.cfg` files in ATC with the backed-up ones.
+3. **Delete**: This button deletes all `*.cfg` files in ATC. This has the effect of returning all games to their default settings (since ATC will regenerate them).
 4. **Patch**: This button patches all rotary games in ATC to provide the Positional Analog Inc and Dec settings with mappable values so that you can more easily configure joysticks like the GRS Ikari Warriors stick. It is recommended that you perform a backup before using this feature in case the changes aren't what you had in mind.<br/>
 
 <img width="546" height="247" alt="Config Tools" src="https://github.com/user-attachments/assets/44713b1d-7c3c-487f-b134-4a6bd4a389a2" /><br/>
