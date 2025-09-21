@@ -128,7 +128,7 @@ To setup a manual action that will run upon a particular button or key press, Ch
 <img width="781" height="96" alt="Keyboard mode" src="https://github.com/user-attachments/assets/b4575e9b-f229-4e01-84ab-f551be2c1042" />
 <img width="779" height="95" alt="Controller mode" src="https://github.com/user-attachments/assets/ba8541d1-2989-42f2-97ee-fc9c4c9878d0" /><br/>
 
-Next, use the **Profile** and **Command** fields to configure a keypress or GameInfo navigation action or a command line that will execute when the button or key is pressed. Finally, press the **Assign** button to choose the actual button or key you want to assign to the action and add it to the **Actions List**.
+Next, configure a keypress or GameInfo navigation action, or use the **Profile** and **Command** fields below to configure one or more a command line actions that will execute when the button or key is pressed. Finally, press the **Assign** button to choose the actual button or key you want to assign to the action and add it to the **Actions List**.
 
 **Note**: It is possible to assign multiple actions to the same button or key press, in which case the actions will be invoked sequentially upon each press. See the [Sequence](#Sequence) section below for more information about how this works.
 
