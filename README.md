@@ -44,9 +44,9 @@ To install arcadeVFE 1.2.1, follow these four steps:
 3. At the end of the install, accept the option to launch **arcadeVFE**.
 4. In the **Initial Setup Dialog** that follows, enter ATC's rom folder in the bottom field, then press **Apply**.<br/>
 
-<img width="400" alt="Initial Setup" src="https://github.com/user-attachments/assets/d5db6135-b82a-430c-9742-2ec80b9613bc" /><br/>
+<img width="400" alt="Initial Setup" src="https://github.com/user-attachments/assets/28486fa3-69cc-426b-ae39-931cc7f74f11" /><br/>
 
-Before pressing **Close** to complete the installation, you may wish to press the **Audit ROMs...** button to perform a quick validation of your rom collection. You may also want to click on **Config Tools...** and do a `*.cfg` file backup. 
+Before pressing **Close** to complete the installation, you may wish to press the **Audit ROMs...** button to perform a quick validation of your rom collection. You may also want to click on **Config Tools...** to do a `*.cfg` file backup.
 
 If you are new to ATC and have not yet installed any roms, you may wish to refer to the next section, [Copy ROMs to ATC](#Copy-ROMs-to-ATC) for a streamlined method of doing this.
 
@@ -61,7 +61,7 @@ Once you close the **Initial Setup** dialog, you will be taken directly to the *
 1. Select a game from the **Choose ROM** list on the top right. You should see its location in the arcade directly beneath. If you ever wish to edit these locations, check the **Edit Directory** checkbox in the **User Preferences** area at the bottom of the screen.
 2. With a game selected, press the **Preview GameInfo...** button at the bottom of the dialog. This will display game information that you can navigate through using the left and right arrow buttons. To Exit use the `Escape` key.
 
-<img width="700" alt="Settings" src="https://github.com/user-attachments/assets/5ce6e1db-e812-4f48-8848-e6ad3f1bcf03" /><br/>
+<img width="700" alt="Settings" src="https://github.com/user-attachments/assets/d5b84406-93e3-44c4-ac9e-b409c88662a8" /><br/>
 
 After returning to the Settings screen, you may configure your controllers by following the instructions in the General Configuration section below.
 
@@ -81,8 +81,8 @@ Use **arcadeVFE** to quickly install the correct roms into **Arcade Time Capsule
 **Copy the ROMS:**
 1. Run arcadeVFE and go to the **Initial Setup** dialog using the button at the bottom of the **Settings** screen.<br/>
 
-<img width="400" alt="Initial Setup" src="https://github.com/user-attachments/assets/d5db6135-b82a-430c-9742-2ec80b9613bc" /><br/>
-   
+<img width="400" alt="Initial Setup - copy roms" src="https://github.com/user-attachments/assets/0845117b-60b8-4249-b49a-1b03ba3e3000" /><br/>
+
 3. Ensure the **ROM folder to monitor** field contains a path to the (empty) ATC roms folder on your PC.
 
 > [!TIP]
