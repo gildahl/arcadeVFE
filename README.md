@@ -58,7 +58,7 @@ If you are new to ATC and have not yet installed any roms, you may wish to refer
 Quick Tour
 ==========
 Once you close the **Initial Setup** dialog, you will be taken directly to the **Settings** dialog. To confirm proper installation, take a quick tour by performing these actions: 
-1. Select a game from the **Choose ROM** list on the top right. You should see its location in the arcade directly beneath. If you ever wish to edit these locations, check the **Edit Directory** checkbox in the **User Preferences** area at the bottom of the screen.
+1. Select a game from the **Choose ROM** list on the top right. You should see its location in the arcade directly beneath. If you ever wish to edit these locations, check the **Edit** checkbox to enable the controls.
 2. With a game selected, press the **Preview GameInfo...** button at the bottom of the dialog. This will display game information that you can navigate through using the left and right arrow buttons. To Exit use the `Escape` key.
 
 <img width="700" alt="Settings" src="https://github.com/user-attachments/assets/201af3e8-5b01-4111-8631-dafe872d7500" /><br/>
