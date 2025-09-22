@@ -109,7 +109,7 @@ ROM Monitor:
 ------------
 To setup a new rom to be monitored, choose `ROM Monitor` from the **Device List** list in the **Settings** screen.<br/>
 
-<img width="800" height="95" alt="ROM Monitor mode" src="https://github.com/user-attachments/assets/d69d95d4-57fd-46ce-bd3c-184f5d67d052" /><br/>
+<img width="300" alt="ROM Monitor mode" src="https://github.com/user-attachments/assets/b8ea6ba6-1594-4287-a607-58fdfee51053" /><br/>
 
 Next, choose a rom from the **Choose ROM** list and then use the **Profile** and **Command** fields to configure the specific commands that should execute when that game is loaded. Finally, press the **Assign ROM** button to add your defined command(s) to the **Action List**. 
 
@@ -125,8 +125,8 @@ Buttons and Key Presses:
 ------------------------
 To setup a manual action that will run upon a particular button or key press, Choose `Keyboard` or one of the game controllers from the **Device List** in the Settings screen.<br/>
 
-<img width="781" height="96" alt="Keyboard mode" src="https://github.com/user-attachments/assets/b4575e9b-f229-4e01-84ab-f551be2c1042" />
-<img width="779" height="95" alt="Controller mode" src="https://github.com/user-attachments/assets/ba8541d1-2989-42f2-97ee-fc9c4c9878d0" /><br/>
+<img width="300" height="134" alt="Keyboard mode" src="https://github.com/user-attachments/assets/14204222-5ac0-4e51-9a0f-571b206f9286" /><br/>
+<img width="300" height="131" alt="Controller mode" src="https://github.com/user-attachments/assets/d7dc9011-4d00-4bd1-a305-815f93e4dfa7" /><br/>
 
 Next, configure a keypress or GameInfo navigation action, or use the **Profile** and **Command** fields below to configure one or more a command line actions that will execute when the button or key is pressed. Finally, press the **Assign** button to choose the actual button or key you want to assign to the action and add it to the **Actions List**.
 
