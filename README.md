@@ -234,9 +234,6 @@ If you have configured voice notification phrases for your actions, then this sw
 ### Beep on action
 This option will sound a beep whenever a command action happens. This can be useful as a debugging tool by asserting profile changes independent of the voice option.
 
-### Edit Directory
-This option will enable the edit controls under the Choose ROM list containing the locations of arcade machines in the virtual arcade. You may edit these as you please. This option is turned off by default to prevent inadvertent changes to the location list (since changes are saved immediately as they are entered).
-
 ### Run RawAccel
 **RawAccel** is a utility that can be found on GitHub at `https://github.com/RawAccelOfficial/rawaccel`. This software may be needed to tune some trackballs to have additional sensitivity. For example, I need it to make my **Ultimarc U-Trak** trackball work correctly in **Arcade Time Capsule**. To integrate **RawAccel** with **arcadeVFE**, simply install it anywhere you like on your PC, then find the `plugins.ini` file located in the `\Config` subfolder of **arcadeVFE**, load it in an text editor like **Notepad**, and then add the path to your RawAccel folder to the `Path=` line in the `[RawAccel]` section. For example:
 
