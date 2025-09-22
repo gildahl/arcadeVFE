@@ -15,7 +15,7 @@
 /***********************************************************************
 * Compiler directives
 ************************************************************************/
-global CodeVersion := "1.2.1.0"
+global CodeVersion := "1.2.2.0"
 ;@Ahk2Exe-Let version = %A_PriorLine~U)^(.+"){1}(.+)".*$~$2%
 ;@Ahk2Exe-SetCopyright © 2025 David G. Dahlstrom
 ;@Ahk2Exe-SetProductName arcadeVFE
@@ -42,6 +42,7 @@ global CodeVersion := "1.2.1.0"
 #include PacDrive.ahk2
 #include SystemCursor.ahk2
 #include Utility.ahk2
+#include HighScore.ahk2
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;Turn test mode on/off
@@ -87,6 +88,8 @@ global g_sImageOrder := "cabinets,cpanel,instructions,instructions_2,flyers,flye
 global g_bHideCursor := 0
 global g_iGameInfoFontSize := 18
 global g_iMonitor := 1
+global g_guiGameInfoOverlayHwnd := 0
+global g_iMaxHSTableRows := 20
 ;***********************************************************
 
 global g_oSDL2 := SDL2DLL() ;SDL library for game device discovery and polling
@@ -104,6 +107,7 @@ global g_bCancelAssign := false
 global g_bCancelPoll := false
 global g_bActive := false
 global g_bOnlyMonitorWhenArcadeIsLoaded := false
+global g_sArcadePID := 0
 global g_iRawAccelPID := 0
 global g_sLastActionKey := ""
 global g_bSuppressLastAccess := false
@@ -116,7 +120,8 @@ global g_iCommandLineDelay := 500        ;Delay in between two consecutive comma
 global g_oVoice := voice_class()         ;initialize speech support
 global g_oTemplates                      ;Object used by the JSON parser to hold the Template list
 global g_oTweaks                         ;Object used by the JSON parser to hold the Tweaks list
-global g_oActions	:= Map()		     ;Object used by the JSON parser to hold the Actions list
+global g_oActions := Map()		     	 ;Object used by the JSON parser to hold the Actions list
+global g_oInitials := Array()
 global g_aDevices := Array()             ;Holds the list of devices (a.k.a. Action Sources)
 global g_mDeviceIndex := Map()           ;Holds the indexes of the devices in the list
 global g_mDevices := Map()               ;Holds info for all devices in the list              ;
@@ -135,16 +140,20 @@ global g_sUserFolder := A_ScriptDir "\User"
 global g_sLogFolder := A_ScriptDir "\Log"
 global g_sAuditFolder := A_ScriptDir "\Audit"
 global g_sArcadeFolder := A_ScriptDir "\Arcade"
+global g_sHi2txtFolder := A_ScriptDir "\Hi2txt"
+global g_sHighScoreFolder := A_ScriptDir "\Hi2txt\plugins\hiscore"
 global g_sRawAccelFolder := "" ;plugin
 
 ;filename defaults
 global g_sIniFile := g_sConfigFolder "\vfe.ini"
 global g_sPluginsFile := g_sConfigFolder "\plugins.ini"
+global g_sInitialsFile := g_sConfigFolder "\initials.json"
 global g_sUserFile := g_sUserFolder "\Arcade Controller.json"
 global g_sTemplatesFile := g_sConfigFolder "\templates.json"
 global g_sTweaksFile := g_sConfigFolder "\tweaks.json"
 global g_sMame2010 := g_sAuditFolder "\mame2010\mame64.exe" ;For MAME 2010 / 0.139 rom file audits
 global g_sMame2014 := g_sAuditFolder "\mame2014\mame64.exe" ;For MAME 2014 / 0.159 rom file audits
+global g_sHi2txtExe := g_sHi2txtFolder "\hi2txt.exe"
 global g_sRawAccelExe := "" ;plugin
 
 ;Make file updates effective with ver. 1.2)
@@ -312,6 +321,19 @@ DoFileAudit()
 	if (!FileExist(A_ScriptDir "\Arcade\Arcade Time Capsule 3.6.Vicinities.json"))
 		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " A_ScriptDir "\Arcade\Arcade Time Capsule 3.6.Vicinities.json" "`n")
 
+	if (!FileExist(g_sHi2txtExe))
+		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " g_sHi2txtExe "`n")
+	if (!FileExist(g_sHi2txtFolder "\hi2txt.zip"))
+		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " g_sHi2txtFolder "\hi2txt.zip`n")
+	if (!FileExist(g_sHi2txtFolder "\plugins\hiscore\hiscore.dat"))
+		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " g_sHi2txtFolder "\plugins\hiscore\hiscore.dat`n")
+	if (!FileExist(g_sHi2txtFolder "\plugins\hiscore\sort_hiscore.lua"))
+		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " g_sHi2txtFolder "\plugins\hiscore\sort_hiscore.lua`n")
+	if (!FileExist(g_sHi2txtFolder "\plugins\hiscore\plugin.json"))
+		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " g_sHi2txtFolder "\plugins\hiscore\plugin.json`n")
+	if (!FileExist(g_sHi2txtFolder "\plugins\hiscore\init.lua"))
+		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " g_sHi2txtFolder "\plugins\hiscore\init.lua`n")
+
 	if (bAuditSuccessful)
 		g_oLog.LogLine("INFO: All required runtime files confirmed to exist.`n")
 
@@ -414,6 +436,14 @@ LoadConfig()
 	}
 	catch {
 		IniWrite(g_sImageOrder, g_sIniFile, "GameInfo", "ImageOrder")
+	}
+
+	;Initialize Settings GameInfo Left key
+	try {
+		global g_iMaxHSTableRows := IniRead(g_sIniFile, "GameInfo", "MaxHighScoreTableRows")
+	}
+	catch {
+		IniWrite(g_iMaxHSTableRows, g_sIniFile, "GameInfo", "MaxHighScoreTableRows")
 	}
 
 	;Create the fully validated g_aImageOrder array accounting for possible
@@ -554,13 +584,15 @@ StartRomWatcher()
 }
 
 /**
- * Function called by the WatchFolder folder/file monitor whenever the access
- * timestamp on a file is changed.
- * @param sFolder - The folder in which a change was detected
+ * Function called by the WatchFolder folder/file monitor whenever the access timestamp on a file is
+ * changed. 
+ * 
+ * This function may also be called manually just to update the access timestamp of a file by
+ * sending a null sFolder. In this case, only the timestamp will be updated, but no action will be performed.
+ * @param sFolder - The folder in which a change was detected. If empty, the function was called manually.
  * @param aChanges - The specific changes detected, including the name of the file accessed.
- * @param bIgnore - if true, update the timestamp only and don't perform the action
  */
-RomAccess_Event(sFolder, aChanges, bIgnore:=false) 
+RomAccess_Event(sFolder, aChanges) 
 {
     static tLastFileName := ""
 
@@ -584,22 +616,22 @@ RomAccess_Event(sFolder, aChanges, bIgnore:=false)
 
 	;Force last-access timestamp of the **game we're about to exit** to a week ago. This is to overcome an issue in
 	;which Windows does not natively update this timestamp if it is too recent, so lets make it look old so it does.	
-	if (bIgnore && sFolder) ;this will be true if RomAccess_Event() was called manually just to update the access timestamp.
+	if (!sFolder && sNewROMFile) ;this will be true if RomAccess_Event() was called manually just to update the access timestamp.
 	{
-		FileSetTime DateAdd(A_Now, -7, "days"), sFolder, "A"
-		SplitPath(sFolder, &OutName)
-		g_oLog.LogLine("INFO: Access timestamp updated on file (retroactive): `"" OutName "`"`n")
+		FileSetTime DateAdd(A_Now, -7, "days"), sNewROMFile, "A"
+		SplitPath(sNewROMFile, &OutName)
+		g_oLog.LogLine("INFO: Access timestamp updated on file (force): `"" OutName "`"`n")
 	}
 	else if (g_sCurrentROM) ;this will be true if RomAccess_Event() was called by WatchFolder (note: g_sCurrentROM is a global)
 	{
 		FileSetTime DateAdd(A_Now, -7, "days"), g_sCurrentROM, "A"
 		SplitPath(g_sCurrentROM, &OutName)
-		g_oLog.LogLine("INFO: Access timestamp updated on file (active): `"" g_sCurrentROM "`"`n")
+		g_oLog.LogLine("INFO: Access timestamp updated on file (normal): `"" OutName "`"`n")
 	}
 
 	tLastFileName := g_sCurrentROM
 
-	if (bIgnore)
+	if (!sFolder) ;no folder was provided so don't perform any actions
 		return
 
 	;Return if the application is in an inactive state (such when in the Settings screen). In this case
@@ -684,6 +716,7 @@ ApplicationProcessCheck_Callback()
 {
 	global g_bCancelPoll
 	global g_iRawAccelPID
+	global g_sArcadePID
 
 	;Terminate this timer if g_bCancelPoll gets set
 	;Needed to support toggling of "Monitor only when Arcade running" option
@@ -697,14 +730,8 @@ ApplicationProcessCheck_Callback()
 	;now loaded, then call Poll() to start/resume monitoring
 	if (g_bOnlyMonitorWhenArcadeIsLoaded && ProcessExist(g_sApplicationName))
 	{
+		Hotkey("~LButton", OnMouseButtonEvent, "On")
 		g_oLog.LogLine("INFO: Application, `"" g_sApplicationName "`" detected.`n" )
-
-		;Refresh the g_sCurrentROM timestamp since it might get replayed
-		if (g_sCurrentROM) ;g_sCurrentROM is a global
-		{
-			global g_bSuppressLastAccess := true
-			FileSetTime DateAdd(A_Now, -7, "days"), g_sCurrentROM, "A"
-		}
 
 		;Run RawAccel if the option is checked and it's available
 		if (gcRawAccel_Checkbox.Value && FileExist(g_sRawAccelExe))
@@ -778,6 +805,8 @@ Poll()
 		{
 			g_oLog.LogLine("INFO: Application, `"" g_sApplicationName "`" not detected.`n" )
 
+			Hotkey("~LButton", OnMouseButtonEvent, "On")
+
 			;shutdown RawAccel if it is running
 			if (gcRawAccel_Checkbox.Value && g_iRawAccelPID)
 			{
@@ -801,8 +830,8 @@ Poll()
 			;exits the arcade, changes the Use GameInfo Overlay setting and then
 			;returns to play the same game.
 			Changes := Array()
-			Changes.Push({Name: "Void"}) ;This is just a place holder
-			RomAccess_Event(g_sCurrentROM, Changes, true)			
+			Changes.Push({Name: g_sCurrentROM})
+			RomAccess_Event("", Changes)			
 
 			global g_sCurrentROM := "" ;clear current rom
 
@@ -1137,7 +1166,7 @@ RunAction(oAction, sModifier:="")
 			Case "Exit":			
 				g_oGameInfoDisplay.Clear()
 
-			Sleep 300
+			Sleep 100
 		}
 
 		return
@@ -1354,8 +1383,8 @@ ShowGameInfo(sRomName)
 			if (DateDiff(A_Now, FileGetTime(A_LoopFilePath, "A"), "Days") < 2) 
 			{
 				Changes := Array()
-				Changes.Push({Name: "Void"}) ;This is just a place holder
-				RomAccess_Event(A_LoopFilePath, Changes, true)
+				Changes.Push({Name: A_LoopFilePath}) 
+				RomAccess_Event("", Changes)
 			}
 		} 
 	}
@@ -1409,7 +1438,7 @@ ShowSplash()
 	gcSplashTitle.SetFont("s26 w700", "Courier New")
 
 	global gcSplashVer := guiSplash.AddText("x" x1 + 235 + iconW " y" y1 + 20 " w" iWidth " h" iHeight, g_sCodeVersionMinor)
-	gcSplashVer.SetFont("s14 w500", "Courier New")
+	gcSplashVer.SetFont("s12 w500", "Courier New")
 
 	sArcade := IniRead(g_sIniFile, "General", "Arcade", "")
 	sArcade := sArcade == "Other" || !sArcade ? "The Virtual Arcade Front End" : "for " sArcade
@@ -1427,4 +1456,45 @@ LogError(e, mode)
     g_oLog.LogLine(sErr "`n")
 	OutputDebug sErr
     ExitApp(-1)
+}
+
+
+/**
+ * This callback provides the handling needed to support clicking on the GameInfo screen such that
+ * clicking on the right side advances one page and clicking on the left side goes back a page.
+ * This must be done in a way that does not cause the GameInfo screen to actually get activated
+ * otherwise trackball/mouse movements will be lost as soon as the user clicks on the window.
+ */
+OnMouseButtonEvent(*)
+{
+	;Only handle when the GameInfo screen exists
+	if (!WinExist("ahk_id " g_guiGameInfoOverlayHwnd))
+		return
+
+	;if calling from the Settings screen, testing shows that the mouse coords are incorrect on the
+	;first click unless the overlay is activated first. This doesn't seem to be an issue when 
+	;activated by the game while the Settings dialog is closed.
+	if (IsWinVisible("ahk_id " guiSettings.Hwnd))
+		try WinActivate("ahk_id " g_guiGameInfoOverlayHwnd)
+
+	MouseGetPos(&MouseX, &MouseY, &MouseWin, &MouseControl)
+
+	if (MouseWin := g_guiGameInfoOverlayHwnd)
+	{
+		g_oGameInfoDisplay.GetBounds(&X, &Y, &W, &H)
+		If (MouseX > 0 && MouseX < W//2 && MouseY > 0 && MouseY < H)
+		{
+			;clicked on the left side
+			Sleep 0
+			g_oGameInfoDisplay.GoPage("l")
+			Sleep 100
+		}
+		else If (MouseX > W//2 && MouseX < W && MouseY > 0 && MouseY < H)
+		{
+			;clicked on the right side
+			Sleep 0
+			g_oGameInfoDisplay.GoPage("r")
+			Sleep 100
+		}
+	}
 }

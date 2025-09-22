@@ -145,8 +145,18 @@ class GameInfoDisplay
 		this.guiGameInfoOverlay.Show("X" this._boundsLeft " Y" this._boundsTop "W" this._ScreenWidth " H" this._ScreenHeight " NA")
 		WinSetTransparent(1, "ahk_id " this.guiGameInfoOverlay.Hwnd) ;don't set this completely transparent (0) or mouse clicks will leak through
 
+		global g_guiGameInfoOverlayHwnd := this.guiGameInfoOverlay.Hwnd
+
 		this._active := true
 		g_oLog.LogLine("INFO: Showing GameInfo screen.`n")
+	}
+
+	GetBounds(&X:=0, &Y:=0, &W:=0, &H:=0)
+	{
+		X := this._boundsLeft
+		Y := this._boundsTop
+		W := this._ScreenWidth
+		H := this._ScreenHeight
 	}
 
 		;Call this between each game
@@ -392,29 +402,64 @@ class GameInfoDisplay
 
 			screen_lines := this._ScreenHeight // ht ;number of lines available for the screen height
 
+			;get high score table for the current game
+			leader_board := ""
+			aLeaderboard := ""
+			if (g_sArcadeString != "Other")
+			{
+				aLeaderboard := HighScore.ReadHighScores(this._rom)
+				if (aLeaderboard) ;will be empty if no highscores
+				{
+					leader_board := HighScore.FormattedHighScore "`n`n"
+
+					;since the length of a row is variable and we never want the unformatted linelength to
+					;force a linebreak, at this stage we only write the rows as indexes in the form
+					;<row>1</row>
+					;<row>2</row>
+					;etc.
+					;Then, at the time of formatting where we have the opportunity to reduce the font size
+					;if necessary, we will replace these with the actual text from aLeaderboard.
+					for i, sLBLine in aLeaderboard
+						leader_board := leader_board "<row>" A_Index "</row>`n"
+
+					leader_board := leader_board "`n- HISTORY -`n`n"
+				}
+			}
+
 			;get the history for the current game
 			if (!IsObject(g_oMameData))
 				g_oMameData := MAMEData(g_sMameInfoFile, g_sMameHistoryFile)
 
 			mame_history_text := g_oMameData.GetHistory(this._rom)
 
+			;split history into header (first 3 lines) and body
+			mame_history_header := ""
+			mame_history_body := ""
+			Loop Parse mame_history_text, "`n"
+			{
+				if (A_Index <= 4)
+					mame_history_header := mame_history_header A_LoopField "`n"
+				else
+					mame_history_body := mame_history_body A_LoopField "`n"
+			}
+
 			;some games in the history.xml refer to the base rom for a full desciption
 			;so lets look that up and include it.
 			sBaseRom := IniRead(g_sBaseRomsFile, "BaseRoms", this._rom, "")
 
 			mame_baserom_history_text := sBaseRom ? g_oMameData.GetHistory(sBaseRom) : ""
-			mame_baserom_history_text :=  mame_baserom_history_text ? "`n`n`n===== Base ROM Game Information =====`n`n" mame_baserom_history_text : mame_baserom_history_text
+			mame_baserom_history_text :=  mame_baserom_history_text ? "`n`n===== Original Game Information =====`n`n" mame_baserom_history_text : mame_baserom_history_text
 
 			mame_info_text := g_oMameData.GetInfo(this._rom)				
-			mame_info_text := mame_info_text ? "`n`n`n===== MAME Development History =====`n`n" mame_info_text : mame_info_text
+			mame_info_text := mame_info_text ? "`n`n===== MAME Development History =====`n`n" mame_info_text : mame_info_text
 
-			if (!mame_history_text && !mame_info_text && !mame_baserom_history_text)
+			if (!mame_history_header && !mame_history_body && !mame_info_text && !mame_baserom_history_text  && !leader_board)
 			{
 				oGameInfo := ReadListXML.GetXMLMetaInfo(g_sGamesXMLFile, this._rom)
 				info_text := "There is no information available for the game: " oGameInfo["description"] " (" this._rom ")"
 			}
 			else
-				info_text := mame_history_text . mame_baserom_history_text . mame_info_text
+				info_text := mame_history_header . leader_board . mame_history_body . mame_baserom_history_text . mame_info_text
 
 			;Replace "En Dash" characters with "Hyphen-Minus" to avoid display issues.
 			info_text := StrReplace(info_text, "–", "-")
@@ -561,7 +606,7 @@ class GameInfoDisplay
 							CreateField(idx, sControlType)
 							this.gcFormatField%idx%.Value := sText
 							this.gcFormatField%idx%.SetFont("italic " g_color_light_blue)
-						} 						
+						} 	
 
 						;The order of the following group of statements must not be changed
 						;********************************************************************
@@ -617,7 +662,7 @@ class GameInfoDisplay
 							this._sNextStyle := "underline" ;Next line with text will be underlined
 						}
 
-						if (InStr(sText, "Base ROM Game Information"))
+						if (InStr(sText, "== Original Game Information =="))
 						{
 						    this._sNextStyle := "italics" ;Next line with text will be in italics
 						}
@@ -655,7 +700,7 @@ class GameInfoDisplay
 							 
 						sPhrases := "
 						(
-						Bugs:,NOTE:,WIP:,HOW TO PLAY:,STORY:,TEST MODE:,LEVELS:,SETUP:,TEST MODE:.WIP:,* CONSOLES:,* OTHERS:,* COMPUTERS:,* HANDHELDS:,* TODO:,* GLITCH:,- TRIVIA -,- UPDATES -,- SCORING -,- CAST OF CHARACTERS -,- STAFF -,- CONTRIBUTE -,- TECHNICAL -,- TIPS AND TRICKS -,- SERIES -,- PORTS -
+						Bugs:,NOTE:,WIP:,HOW TO PLAY:,STORY:,TEST MODE:,LEVELS:,SETUP:,TEST MODE:.WIP:,* CONSOLES:,* OTHERS:,* COMPUTERS:,* HANDHELDS:,* TODO:,* GLITCH:,- HISTORY -,- TRIVIA -,- UPDATES -,- SCORING -,- CAST OF CHARACTERS -,- STAFF -,- CONTRIBUTE -,- TECHNICAL -,- TIPS AND TRICKS -,- SERIES -,- PORTS -
 						)"
 
 						if (IsAnyInStr(sText, sPhrases))
@@ -670,7 +715,41 @@ class GameInfoDisplay
 							CreateField(idx, sControlType)
 							this.gcFormatField%idx%.Value := sText 
 							this.gcFormatField%idx%.SetFont(g_color_light_blue " bold", "Futura")
-						}						
+						}	
+						
+						if (InStr(sText, "<row>")) ;a highscore table line
+						{
+							fsz := g_iGameInfoFontSize
+							nw := CreateField(idx, sControlType)
+							iRow := Number(StrReplace(StrReplace(sText, "<row>", ""), "</row>", ""))
+							loop
+							{
+								tsz := GetTextExtentPoint(aLeaderboard[iRow], "Consolas", fsz, true)
+								if (tsz < nw * 96/A_ScreenDPI)
+									break
+								else
+									fsz--
+							}
+
+							CreateField(idx, sControlType)
+							iRow := Number(StrReplace(StrReplace(sText, "<row>", ""), "</row>", ""))
+							this.gcFormatField%idx%.Value := aLeaderboard[iRow]
+
+							sInitials := ""  
+							for i, j in g_oInitials
+							{
+								if (InStr(aLeaderboard[iRow], "│" j))
+								{
+									sInitials := j
+									break
+								}
+							}
+							
+							if (sInitials)
+								this.gcFormatField%idx%.SetFont("s" fsz " cYellow", "Consolas")
+							else
+								this.gcFormatField%idx%.SetFont("s" fsz, "Consolas")
+						}
 					}
 				}
 

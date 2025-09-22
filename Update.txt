@@ -1,3 +1,13 @@
+arcadeVFE v.1.2.2
+* Added high scores from the arcade to GameInfo for supported games.
+* vfe.ini setting MaxHighScoreTableRows can limit table rows, or turn
+  them all on by setting to 0.
+* New "Player Initials" field added to Initial Setup. This is used to
+  highlight that user's initials in the high score tables.
+* Should now be possible to change pages in GameInfo using motion controller 
+  clicks on the right and left sides of the page when viewing in a desktop portal.
+* Disable Setting screen while GameInfo is displayed to avoid side-effects.
+
 arcadeVFE v.1.2.1
 
 * Minor refinements made to user interface.

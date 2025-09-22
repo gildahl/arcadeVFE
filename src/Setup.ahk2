@@ -61,6 +61,25 @@ class Setup
 		gcApplicationEdit.OnEvent("Change", (*) => Setup.ApplicationEdit_Change())
 		gcApplicationEdit.TT := "Enter the name of the executable for this arcade. Do not`ninclude the path. For example, `"RetroVRArcade.exe`"."
 
+        gcInitialsComboBoxLabel := guiSetup.AddText("x" 370 " y" 9 " w" 75, "Player Initials")
+        gcInitialsComboBox := guiSetup.AddComboBox("x" 370 " y" 24 " w" 75 " +BackgroundWhite",)
+		gcInitialsComboBox.OnEvent("Change", (*) => Setup.InitialsComboBox_Change())
+		gcInitialsComboBox.TT := "These initals are used to highlight your initials in the GameInfo`nleaderboards.`n`nEnter your arcade initials as you enter them into games. If you use`nmore than one set of initials (perhaps a longer version for games`nthat accept that), you should enter those as well."
+
+        gcAddInitialsButton := guiSetup.AddButton("x" 448 " y" 22 " w" nIconButtonWidth)
+		gcAddInitialsButton.OnEvent("Click", (*) => Setup.AddInitialsButton_Click())
+		gcAddInitialsButton.TT := "Add these initials to the list."
+		gcAddInitialsButton.Enabled := false
+		GuiButtonIcon(gcAddInitialsButton, 'icons.dll', 127, 's16') ;add (+) icon
+
+        gcRemoveInitialsButton := guiSetup.AddButton("x" 490 " y" 22 " w" nIconButtonWidth)
+		gcRemoveInitialsButton.OnEvent("Click", (*) => Setup.RemoveInitialsButton_Click())
+		gcRemoveInitialsButton.TT := "Delete the selected initals from the list."
+        gcRemoveInitialsButton.Enabled := false
+		GuiButtonIcon(gcRemoveInitialsButton, 'icons.dll', 130, 's16') ;remove (-) icon
+
+        Setup.ReadInitials()
+
 		gcApplicationBrowseButton := guiSetup.AddButton("x" 183 " y" 69 " w" nIconButtonWidth)
 		gcApplicationBrowseButton.OnEvent("Click", (*) => Setup.ApplicationBrowseButton_Click())
         gcApplicationBrowseButton.TT := "Browse for the arcade system executable file."
@@ -640,6 +659,110 @@ class Setup
 
         DetectHiddenWindows OG_DetectHiddenWindows
     }
+
+    static InitialsComboBox_Change(*)
+    {
+		;Update button states as needed
+		if (gcInitialsComboBox.Text == "")
+		{
+			gcAddInitialsButton.Enabled := false
+			gcRemoveInitialsButton.Enabled := false
+			return
+		}
+
+		;Disable Add button and enable remove button if initials already exist
+		aInitials := Array()
+        try {
+            aInitials := ControlGetItems(gcInitialsComboBox)
+            for i, sInitial in aInitials
+            {
+                if (sInitial == gcInitialsComboBox.Text)
+                {
+                    gcAddInitialsButton.Enabled := false
+                    gcRemoveInitialsButton.Enabled := true
+                    return
+                }
+            }
+        }
+
+		;initials weren't found
+		gcAddInitialsButton.Enabled := true
+		gcRemoveInitialsButton.Enabled := false
+    }
+
+    static AddInitialsButton_Click(*)
+    {
+		if (gcInitialsComboBox.Text == "")
+			return
+
+		gcInitialsComboBox.Add([gcInitialsComboBox.Text])
+		new_item := Setup.SaveInitials()
+
+		gcRemoveInitialsButton.Enabled := true
+        gcAddInitialsButton.Enabled := false
+    }
+
+    static RemoveInitialsButton_Click(*)
+    {
+		last := gcInitialsComboBox.Value
+		try gcInitialsComboBox.Delete(gcInitialsComboBox.Value)
+
+		try {
+			gcInitialsComboBox.Value.Choose(last)
+		}
+		catch
+		{
+			try gcInitialsComboBox.Value.Choose(last-1)
+		}
+
+		Setup.SaveInitials()
+
+        try gcInitialsComboBox.Value := 1
+
+		if (gcInitialsComboBox.Text == "")
+		{
+			gcAddInitialsButton.Enabled := false
+			gcRemoveInitialsButton.Enabled := false
+		}
+    }
+
+    static SaveInitials()
+    {
+    	aInitials := Array()
+		aInitials := ControlGetItems(gcInitialsComboBox)
+		
+		sJSON := JSON.stringify(aInitials)
+
+		fInitialsFile := FileOpen(g_sInitialsFile, "w")
+
+		fInitialsFile.Write(sJSON)
+		fInitialsFile.Close()
+
+		;Now rebuild the g_oInitials object
+		sJSON := FileRead(g_sInitialsFile)
+		global g_oInitials := JSON.parse(sJSON)
+
+		return aInitials.Length
+    }
+
+    /**
+	 * Read the machine vicinities from the arcade-specific JSON file
+	 */
+	static ReadInitials()
+	{
+		if (FileExist(g_sInitialsFile))
+		{
+			sJSON := FileRead(g_sInitialsFile)
+			global g_oInitials := JSON.parse(sJSON)
+
+			gcInitialsComboBox.Add(g_oInitials)
+            
+            try {
+                gcInitialsComboBox.Value := 1
+                gcRemoveInitialsButton.Enabled := true
+            }
+		}
+	}
 
     static ShowSetupDialog()
     {

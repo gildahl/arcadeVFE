@@ -570,7 +570,7 @@ class Settings
 	 */
 	static ReadVicinities()
 	{
-		if (FileExist(g_sFloorsFile))
+		if (FileExist(g_sVicinitiesFile))
 		{
 			sJSON := FileRead(g_sVicinitiesFile)
 			global g_oVicinities := JSON.parse(sJSON)
@@ -758,6 +758,7 @@ class Settings
 			SystemCursor("Off")
 		SplitPath(gcROMDropDownGameRom.Text,,,,&OutNameNoExt)
 		ShowGameInfo(OutNameNoExt)
+		try guiSettings.Opt("+Disabled")
 
 		Hotkey(g_sGameInfoSettingsRightKey, ObjBindMethod(Settings.GameInfo_Callback,,g_sGameInfoSettingsRightKey), "On")
 		Hotkey(g_sGameInfoSettingsLeftKey, ObjBindMethod(Settings.GameInfo_Callback,,g_sGameInfoSettingsLeftKey), "On")
@@ -780,11 +781,13 @@ class Settings
 				g_oGameInfoDisplay.GoPage("l")
 			Case "Escape":	
 				g_oGameInfoDisplay.Clear()
+				try guiSettings.Opt("-Disabled")
+				try WinActivate("ahk_id " guiSettings.Hwnd)
 				Hotkey(g_sGameInfoSettingsRightKey, ObjBindMethod(Settings.GameInfo_Callback), "Off")
 				Hotkey(g_sGameInfoSettingsLeftKey, ObjBindMethod(Settings.GameInfo_Callback), "Off")
 				Hotkey(g_sGameInfoSettingsExitKey, ObjBindMethod(Settings.GameInfo_Callback), "Off")		
 				SystemCursor("On")
-				Sleep 300
+				Sleep 100
 		}
 	}
 
@@ -1151,7 +1154,7 @@ class Settings
 		gcVicinityComboBox.Add([gcVicinityComboBox.Text])
 		new_item := Settings.AddVicinities()
 
-		gcRemoveVicinityButtonEnabled := true
+		gcRemoveVicinityButton.Enabled := true
 
 		Settings.WriteVicinity()
 	}

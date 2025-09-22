@@ -1,0 +1,402 @@
+/*****************************************************************************
+ * @description arcadeVFE - High score parser
+ * @file HighScore.ahk2
+ * @author © 2025 David G. Dahlstrom
+  ****************************************************************************/
+
+/******************************************************************************
+* LICENSE
+* The code in this file is distributed freely on GitHub for hobbyist 
+* users, and may be used and modified freely for personal, non-commercial 
+* use. It may not be sold or distributed with any other product or software 
+* without permission.
+*******************************************************************************/
+
+#Requires AutoHotkey v2.0
+
+class HighScore
+{
+    static _formatted_high_score := ""
+    static _high_score := 0
+    static _high_initials := ""
+    static _high_stage := ""
+    static _high_datetime := ""
+    static _aLeaderboard := ""
+
+    static FormattedHighScore
+    {
+        get => this._formatted_high_score
+    }
+
+    static Score
+    {
+        get => this._high_score
+    }
+
+    static Initials
+    {
+        get => this._high_initials
+    }
+
+    static Stage
+    {
+        get => this._high_stage
+    }
+
+    static DateTime
+    {
+        get => this._high_datetime
+    }
+
+    static ClearScore()
+    {
+        this._formatted_high_score := ""
+        this._high_score := -1 ;-1 indicates no valid score recorded
+        this._high_initials := ""
+        this._high_stage := ""
+    }
+
+    static FormatHighScore(hi_label, hi_score, hi_name, hi_stage)
+    {
+        hi_score_text := hi_score
+        if (Trim(hi_name) != "")
+            hi_name := " by " . hi_name
+        else 
+            hi_name := ""
+
+        if (hi_stage)
+            hi_stage := " (Stage " . Trim(hi_stage) . ")" 
+
+        return hi_label . ": " . hi_score_text . hi_name . hi_stage
+    }
+ 
+    /**
+     * This function will retrieve the leaderboard for this rom. 
+     * @param sRomName - rom name with no extension
+     * @returns {Array} - the leaderboard table
+     */
+    static ReadHighScores(sRomName)
+    {
+        /*
+        Game specific test cases:
+          Crystal Castles/GI Joe/Tempest - restrict # of lines
+          dfeveron - reduce font size (too wide)
+          bosco and break thru - garbage chars
+          defender, theend - missing values in score column (but has a today's score column)
+          guwange, vasara - formatting off due to asian language characters being wider than monospace
+          garbage: Gun Smoke
+        */
+
+        formatted_high_score := hi_score := hi_name := hi_stage := hiscore_folder := hiscoredat_folder := ""
+ 
+        HighScore.ClearScore()
+
+        mColumnMap := Map() 
+        aTitles := Array()
+        hiFile := sRomName . ".hi"
+
+        hiscore_folder := g_sATCFolder "\RetroVRArcade\Plugins\save\mame2010\hi"
+ 
+        hi2txt_cmd := '-hiscoredat "' g_sHighScoreFolder '\hiscore.dat" -r "' hiscore_folder '\' hiFile '"'
+
+        OG_DetectHiddenWindows := A_DetectHiddenWindows
+        DetectHiddenWindows True
+
+        ;These first three lines (and the later FreeConsole and ProcessClose)
+        ;are needed to hide the console. Without this, a console window will
+        ;flash briefly on screen during startup.
+        try 
+        {
+            Run A_ComSpec,, "Hide", &com_pid
+            WinWait "ahk_pid " com_pid
+            DllCall("AttachConsole", "UInt", com_pid)
+        
+            WshShell := ComObject("WScript.Shell")
+        }
+        catch as e
+        {		
+            g_olog.LogLine("ERROR: Attaching console for GetHi2TxtScores(): " g_oLog.FormatErrorMessage(e) "`n")
+            ExitApp
+        }
+
+        try 
+        {
+            exec := WshShell.Exec(g_sHi2txtExe  " "  hi2txt_cmd)
+            stdout := exec.StdOut.ReadAll()
+            stderr := exec.StdErr.ReadAll()
+            if (stderr || !stdout)
+            {
+                stderr := StrReplace(stderr, "Error" , "Message") ;don't want this to trigger an error beep
+                stderr := StrReplace(stderr, "`r`n", "") ;don't need the extra linefeed data
+                g_oLog.LogLine("INFO: Failed to read high score file `"" . hifile . "`": " . stderr . ".`n")
+                this._aLeaderboard := ""
+            }
+            else
+            { 
+                ChangeEncoding(&stdout, "CP0", "UTF-8")
+                rawscores := StrSplit(stdout, "`r`n", A_Space)
+                aLeaderboard := Array()
+
+                ;Loop through each subtable (for example, gauntlet has 4 tables)
+                ;Most games, however, have just one.
+                Loop {
+                    iTableRows := 0
+                    iSubTableRows := 0
+
+                    if (SubStr(rawscores[1], 1, 1) == "#") {  ;a leading "#" indicates a table header
+                        aTitles.Push(StrReplace(rawscores[1], "# ", ""))
+                        rawscores.RemoveAt(1)
+                    }
+
+                    headers := StrSplit(rawscores[1], "|")
+                    nScoreCount := (rawscores.Length <= g_iMaxHSTableRows) || !g_iMaxHSTableRows ? rawscores.Length : g_iMaxHSTableRows+1
+                    nHeaderCount := headers.Length
+
+                    ;Create a helper map holding the contents of each column
+                    Loop nHeaderCount
+                    {
+                        headerLoop := A_Index
+                        mColumnMap[headers[headerLoop]] := Array()
+                        
+                        Loop nScoreCount
+                        {
+                            if (A_Index == 1)
+                                continue
+                            thisValue := StrSplit(rawscores[A_Index],"|")    
+                            if (!thisValue.Has(1) || SubStr(thisValue[1], 1, 1) == "#")
+                            {
+                                if (thisValue.Has(1)) {
+                                    if (thisValue[1] && SubStr(thisValue[1], 1, 1) == "#") {
+                                        iSubTableRows := A_Index - 1
+                                    }
+                                }
+                                else
+                                    continue
+
+                                break      
+                            }             
+                            if (thisValue.Length >= headerLoop)
+                            {
+                                mColumnMap[headers[headerLoop]].Push(thisValue[headerLoop])
+                            }
+                        }
+                    }
+
+                    ;Format the numbers in the score column
+                    ;If the "SCORE" column does not exist (such as Wizard of Wor) or the SCORE column
+                    ;is empty, then search for another possible column containing the word "SCORE"
+                    sScoreHeader := "SCORE"
+                    if (!mColumnMap.Has(sScoreHeader) || !mColumnMap[sScoreHeader][1])
+                    {
+                        for i, header in headers {
+                            if (InStr(header, "SCORE") && mColumnMap[header][1]) {
+                                sScoreHeader := header
+                                break
+                            }
+                        }
+                    }
+
+                    for i, score in mColumnMap[sScoreHeader]
+                    {
+                        mColumnMap[sScoreHeader][A_Index] := IsNumber(score) ? ThouSep(Number(score)) : mColumnMap[sScoreHeader][A_Index]
+                    }
+
+                    ;Calculate each column's width based on its longest string
+                    aColumnWidths := Array()
+                    for i, header in headers
+                    {
+                        size := StrLen(header)
+                        for k, content in mColumnMap[header]
+                        {
+                            if (StrLen(content) > size)
+                                size := StrLen(content)
+                        }
+
+                        aColumnWidths.Push(size)
+                    }
+
+                    bTable := sRomName == "guwange" || sRomName == "vasara" ? false : true
+                    if (bTable)
+                    {
+                        ;******************************************************
+                        ; Build aLeaderboard
+                        ;******************************************************
+                        if (aTitles.Has(A_Index))
+                        {
+                            if (A_Index > 1)
+                                aLeaderboard.Push("`n")
+
+                            aLeaderboard.Push(aTitles[A_Index])
+                        }
+
+                        ;create the top line
+                        sLine := ""
+                        for i, header in headers {
+                            CornerChar := "┬"
+                            if (A_Index == 1)
+                                cornerChar := "┌"
+        
+                            sLine := sLine cornerChar RepeatChar("─", aColumnWidths[A_Index])
+                        }
+                        aLeaderboard.Push(sLine "┐")
+
+                        ;create the header line
+                        sLine := ""
+                        for i, header in headers {
+                            sLine := sLine "│" PadString(header, aColumnWidths[A_Index])
+                        }
+                        aLeaderboard.Push(sLine "│")
+
+                        ;create the header separator bar
+                        sLine := ""
+                        for i, header in headers {
+                            CornerChar := "┼"
+                            if (A_Index == 1)
+                                cornerChar := "├"
+        
+                            sLine := sLine cornerChar RepeatChar("─", aColumnWidths[A_Index])
+                        }
+                        aLeaderboard.Push(sLine "┤")
+
+                        ;create the table rows
+                        Loop mColumnMap[headers[1]].Length
+                        {
+                            sLine := ""
+                            idx := A_Index
+                            for i, header in headers
+                            {
+                                sLine := sLine "│" PadString(mColumnMap[header][idx], aColumnWidths[A_Index])
+                            }
+                            aLeaderboard.Push(sLine "│")
+                        }
+
+                        ;create the bottom line
+                        sLine := ""
+                        for i, header in headers {
+                            CornerChar := "┴"
+                            if (A_Index == 1)
+                                cornerChar := "└"
+        
+                            sLine := sLine cornerChar RepeatChar("─", aColumnWidths[A_Index])
+                        }
+                        aLeaderboard.Push(sLine "┘")
+                        ;******************************************************
+                    }
+                    else
+                    {
+                        ;******************************************************
+                        ; Build aLeaderboard - no grid
+                        ;******************************************************
+                        if (aTitles.Has(A_Index))
+                        {
+                            if (A_Index > 1)
+                                aLeaderboard.Push("`n")
+
+                            aLeaderboard.Push(aTitles[A_Index])
+                        }
+
+                        ;create the header line
+                        sLine := ""
+                        for i, header in headers {
+                            sLine := sLine " " PadString(header, aColumnWidths[A_Index])
+                        }
+                        aLeaderboard.Push(sLine " ")
+
+                        ;create the table rows
+                        Loop mColumnMap[headers[1]].Length
+                        {
+                            sLine := ""
+                            idx := A_Index
+                            for i, header in headers
+                            {
+                                sLine := sLine " " PadString(mColumnMap[header][idx], aColumnWidths[A_Index])
+                            }
+                            aLeaderboard.Push(sLine " ")
+                        }
+                        ;******************************************************
+                    }
+
+                    ;Delete all processed rows so that we can continue with
+                    ;the next high score table if one exists.
+                    if (iSubTableRows)
+                    {
+                        Loop iSubTableRows {
+                            rawscores.RemoveAt(1)
+                        }      
+                        iSubTableRows := 0                  
+                    }
+                    else
+                        break
+                }
+
+                this._aLeaderboard := aLeaderboard
+
+                ;set the top score global for the current game if one exists
+                if (mColumnMap.Has(sScoreHeader))
+                {
+                    ;some games (like btimem) are missing highscore in the first ranks
+                    ;so skip down to where they begin
+                    iFirstHighScoreIdx := 0
+                    for i, score in mColumnMap[sScoreHeader]
+                    {
+                        if (!mColumnMap[sScoreHeader][A_Index]) {
+                            iFirstHighScoreIdx := A_Index
+                        }
+                        else {
+                            iFirstHighScoreIdx := A_Index
+                            break
+                        }
+                    }
+
+                    if (mColumnMap[sScoreHeader][iFirstHighScoreIdx])
+                    {
+                        hi_score := Trim(mColumnMap[sScoreHeader][iFirstHighScoreIdx])
+
+                        if (mColumnMap.Has("NAME") && mColumnMap["NAME"][1])
+                        {
+                            if (Trim(mColumnMap["NAME"][iFirstHighScoreIdx]))
+                                hi_name := Trim(mColumnMap["NAME"][iFirstHighScoreIdx])
+                        }
+                        else if (mColumnMap.Has("TODAYS NAME") && mColumnMap["TODAYS NAME"][1]) { ;exception for Defender
+                            if (Trim(mColumnMap["TODAYS NAME"][iFirstHighScoreIdx]))
+                                hi_name := Trim(mColumnMap["TODAYS NAME"][iFirstHighScoreIdx])
+                        }
+
+                        if (mColumnMap.Has("STAGE"))
+                            if (Trim(mColumnMap["STAGE"][iFirstHighScoreIdx]))
+                                hi_stage := Trim(mColumnMap["STAGE"][iFirstHighScoreIdx])
+
+                        formatted_hi_score := HighScore.FormatHighScore("High Score", hi_score, hi_name, hi_stage)
+
+                        this._formatted_high_score := formatted_hi_score
+                        this._high_score := IsNumber(hi_score) ? Number(hi_score) : -1 ;-1 indicates no valid score recorded
+                        this._high_initials := hi_name
+                        this._high_stage := hi_stage
+                    }
+                    else
+                    {
+                        ;There was a high score table, but no high scores recorded (or all zero like theend)
+                        if (iFirstHighScoreIdx > 0)
+                        {
+                            this._formatted_high_score := "High Scores"
+                            this._high_score := -1
+                            this._high_initials := ""
+                            this._high_stage := ""
+                        }
+                    }
+                }
+            }
+        }
+        catch as e
+        {		
+            g_oLog.LogLine("WARNING: Processing high scores: " . g_oLog.FormatErrorMessage(e) . "`n")
+        }
+
+        DllCall("FreeConsole")
+        ProcessClose com_pid 
+
+        DetectHiddenWindows OG_DetectHiddenWindows
+
+        return this._aLeaderboard
+    }
+}
