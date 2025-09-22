@@ -76,7 +76,7 @@ global g_sMameInfoFile := g_sGameInfoFolder "\mameinfo.dat"
 global g_sMameHistoryFile := g_sGameInfoFolder "\history.xml"
 global g_sControlsIniFile := g_sGameInfoFolder "\controls.ini"
 global g_sGamesXMLFile := g_sGameInfoFolder "\games.xml"
-global g_sBaseRomsFile := g_sGameInfoFolder "\baseroms.ini"
+global g_sRomRefFile := g_sGameInfoFolder "\romref.ini"
 global g_sLogoFolder := A_ScriptDir "\GameInfo\Logo"
 global g_oMameData := MAMEData(g_sMameInfoFile, g_sMameHistoryFile)
 global g_oGameInfoDisplay := GameInfoDisplay()
@@ -98,7 +98,7 @@ global g_oPacDrive := PacDriveDLL() ;Support for Ultimarc ServoStik rotation
 ;colors
 global g_color_light_green := "c4EC9A2"
 global g_color_dark_green := "c6A9955"
-global g_color_dark_blue := "c1F52B3"
+global g_color_dark_blue := "c61abff"
 global g_color_light_blue := "c9cc9fd"
 global g_color_pale_yellow := "ccfaf9cd"
 
@@ -163,8 +163,11 @@ if (FileExist(g_sGameInfoFolder "\void.png"))
 	try FileDelete(g_sGameInfoFolder "\void.png")
 if (FileExist(g_sArcadeFolder "\Arcade Time Capsule 3.6.Vicinities.json")) ;ver 1.2.2
 	try FileDelete(g_sArcadeFolder "\Arcade Time Capsule 3.6.Vicinities.json") ;ver 1.2.2
+if (FileExist(g_sGameInfoFolder "\baseroms.ini"))
+	try FileDelete(g_sGameInfoFolder "\baseroms.ini")
 if (FileExist(g_sArcadeFolder "\Arcade Time Capsule 3.6.Locations.ini"))
 	try FileMove(g_sArcadeFolder "\Arcade Time Capsule 3.6.Locations.ini", g_sArcadeFolder "\Arcade Time Capsule 3.6.Directory.ini")
+
 sEditDir := "NA"
 try sEditDir := IniRead(g_sIniFile, "General", "ShowLocations")
 try sEditDir := IniRead(g_sIniFile, "General", "EditLocations")
@@ -297,8 +300,8 @@ DoFileAudit()
 		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " g_sControlsIniFile "`n")
 	if (!FileExist(g_sGamesXMLFile))
 		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " g_sGamesXMLFile "`n")
-	if (!FileExist(g_sBaseRomsFile))
-		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " g_sBaseRomsFile "`n")
+	if (!FileExist(g_sRomRefFile))
+		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " g_sRomRefFile "`n")
 
 	;.\Audit folder files
 	if (!FileExist(g_sMame2010))

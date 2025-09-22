@@ -214,9 +214,10 @@ class HighScore
 
                         aColumnWidths.Push(size)
                     }
-
-                    bTable := sRomName == "guwange" || sRomName == "vasara" ? false : true
-                    if (bTable)
+                    
+                    ;Look-up whether the game supports wide characters in the NAME column
+                    bWideChar := IniRead(g_sRomRefFile, "WideChar", sRomName, 0)
+                    if (!bWideChar)
                     {
                         ;******************************************************
                         ; Build aLeaderboard
@@ -286,6 +287,8 @@ class HighScore
                     {
                         ;******************************************************
                         ; Build aLeaderboard - no grid
+                        ; This version is used exclusively for titles in which
+                        ; the NAME column may contain wide Unicode characters.
                         ;******************************************************
                         if (aTitles.Has(A_Index))
                         {
@@ -295,24 +298,69 @@ class HighScore
                             aLeaderboard.Push(aTitles[A_Index])
                         }
 
+                        ;create the top line
+                        sLine := ""
+                        sNameColumn := ""
+                        for i, header in headers {
+                            if (header == "NAME")
+                                sNameColumn := RepeatChar("─", aColumnWidths[A_Index])
+                            else
+                                sLine := sLine "─" RepeatChar("─", aColumnWidths[A_Index])
+                        }
+                        sLine := sLine "─" sNameColumn
+                        aLeaderboard.Push(sLine "─")
+
                         ;create the header line
                         sLine := ""
+                        sNameColumn := ""
                         for i, header in headers {
-                            sLine := sLine " " PadString(header, aColumnWidths[A_Index])
+                            if (header == "NAME")
+                                sNameColumn := PadString(header, aColumnWidths[A_Index])
+                            else
+                                sLine := sLine " " PadString(header, aColumnWidths[A_Index])
                         }
+                        sLine := sLine " " sNameColumn
+                        aLeaderboard.Push(sLine " ")
+
+                        ;create the header separator line
+                        sLine := ""
+                        sNameColumn := ""
+                        for i, header in headers {
+                            if (header == "NAME")
+                                sNameColumn := RepeatChar("─", aColumnWidths[A_Index])
+                            else
+                                sLine := sLine " " RepeatChar("─", aColumnWidths[A_Index])
+                        }
+                        sLine := sLine " " sNameColumn
                         aLeaderboard.Push(sLine " ")
 
                         ;create the table rows
                         Loop mColumnMap[headers[1]].Length
                         {
                             sLine := ""
+                            sNameColumn := ""
                             idx := A_Index
                             for i, header in headers
                             {
-                                sLine := sLine " " PadString(mColumnMap[header][idx], aColumnWidths[A_Index])
+                                if (header == "NAME")
+                                    sNameColumn := PadString(mColumnMap[header][idx], aColumnWidths[A_Index])
+                                else
+                                    sLine := sLine " " PadString(mColumnMap[header][idx], aColumnWidths[A_Index])
                             }
+                            sLine := sLine " " sNameColumn
                             aLeaderboard.Push(sLine " ")
                         }
+
+                        sLine := ""
+                        sNameColumn := ""
+                        for i, header in headers {
+                            if (header == "NAME")
+                                sNameColumn := RepeatChar("─", aColumnWidths[A_Index])
+                            else
+                                sLine := sLine "─" RepeatChar("─", aColumnWidths[A_Index])
+                        }
+                        sLine := sLine "─" sNameColumn
+                        aLeaderboard.Push(sLine "─")
                         ;******************************************************
                     }
 

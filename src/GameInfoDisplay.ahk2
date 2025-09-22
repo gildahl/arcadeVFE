@@ -421,10 +421,10 @@ class GameInfoDisplay
 					;if necessary, we will replace these with the actual text from aLeaderboard.
 					for i, sLBLine in aLeaderboard
 						leader_board := leader_board "<row>" A_Index "</row>`n"
-
-					leader_board := leader_board "`n- HISTORY -`n`n"
 				}
 			}
+
+			leader_board := leader_board "`n<===GameInformation/>`n`n"
 
 			;get the history for the current game
 			if (!IsObject(g_oMameData))
@@ -432,26 +432,33 @@ class GameInfoDisplay
 
 			mame_history_text := g_oMameData.GetHistory(this._rom)
 
-			;split history into header (first 3 lines) and body
+			;split history into header (first 3 or 4 lines) and body
 			mame_history_header := ""
 			mame_history_body := ""
 			Loop Parse mame_history_text, "`n"
 			{
-				if (A_Index <= 4)
-					mame_history_header := mame_history_header A_LoopField "`n"
+				if (A_Index <= 4) 
+				{
+					;if there's a two line game title, make it a single line. Not doing this messes
+					;with the formatting (e.g. vasara)
+					if (A_Index == 4 && A_LoopField) 
+						mame_history_header := Trim(mame_history_header, "`n") "  " A_LoopField "`n`n"
+					else 
+						mame_history_header := mame_history_header A_LoopField "`n"
+				}
 				else
 					mame_history_body := mame_history_body A_LoopField "`n"
 			}
 
 			;some games in the history.xml refer to the base rom for a full desciption
 			;so lets look that up and include it.
-			sBaseRom := IniRead(g_sBaseRomsFile, "BaseRoms", this._rom, "")
+			sBaseRom := IniRead(g_sRomRefFile, "BaseRoms", this._rom, "")
 
 			mame_baserom_history_text := sBaseRom ? g_oMameData.GetHistory(sBaseRom) : ""
-			mame_baserom_history_text :=  mame_baserom_history_text ? "`n`n===== Original Game Information =====`n`n" mame_baserom_history_text : mame_baserom_history_text
+			mame_baserom_history_text :=  mame_baserom_history_text ? "`n`n<===OriginalGameInformation/>`n`n" mame_baserom_history_text : mame_baserom_history_text
 
 			mame_info_text := g_oMameData.GetInfo(this._rom)				
-			mame_info_text := mame_info_text ? "`n`n===== MAME Development History =====`n`n" mame_info_text : mame_info_text
+			mame_info_text := mame_info_text ? "`n`n<===MAMEDevelopmentHistory/>`n`n" mame_info_text : mame_info_text
 
 			if (!mame_history_header && !mame_history_body && !mame_info_text && !mame_baserom_history_text  && !leader_board)
 			{
@@ -597,7 +604,6 @@ class GameInfoDisplay
 				{
 					Loop EditGetLineCount(iHwnd)-1
 					{
-						;iLineNum := A_Index	
 						idx := iPage "_" A_Index
 						sText := EditGetLine(A_Index, iHwnd)
 
@@ -605,7 +611,7 @@ class GameInfoDisplay
 						{
 							CreateField(idx, sControlType)
 							this.gcFormatField%idx%.Value := sText
-							this.gcFormatField%idx%.SetFont("italic " g_color_light_blue)
+							this.gcFormatField%idx%.SetFont("italic " g_color_dark_blue, "Verdana")
 						} 	
 
 						;The order of the following group of statements must not be changed
@@ -642,7 +648,7 @@ class GameInfoDisplay
 								sLastBaseRomTitleFontSize := fsz
 
 								this.gcFormatField%idx%.Value := sText
-								this.gcFormatField%idx%.SetFont("s" fsz " " g_color_light_green " underline", "Verdana")
+								this.gcFormatField%idx%.SetFont("s" fsz " " g_color_light_green, "Verdana")
 							}
 
 							;an empy line means we have reached end of the line group
@@ -658,11 +664,11 @@ class GameInfoDisplay
 						{
 							CreateField(idx, sControlType)
 							this.gcFormatField%idx%.Value := sText
-							this.gcFormatField%idx%.SetFont("italic " g_color_light_blue)
+							this.gcFormatField%idx%.SetFont("italic " g_color_dark_blue)
 							this._sNextStyle := "underline" ;Next line with text will be underlined
 						}
 
-						if (InStr(sText, "== Original Game Information =="))
+						if (InStr(sText, "<===OriginalGameInformation/>"))
 						{
 						    this._sNextStyle := "italics" ;Next line with text will be in italics
 						}
@@ -680,8 +686,8 @@ class GameInfoDisplay
 							}
 							else
 							{
-								fsz := g_iGameInfoFontSize
-								nw := CreateField(idx, sControlType)
+								fsz := g_iGameInfoFontSize + 4
+								nw := CreateField(idx, sControlType, ht+6, -4) ;-4 pulls to left a bit to align margin at this larger font size
 								loop
 								{
 									tsz := GetTextExtentPoint(sText, "Verdana", fsz, true)
@@ -695,7 +701,7 @@ class GameInfoDisplay
 							sLastTitleFontSize := fsz
 
 							this.gcFormatField%idx%.Value := sText
-							this.gcFormatField%idx%.SetFont("s" fsz " " g_color_light_green " underline bold", "Verdana")
+							this.gcFormatField%idx%.SetFont("s" fsz " " g_color_light_green " bold", "Verdana")
 						}
 							 
 						sPhrases := "
@@ -710,14 +716,25 @@ class GameInfoDisplay
 							this.gcFormatField%idx%.SetFont(g_color_pale_yellow " w600", "Verdana")
 						}
 
-						if (InStr(sText, "=====")) 
+						if (InStr(sText, "<===")) ;signifies a section header
 						{		
 							CreateField(idx, sControlType)
-							this.gcFormatField%idx%.Value := sText 
-							this.gcFormatField%idx%.SetFont(g_color_light_blue " bold", "Futura")
+							this.gcFormatField%idx%.SetFont("s" g_iGameInfoFontSize " " g_color_light_blue " bold underline", "Verdana")
+
+							Switch sText
+							{
+								Case "<===GameInformation/>":
+									this.gcFormatField%idx%.Value := "GAME INFORMATION"
+
+								Case "<===OriginalGameInformation/>":
+									this.gcFormatField%idx%.Value := "ORIGINAL GAME INFORMATION"
+
+								Case "<===MAMEDevelopmentHistory/>":	
+									this.gcFormatField%idx%.Value := "MAME DEVELOPMENT HISTORY"							
+							}
 						}	
 						
-						if (InStr(sText, "<row>")) ;a highscore table line
+						if (InStr(sText, "<row>")) ;signifies a highscore table row
 						{
 							fsz := g_iGameInfoFontSize
 							nw := CreateField(idx, sControlType)
@@ -731,7 +748,7 @@ class GameInfoDisplay
 									fsz--
 							}
 
-							CreateField(idx, sControlType)
+							;CreateField(idx, sControlType)
 							iRow := Number(StrReplace(StrReplace(sText, "<row>", ""), "</row>", ""))
 							this.gcFormatField%idx%.Value := aLeaderboard[iRow]
 
@@ -754,14 +771,14 @@ class GameInfoDisplay
 				}
 
 				;Creates the formatted field and positions it on the host control
-				CreateField(idx, sControlType)
+				CreateField(idx, sControlType, fntsz:=ht, margin_adjust:=0)
 				{				
 					margin := sControlType == "control1Fields" ? edit_margin : edit_width + edit_margin	
 					this.gcFormatField%idx% := this.guiGameInfo.AddEdit("c0xCCCCCC Background0x1F1F1F Hidden -VScroll -HScroll -E0x200 R1") ;A one row edit control
 					pages[iPage][sControlType].Push(this.gcFormatField%idx%) 
 					yPos := ht * (A_Index - 1)
-					this.gcFormatField%idx%.Move(margin, yPos, edit_width, ht)
-					return edit_width - edit_margin
+					this.gcFormatField%idx%.Move(margin + margin_adjust, yPos, edit_width, fntsz)
+					return edit_width + margin_adjust ;- edit_margin
 				}
 
 				iProg := this.gcGameInfoProgress.Value
