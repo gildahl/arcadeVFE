@@ -58,10 +58,10 @@ If you are new to ATC and have not yet installed any roms, you may wish to refer
 Quick Tour
 ==========
 Once you close the **Initial Setup** dialog, you will be taken directly to the **Settings** dialog. To confirm proper installation, take a quick tour by performing these actions: 
-1. Select a game from the **Choose ROM** list on the top right. You should see its location in the arcade directly beneath. If you ever wish to edit these locations, check the **Edit Directory** checkbox in the **User Preferences** area at the bottom of the screen.
+1. Select a game from the **Choose ROM** list on the top right. You should see its location in the arcade directly beneath. If you ever wish to edit these locations, check the **Edit** checkbox to enable the controls.
 2. With a game selected, press the **Preview GameInfo...** button at the bottom of the dialog. This will display game information that you can navigate through using the left and right arrow buttons. To Exit use the `Escape` key.
 
-<img width="700" alt="Settings" src="https://github.com/user-attachments/assets/d5b84406-93e3-44c4-ac9e-b409c88662a8" /><br/>
+<img width="700" alt="Settings" src="https://github.com/user-attachments/assets/201af3e8-5b01-4111-8631-dafe872d7500" /><br/>
 
 After returning to the Settings screen, you may configure your controllers by following the instructions in the General Configuration section below.
 
@@ -109,7 +109,7 @@ ROM Monitor:
 ------------
 To setup a new rom to be monitored, choose `ROM Monitor` from the **Device List** list in the **Settings** screen.<br/>
 
-<img width="800" height="95" alt="ROM Monitor mode" src="https://github.com/user-attachments/assets/d69d95d4-57fd-46ce-bd3c-184f5d67d052" /><br/>
+<img width="300" alt="ROM Monitor mode" src="https://github.com/user-attachments/assets/b8ea6ba6-1594-4287-a607-58fdfee51053" /><br/>
 
 Next, choose a rom from the **Choose ROM** list and then use the **Profile** and **Command** fields to configure the specific commands that should execute when that game is loaded. Finally, press the **Assign ROM** button to add your defined command(s) to the **Action List**. 
 
@@ -125,8 +125,8 @@ Buttons and Key Presses:
 ------------------------
 To setup a manual action that will run upon a particular button or key press, Choose `Keyboard` or one of the game controllers from the **Device List** in the Settings screen.<br/>
 
-<img width="781" height="96" alt="Keyboard mode" src="https://github.com/user-attachments/assets/b4575e9b-f229-4e01-84ab-f551be2c1042" />
-<img width="779" height="95" alt="Controller mode" src="https://github.com/user-attachments/assets/ba8541d1-2989-42f2-97ee-fc9c4c9878d0" /><br/>
+<img width="300" height="134" alt="Keyboard mode" src="https://github.com/user-attachments/assets/14204222-5ac0-4e51-9a0f-571b206f9286" /><br/>
+<img width="300" height="131" alt="Controller mode" src="https://github.com/user-attachments/assets/d7dc9011-4d00-4bd1-a305-815f93e4dfa7" /><br/>
 
 Next, configure a keypress or GameInfo navigation action, or use the **Profile** and **Command** fields below to configure one or more a command line actions that will execute when the button or key is pressed. Finally, press the **Assign** button to choose the actual button or key you want to assign to the action and add it to the **Actions List**.
 
@@ -223,7 +223,7 @@ User Preferences
 ================
 These options allow the user to make adjustments to certain features.
 
-<img width="541" height="103" alt="User Preferences" src="https://github.com/user-attachments/assets/10b6a056-56d1-4286-8041-6f15cfc0707c" />
+<img width="543" height="108" alt="User Preferences" src="https://github.com/user-attachments/assets/19e9b93c-ef76-4e94-9af1-4bdc89e13cfd" /><br/>
 
 ### Monitor only when the arcade is running
 This is a recommended setting for most use cases (and required for the **Run RawAccel** and **Use GameInfo Overlay** options). Turning this off is mainly intended for testing and can cause side-effects in other applications. Note that you will need to exit and restart **arcadeVFE** if you change this setting.
@@ -233,9 +233,6 @@ If you have configured voice notification phrases for your actions, then this sw
 
 ### Beep on action
 This option will sound a beep whenever a command action happens. This can be useful as a debugging tool by asserting profile changes independent of the voice option.
-
-### Edit Directory
-This option will enable the edit controls under the Choose ROM list containing the locations of arcade machines in the virtual arcade. You may edit these as you please. This option is turned off by default to prevent inadvertent changes to the location list (since changes are saved immediately as they are entered).
 
 ### Run RawAccel
 **RawAccel** is a utility that can be found on GitHub at `https://github.com/RawAccelOfficial/rawaccel`. This software may be needed to tune some trackballs to have additional sensitivity. For example, I need it to make my **Ultimarc U-Trak** trackball work correctly in **Arcade Time Capsule**. To integrate **RawAccel** with **arcadeVFE**, simply install it anywhere you like on your PC, then find the `plugins.ini` file located in the `\Config` subfolder of **arcadeVFE**, load it in an text editor like **Notepad**, and then add the path to your RawAccel folder to the `Path=` line in the `[RawAccel]` section. For example:
@@ -253,7 +250,7 @@ In addition to this documentation file, the **Settings** screen implements toolt
 ### Use GameInfo Overlay
 This feature will display a screen showing detailed game information, including pictures, associated with the game currently running in the arcade. This information may be easily viewed while you are in VR by using your favorite desktop viewport (third party, or one provided with your headset). The text information comes from the `mameinfo.dat` and `history.xml` files in the `\GameInfo` folder. This overlay will automatically unload when the arcade is closed (which is why this feature is only available when the **Monitor only when the arcade is running** setting is configured).<br/>
 
-<img width="900" alt="GameInfo" src="https://github.com/user-attachments/assets/8a46e860-5c07-4974-922f-2914ab303a52" /><br/>
+<img width="900" height="1200" alt="GameInfo" src="https://github.com/user-attachments/assets/879f5d86-83fe-44d0-96e5-9aa009d7901f" /><br/>
 
 To navigate through the **GameInfo** screens, you will want to assign at least the `Right` action in the game controller button configuration (and optionally, the `Left`, `Start`, and `Exit` options), using the **GameInfo navigation** radio switch at the top of the screen. If you would like custom pictures to be displayed along with the text information, you may create additional folders within the `..\GameInfo\Assets` subfolder of **arcadeVFE**, and fill them with `*.jpg` or `*.png` files having root names that are the same as the roms you would like to associate them with. Examples are provided in the `..\GameInfo\Assets\cabinets` folder along with a few others. Feel free to add additional folders as you like.<br/>
 
