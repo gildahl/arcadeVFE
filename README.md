@@ -250,7 +250,7 @@ In addition to this documentation file, the **Settings** screen implements toolt
 ### Use GameInfo Overlay
 This feature will display a screen showing detailed game information, including pictures, associated with the game currently running in the arcade. This information may be easily viewed while you are in VR by using your favorite desktop viewport (third party, or one provided with your headset). The text information comes from the `mameinfo.dat` and `history.xml` files in the `\GameInfo` folder. This overlay will automatically unload when the arcade is closed (which is why this feature is only available when the **Monitor only when the arcade is running** setting is configured).<br/>
 
-<img width="900" alt="GameInfo" src="https://github.com/user-attachments/assets/bb11ab4b-4fa7-4913-98ae-81e7e0e624ea" /><br/>
+<img width="900" height="1200" alt="GameInfo" src="https://github.com/user-attachments/assets/879f5d86-83fe-44d0-96e5-9aa009d7901f" /><br/>
 
 To navigate through the **GameInfo** screens, you will want to assign at least the `Right` action in the game controller button configuration (and optionally, the `Left`, `Start`, and `Exit` options), using the **GameInfo navigation** radio switch at the top of the screen. If you would like custom pictures to be displayed along with the text information, you may create additional folders within the `..\GameInfo\Assets` subfolder of **arcadeVFE**, and fill them with `*.jpg` or `*.png` files having root names that are the same as the roms you would like to associate them with. Examples are provided in the `..\GameInfo\Assets\cabinets` folder along with a few others. Feel free to add additional folders as you like.<br/>
 
