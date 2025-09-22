@@ -161,6 +161,8 @@ if (FileExist(g_sConfigFolder "\arcadeVFE.ini"))
 	try FileMove(g_sConfigFolder "\arcadeVFE.ini", g_sConfigFolder "\vfe.ini")
 if (FileExist(g_sGameInfoFolder "\void.png"))
 	try FileDelete(g_sGameInfoFolder "\void.png")
+if (FileExist(g_sArcadeFolder "\Arcade Time Capsule 3.6.Vicinities.json")) ;ver 1.2.2
+	try FileDelete(g_sArcadeFolder "\Arcade Time Capsule 3.6.Vicinities.json") ;ver 1.2.2
 if (FileExist(g_sArcadeFolder "\Arcade Time Capsule 3.6.Locations.ini"))
 	try FileMove(g_sArcadeFolder "\Arcade Time Capsule 3.6.Locations.ini", g_sArcadeFolder "\Arcade Time Capsule 3.6.Directory.ini")
 sEditDir := "NA"
@@ -184,7 +186,6 @@ global g_sROMMonitorFolder := ""
 global g_sATCFolder := ""
 global g_oArcadeRomList := Map()         ;Holds the curated arcade rom list including rom versions 
 global g_oFloors                         ;initialized in Settings.ReadFloors()
-global g_oVicinities                     ;initialized in Settings.ReadVicinities()
 
 ;group constants
 global TWO_WAY_H :=  "[Group, 2-way horizontal]"
@@ -318,8 +319,6 @@ DoFileAudit()
 		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " A_ScriptDir "\Arcade\Arcade Time Capsule 3.6.Directory.ini" "`n")
 	if (!FileExist(A_ScriptDir "\Arcade\Arcade Time Capsule 3.6.RomList.json"))
 		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " A_ScriptDir "\Arcade\Arcade Time Capsule 3.6.RomList.json" "`n")
-	if (!FileExist(A_ScriptDir "\Arcade\Arcade Time Capsule 3.6.Vicinities.json"))
-		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " A_ScriptDir "\Arcade\Arcade Time Capsule 3.6.Vicinities.json" "`n")
 
 	if (!FileExist(g_sHi2txtExe))
 		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " g_sHi2txtExe "`n")

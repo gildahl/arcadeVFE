@@ -198,7 +198,6 @@ class Setup
         if (IsSet(guiSettings))
         {
             Settings.ReadFloors()
-            Settings.ReadVicinities()
         }
 
         local sRomListFile := g_sArcadeFolder "\" g_sArcadeString ".RomList.json"
@@ -856,8 +855,12 @@ class Setup
 
             ;Machine location editor is not supported for "Other" arcade
             ;Use try since this may be called before Settings is created
-            try gcEditDirectory_Checkbox.Enabled := g_sArcadeString == "Other" ? false : true
+            try gcEditDirectoryCheckbox.Enabled := g_sArcadeString == "Other" ? false : true
             gcConfigToolsButton.Enabled := g_sArcadeString != "Other" && DirExist(g_sATCFolder "\RetroVRArcade\Plugins\save") && DirExist(gcROMMonitorFolderEdit.Text "\..\..\..\RetroVRArcade\Plugins\save") && DirExist(gcROMMonitorFolderEdit.Text) ? true : false
+
+            ;Save initials if a new one is ready to be saved
+            if (gcAddInitialsButton.Enabled)
+                Setup.AddInitialsButton_Click()
 
             g_oLog.LogLine("INFO: Setup Apply Button pressed.`n")
         }

@@ -124,21 +124,16 @@ class Settings
 		gcFloorDropDown.TT := "Floor that this machine resides on."
 
 		gcVicinityLabel := guiSettings.AddText("x" 520 " y" 73 " w" 20, "Vicinity:")
-		gcVicinityComboBox := guiSettings.AddComboBox("x" 561 " y" 70 " w" 233 " +BackgroundWhite",)
-		gcVicinityComboBox.OnEvent("Change", (*) => Settings.VicinityComboBox_Change())
-		gcVicinityComboBox.TT := "Select from list or type in a description of where the`nmachine is located on the floor to help you find it."
+		gcVicinityEdit := guiSettings.AddEdit("x" 561 " y" 70 " w" 233 " +BackgroundWhite",)
+		gcVicinityEdit.OnEvent("Change", (*) => Settings.VicinityEdit_Change())
+		gcVicinityEdit.TT := "Type in a description of where the machine`nis located on the floor to help you find it."
 
-		gcAddVicinityButton := guiSettings.AddButton("x" Settings.mMetrics.Width - nIconButtonWidth*2 - 30 - 2 " y" 69 " w" nIconButtonWidth)
-		gcAddVicinityButton.OnEvent("Click", (*) => Settings.AddVicinityButton_Click())
-		gcAddVicinityButton.TT := "Add this vicinity to the list."
-		gcAddVicinityButton.Enabled := false
-		GuiButtonIcon(gcAddVicinityButton, 'icons.dll', 127, 's16') ;add (+) icon
+		gcEditDirectoryCheckbox := guiSettings.AddCheckbox("x" 810 " y" 74, " Edit")
+		gcEditDirectoryCheckbox.OnEvent("Click", (*) => Settings.EditDirectoryCheckbox_Click())
+		gcEditDirectoryCheckbox.Value := IniRead(g_sIniFile, "General", "EditDirectory", 0)	
+		gcEditDirectoryCheckbox.TT := "Enable editing of the`nmachine locations."
 
-		gcRemoveVicinityButton := guiSettings.AddButton("x" Settings.mMetrics.Width - nIconButtonWidth - 30 " y" 69 " w" nIconButtonWidth)
-		gcRemoveVicinityButton.OnEvent("Click", (*) => Settings.RemoveVicinityButton_Click())
-		gcRemoveVicinityButton.TT := "Delete this vicinity from the list."
-		gcRemoveVicinityButton.Enabled := false
-		GuiButtonIcon(gcRemoveVicinityButton, 'icons.dll', 130, 's16') ;remove (-) icon
+		gcEditDirectoryCheckbox.Enabled := g_sArcadeString == "Other" ? false : true
 
 		Settings.SetLocationInfoVisiblity(false)
 
@@ -343,14 +338,7 @@ class Settings
 		try gcBeep_Checkbox.Value := Integer(IniRead(g_sIniFile, "General", "BeepOnProfileChange", 0))	
 		gcBeep_Checkbox.TT := "Checked:        Beep whenever an action is performed.`nUnchecked:    Never beep (off)"
 
-		gcEditDirectory_Checkbox := guiSettings.AddCheckbox("x" 275 " y" iLVBaseOffset_Y3, "Edit Directory")
-		gcEditDirectory_Checkbox.OnEvent("Click", (*) => Settings.EditDirectory_Checkbox_Click())
-		gcEditDirectory_Checkbox.Value := IniRead(g_sIniFile, "General", "EditDirectory", 0)	
-		gcEditDirectory_Checkbox.TT := "Enable editing the machine location`ninformation under the ROM list."
-
-		gcEditDirectory_Checkbox.Enabled := g_sArcadeString == "Other" ? false : true
-
-		gcRawAccel_Checkbox := guiSettings.AddCheckbox("x" 275 " y" iLVBaseOffset_Y4, "Run RawAccel")
+		gcRawAccel_Checkbox := guiSettings.AddCheckbox("x" 275 " y" iLVBaseOffset_Y3, "Run RawAccel")
 		gcRawAccel_Checkbox.OnEvent("Click", (*) => Settings.RawAccel_Checkbox_Click())
 		try gcRawAccel_Checkbox.Value := Integer(IniRead(g_sIniFile, "General", "LoadRawAccel", 0))
 		gcRawAccel_Checkbox.TT := "Run the RawAccel plugin when the arcade application`nstarts and close it when the application terminates."
@@ -358,7 +346,7 @@ class Settings
 		if (!FileExist(g_sRawAccelExe) || gcApplicationEdit.Text == '' || gcOnlyWhenArcadeActive_Checkbox.Value == 0)
 			gcRawAccel_Checkbox.Enabled := false
 
-		gcToolTip_Checkbox := guiSettings.AddCheckbox("x" 275 " y" iLVBaseOffset_Y5, "Show Tooltips")
+		gcToolTip_Checkbox := guiSettings.AddCheckbox("x" 275 " y" iLVBaseOffset_Y4, "Show Tooltips")
 		gcToolTip_Checkbox.OnEvent("Click", (*) => Settings.ToolTip_Checkbox_Click())
 		try gcToolTip_Checkbox.Value := Integer(IniRead(g_sIniFile, "General", "ShowToolTips", 1))
 		gcToolTip_Checkbox.TT := "Show or hide tooltips on this screen."
@@ -429,7 +417,6 @@ class Settings
 		Settings.InitDevices()            ;Get and populate the list of devices (a.k.a. Action Sources)
 		Settings.ReadTemplates()          ;Populate Template list from JSON file if available
 		Settings.ReadFloors()		      ;Populate Floor list from JSON if available
-		Settings.ReadVicinities()         ;Populate Vicinities list from JSON if available
 		Settings.ReadActionList()         ;Populate Action list from JSON file if available
 		Settings.FillRomList()            ;Populate the ROM list
 	}
@@ -562,20 +549,6 @@ class Settings
 			global g_oFloors := JSON.parse(sJSON)
 
 			gcFloorDropDown.Add(g_oFloors) ;
-		}
-	}
-
-	/**
-	 * Read the machine vicinities from the arcade-specific JSON file
-	 */
-	static ReadVicinities()
-	{
-		if (FileExist(g_sVicinitiesFile))
-		{
-			sJSON := FileRead(g_sVicinitiesFile)
-			global g_oVicinities := JSON.parse(sJSON)
-
-			gcVicinityComboBox.Add(g_oVicinities)
 		}
 	}
 
@@ -754,11 +727,13 @@ class Settings
 		;update from ini in case user updated during runtime
 		global g_bHideCursor := Integer(IniRead(g_sIniFile, "GameInfo", "HideCursor", g_bHideCursor))
 
+		try guiSettings.Opt("+Disabled")
+		gcStatusLabel.Text := "Press [" g_sGameInfoSettingsExitKey "] to close GameInfo window"
+
 		if (!bTestMode && g_bHideCursor)
 			SystemCursor("Off")
 		SplitPath(gcROMDropDownGameRom.Text,,,,&OutNameNoExt)
 		ShowGameInfo(OutNameNoExt)
-		try guiSettings.Opt("+Disabled")
 
 		Hotkey(g_sGameInfoSettingsRightKey, ObjBindMethod(Settings.GameInfo_Callback,,g_sGameInfoSettingsRightKey), "On")
 		Hotkey(g_sGameInfoSettingsLeftKey, ObjBindMethod(Settings.GameInfo_Callback,,g_sGameInfoSettingsLeftKey), "On")
@@ -782,6 +757,7 @@ class Settings
 			Case "Escape":	
 				g_oGameInfoDisplay.Clear()
 				try guiSettings.Opt("-Disabled")
+				gcStatusLabel.Text := ""
 				try WinActivate("ahk_id " guiSettings.Hwnd)
 				Hotkey(g_sGameInfoSettingsRightKey, ObjBindMethod(Settings.GameInfo_Callback), "Off")
 				Hotkey(g_sGameInfoSettingsLeftKey, ObjBindMethod(Settings.GameInfo_Callback), "Off")
@@ -963,7 +939,7 @@ class Settings
 		bState := bState && !InStr(gcROMDropDown.Text,"[")
 
 		bShowLocations := false
-		try bShowLocations := (gcEditDirectory_Checkbox.Value && gcEditDirectory_Checkbox.Enabled)
+		try bShowLocations := (gcEditDirectoryCheckbox.Value && gcEditDirectoryCheckbox.Enabled)
 
 		if (!bShowLocations)
 			bState := false
@@ -971,23 +947,21 @@ class Settings
 		gcFloorLabel.Visible := bState
 		gcFloorDropDown.Visible := bState
 		gcVicinityLabel.Visible := bState
-		gcVicinityComboBox.Visible := bState
-		gcAddVicinityButton.Visible := bState
-		gcRemoveVicinityButton.Visible := bState
+		gcVicinityEdit.Visible := bState
+		gcEditDirectoryCheckbox.Visible := bState
 		
 		try
 		{
-			if (gcEditDirectory_Checkbox.Enabled && gcDevices.Text == "ROM Monitor" && !InStr(gcROMDropDown.Text,"["))
+			if (gcEditDirectoryCheckbox.Enabled && gcDevices.Text == "ROM Monitor" && !InStr(gcROMDropDown.Text,"["))
 			{
 				gcFloorLabel.Visible := true
 				gcFloorDropDown.Visible := true
 				gcVicinityLabel.Visible := true
-				gcVicinityComboBox.Visible := true
+				gcVicinityEdit.Visible := true
+				gcEditDirectoryCheckbox.Visible := true
 
-				gcFloorDropDown.Enabled := gcEditDirectory_Checkbox.Value
-				gcVicinityComboBox.Enabled := gcEditDirectory_Checkbox.Value
-				gcAddVicinityButton.Visible := gcEditDirectory_Checkbox.Value
-				gcRemoveVicinityButton.Visible := gcEditDirectory_Checkbox.Value
+				gcFloorDropDown.Enabled := gcEditDirectoryCheckbox.Value
+				gcVicinityEdit.Enabled := gcEditDirectoryCheckbox.Value
 			}
 		}	
 	}
@@ -1146,70 +1120,8 @@ class Settings
 		}
 	}
 
-	static AddVicinityButton_Click(*)
+	static VicinityEdit_Change(*)
 	{
-		if (gcVicinityComboBox.Text == "")
-			return
-		
-		gcVicinityComboBox.Add([gcVicinityComboBox.Text])
-		new_item := Settings.AddVicinities()
-
-		gcRemoveVicinityButton.Enabled := true
-
-		Settings.WriteVicinity()
-	}
-
-	static VicinityComboBox_Change(*)
-	{
-		Settings.WriteVicinity()
-
-		;Update button states as needed
-		if (gcVicinityComboBox.Text == "")
-		{
-			gcAddVicinityButton.Enabled := false
-			gcRemoveVicinityButton.Enabled := false
-			return
-		}
-
-		;Disable Add button and enable remove button if vicinity already exists
-		aVicinities := Array()
-		aVicinities := ControlGetItems(gcVicinityComboBox)
-		for i, sVicinity in aVicinities
-		{
-			if (sVicinity == gcVicinityComboBox.Text)
-			{
-				gcAddVicinityButton.Enabled := false
-				gcRemoveVicinityButton.Enabled := true
-			    return
-			}
-		}
-
-		;Vicinity wasn't found
-		gcAddVicinityButton.Enabled := true
-		gcRemoveVicinityButton.Enabled := false
-	}
-
-	static RemoveVicinityButton_Click(*)
-	{
-		last := gcVicinityComboBox.Value
-		try gcVicinityComboBox.Delete(gcVicinityComboBox.Value)
-
-		try {
-			gcVicinityComboBox.Choose(last)
-		}
-		catch
-		{
-			try gcVicinityComboBox.Choose(last-1)
-		}
-
-		Settings.AddVicinities()
-
-		if (gcVicinityComboBox.Text == "")
-		{
-			gcAddVicinityButton.Enabled := false
-			gcRemoveVicinityButton.Enabled := false
-		}
-
 		Settings.WriteVicinity()
 	}
 
@@ -1221,7 +1133,7 @@ class Settings
 
 		if (sRom && !InStr(sRom, "["))
 		{
-			IniWrite(gcVicinityComboBox.Text, g_sDirectoryFile, sRom, "Vicinity")
+			IniWrite(gcVicinityEdit.Text, g_sDirectoryFile, sRom, "Vicinity")
 		}
 	}
 
@@ -1409,9 +1321,9 @@ class Settings
 		IniWrite(gcBeep_Checkbox.Value, g_sIniFile, "General", "BeepOnProfileChange")
 	}
 
-	static EditDirectory_Checkbox_Click(*)
+	static EditDirectoryCheckbox_Click(*)
 	{
-		IniWrite(gcEditDirectory_Checkbox.Value, g_sIniFile, "General", "EditDirectory")
+		IniWrite(gcEditDirectoryCheckbox.Value, g_sIniFile, "General", "EditDirectory")
 
 	    Settings.Devices_Change()
 	}
@@ -1986,25 +1898,6 @@ class Settings
 		return aTemplates.Length
 	}
 
-	static AddVicinities()
-	{
-		aVicinities := Array()
-		aVicinities := ControlGetItems(gcVicinityComboBox)
-		
-		sJSON := JSON.stringify(aVicinities)
-
-		fVicinitiesFile := FileOpen(g_sVicinitiesFile, "w")
-
-		fVicinitiesFile.Write(sJSON)
-		fVicinitiesFile.Close()
-
-		;Now rebuild the g_oVicinities object
-		sJSON := FileRead(g_sVicinitiesFile)
-		global g_oVicinities := JSON.parse(sJSON)
-
-		return aVicinities.Length
-	}
-
 	static UpdateAssignButtonState()
 	{
 
@@ -2189,9 +2082,7 @@ class Settings
 
 			sVicinity := ""
 			try sVicinity := IniRead(g_sDirectoryFile, sRom, "Vicinity")
-			gcVicinityComboBox.Text := sVicinity ? sVicinity : ""
-
-			Settings.VicinityComboBox_Change() ;update enabled state of add/remove buttons
+			gcVicinityEdit.Text := sVicinity ? sVicinity : ""
 		}
 	}
 

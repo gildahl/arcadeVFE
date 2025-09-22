@@ -7,6 +7,8 @@ arcadeVFE v.1.2.2
 * Should now be possible to change pages in GameInfo using motion controller 
   clicks on the right and left sides of the page when viewing in a desktop portal.
 * Disable Setting screen while GameInfo is displayed to avoid side-effects.
+* Changed Vicinity combobox to an edit box to simplify its operation.
+* Moved Edit Directory preference to the top to improve its context. 
 
 arcadeVFE v.1.2.1
 
