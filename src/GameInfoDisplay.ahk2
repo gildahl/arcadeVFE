@@ -789,7 +789,9 @@ class GameInfoDisplay
 				else
 					Sleep 500
 
-				try this.gcGameInfoPleaseWait.Visible := this.gcGameInfoProgress.Visible := this.gcGameInfoLogo.Visible := false
+				try this.gcGameInfoPleaseWait.Visible := false
+				try this.gcGameInfoProgress.Visible := false
+				try this.gcGameInfoLogo.Visible := false
 			}
 		}
 		else ;assetType not "info", so must be an image type
