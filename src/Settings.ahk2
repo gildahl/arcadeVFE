@@ -354,7 +354,7 @@ class Settings
 		gcShowGameInfo_Checkbox := guiSettings.AddCheckbox("x" 400 " y" iLVBaseOffset_Y3, "Use GameInfo Overlay")
 		gcShowGameInfo_Checkbox.OnEvent("Click", (*) => Settings.ShowGameInfo_Checkbox_Click())
 		try gcShowGameInfo_Checkbox.Value := IniRead(g_sIniFile, "General", "ShowGameInfo", 0)	
-		gcShowGameInfo_Checkbox.TT := "Show GameInfo overlay on the desktop when the arcade application`nstarts and close it when the application terminates.`n`nNote that if you use mouse clicks as your fire button, these may not work`nwhile the overlay is covering the emulator's screen. To fix this you may:`n(1) turn off this feature,`n(2) map your fire button to a controller button, or `n(3) display GameInfo on another monitor if you have one using the`n      monitor setting below (try Monitor=2)."
+		gcShowGameInfo_Checkbox.TT := "Show GameInfo overlay on the desktop when the arcade`napplication starts and close it when the application terminates.`nUse a desktop portal while in VR to browse the GameInfo."
 	
 		gcGameInfoFontSizeLabel := guiSettings.AddText("x" 465 " y" iLVBaseOffset_Y4 - 2 " w" 60 " h" 20, "Font Size")
 		gcGameInfoFontSizeLabel.SetFont("s7")
@@ -369,7 +369,7 @@ class Settings
 
 		gcGameInfoMonitorDropDown := guiSettings.AddDropDownList("x" 420 " y" iLVBaseOffset_Y5 - 4 " w" 40 " +BackgroundWhite",)
 		gcGameInfoMonitorDropDown.OnEvent("Change", (*) => Settings.GameInfoMonitorDropDown_Change())
-		gcGameInfoMonitorDropDown.TT := "Select monitor on which`nto display the GameInfo."
+		gcGameInfoMonitorDropDown.TT := "Select monitor on which to display the GameInfo.`n`nNote that changing pages in GameInfo using a mouse or motion`ncontroller while in a game is only supported on screen 1."
 
 		if (gcOnlyWhenArcadeActive_Checkbox.Value == 0)
 		{
