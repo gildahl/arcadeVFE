@@ -141,7 +141,7 @@ global g_sLogFolder := A_ScriptDir "\Log"
 global g_sAuditFolder := A_ScriptDir "\Audit"
 global g_sArcadeFolder := A_ScriptDir "\Arcade"
 global g_sHi2txtFolder := A_ScriptDir "\Hi2txt"
-global g_sHighScoreFolder := A_ScriptDir "\Hi2txt\plugins\hiscore"
+global g_sHiscoreDatFolder := A_ScriptDir "\Hi2txt\plugins\hiscore"
 global g_sRawAccelFolder := "" ;plugin
 
 ;filename defaults
@@ -183,10 +183,10 @@ if (sEditDir != "NA")
 global g_sArcadeString := ""             ;Currently may be "Arcade Time Capsule 3.6" or "Other"
 global g_sDirectoryFile := ""
 global g_sFloorsFile := ""   
-global g_sVicinitiesFile := ""
 global g_sApplicationName := ""
 global g_sROMMonitorFolder := ""
 global g_sATCFolder := ""
+global g_sHighScoreFolder := ""          ;Location of the mame *.hi files
 global g_oArcadeRomList := Map()         ;Holds the curated arcade rom list including rom versions 
 global g_oFloors                         ;initialized in Settings.ReadFloors()
 

@@ -16,88 +16,95 @@
 
 class HighScore
 {
-    static _formatted_high_score := ""
-    static _high_score := 0
-    static _high_initials := ""
-    static _high_stage := ""
-    static _high_datetime := ""
+    static _sFormattedHighScore := ""
+    static _iHighScore := 0
+    static _sHighInitials := ""
+    static _sHighStage := ""
     static _aLeaderboard := ""
 
     static FormattedHighScore
     {
-        get => this._formatted_high_score
+        get => this._sFormattedHighScore
     }
 
     static Score
     {
-        get => this._high_score
+        get => this._iHighScore
     }
 
     static Initials
     {
-        get => this._high_initials
+        get => this._sHighInitials
     }
 
     static Stage
     {
-        get => this._high_stage
-    }
-
-    static DateTime
-    {
-        get => this._high_datetime
+        get => this._sHighStage
     }
 
     static ClearScore()
     {
-        this._formatted_high_score := ""
-        this._high_score := -1 ;-1 indicates no valid score recorded
-        this._high_initials := ""
-        this._high_stage := ""
+        this._sFormattedHighScore := ""
+        this._iHighScore := -1 ;-1 indicates no valid score recorded
+        this._sHighInitials := ""
+        this._sHighStage := ""
     }
 
-    static FormatHighScore(hi_label, hi_score, hi_name, hi_stage)
+    static FormatHighScore(sHiLabel, sHiScore, sHiName, sHiStage)
     {
-        hi_score_text := hi_score
-        if (Trim(hi_name) != "")
-            hi_name := " by " . hi_name
+        sHiScoreText := sHiScore
+        if (Trim(sHiName) != "")
+            sHiName := " by " . sHiName
         else 
-            hi_name := ""
+            sHiName := ""
 
-        if (hi_stage)
-            hi_stage := " (Stage " . Trim(hi_stage) . ")" 
+        if (sHiStage)
+            sHiStage := " (Stage " . Trim(sHiStage) . ")" 
 
-        return hi_label . ": " . hi_score_text . hi_name . hi_stage
+        return sHiLabel . ": " . sHiScoreText . sHiName . sHiStage
     }
  
     /**
-     * This function will retrieve the leaderboard for this rom. 
+     * This function will retrieve the leaderboard for this rom from either the MAME plugin created
+     * *.hi highscore file for this game, or from an arcadeVFE *.high alternate highscore file.
+     * 
+     * This data will then returned as a monospace table structure that can be readily displayed by
+     * the GameInfo screen. 
+     * 
+     * The following shows the structure of the optional *.high file (which mimics the structure
+     * returned by Hi2txt from the *.hi files.)
+     * 
+     * if the ! EXCLUSIVE line is not present, the table will only be displayed if there is not
+     * a working *.hi file. When it is present, the alt table will always be used. The # line
+     * is an optional title for the table. The second table shown in the example is also optional.
+     * 
+     * ! EXCLUSIVE
+     * # TOP SCORES
+     *  RANK|SCORE|NAME|STAGE|SHIP
+     *  1|92387|DGD|6|Corvette
+     *  2|8630|DGD|3|Corvette
+     *  3|7000|MDD|2|Carrier
+     *  # TODAY'S SCORES
+     *  RANK|SCORE|NAME|STAGE|SHIP
+     *  1|1000|XYZ|1|Row Boat
+     *  2|2100|QED|3|Cruiser
+     *  3|3212|MDD|2|Corvette
+     * 
      * @param sRomName - rom name with no extension
      * @returns {Array} - the leaderboard table
      */
     static ReadHighScores(sRomName)
     {
-        /*
-        Game specific test cases:
-          Crystal Castles/GI Joe/Tempest - restrict # of lines
-          dfeveron - reduce font size (too wide)
-          bosco and break thru - garbage chars
-          defender, theend - missing values in score column (but has a today's score column)
-          guwange, vasara - formatting off due to asian language characters being wider than monospace
-          garbage: Gun Smoke
-        */
-
-        formatted_high_score := hi_score := hi_name := hi_stage := hiscore_folder := hiscoredat_folder := ""
+       sHiScore := sHiName := sHiStage := ""
  
         HighScore.ClearScore()
 
         mColumnMap := Map() 
         aTitles := Array()
-        hiFile := sRomName . ".hi"
-
-        hiscore_folder := g_sATCFolder "\RetroVRArcade\Plugins\save\mame2010\hi"
+        sHiFile := sRomName . ".hi"
+        sHighFile := sRomName . ".high"
  
-        hi2txt_cmd := '-hiscoredat "' g_sHighScoreFolder '\hiscore.dat" -r "' hiscore_folder '\' hiFile '"'
+        sHi2txtCommand := '-hiscoredat "' g_sHiscoreDatFolder '\hiscore.dat" -r "' g_sHighScoreFolder '\' sHiFile '"'
 
         OG_DetectHiddenWindows := A_DetectHiddenWindows
         DetectHiddenWindows True
@@ -121,48 +128,81 @@ class HighScore
 
         try 
         {
-            exec := WshShell.Exec(g_sHi2txtExe  " "  hi2txt_cmd)
-            stdout := exec.StdOut.ReadAll()
-            stderr := exec.StdErr.ReadAll()
-            if (stderr || !stdout)
+            bError := false
+            bUseAltsHighFile := false
+            aRawScoreTable := stdout := ssHiFileName := ""
+
+            ;check to see if there is an alternative *.high file 
+            if (FileExist(g_sHighScoreFolder '\' sHighFile))
             {
-                stderr := StrReplace(stderr, "Error" , "Message") ;don't want this to trigger an error beep
-                stderr := StrReplace(stderr, "`r`n", "") ;don't need the extra linefeed data
-                g_oLog.LogLine("INFO: Failed to read high score file `"" . hifile . "`": " . stderr . ".`n")
-                this._aLeaderboard := ""
+                aRawScoreTable := StrSplit(FileRead(g_sHighScoreFolder '\' sHighFile), "`r`n")
+                ssHiFileName := sHighFile
+                if (Trim(aRawScoreTable[1]) == "! EXCLUSIVE")
+                {
+                    bUseAltsHighFile := true
+                    g_oLog.LogLine("INFO: Forcing (! EXCLUSIVE) use of alternate highscore file: " sHighFile "`n")
+                    aRawScoreTable.RemoveAt(1) ;remove the ! EXCLUSIVE line
+                }
             }
-            else
+
+            ;if we're not forcing an alternative *.high file, try reading the normal *.hi file
+            ;using the Hi2txt utility.
+            if (!bUseAltsHighFile)
+            {
+                exec := WshShell.Exec(g_sHi2txtExe  " "  sHi2txtCommand)
+                stdout := exec.StdOut.ReadAll()
+                stderr := exec.StdErr.ReadAll()
+            
+                if (stderr || !stdout) ;could not read the *.hi file
+                {
+                    bError := true
+                    stderr := StrReplace(stderr, "Error" , "Message") ;don't want this to trigger an error beep
+                    stderr := StrReplace(stderr, "`r`n", "") ;don't need the extra linefeed data
+                    g_oLog.LogLine("INFO: Failed to read sHiFile `"" . sHiFile . "`": " . stderr . ".`n")
+                    this._aLeaderboard := ""
+                }
+                else
+                {
+                    ChangeEncoding(&stdout, "CP0", "UTF-8")
+                    aRawScoreTable := StrSplit(stdout, "`r`n", A_Space)
+                    ssHiFileName := sHiFile
+                }
+            }
+
+            ;if a aRawScoreTable array was created, create the highscore table
+            if (aRawScoreTable)
             { 
-                ChangeEncoding(&stdout, "CP0", "UTF-8")
-                rawscores := StrSplit(stdout, "`r`n", A_Space)
+                g_oLog.LogLine("INFO: Using highscore file: " ssHiFileName "`n")
+
                 aLeaderboard := Array()
 
                 ;Loop through each subtable (for example, gauntlet has 4 tables)
                 ;Most games, however, have just one.
-                Loop {
+                Loop 
+                {
                     iTableRows := 0
                     iSubTableRows := 0
 
-                    if (SubStr(rawscores[1], 1, 1) == "#") {  ;a leading "#" indicates a table header
-                        aTitles.Push(StrReplace(rawscores[1], "# ", ""))
-                        rawscores.RemoveAt(1)
+                    if (SubStr(aRawScoreTable[1], 1, 1) == "#") {  ;a leading "#" indicates a table header
+                        aTitles.Push(StrReplace(aRawScoreTable[1], "# ", ""))
+                        aRawScoreTable.RemoveAt(1)
                     }
-
-                    headers := StrSplit(rawscores[1], "|")
-                    nScoreCount := (rawscores.Length <= g_iMaxHSTableRows) || !g_iMaxHSTableRows ? rawscores.Length : g_iMaxHSTableRows+1
-                    nHeaderCount := headers.Length
+ 
+                    aHeaders := StrSplit(aRawScoreTable[1], "|")
+                    nScoreCount := (aRawScoreTable.Length <= g_iMaxHSTableRows) || !g_iMaxHSTableRows ? aRawScoreTable.Length : g_iMaxHSTableRows+1
+                    nHeaderCount := aHeaders.Length
 
                     ;Create a helper map holding the contents of each column
                     Loop nHeaderCount
                     {
                         headerLoop := A_Index
-                        mColumnMap[headers[headerLoop]] := Array()
+                        mColumnMap[aHeaders[headerLoop]] := Array()
                         
                         Loop nScoreCount
                         {
                             if (A_Index == 1)
                                 continue
-                            thisValue := StrSplit(rawscores[A_Index],"|")    
+                            thisValue := StrSplit(aRawScoreTable[A_Index],"|")    
                             if (!thisValue.Has(1) || SubStr(thisValue[1], 1, 1) == "#")
                             {
                                 if (thisValue.Has(1)) {
@@ -177,20 +217,20 @@ class HighScore
                             }             
                             if (thisValue.Length >= headerLoop)
                             {
-                                mColumnMap[headers[headerLoop]].Push(thisValue[headerLoop])
+                                mColumnMap[aHeaders[headerLoop]].Push(thisValue[headerLoop])
                             }
                         }
                     }
 
-                    ;Format the numbers in the score column
+                    ;Format the numbers in the SCORE column
                     ;If the "SCORE" column does not exist (such as Wizard of Wor) or the SCORE column
                     ;is empty, then search for another possible column containing the word "SCORE"
                     sScoreHeader := "SCORE"
                     if (!mColumnMap.Has(sScoreHeader) || !mColumnMap[sScoreHeader][1])
                     {
-                        for i, header in headers {
-                            if (InStr(header, "SCORE") && mColumnMap[header][1]) {
-                                sScoreHeader := header
+                        for i, sHeader in aHeaders {
+                            if (InStr(sHeader, "SCORE") && mColumnMap[sHeader][1]) {
+                                sScoreHeader := sHeader
                                 break
                             }
                         }
@@ -203,10 +243,10 @@ class HighScore
 
                     ;Calculate each column's width based on its longest string
                     aColumnWidths := Array()
-                    for i, header in headers
+                    for i, sHeader in aHeaders
                     {
-                        size := StrLen(header)
-                        for k, content in mColumnMap[header]
+                        size := StrLen(sHeader)
+                        for k, content in mColumnMap[sHeader]
                         {
                             if (StrLen(content) > size)
                                 size := StrLen(content)
@@ -214,25 +254,30 @@ class HighScore
 
                         aColumnWidths.Push(size)
                     }
+
+                    ;push the title into the aLeaderboard output structure
+                    if (aTitles.Has(A_Index))
+                    {
+                        if (A_Index > 1)
+                            aLeaderboard.Push("`n")
+
+                        aLeaderboard.Push(aTitles[A_Index])
+                    }
                     
-                    ;Look-up whether the game supports wide characters in the NAME column
+                    ;Look-up whether the game needs to support non-monospace 
+                    ;characters in the NAME column.
                     bWideChar := IniRead(g_sRomRefFile, "WideChar", sRomName, 0)
                     if (!bWideChar)
                     {
                         ;******************************************************
-                        ; Build aLeaderboard
+                        ; Build aLeaderboard highscore table - grid
+                        ; This method builds a grid that assumes a monospace
+                        ; font is always being used.
                         ;******************************************************
-                        if (aTitles.Has(A_Index))
-                        {
-                            if (A_Index > 1)
-                                aLeaderboard.Push("`n")
-
-                            aLeaderboard.Push(aTitles[A_Index])
-                        }
 
                         ;create the top line
                         sLine := ""
-                        for i, header in headers {
+                        for i, sHeader in aHeaders {
                             CornerChar := "┬"
                             if (A_Index == 1)
                                 cornerChar := "┌"
@@ -243,14 +288,14 @@ class HighScore
 
                         ;create the header line
                         sLine := ""
-                        for i, header in headers {
-                            sLine := sLine "│" PadString(header, aColumnWidths[A_Index])
+                        for i, sHeader in aHeaders {
+                            sLine := sLine "│" PadString(sHeader, aColumnWidths[A_Index])
                         }
                         aLeaderboard.Push(sLine "│")
 
                         ;create the header separator bar
                         sLine := ""
-                        for i, header in headers {
+                        for i, sHeader in aHeaders {
                             CornerChar := "┼"
                             if (A_Index == 1)
                                 cornerChar := "├"
@@ -260,20 +305,20 @@ class HighScore
                         aLeaderboard.Push(sLine "┤")
 
                         ;create the table rows
-                        Loop mColumnMap[headers[1]].Length
+                        Loop mColumnMap[aHeaders[1]].Length
                         {
                             sLine := ""
                             idx := A_Index
-                            for i, header in headers
+                            for i, sHeader in aHeaders
                             {
-                                sLine := sLine "│" PadString(mColumnMap[header][idx], aColumnWidths[A_Index])
+                                sLine := sLine "│" PadString(mColumnMap[sHeader][idx], aColumnWidths[A_Index])
                             }
                             aLeaderboard.Push(sLine "│")
                         }
 
                         ;create the bottom line
                         sLine := ""
-                        for i, header in headers {
+                        for i, sHeader in aHeaders {
                             CornerChar := "┴"
                             if (A_Index == 1)
                                 cornerChar := "└"
@@ -286,23 +331,16 @@ class HighScore
                     else
                     {
                         ;******************************************************
-                        ; Build aLeaderboard - no grid
+                        ; Build aLeaderboard highscore table - no grid variant
                         ; This version is used exclusively for titles in which
-                        ; the NAME column may contain wide Unicode characters.
+                        ; the NAME column may contain non-monospace characters.
                         ;******************************************************
-                        if (aTitles.Has(A_Index))
-                        {
-                            if (A_Index > 1)
-                                aLeaderboard.Push("`n")
-
-                            aLeaderboard.Push(aTitles[A_Index])
-                        }
 
                         ;create the top line
                         sLine := ""
                         sNameColumn := ""
-                        for i, header in headers {
-                            if (header == "NAME")
+                        for i, sHeader in aHeaders {
+                            if (sHeader == "NAME")
                                 sNameColumn := RepeatChar("─", aColumnWidths[A_Index])
                             else
                                 sLine := sLine "─" RepeatChar("─", aColumnWidths[A_Index])
@@ -311,13 +349,14 @@ class HighScore
                         aLeaderboard.Push(sLine "─")
 
                         ;create the header line
+                        ;moves the NAME column to the last column position
                         sLine := ""
                         sNameColumn := ""
-                        for i, header in headers {
-                            if (header == "NAME")
-                                sNameColumn := PadString(header, aColumnWidths[A_Index])
+                        for i, sHeader in aHeaders {
+                            if (sHeader == "NAME")
+                                sNameColumn := PadString(sHeader, aColumnWidths[A_Index])
                             else
-                                sLine := sLine " " PadString(header, aColumnWidths[A_Index])
+                                sLine := sLine " " PadString(sHeader, aColumnWidths[A_Index])
                         }
                         sLine := sLine " " sNameColumn
                         aLeaderboard.Push(sLine " ")
@@ -325,8 +364,8 @@ class HighScore
                         ;create the header separator line
                         sLine := ""
                         sNameColumn := ""
-                        for i, header in headers {
-                            if (header == "NAME")
+                        for i, sHeader in aHeaders {
+                            if (sHeader == "NAME")
                                 sNameColumn := RepeatChar("─", aColumnWidths[A_Index])
                             else
                                 sLine := sLine " " RepeatChar("─", aColumnWidths[A_Index])
@@ -335,17 +374,19 @@ class HighScore
                         aLeaderboard.Push(sLine " ")
 
                         ;create the table rows
-                        Loop mColumnMap[headers[1]].Length
+                        ;moves the NAME column to the last column position so that non-monospace
+                        ;characters won't disrupt alignment of other columns
+                        Loop mColumnMap[aHeaders[1]].Length
                         {
                             sLine := ""
                             sNameColumn := ""
                             idx := A_Index
-                            for i, header in headers
+                            for i, sHeader in aHeaders
                             {
-                                if (header == "NAME")
-                                    sNameColumn := PadString(mColumnMap[header][idx], aColumnWidths[A_Index])
+                                if (sHeader == "NAME")
+                                    sNameColumn := PadString(mColumnMap[sHeader][idx], aColumnWidths[A_Index])
                                 else
-                                    sLine := sLine " " PadString(mColumnMap[header][idx], aColumnWidths[A_Index])
+                                    sLine := sLine " " PadString(mColumnMap[sHeader][idx], aColumnWidths[A_Index])
                             }
                             sLine := sLine " " sNameColumn
                             aLeaderboard.Push(sLine " ")
@@ -353,8 +394,8 @@ class HighScore
 
                         sLine := ""
                         sNameColumn := ""
-                        for i, header in headers {
-                            if (header == "NAME")
+                        for i, sHeader in aHeaders {
+                            if (sHeader == "NAME")
                                 sNameColumn := RepeatChar("─", aColumnWidths[A_Index])
                             else
                                 sLine := sLine "─" RepeatChar("─", aColumnWidths[A_Index])
@@ -369,7 +410,7 @@ class HighScore
                     if (iSubTableRows)
                     {
                         Loop iSubTableRows {
-                            rawscores.RemoveAt(1)
+                            aRawScoreTable.RemoveAt(1)
                         }      
                         iSubTableRows := 0                  
                     }
@@ -398,38 +439,38 @@ class HighScore
 
                     if (mColumnMap[sScoreHeader][iFirstHighScoreIdx])
                     {
-                        hi_score := Trim(mColumnMap[sScoreHeader][iFirstHighScoreIdx])
+                        sHiScore := Trim(mColumnMap[sScoreHeader][iFirstHighScoreIdx])
 
                         if (mColumnMap.Has("NAME") && mColumnMap["NAME"][1])
                         {
                             if (Trim(mColumnMap["NAME"][iFirstHighScoreIdx]))
-                                hi_name := Trim(mColumnMap["NAME"][iFirstHighScoreIdx])
+                                sHiName := Trim(mColumnMap["NAME"][iFirstHighScoreIdx])
                         }
                         else if (mColumnMap.Has("TODAYS NAME") && mColumnMap["TODAYS NAME"][1]) { ;exception for Defender
                             if (Trim(mColumnMap["TODAYS NAME"][iFirstHighScoreIdx]))
-                                hi_name := Trim(mColumnMap["TODAYS NAME"][iFirstHighScoreIdx])
+                                sHiName := Trim(mColumnMap["TODAYS NAME"][iFirstHighScoreIdx])
                         }
 
                         if (mColumnMap.Has("STAGE"))
                             if (Trim(mColumnMap["STAGE"][iFirstHighScoreIdx]))
-                                hi_stage := Trim(mColumnMap["STAGE"][iFirstHighScoreIdx])
+                                sHiStage := Trim(mColumnMap["STAGE"][iFirstHighScoreIdx])
 
-                        formatted_hi_score := HighScore.FormatHighScore("High Score", hi_score, hi_name, hi_stage)
+                        formatted_hi_score := HighScore.FormatHighScore("High Score", sHiScore, sHiName, sHiStage)
 
-                        this._formatted_high_score := formatted_hi_score
-                        this._high_score := IsNumber(hi_score) ? Number(hi_score) : -1 ;-1 indicates no valid score recorded
-                        this._high_initials := hi_name
-                        this._high_stage := hi_stage
+                        this._sFormattedHighScore := formatted_hi_score
+                        this._iHighScore := IsNumber(sHiScore) ? Number(sHiScore) : -1 ;-1 indicates no valid score recorded
+                        this._sHighInitials := sHiName
+                        this._sHighStage := sHiStage
                     }
                     else
                     {
                         ;There was a high score table, but no high scores recorded (or all zero like theend)
                         if (iFirstHighScoreIdx > 0)
                         {
-                            this._formatted_high_score := "High Scores"
-                            this._high_score := -1
-                            this._high_initials := ""
-                            this._high_stage := ""
+                            this._sFormattedHighScore := "High Scores"
+                            this._iHighScore := -1
+                            this._sHighInitials := ""
+                            this._sHighStage := ""
                         }
                     }
                 }

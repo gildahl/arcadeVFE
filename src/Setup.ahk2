@@ -188,11 +188,12 @@ class Setup
         global g_sArcadeString := gcArcadeDropDown.Text
         global g_sApplicationName := gcApplicationEdit.Text
         global g_sROMMonitorFolder := gcROMMonitorFolderEdit.Text 
-        global g_sATCFolder := g_sROMMonitorFolder "\..\..\.."
         global g_sDirectoryFile := g_sArcadeFolder "\" g_sArcadeString ".Directory.ini"
         global g_sFloorsFile := g_sArcadeFolder "\" g_sArcadeString ".Floors.json"
-        global g_sVicinitiesFile := g_sArcadeFolder "\" g_sArcadeString ".Vicinities.json"
 
+        global g_sATCFolder := g_sROMMonitorFolder "\..\..\.."
+        global g_sHighScoreFolder := g_sATCFolder "\RetroVRArcade\Plugins\save\mame2010\hi"
+       
         ;During startup, we reach this before the Settings dialog
         ;is created, so make sure we don't call these methods prematurely.
         if (IsSet(guiSettings))
@@ -841,11 +842,12 @@ class Setup
             global g_sArcadeString := gcArcadeDropDown.Text
             global g_sApplicationName := gcApplicationEdit.Text
             global g_sROMMonitorFolder := gcROMMonitorFolderEdit.Text 
-            global g_sATCFolder := g_sROMMonitorFolder "\..\..\.."
             global g_sDirectoryFile := g_sArcadeFolder "\" g_sArcadeString ".Directory.ini"
             global g_sFloorsFile := g_sArcadeFolder "\" g_sArcadeString ".Floors.json"
-            global g_sVicinitiesFile := g_sArcadeFolder "\" g_sArcadeString ".Vicinities.json"
 
+            global g_sATCFolder := g_sROMMonitorFolder "\..\..\.."
+            global g_sHighScoreFolder := g_sATCFolder "\RetroVRArcade\Plugins\save\mame2010\hi"
+     
             Settings.FillRomList()
             Settings.SetRomInfo()
             gcApplyButton.Enabled := false
