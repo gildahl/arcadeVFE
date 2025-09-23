@@ -369,7 +369,7 @@ class Settings
 
 		gcGameInfoMonitorDropDown := guiSettings.AddDropDownList("x" 420 " y" iLVBaseOffset_Y5 - 4 " w" 40 " +BackgroundWhite",)
 		gcGameInfoMonitorDropDown.OnEvent("Change", (*) => Settings.GameInfoMonitorDropDown_Change())
-		gcGameInfoMonitorDropDown.TT := "Select monitor on which to display the GameInfo.`n`nNote that changing pages in GameInfo using a mouse or motion`ncontroller while in a game is only supported on screen 1."
+		gcGameInfoMonitorDropDown.TT := "Select monitor on which to display the GameInfo.`n`nNote that using a mouse or motion controller to change`nGameInfo pages while in a game is only supported on screen 1."
 
 		if (gcOnlyWhenArcadeActive_Checkbox.Value == 0)
 		{
