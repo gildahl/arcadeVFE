@@ -728,6 +728,7 @@ class Settings
 		global g_bHideCursor := Integer(IniRead(g_sIniFile, "GameInfo", "HideCursor", g_bHideCursor))
 
 		try guiSettings.Opt("+Disabled")
+		gcViewGameInfoButton.Enabled := false ;prevents key being activated by keyboard space and enter
 		gcStatusLabel.Text := "Press [" g_sGameInfoSettingsExitKey "] to close GameInfo window"
 
 		if (!bTestMode && g_bHideCursor)
@@ -757,6 +758,7 @@ class Settings
 			Case "Escape":	
 				g_oGameInfoDisplay.Clear()
 				try guiSettings.Opt("-Disabled")
+				gcViewGameInfoButton.Enabled := true
 				gcStatusLabel.Text := ""
 				try WinActivate("ahk_id " guiSettings.Hwnd)
 				Hotkey(g_sGameInfoSettingsRightKey, ObjBindMethod(Settings.GameInfo_Callback), "Off")

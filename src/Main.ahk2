@@ -1347,8 +1347,10 @@ ShowGameInfo(sRomName)
 	if (!sRomName)
 		return
 
-	if (!bFirstTime)
-		g_oGameInfoDisplay.Clear()
+	if (!bFirstTime) {
+		if (IsSet(g_oGameInfoDisplay))
+			g_oGameInfoDisplay.Clear()
+	}
 	
 	bFirstTime := false
 	g_oGameInfoDisplay.CreateGameInfoScreen(sRomName)

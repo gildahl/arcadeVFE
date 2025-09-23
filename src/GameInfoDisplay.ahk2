@@ -170,7 +170,7 @@ class GameInfoDisplay
 		try this.guiGameInfoOverlay.Destroy()
 
 		this._active := false
-		g_oLog.LogLine("INFO: GameInfo screen destroyed.`n")
+		g_oLog.LogLine("INFO: GameInfo screen closed.`n")
 	}
 
 	/**
