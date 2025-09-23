@@ -1486,14 +1486,15 @@ OnMouseButtonEvent(*)
 	if (MouseWin := g_guiGameInfoOverlayHwnd)
 	{
 		g_oGameInfoDisplay.GetBounds(&X, &Y, &W, &H)
-		If (MouseX > 0 && MouseX < W//2 && MouseY > 0 && MouseY < H)
+
+		If (MouseX > 0 && MouseX < W//2 && MouseY > 0 && MouseY < H) ;screen mode version: if (MouseX > X && MouseX < X + W//2 && MouseY > Y && MouseY < Y + H)
 		{
 			;clicked on the left side
 			Sleep 0
 			g_oGameInfoDisplay.GoPage("l")
 			Sleep 100
 		}
-		else If (MouseX > W//2 && MouseX < W && MouseY > 0 && MouseY < H)
+		else If (MouseX > W//2 && MouseX < W && MouseY > 0 && MouseY < H) ;screen mode version: else If (MouseX > X + W//2 && MouseX < X + W && MouseY > Y && MouseY < Y + H) 
 		{
 			;clicked on the right side
 			Sleep 0

@@ -5,12 +5,14 @@ arcadeVFE v.1.2.2
   or turn them all on by setting to 0.
 * New "Player Initials" field added to Initial Setup. This is used to
   highlight that user's initials in the high score tables.
-* Should now be possible to change pages in GameInfo using motion controller 
-  clicks on the right and left sides of the page when viewing in a desktop portal.
+* Limited support for changing pages in GameInfo using motion controller 
+  or mouse clicks on the right and left sides of the page. Only works in
+  VR if GameInfo is displayed on screen 1.
 * Disable Setting screen while GameInfo is displayed to avoid side-effects.
 * Changed Vicinity combobox to an edit box to simplify its operation.
 * Moved Edit Directory preference to the top to improve its context. 
 * (fixed) progress bar failed to hide in GameInfo if logo was missing.
+* (fixed) space and enter keys no longer force a refresh of GameInfo.
 
 arcadeVFE v.1.2.1
 
