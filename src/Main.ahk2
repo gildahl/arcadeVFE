@@ -49,60 +49,45 @@ global CodeVersion := "1.2.2.0"
 global bTestMode := 0
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-global g_sCodeVersion := SubStr(CodeVersion, 1, InStr(CodeVersion, ".",,,2)-1)
-global g_sCodeVersionMinor := SubStr(CodeVersion, 1, InStr(CodeVersion, ".",,,3)-1)
-
-global g_iTickCount := A_TickCount
-global g_sResourceFolder := A_ScriptDir "\Resources"
-global g_sVFEIconFile := g_sResourceFolder "\vfe.ico"
-global g_sVFEImageFile := g_sResourceFolder "\vfe.png"
-TraySetIcon g_sVFEIconFile
-A_IconTip := "arcadeVFE`nThe Virtual Arcade`nFront End"
-
+;register callbacks for tooltips
 OnMessage(WM_MOUSEMOVE  := 0x0200, OnMouseEvent)
 OnMessage(WM_MOUSELEAVE := 0x02A3, OnMouseEvent)
 
-;***********************************************************
-;globals for GameInfo display
-global guiGameInfo := ""
-global g_sCurrentROM := ""
-global g_color_edit_bg := "0x1F1F1F"
-global g_color_edit_text := "0xCCCCCC"
+;application start time
+global g_iTickCount := A_TickCount
+
+;version stamp variants
+global g_sCodeVersion := SubStr(CodeVersion, 1, InStr(CodeVersion, ".",,,2)-1)
+global g_sCodeVersionMinor := SubStr(CodeVersion, 1, InStr(CodeVersion, ".",,,3)-1)
+
+;dpi adjusted screen dimensions
 global g_nScreenWidth := A_ScreenWidth * 96 // A_ScreenDPI
 global g_nScreenHeight := A_ScreenHeight * 96 // A_ScreenDPI
-global g_sGameInfoFolder := A_ScriptDir "\GameInfo"
-global g_sAssetsFolder := g_sGameInfoFolder "\Assets"
-global g_sMameInfoFile := g_sGameInfoFolder "\mameinfo.dat"
-global g_sMameHistoryFile := g_sGameInfoFolder "\history.xml"
-global g_sControlsIniFile := g_sGameInfoFolder "\controls.ini"
-global g_sGamesXMLFile := g_sGameInfoFolder "\games.xml"
-global g_sRomRefFile := g_sGameInfoFolder "\romref.ini"
-global g_sLogoFolder := A_ScriptDir "\GameInfo\Logo"
-global g_oMameData := MAMEData(g_sMameInfoFile, g_sMameHistoryFile)
-global g_oGameInfoDisplay := GameInfoDisplay()
-global g_aImageOrder := Array()     
-global g_sGameInfoSettingsExitKey := "Escape"
-global g_sGameInfoSettingsRightKey := "Right"
-global g_sGameInfoSettingsLeftKey := "Left"
-global g_sImageOrder := "cabinets,cpanel,instructions,instructions_2,flyers,flyers_back,pcb"  
-global g_bHideCursor := 0
-global g_iGameInfoFontSize := 18
-global g_iMonitor := 1
-global g_guiGameInfoOverlayHwnd := 0
-global g_iMaxHSTableRows := 20
-;***********************************************************
 
+;global resources
+global g_sResourceFolder := A_ScriptDir "\Resources"
+global g_sVFEIconFile := g_sResourceFolder "\vfe.ico"
+global g_sVFEImageFile := g_sResourceFolder "\vfe.png"
+
+;tray icon settings
+TraySetIcon g_sVFEIconFile
+A_IconTip := "arcadeVFE`nThe Virtual Arcade`nFront End"
+
+;dll libraries
 global g_oSDL2 := SDL2DLL() ;SDL library for game device discovery and polling
 global g_oPacDrive := PacDriveDLL() ;Support for Ultimarc ServoStik rotation
 
-;colors
+;global colors colors
 global g_color_light_green := "c4EC9A2"
 global g_color_dark_green := "c6A9955"
 global g_color_dark_blue := "c61abff"
 global g_color_light_blue := "c9cc9fd"
 global g_color_pale_yellow := "ccfaf9cd"
+global g_color_edit_bg := "0x1F1F1F"
+global g_color_edit_text := "0xCCCCCC"
 
-;global flags
+;global value and flag initializations
+global g_sCurrentROM := ""
 global g_bCancelAssign := false
 global g_bCancelPoll := false
 global g_bActive := false
@@ -111,6 +96,11 @@ global g_sArcadePID := 0
 global g_iRawAccelPID := 0
 global g_sLastActionKey := ""
 global g_bSuppressLastAccess := false
+global g_bHideCursor := 0
+global g_iGameInfoFontSize := 18
+global g_iMonitor := 1
+global g_guiGameInfoOverlayHwnd := 0
+global g_iMaxHSTableRows := 20
 
 ;global delays
 global g_iRestartDelay := 0              ;Delay in between application close and restart (in ms)
@@ -140,8 +130,8 @@ global g_sUserFolder := A_ScriptDir "\User"
 global g_sLogFolder := A_ScriptDir "\Log"
 global g_sAuditFolder := A_ScriptDir "\Audit"
 global g_sArcadeFolder := A_ScriptDir "\Arcade"
-global g_sHi2txtFolder := A_ScriptDir "\Hi2txt"
-global g_sHiscoreDatFolder := A_ScriptDir "\Hi2txt\plugins\hiscore"
+global g_sHi2txtFolder := A_ScriptDir "\Hi2txt\Pre_0.174"
+global g_sHiscoreDatFolder := g_sHi2txtFolder "\plugins\hiscore"
 global g_sRawAccelFolder := "" ;plugin
 
 ;filename defaults
@@ -156,7 +146,54 @@ global g_sMame2014 := g_sAuditFolder "\mame2014\mame64.exe" ;For MAME 2014 / 0.1
 global g_sHi2txtExe := g_sHi2txtFolder "\hi2txt.exe"
 global g_sRawAccelExe := "" ;plugin
 
-;Make file updates effective with ver. 1.2)
+;arcade globals
+;get initialized and set in Setup.PopulateFields() and Setup_ApplyButton_Click()
+global g_sArcadeString := ""             ;Currently may be "Arcade Time Capsule 3.6" or "Other"
+global g_sDirectoryFile := ""
+global g_sFloorsFile := ""   
+global g_sApplicationName := ""
+global g_sROMMonitorFolder := ""
+global g_sATCFolder := ""
+global g_sATCHighScoreRootFolder := ""
+global g_sHighScoreFolder := ""          ;Location of the mame *.hi files
+global g_oArcadeRomList := Map()         ;Holds the curated arcade rom list including rom versions 
+global g_oFloors                         ;initialized in Settings.ReadFloors()
+
+;globals related to GameInfo
+global g_sGameInfoFolder := A_ScriptDir "\GameInfo"
+global g_sAssetsFolder := g_sGameInfoFolder "\Assets"
+global g_sMameInfoFile := g_sGameInfoFolder "\mameinfo.dat"
+global g_sMameHistoryFile := g_sGameInfoFolder "\history.xml"
+global g_sControlsIniFile := g_sGameInfoFolder "\controls.ini"
+global g_sGamesXMLFile := g_sGameInfoFolder "\games.xml"
+global g_sRomRefFile := g_sGameInfoFolder "\romref.ini"
+global g_sLogoFolder := A_ScriptDir "\GameInfo\Logo"
+global g_oMameData := MAMEData(g_sMameInfoFile, g_sMameHistoryFile)
+global g_oGameInfoDisplay := GameInfoDisplay()
+global g_aImageOrder := Array()    
+global g_sImageOrder := "cabinets,cpanel,instructions,instructions_2,flyers,flyers_back,pcb" 
+global g_sGameInfoSettingsExitKey := "Escape"
+global g_sGameInfoSettingsRightKey := "Right"
+global g_sGameInfoSettingsLeftKey := "Left" 
+
+;group constants
+global TWO_WAY_H :=  "[Group, 2-way horizontal]"
+global TWO_WAY_V :=  "[Group, 2-way vertical]"
+global FOUR_WAY  :=  "[Group, 4-way]"
+global EIGHT_WAY :=  "[Group, 8-way]"
+global ANALOG    :=  "[Group, analog]"
+global DUAL      :=  "[Group, dual]"
+global DIAGONAL  :=  "[Group, diagonal]"
+global ROTARY    :=  "[Group, rotary]"
+global SPINNER   :=  "[Group, spinner]"
+global TRACKBALL :=  "[Group, trackball]"
+
+;initialize application log
+global g_oLog := AppLog()
+g_oLog.Init(g_sLogFolder "\log.txt", "arcadeVFE") ;initialize the application log
+OnError LogError ;deal with unhandled exceptions
+
+;Update files and folders for the current version
 if (FileExist(g_sConfigFolder "\arcadeVFE.ini"))
 	try FileMove(g_sConfigFolder "\arcadeVFE.ini", g_sConfigFolder "\vfe.ini")
 if (FileExist(g_sGameInfoFolder "\void.png"))
@@ -178,34 +215,7 @@ if (sEditDir != "NA")
 	try IniDelete(g_sIniFile, "General", "ShowLocations")
 }
 
-;arcade globals
-;get initialized and set in Setup.PopulateFields() and Setup_ApplyButton_Click()
-global g_sArcadeString := ""             ;Currently may be "Arcade Time Capsule 3.6" or "Other"
-global g_sDirectoryFile := ""
-global g_sFloorsFile := ""   
-global g_sApplicationName := ""
-global g_sROMMonitorFolder := ""
-global g_sATCFolder := ""
-global g_sHighScoreFolder := ""          ;Location of the mame *.hi files
-global g_oArcadeRomList := Map()         ;Holds the curated arcade rom list including rom versions 
-global g_oFloors                         ;initialized in Settings.ReadFloors()
-
-;group constants
-global TWO_WAY_H :=  "[Group, 2-way horizontal]"
-global TWO_WAY_V :=  "[Group, 2-way vertical]"
-global FOUR_WAY  :=  "[Group, 4-way]"
-global EIGHT_WAY :=  "[Group, 8-way]"
-global ANALOG    :=  "[Group, analog]"
-global DUAL      :=  "[Group, dual]"
-global DIAGONAL  :=  "[Group, diagonal]"
-global ROTARY    :=  "[Group, rotary]"
-global SPINNER   :=  "[Group, spinner]"
-global TRACKBALL :=  "[Group, trackball]"
-
-global g_oLog := AppLog()
-g_oLog.Init(g_sLogFolder "\log.txt", "arcadeVFE") ;initialize the application log
-OnError LogError ;deal with unhandled exceptions
-
+;exit function
 OnExit ExitArcadeVFE
 ExitArcadeVFE(ExitReason, ExitCode)
 {
@@ -219,8 +229,6 @@ ExitArcadeVFE(ExitReason, ExitCode)
 			g_oLog.LogLine("INFO: Exited arcadeVFE normally (forced), Reason: " ExitReason ", Code: " ExitCode "`n")
 	}	
 }
-
-global g_oAuditLog := AppLog()
 
 ;Create configuration folder if it doesn't already exist
 CreateDirAndLog(g_sConfigFolder)
@@ -282,59 +290,38 @@ DoFileAudit()
 	bAuditSuccessful := true
 
 	;Root folder files
-	if (!FileExist(A_ScriptDir "\icons.dll"))
-		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " A_ScriptDir "\icons.dll" "`n")
-	if (!FileExist(A_ScriptDir "\PacDrive64.dll"))
-		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " A_ScriptDir "\PacDrive64.dll" "`n")
-	if (!FileExist(A_ScriptDir "\SDL2.dll"))
-		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " A_ScriptDir "\SDL2.dll" "`n")
-	if (!FileExist(A_ScriptDir "\UltraStik64.dll"))
-		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " A_ScriptDir "\UltraStik64.dll" "`n")
+	AuditFile(A_ScriptDir "\icons.dll")
+	AuditFile(A_ScriptDir "\PacDrive64.dll")
+	AuditFile(A_ScriptDir "\SDL2.dll")
+	AuditFile(A_ScriptDir "\UltraStik64.dll")
 
 	;.\GameInfo folder files
-	if (!FileExist(g_sMameInfoFile))
-		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " g_sMameInfoFile "`n")
-	if (!FileExist(g_sMameHistoryFile))
-		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " g_sMameHistoryFile "`n")
-	if (!FileExist(g_sControlsIniFile))
-		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " g_sControlsIniFile "`n")
-	if (!FileExist(g_sGamesXMLFile))
-		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " g_sGamesXMLFile "`n")
-	if (!FileExist(g_sRomRefFile))
-		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " g_sRomRefFile "`n")
+	AuditFile(g_sMameInfoFile)
+	AuditFile(g_sMameHistoryFile)
+	AuditFile(g_sControlsIniFile)
+	AuditFile(g_sGamesXMLFile)
+	AuditFile(g_sRomRefFile)
 
 	;.\Audit folder files
-	if (!FileExist(g_sMame2010))
-		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " g_sMame2010 "`n")
-	if (!FileExist(g_sMame2014))
-		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " g_sMame2014 "`n")
+	AuditFile(g_sMame2010)
+	AuditFile(g_sMame2014)
 
 	;.\Resources folder files
-	if (!FileExist(g_sVFEIconFile))
-		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " g_sVFEIconFile "`n")  
-	if (!FileExist(g_sVFEImageFile))
-		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " g_sVFEImageFile "`n")
+	AuditFile(g_sVFEIconFile)
+	AuditFile(g_sVFEImageFile)
 
 	;.\Arcade folder files
-	if (!FileExist(A_ScriptDir "\Arcade\Arcade Time Capsule 3.6.Floors.json"))
-		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " A_ScriptDir "\Arcade\Arcade Time Capsule 3.6.Floors.json" "`n")
-	if (!FileExist(A_ScriptDir "\Arcade\Arcade Time Capsule 3.6.Directory.ini"))
-		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " A_ScriptDir "\Arcade\Arcade Time Capsule 3.6.Directory.ini" "`n")
-	if (!FileExist(A_ScriptDir "\Arcade\Arcade Time Capsule 3.6.RomList.json"))
-		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " A_ScriptDir "\Arcade\Arcade Time Capsule 3.6.RomList.json" "`n")
-
-	if (!FileExist(g_sHi2txtExe))
-		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " g_sHi2txtExe "`n")
-	if (!FileExist(g_sHi2txtFolder "\hi2txt.zip"))
-		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " g_sHi2txtFolder "\hi2txt.zip`n")
-	if (!FileExist(g_sHi2txtFolder "\plugins\hiscore\hiscore.dat"))
-		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " g_sHi2txtFolder "\plugins\hiscore\hiscore.dat`n")
-	if (!FileExist(g_sHi2txtFolder "\plugins\hiscore\sort_hiscore.lua"))
-		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " g_sHi2txtFolder "\plugins\hiscore\sort_hiscore.lua`n")
-	if (!FileExist(g_sHi2txtFolder "\plugins\hiscore\plugin.json"))
-		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " g_sHi2txtFolder "\plugins\hiscore\plugin.json`n")
-	if (!FileExist(g_sHi2txtFolder "\plugins\hiscore\init.lua"))
-		bAuditSuccessful := false, g_oLog.LogLine("ERROR: Required file missing: " g_sHi2txtFolder "\plugins\hiscore\init.lua`n")
+	AuditFile(A_ScriptDir "\Arcade\Arcade Time Capsule 3.6.Floors.json")
+	AuditFile(A_ScriptDir "\Arcade\Arcade Time Capsule 3.6.Directory.ini")
+	AuditFile(A_ScriptDir "\Arcade\Arcade Time Capsule 3.6.RomList.json")
+	
+	;Hi2Txt files
+	AuditFile(g_sHi2txtExe)
+	AuditFile(g_sHi2txtFolder "\hi2txt.zip")
+	AuditFile(g_sHiscoreDatFolder "\hiscore.dat")
+	AuditFile(g_sHiscoreDatFolder "\sort_hiscore.lua")
+	AuditFile(g_sHiscoreDatFolder "\plugin.json")
+	AuditFile(g_sHiscoreDatFolder "\init.lua")
 
 	if (bAuditSuccessful)
 		g_oLog.LogLine("INFO: All required runtime files confirmed to exist.`n")
@@ -342,6 +329,15 @@ DoFileAudit()
 	;Also audit optional files
 	Loop Files A_ScriptDir "\User\*.json" {
 		g_oLog.LogLine("INFO: Found action list file(s): " A_LoopFileName "`n")
+	}
+
+	AuditFile(sFile) 
+	{
+		if (!FileExist(sFile))
+		{
+			bAuditSuccessful := false
+			g_oLog.LogLine("ERROR: Required file missing: " sFile "`n")
+		}
 	}
 }
 
@@ -391,62 +387,26 @@ CreateDefaultActionList()
 
 /**
  * Load general application settings from vfe.ini.
- * Set defaults when not found.
+ * Sets default when not found.
  */
 LoadConfig()
 {
-	;************* Initialize GameInfo Default Settings ************************************
-	;Initialize Settings GameInfo Monitor setting
-	global g_iMonitor := Integer(IniRead(g_sIniFile, "GameInfo", "Monitor", g_iMonitor))
-	IniWrite(g_iMonitor, g_sIniFile, "GameInfo", "Monitor")
-
-	;Initialize Settings GameInfo HideCursor setting
-	global g_bHideCursor := Integer(IniRead(g_sIniFile, "GameInfo", "HideCursor", g_bHideCursor))
-	IniWrite(g_bHideCursor, g_sIniFile, "GameInfo", "HideCursor")
+	;Initialize Settings GameInfo preferences
+	global g_iMonitor := InitializeIniNumber("GameInfo", "Monitor", g_iMonitor)
+	global g_bHideCursor := InitializeIniNumber("GameInfo", "HideCursor", g_bHideCursor)
+	global g_iMaxHSTableRows := InitializeIniString("GameInfo", "MaxHighScoreTableRows", g_iMaxHSTableRows)
 
 	;override if in test mode
 	if (bTestMode)
 		g_bHideCursor := 1
 
-	;Initialize Settings GameInfo Exit key
-	try {
-		global g_sGameInfoSettingsExitKey := IniRead(g_sIniFile, "GameInfo", "SettingsExitKey")
-	}
-	catch {
-		IniWrite(g_sGameInfoSettingsExitKey, g_sIniFile, "GameInfo", "SettingsExitKey")
-	}
-
-	;Initialize Settings GameInfo Right key
-	try {
-		global g_sGameInfoSettingsRightKey := IniRead(g_sIniFile, "GameInfo", "SettingsRightKey")
-	}
-	catch {
-		IniWrite(g_sGameInfoSettingsRightKey, g_sIniFile, "GameInfo", "SettingsRightKey")
-	}
-
-	;Initialize Settings GameInfo Left key
-	try {
-		global g_sGameInfoSettingsLeftKey := IniRead(g_sIniFile, "GameInfo", "SettingsLeftKey")
-	}
-	catch {
-		IniWrite(g_sGameInfoSettingsLeftKey, g_sIniFile, "GameInfo", "SettingsLeftKey")
-	}	
+	;Initialize Settings GameInfo navigation keys
+	global g_sGameInfoSettingsExitKey := InitializeIniString("GameInfo", "SettingsExitKey", g_sGameInfoSettingsExitKey)
+	global g_sGameInfoSettingsRightKey := InitializeIniString("GameInfo", "SettingsRightKey", g_sGameInfoSettingsRightKey)
+	global g_sGameInfoSettingsLeftKey := InitializeIniString("GameInfo", "SettingsLeftKey", g_sGameInfoSettingsLeftKey)
 
     ;Initialize GameInfo image order
-	try {
-		global g_sImageOrder := IniRead(g_sIniFile, "GameInfo", "ImageOrder")
-	}
-	catch {
-		IniWrite(g_sImageOrder, g_sIniFile, "GameInfo", "ImageOrder")
-	}
-
-	;Initialize Settings GameInfo Left key
-	try {
-		global g_iMaxHSTableRows := IniRead(g_sIniFile, "GameInfo", "MaxHighScoreTableRows")
-	}
-	catch {
-		IniWrite(g_iMaxHSTableRows, g_sIniFile, "GameInfo", "MaxHighScoreTableRows")
-	}
+	global g_sImageOrder := InitializeIniString("GameInfo", "ImageOrder", g_sImageOrder)
 
 	;Create the fully validated g_aImageOrder array accounting for possible
 	;additional folders or deleted folders
@@ -465,22 +425,25 @@ LoadConfig()
 	}
 	g_aImageOrder := aTempImageOrder
 
-	;*****************************************************************************************
+	;Initialize delays
+	global g_iRestartDelay := InitializeIniNumber("GameInfo", "RestartDelay", g_iRestartDelay)
+	global g_iCommandLineDelay := InitializeIniNumber("GameInfo", "CommandLineDelay", g_iCommandLineDelay)
 
-	;Initialize delay between closing an app and restarting it to 500ms
-	try {
-		global g_iRestartDelay := Integer(IniRead(g_sIniFile, "General", "RestartDelay"))
-	}
-	catch {
-		IniWrite(g_iRestartDelay, g_sIniFile, "General", "RestartDelay")
+	;closure functions
+	InitializeIniString(sSection, sKey, sValue)
+	{
+		sValue := IniRead(g_sIniFile, sSection, sKey, sValue)
+		IniWrite(sValue, g_sIniFile, sSection, sKey)
+
+		return sValue
 	}
 
-	;Init delay between two consecutive command line calls to 1000ms
-	try {
-		global g_iCommandLineDelay := Integer(IniRead(g_sIniFile, "General", "CommandLineDelay"))
-	}
-	catch {
-		IniWrite(g_iCommandLineDelay, g_sIniFile, "General", "CommandLineDelay")
+	InitializeIniNumber(sSection, sKey, nValue)
+	{
+		nValue := Integer(IniRead(g_sIniFile, sSection, sKey, nValue))
+		IniWrite(nValue, g_sIniFile, sSection, sKey)
+
+		return nValue
 	}
 }
 
