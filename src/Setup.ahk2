@@ -20,6 +20,7 @@ class Setup
 {
     static mSetup := Map()
     static bAutoshow := false
+    static oAuditLog := AppLog()
 
     /**
      * Create the initial setup dialog
@@ -192,7 +193,8 @@ class Setup
         global g_sFloorsFile := g_sArcadeFolder "\" g_sArcadeString ".Floors.json"
 
         global g_sATCFolder := g_sROMMonitorFolder "\..\..\.."
-        global g_sHighScoreFolder := g_sATCFolder "\RetroVRArcade\Plugins\save\mame2010\hi"
+        global g_sATCHighScoreRootFolder := g_sATCFolder "\RetroVRArcade\Plugins\save"
+        global g_sHighScoreFolder := g_sATCHighScoreRootFolder "\mame2010\hi"
        
         ;During startup, we reach this before the Settings dialog
         ;is created, so make sure we don't call these methods prematurely.
@@ -554,12 +556,12 @@ class Setup
         gcAuditButton.Enabled := false
         gcSetup_CloseButton.Enabled := false
         gcAuditProgress.Visible := true
-        g_oAuditLog.Init(g_sAuditFolder "\audit.txt", "arcadeVFE ROM File Audit")
+        Setup.oAuditLog.Init(g_sAuditFolder "\audit.txt", "arcadeVFE ROM File Audit")
 
         sROMFolder := gcROMMonitorFolderEdit.Text
-        g_oAuditLog.LogLine("INFO: Start auditing ROM files in folder: " sROMFolder "\*.zip`n")
-        g_oAuditLog.LogLine("INFO: Using curated arcade ROM list: `"" g_sArcadeString "`"`n")
-        g_oAuditLog.LogLine("`n")
+        Setup.oAuditLog.LogLine("INFO: Start auditing ROM files in folder: " sROMFolder "\*.zip`n")
+        Setup.oAuditLog.LogLine("INFO: Using curated arcade ROM list: `"" g_sArcadeString "`"`n")
+        Setup.oAuditLog.LogLine("`n")
 
         OG_DetectHiddenWindows := A_DetectHiddenWindows
         DetectHiddenWindows True
@@ -575,7 +577,7 @@ class Setup
         }
         catch as e
         {		
-            g_oAuditLog.LogLine("ERROR: Attaching console for GetHi2TxtScores(): " g_oAuditLog.FormatErrorMessage(e) "`n")
+            Setup.oAuditLog.LogLine("ERROR: Attaching console for GetHi2TxtScores(): " Setup.oAuditLog.FormatErrorMessage(e) "`n")
             ExitApp(-1)
         }
 
@@ -587,7 +589,7 @@ class Setup
             ;Missing file check
             if (!FileExist(sROMFolder "\" sRom ".zip"))
             {
-                g_oAuditLog.LogLine("AUDIT " mInfo["MAMEVersion"] " ROM: " PadString(sRom, 8) "  : Rom File missing.`n")
+                Setup.oAuditLog.LogLine("AUDIT " mInfo["MAMEVersion"] " ROM: " PadString(sRom, 8) "  : Rom File missing.`n")
                 iErrorCount++
                 continue
             }
@@ -624,14 +626,14 @@ class Setup
                         stdout := " " PadString(sRom, 8) "  : Rom file is not supported in this version of MAME."
 
                     iErrorCount++
-                    g_oAuditLog.LogLine("AUDIT " mInfo["MAMEVersion"] " ROM: " stdout "`n")
+                    Setup.oAuditLog.LogLine("AUDIT " mInfo["MAMEVersion"] " ROM: " stdout "`n")
                 }
 
                 if (stderr)
-                    g_oAuditLog.LogLine("AUDIT " mInfo["MAMEVersion"] " ROM: " stderr " (stderr)`n")
+                    Setup.oAuditLog.LogLine("AUDIT " mInfo["MAMEVersion"] " ROM: " stderr " (stderr)`n")
             }
             catch as e {
-                g_oAuditLog.LogLine("ERROR: Calling -verifyroms, Rom: " sRom ", Message: " g_oAuditLog.FormatErrorMessage(e) "`n")
+                Setup.oAuditLog.LogLine("ERROR: Calling -verifyroms, Rom: " sRom ", Message: " Setup.oAuditLog.FormatErrorMessage(e) "`n")
             }
         }
 
@@ -642,9 +644,9 @@ class Setup
         if (iErrorCount == 1)
             sAnomalyPhrase := "anomaly was found."        
 
-        g_oAuditLog.LogLine("`n")
-        g_oAuditLog.LogLine("INFO: Completed audit of " g_oArcadeRomList.Count " rom files. " iErrorCount " " sAnomalyPhrase "`n")
-        g_oAuditLog.LogLine("INFO: Please note that ROMs reporting anomalies may still work, but should be tested.`n")
+        Setup.oAuditLog.LogLine("`n")
+        Setup.oAuditLog.LogLine("INFO: Completed audit of " g_oArcadeRomList.Count " rom files. " iErrorCount " " sAnomalyPhrase "`n")
+        Setup.oAuditLog.LogLine("INFO: Please note that ROMs reporting anomalies may still work, but should be tested.`n")
 
         ;Reset all the rom access timestamps since mame just touched them all.
         FileSetTime DateAdd(A_Now, -7, "days"), g_sROMMonitorFolder "\*.zip", "A"
@@ -652,7 +654,7 @@ class Setup
         gcAuditProgress.Visible := false
         gcAuditProgress.Value := 0
 
-        g_oAuditLog.ShowLog()    
+        Setup.oAuditLog.ShowLog()    
 
         gcAuditButton.Enabled := true
         gcSetup_CloseButton.Enabled := true
@@ -846,7 +848,8 @@ class Setup
             global g_sFloorsFile := g_sArcadeFolder "\" g_sArcadeString ".Floors.json"
 
             global g_sATCFolder := g_sROMMonitorFolder "\..\..\.."
-            global g_sHighScoreFolder := g_sATCFolder "\RetroVRArcade\Plugins\save\mame2010\hi"
+            global g_sATCHighScoreRootFolder := g_sATCFolder "\RetroVRArcade\Plugins\save"
+            global g_sHighScoreFolder := g_sATCHighScoreRootFolder "\mame2010\hi"
      
             Settings.FillRomList()
             Settings.SetRomInfo()

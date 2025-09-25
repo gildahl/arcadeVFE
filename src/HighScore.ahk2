@@ -63,6 +63,341 @@ class HighScore
 
         return sHiLabel . ": " . sHiScoreText . sHiName . sHiStage
     }
+
+    ;Reading and updating an existing high score file sample code
+    /*
+    mHighFile := HighScore.ReadHighFile("!example", &sFolder)
+    val := HighScore.HighScoreObjectAddTableScore(&mHighFile, 1, "80000|MRN|3|Boat", 4)
+    HighScore.WriteHighScores(mHighFile, "!example", sFolder )
+    */
+
+    ;Creating a new high score file from scratch
+    ;Table titles (sTitle) are optional if there is only one table, but required
+    ;if there is more than one table.
+    /*
+	oHS := HighScore.HighScoreObjectCreate("frenzy")
+	iTable := HighScore.HighScoreObjectAddTable(&oHS, sTitle:="TEST")
+	iHeader := HighScore.HighScoreObjectAddTableHeader(&oHS, iTable, "SCORE|NAME|FLOOR")
+	val := HighScore.HighScoreObjectAddTableScore(&oHS, iTable, "10|MRN|3rd", 4)
+	val := HighScore.HighScoreObjectAddTableScore(&oHS, iTable, "8|DGD|2nd", 4)
+	val := HighScore.HighScoreObjectAddTableScore(&oHS, iTable, "120|MDD|4th", 4)
+	iTable := HighScore.HighScoreObjectAddTable(&oHS, sTitle:="TEST2")
+	iHeader := HighScore.HighScoreObjectAddTableHeader(&oHS, iTable, "SCORE|NAME|FLOOR|VICINITY")
+	val := HighScore.HighScoreObjectAddTableScore(&oHS, iTable, "10286|MRN|1st|here", 4)
+	val := HighScore.HighScoreObjectAddTableScore(&oHS, iTable, "1238|RGT|3rd|there", 4)
+	val := HighScore.HighScoreObjectAddTableScore(&oHS, iTable, "126900|QED|4th|everywhere", 4)
+	val := HighScore.HighScoreObjectAddTableScore(&oHS, iTable, "86543|DGD|9th|left", 4)
+	val := HighScore.HighScoreObjectAddTableScore(&oHS, iTable, "98000|LYN|20th|right", 4)
+	val := HighScore.HighScoreObjectAddTableScore(&oHS, iTable, "1000|QED|4th|up", 4)
+	HighScore.WriteHighScores(oHS, "frenzy", "D:\Stand Alone\Arcade Time Capsule\RetroVRArcade\Plugins\save\mame2010\hi")
+    */
+
+    /**
+     * Creates an empty highscore object
+     * @param {Integer} iTables - number of high score tables to create
+     * @param {String} sType - may be "EXCLUSIVE" or empty
+     */
+    static HighScoreObjectCreate(sRomName, sType:="")
+    {
+        try {
+            oHS := Map()
+            oHS["ROM"] := sRomName
+
+            if (sType)
+                oHS["DIRECTIVE"] := sType
+
+            oHS["TABLES"] := Array()
+        }
+        catch as e
+        {
+            g_oLog.LogLine("ERROR: Creating highscore object: " g_oLog.FormatErrorMessage(e) "`n")
+            ExitApp(-1)
+        }
+
+        return oHS
+    }
+
+    /**
+     * Adds a table to a highscore object. A title is optional.
+     * @param oHS - the highscore object to modify
+     * @param {String} sTitle - the optional table name
+     * @returns {Integer} - the number of tables in the object 
+     */
+    static HighScoreObjectAddTable(&oHS, sTitle:="")
+    {
+        try
+        {
+            oHS["TABLES"].Push(Map())
+            iSz := oHS["TABLES"].Length
+            if (sTitle)
+                oHS["TABLES"][iSz]["TITLE"] := sTitle
+
+            oHS["TABLES"][iSz]["DATA"] := Array()
+        }
+        catch as e
+        {
+            g_oLog.LogLine("ERROR: Adding highscore table: " g_oLog.FormatErrorMessage(e) "`n")
+            ExitApp(-1)
+        }
+
+        return oHS["TABLES"].Length
+    }
+
+    /**
+     * Adds or updates the header for a highscore object table
+     * @param oHS - the highscore object to modify
+     * @param iTable - the table index
+     * @param sHeader - the header as a pipe-delimited string beginning with "SCORE" and "NAME". 
+     *                  Do not include a RANK column as this will be created automatically.
+     * @returns {integer} - the index of the header line just added (aways 1)
+     */
+    static HighScoreObjectAddTableHeader(&oHS, iTable, sHeader)
+    {
+        try 
+        {
+            aHeader := StrSplit(sHeader, "|")
+
+            if (oHS["TABLES"][iTable]["DATA"].Has(1))
+                oHS["TABLES"][iTable]["DATA"][1] := aHeader
+            else
+                oHS["TABLES"][iTable]["DATA"].Push(aHeader)
+        }
+        catch as e
+        {
+            g_oLog.LogLine("ERROR: Adding highscore table header: " g_oLog.FormatErrorMessage(e) "`n")
+            ExitApp(-1)
+        }
+
+        return oHS["TABLES"][iTable]["DATA"].Length
+    }
+
+    /**
+     * Adds a highscore to a highscore object table.
+     * @param oHS - the highscore object to modify
+     * @param iTable - the table index
+     * @param sScore - the score as a pipe-delimited string. Must have same number of fields as header
+     *                 with the first two fields always being the SCORE (with no commas) and NAME.
+     * @param iMaxRows - Maximum number of rows allowed in table. If 0, the list is not limited.
+     * @returns {integer} - the index of the score line just added 
+     */
+    static HighScoreObjectAddTableScore(&oHS, iTable, sScore, iMaxRows:=0)
+    {
+        try 
+        {
+            aScore := StrSplit(sScore, "|")
+
+            if (!oHS["TABLES"][iTable]["DATA"].Has(1))
+                return "" ;no header found
+            else
+                oHS["TABLES"][iTable]["DATA"].Push(aScore)
+
+            ;Now sort the table by score
+            sScoreList := ""
+            for i, nScoreLine in oHS["TABLES"][iTable]["DATA"]
+            {
+                if (A_Index == 1) ; header
+                    continue 
+
+                sScoreList := sScoreList "|" nScoreLine[1]
+            }
+
+            sScoreList := Trim(sScoreList, "| ")
+            sScoreList := Sort(sScoreList, "D| N U R")
+            aScoreList := StrSplit(sScoreList, "|")
+
+            aNewScoreList := Array()
+            aNewScoreList.Push(oHS["TABLES"][iTable]["DATA"][1]) ;header
+
+            for i, sOrderedScore in aScoreList
+            {
+                for i, sScore in oHS["TABLES"][iTable]["DATA"]
+                {
+                    if (sScore[1] == sOrderedScore)
+                    {
+                        aNewScoreList.Push(oHS["TABLES"][iTable]["DATA"][i])
+                        continue
+                    }
+                }
+            }
+
+            ;trim list down to no more than iMaxRows elements
+            ;removing the lowest score entries to do so
+            if (iMaxRows) ;if iMaxRows==0, the list is not limited
+            {
+                loop
+                {
+                    if (aNewScoreList.Length > iMaxRows+1) ;+1 is so we include the header
+                        aNewScoreList.Pop()
+                    else
+                        break
+                }
+            }
+
+            oHS["TABLES"][iTable]["DATA"] := aNewScoreList
+        }
+        catch as e
+        {
+            g_oLog.LogLine("ERROR: Adding highscore table score: " g_oLog.FormatErrorMessage(e) "`n")
+            ExitApp(-1)
+        }
+
+        return oHS["TABLES"][iTable]["DATA"].Length - 1
+    }
+
+    /**
+     * Read an arcadeVFE *.high highscore file into an object
+     * @param sRomName - the rom for this *.high file
+     * @returns {Map} - an object representation of the highscore file
+     */
+    static ReadHighFile(sRomName, &sPath:="")
+    {
+        try
+        {
+            sHighScoreFolder:= ""
+            sHighFile := sRomName . ".high" ;the arcadeVFE alternate .high file
+            mHighFile := Map()
+
+            if (g_sArcadeString != "Other")
+            {
+                if (FileExist(g_sATCHighScoreRootFolder "\mame2010\hi\" sHighFile)) {
+                    sHighScoreFolder := g_sATCHighScoreRootFolder "\mame2010\hi"
+                }
+                else if (FileExist(g_sATCHighScoreRootFolder "\mame2014\hi\" sHighFile)) {
+                    sHighScoreFolder := g_sATCHighScoreRootFolder "\mame2014\hi"
+                }            
+            }
+            else {
+                ;Currently hi file support in "Other" arcades is only supported if this vfe.ini key is defined
+                sHighScoreFolder := IniRead(g_sIniFile, "Other", "HiFileFolder", "")
+                if (!sHighScoreFolder)
+                    return ""
+            }
+
+            sPath := sHighScoreFolder
+
+            if (FileExist(sHighScoreFolder "\" sHighFile)) {
+                sHighFileContents := FileRead(sHighScoreFolder "\" sHighFile)
+            }
+            else {
+                g_oLog.LogLine("INFO: The highscore file " sHighScoreFolder "\" sHighFile " could not be found.`n")
+                return ""
+            }
+        
+            if (sHighFileContents)
+            {
+                sHighFileContents := Trim(sHighFileContents, "`r`n `r `n")
+                aHighFileContents := StrSplit(sHighFileContents, "`r`n")
+
+                iTableIdx := 0
+                iRowIdx := 0
+                bTableHasTitle := false
+                mHighFile["TABLES"] := Array()
+
+                mHighFile["ROM"] := sRomName
+
+                for i, sLine in aHighFileContents
+                {
+                    if (SubStr(sLine, 1, 1) == "!") {
+                        mHighFile["DIRECTIVE"] := Trim(StrReplace(sLine, "!", ""))
+                    }
+                    else if (SubStr(sLine, 1, 1) == "#")
+                    {
+                        bTableHasTitle := true
+                        iTableIdx++
+                        iRowIdx := 1
+                        mHighFile["TABLES"].Push(Map())
+                        mHighFile["TABLES"][iTableIdx]["TITLE"] := Trim(StrReplace(sLine, "#", ""))
+                    }
+                    else
+                    {
+                        if (!mHighFile["TABLES"][iTableIdx].Has("DATA"))
+                        {
+                            ;The title is optional, so if its missing, do the increments here.
+                            if (!bTableHasTitle)
+                            {
+                                iTableIdx++
+                                iRowIdx := 1
+                                bTableHasTitle := false
+                            }
+
+                            mHighFile["TABLES"][iTableIdx]["DATA"] := Array()
+                        }
+
+                        aContents := StrSplit(sLine, "|", "`r`n")
+                        aContents.RemoveAt(1) ;remove the RANK column
+                        mHighFile["TABLES"][iTableIdx]["DATA"].Push(aContents)
+                    }
+                }
+            }
+        }
+        catch as e
+        {
+            g_oLog.LogLine("ERROR: Reading highscore file: " g_oLog.FormatErrorMessage(e) "`n")
+            ExitApp(-1)
+        }
+
+        return mHighFile
+    }
+
+    /**
+     * Write a highscore object to a file in the same format as Hi2Txt so that it may be
+     * read similarly.
+     * @param sRom - the name of the rom without an extension
+     * @param oHS - the highscore object to write
+     * @param sPath - the path to where to write the file
+     */
+    static WriteHighScores(oHS, sRom, sPath)
+    {
+        try {
+            sFile := sPath "\" sRom ".high"
+            try FileDelete(sFile)
+
+            if oHS.Has("DIRECTIVE")
+            {
+                sDirective := "! " oHS["DIRECTIVE"]
+                FileAppend(sDirective "`r`n", sFile)
+            }
+
+            for i, aTable in oHS["TABLES"]
+            {
+                bLastTable := false
+                if (A_Index == oHS["TABLES"].Length)
+                    bLastTable := true
+
+                if (aTable.Has("TITLE"))
+                {
+                    sTableName := "# " aTable["TITLE"]
+                    FileAppend(sTableName "`r`n", sFile)
+                }
+
+                for i, aScoreLine in aTable["DATA"]
+                {
+                    sOutputLine := ""
+                    for i, aColumn in aScoreLine
+                    {
+                        sOutputLine := sOutputLine aScoreLine[i] "|"
+                    }
+
+                    if (A_Index == 1)
+                        sOutputLine := "RANK|" sOutputLine
+                    else
+                        sOutputLine := String(A_Index - 1) "|" sOutputLine
+
+                    sOutputLine := Trim(sOutputLine, "| ")
+
+                    if (A_Index == aTable["DATA"].Length && bLastTable)
+                        FileAppend(sOutputLine, sFile)
+                    else
+                        FileAppend(sOutputLine "`r`n", sFile)
+                }
+            }
+        }
+        catch as e
+        {
+            g_oLog.LogLine("ERROR: Writing highscore file: " g_oLog.FormatErrorMessage(e) "`n")
+            ExitApp(-1)
+        }
+    }
  
     /**
      * This function will retrieve the leaderboard for this rom from either the MAME plugin created
@@ -101,9 +436,33 @@ class HighScore
 
         mColumnMap := Map() 
         aTitles := Array()
-        sHiFile := sRomName . ".hi"
-        sHighFile := sRomName . ".high"
- 
+        sHiFile := sRomName . ".hi" ;the native .hi file
+        sHighFile := sRomName . ".high" ;the arcadeVFE alternate .high file
+
+        ;search for *.hi and *.high files in all possible folders
+        ;then set g_sHighScoreFolder to where it was found
+        if (g_sArcadeString != "Other")
+        {
+            if (FileExist(g_sATCHighScoreRootFolder "\mame2010\hi\" sHiFile) || FileExist(g_sATCHighScoreRootFolder "\mame2010\hi\" sHighFile)) {
+                global g_sHighScoreFolder := g_sATCHighScoreRootFolder "\mame2010\hi"
+            }
+            ;as of ATC 3.6 we won't likely find *.hi files here, but we could find *.high files.
+            else if (FileExist(g_sATCHighScoreRootFolder "\mame2014\hi\" sHiFile) || FileExist(g_sATCHighScoreRootFolder "\mame2014\hi\" sHighFile)) {
+                global g_sHighScoreFolder := g_sATCHighScoreRootFolder "\mame2014\hi"
+            }            
+            else {
+                ;don't bother reporting any missing *.high files since they aren't required.
+                g_oLog.LogLine("INFO: Highscore file " sRomName ".hi was not found. Skipping highscore table.`n")
+                return
+            }
+        }
+        else {
+            ;Currently hi file support in "Other" arcades is only supported if this vfe.ini key is defined
+            g_sHighScoreFolder := IniRead(g_sIniFile, "Other", "HiFileFolder", "")
+            if (!g_sHighScoreFolder)
+                return
+        }
+
         sHi2txtCommand := '-hiscoredat "' g_sHiscoreDatFolder '\hiscore.dat" -r "' g_sHighScoreFolder '\' sHiFile '"'
 
         OG_DetectHiddenWindows := A_DetectHiddenWindows
@@ -122,7 +481,7 @@ class HighScore
         }
         catch as e
         {		
-            g_olog.LogLine("ERROR: Attaching console for GetHi2TxtScores(): " g_oLog.FormatErrorMessage(e) "`n")
+            g_oLog.LogLine("ERROR: Attaching console for GetHi2TxtScores(): " g_oLog.FormatErrorMessage(e) "`n")
             ExitApp
         }
 
