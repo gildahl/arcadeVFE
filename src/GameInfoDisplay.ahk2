@@ -737,33 +737,34 @@ class GameInfoDisplay
 						
 						if (InStr(sText, "<row>")) ;signifies a highscore table row
 						{
+							bPlayerInitials := false
+
 							fsz := g_iGameInfoFontSize
 							nw := CreateField(idx, sControlType)
 							iRow := Number(StrReplace(StrReplace(sText, "<row>", ""), "</row>", ""))
+
+							;if the line contains player initials (those defined in the Initial Setup dialog)
+							;they will be enclosed in element tags <player>DGD</player> 
+							sLeaderboardName := aLeaderboard[iRow]
+							if (InStr(sLeaderboardName, "<player>"))
+							{
+								sLeaderboardName := StrReplace(StrReplace(sLeaderboardName, "<player>", ""), "</player>", "")
+								bPlayerInitials := true
+							}
+
 							loop
 							{
-								tsz := GetTextExtentPoint(aLeaderboard[iRow], "Consolas", fsz, true)
+								tsz := GetTextExtentPoint(sLeaderboardName, "Consolas", fsz, true)
 								if (tsz < nw * 96/A_ScreenDPI)
 									break
 								else
 									fsz--
 							}
 
-							;CreateField(idx, sControlType)
 							iRow := Number(StrReplace(StrReplace(sText, "<row>", ""), "</row>", ""))
-							this.gcFormatField%idx%.Value := aLeaderboard[iRow]
-
-							sInitials := ""  
-							for i, j in g_oInitials
-							{
-								if (InStr(aLeaderboard[iRow], "│" j))
-								{
-									sInitials := j
-									break
-								}
-							}
-							
-							if (sInitials)
+							this.gcFormatField%idx%.Value := sLeaderboardName
+			
+							if (bPlayerInitials)
 								this.gcFormatField%idx%.SetFont("s" fsz " cYellow", "Consolas")
 							else
 								this.gcFormatField%idx%.SetFont("s" fsz, "Consolas")

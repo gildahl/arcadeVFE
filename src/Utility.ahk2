@@ -18,7 +18,7 @@ Even(iVal) => ((iVal & 1) == 0)
 
 /**
  * Does a particular value from an array match a string?
- * This is a case sensitive exact match test.
+ * This is a non-case sensitive match test.
  * @param aArray - The array of values to look for
  * @param sValue - The string to look for the values in
  * @param {String} sFoundValue - The value found (by ref)
@@ -27,7 +27,7 @@ Even(iVal) => ((iVal & 1) == 0)
 IsValueInArray(aArray, sValue, &sFoundValue:="")
 {
 	for i, j in aArray
-		if (sValue == j)
+		if (sValue = j)
 		{
 			sFoundValue := j
 			return 1

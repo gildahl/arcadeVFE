@@ -789,12 +789,22 @@ class HighScore
                         aLeaderboard.Push(sLine "┤")
 
                         ;create the table rows
-                        iIterations := aTable["DATA"].Length-1
-                        Loop iIterations
+                        iRows := aTable["DATA"].Length-1
+                        Loop iRows
                         {
                             sLine := PadString("│" String(A_Index), 5)
                             for i, sContent in aTable["DATA"][A_Index + 1]
                             {
+                                ;tag the filed with <player>DGD</player> tags if it contains
+                                ;player initials (i.e. the initals defined in the Initial Setup dialog)
+                                if (i == aTable["NAME_COLUMN"]) {
+
+                                    if (IsValueInArray(g_oInitials, Trim(sContent)))
+                                    {
+                                        sLine := "<player>" sLine "</player>"
+                                    }
+                                }
+
                                 sLine := sLine "│" PadString(sContent, aColumnWidths[A_Index])
                             }
                             aLeaderboard.Push(sLine "│")
@@ -856,16 +866,21 @@ class HighScore
                         ;create the table rows
                         ;moves the NAME column to the last column position so that non-monospace
                         ;characters won't disrupt alignment of other columns
-                        iIterations := aTable["DATA"].Length-1
-                        Loop iIterations
+                        iRows:= aTable["DATA"].Length-1
+                        Loop iRows
                         {
                             sLine := PadString(String(A_Index), 5)
                             sNameField := ""
 
                             for i, sContent in aTable["DATA"][A_Index + 1]
                             {
-                                if (i == aTable["NAME_COLUMN"])
+                                if (i == aTable["NAME_COLUMN"]) {
                                     sNameField := PadString(sContent, aColumnWidths[A_Index])
+                                    if (IsValueInArray(g_oInitials, Trim(sContent)))
+                                    {
+                                        sNameField := "<player>" sNameField "</player>"
+                                    }
+                                }
                                 else
                                     sLine := sLine " " PadString(sContent, aColumnWidths[A_Index])
                             }
