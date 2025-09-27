@@ -190,9 +190,24 @@ class Setup
         gcRestoreHSButton.OnEvent("Click", (*) => Setup.gcRestoreHSButton_Click())
         gcRestoreHSButton.TT := "Press to restore all backed-up ATC`n*.hi and *.high, high score files."
 
+        gcClearHSButton := guiBackup.AddButton("x" iGB_X + iGB_W/2 - 40 " y" iGB_Y + 110 " w" 80 " h" 25, "Clear")
+        gcClearHSButton.OnEvent("Click", (*) => Setup.gcClearHSButton_Click())
+        gcClearHSButton.TT := "Press to delete all ATC *.hi files.`nA backup is recommended before performing this action.`nNote that *.high files are not cleared."
+
         ;Dialog close
         gcBackupDialogCloseButton := guiBackup.AddButton("x" Setup.BackupDialog.W/2 - 40 " y" Setup.BackupDialog.H - 40 " w" 80 " h" 25, "Close")
         gcBackupDialogCloseButton.OnEvent("Click", (*) => Setup.BackupDialogCloseButton_Click())
+    }
+
+    static ShowSetupDialog()
+    {
+        try guiSettings.Opt("+Disabled")
+        guiSetup.Opt("-Resize -MaximizeBox -MinimizeBox")
+        guiSetup.Show("x" Setup.mSetup.X " y" Setup.mSetup.Y " w" Setup.mSetup.Width " h" Setup.mSetup.Height)
+
+        g_oLog.LogLine("INFO: Showing Setup Dialog.`n")
+
+        Setup.PopulateFields()
     }
 
     static PopulateFields()
@@ -390,6 +405,44 @@ static gcBackupHSButton_Click()
 
         gcRestoreHSButton.TT := tempTT
         return
+    }
+
+    static gcClearHSButton_Click()
+    {
+        if (!DirExist(g_sROMMonitorFolder))
+            return
+
+        ;Must force dismisal of ToolTip over browse window
+		tempTT := gcClearHSButton.TT
+		gcClearHSButton.TT := ""
+		ToolTip()
+
+        result := "Yes"
+        result := MsgBox("Performing this *.hi file clear operation will delete all *.hi files in ATC, effectively returning them to their defaults. Any backups you have made will not be affected and may still be restored later.`n`nAre you sure you would like to proceed?`nPress 'Yes' to reset now, or press 'No' to abort.", "Perform *.hi file delete?", 36)
+
+        if (result == "No")
+        {
+            gcClearHSButton.TT := tempTT
+            return
+        }
+
+        iFilesDeleted := 0
+        for i, sVer in Setup.GetMAMEVersions()
+        {
+            Loop files g_sATCFolder "\RetroVRArcade\Plugins\save\mame" sVer "\hi\*.hi" 
+            {
+                FileDelete(A_LoopFileFullPath)
+                iFilesDeleted++
+            }
+        }
+
+        if (iFilesDeleted > 0)
+            MsgBox "Successfully deleted " iFilesDeleted " high score files.", "Delete Completed", 64
+        else
+            MsgBox "There were no high score files found to delete.", "Delete Unsuccessful", 16
+
+        gcClearHSButton.Enabled := false
+        gcClearHSButton.TT := tempTT
     }
     
     static gcBackupConfigButton_Click()
@@ -692,6 +745,7 @@ static gcBackupHSButton_Click()
     static AuditButton_Click() 
     {
         iErrorCount := 0
+        guiSetup.Opt("+Disabled")
         gcAuditButton.Enabled := false
         gcSetup_CloseButton.Enabled := false
         gcAuditProgress.Visible := true
@@ -797,6 +851,7 @@ static gcBackupHSButton_Click()
 
         gcAuditButton.Enabled := true
         gcSetup_CloseButton.Enabled := true
+        guiSetup.Opt("-Disabled")
 
         DetectHiddenWindows OG_DetectHiddenWindows
     }
@@ -808,6 +863,7 @@ static gcBackupHSButton_Click()
 		{
 			gcAddInitialsButton.Enabled := false
 			gcRemoveInitialsButton.Enabled := false
+            Setup.UpdateApplyButton()
 			return
 		}
 
@@ -821,6 +877,7 @@ static gcBackupHSButton_Click()
                 {
                     gcAddInitialsButton.Enabled := false
                     gcRemoveInitialsButton.Enabled := true
+                    Setup.UpdateApplyButton()
                     return
                 }
             }
@@ -829,6 +886,7 @@ static gcBackupHSButton_Click()
 		;initials weren't found
 		gcAddInitialsButton.Enabled := true
 		gcRemoveInitialsButton.Enabled := false
+        Setup.UpdateApplyButton()
     }
 
     static AddInitialsButton_Click(*)
@@ -904,17 +962,6 @@ static gcBackupHSButton_Click()
             }
 		}
 	}
-
-    static ShowSetupDialog()
-    {
-        try guiSettings.Opt("+Disabled")
-        guiSetup.Opt("-Resize -MaximizeBox -MinimizeBox")
-        guiSetup.Show("x" Setup.mSetup.X " y" Setup.mSetup.Y " w" Setup.mSetup.Width " h" Setup.mSetup.Height)
-
-        g_oLog.LogLine("INFO: Showing Setup Dialog.`n")
-
-        Setup.PopulateFields()
-    }
 
     static Setup_CloseButton_Click(*)
     {
@@ -1077,9 +1124,20 @@ static gcBackupHSButton_Click()
 
     static UpdateApplyButton()
     {
-        if (gcArcadeDropDown.Text && gcArcadeExeEdit.Text && DirExist(gcROMMonitorFolderEdit.Text))
-            gcApplyButton.Enabled := true
-        else 
-            gcApplyButton.Enabled := false            
+        sArcade := IniRead(g_sIniFile, "General", "Arcade", "")
+        sArcadeExe := IniRead(g_sIniFile, sArcade, "Application", "")
+        sROMFolder := IniRead(g_sIniFile, sArcade, "ROMFolder", "")    
+
+        if (sArcade == gcArcadeDropDown.Text &&
+            sArcadeExe == gcArcadeExeEdit.Text &&
+            sROMFolder == gcROMMonitorFolderEdit.Text &&
+            !gcAddInitialsButton.Enabled)
+        {
+            gcApplyButton.Enabled := false
+        }
+        else
+        {
+            gcApplyButton.Enabled := true  
+        }
     }
 }
