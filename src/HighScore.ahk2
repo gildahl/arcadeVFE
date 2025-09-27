@@ -409,6 +409,10 @@ class HighScore
                     sTableName := "# " aTable["TITLE"]
                     FileAppend(sTableName "`r`n", sFile)
                 }
+                else if (i > 1)
+                {
+                    FileAppend("#`r`n", sFile)
+                }
 
                 for i, aScoreLine in aTable["DATA"]
                 {
