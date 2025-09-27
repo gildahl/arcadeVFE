@@ -57,10 +57,10 @@ class Setup
         
         gcArcadeDropDown.Add(["Other"])
 
-        gcApplicationEditLabel := guiSetup.AddText("x" 25 " y" 55 " w" 350, "Application Name")
-        gcApplicationEdit := guiSetup.AddEdit("x" 25 " y" 70 " w" 155 " +BackgroundWhite",)
-		gcApplicationEdit.OnEvent("Change", (*) => Setup.ApplicationEdit_Change())
-		gcApplicationEdit.TT := "Enter the name of the executable for this arcade. Do not`ninclude the path. For example, `"RetroVRArcade.exe`"."
+        gcArcadeExeEditLabel := guiSetup.AddText("x" 25 " y" 55 " w" 350, "Arcade Executable Name")
+        gcArcadeExeEdit := guiSetup.AddEdit("x" 25 " y" 70 " w" 155 " +BackgroundWhite",)
+		gcArcadeExeEdit.OnEvent("Change", (*) => Setup.ArcadeExeEdit_Change())
+		gcArcadeExeEdit.TT := "Enter the name of the executable for this arcade. Do not`ninclude the path. For example, `"RetroVRArcade.exe`"."
 
         gcInitialsComboBoxLabel := guiSetup.AddText("x" 370 " y" 9 " w" 75, "Player Initials")
         gcInitialsComboBox := guiSetup.AddComboBox("x" 370 " y" 24 " w" 75 " +BackgroundWhite",)
@@ -81,10 +81,10 @@ class Setup
 
         Setup.ReadInitials()
 
-		gcApplicationBrowseButton := guiSetup.AddButton("x" 183 " y" 69 " w" nIconButtonWidth)
-		gcApplicationBrowseButton.OnEvent("Click", (*) => Setup.ApplicationBrowseButton_Click())
-        gcApplicationBrowseButton.TT := "Browse for the arcade system executable file."
-        GuiButtonIcon(gcApplicationBrowseButton, 'imageres.dll', 206, 's16')
+		gcArcadeExeBrowseButton := guiSetup.AddButton("x" 183 " y" 69 " w" nIconButtonWidth)
+		gcArcadeExeBrowseButton.OnEvent("Click", (*) => Setup.ArcadeExeBrowseButton_Click())
+        gcArcadeExeBrowseButton.TT := "Browse for the arcade system executable file."
+        GuiButtonIcon(gcArcadeExeBrowseButton, 'imageres.dll', 206, 's16')
 
         gcROMMonitorFolderLabel := guiSetup.AddText("x" 25 " y" 100 " w" 350, "ROM folder to monitor")
         gcROMMonitorFolderEdit := guiSetup.AddEdit("x" 25 " y" 115 " w" 462 " +BackgroundWhite",)
@@ -122,7 +122,7 @@ class Setup
 
         ;Force display of the Setup dialog if any or all of its fields are empty after attempting to populate its
         ;fields from the vfe.ini file. This would be expected on an initial run.
-        if (!gcArcadeDropDown.Text || !gcApplicationEdit.Text || !DirExist(gcROMMonitorFolderEdit.Text))
+        if (!gcArcadeDropDown.Text || !gcArcadeExeEdit.Text || !DirExist(gcROMMonitorFolderEdit.Text))
         {
             Setup.ShowSetupDialog()
             Setup.bAutoshow := true
@@ -179,15 +179,15 @@ class Setup
         if (!gcArcadeDropDown.Text)
             try gcArcadeDropDown.Text := IniRead(g_sIniFile, "General", "Arcade", "Arcade Time Capsule 3.6")
 
-        try gcApplicationEdit.Text := IniRead(g_sIniFile, gcArcadeDropDown.Text, "Application")
+        try gcArcadeExeEdit.Text := IniRead(g_sIniFile, gcArcadeDropDown.Text, "Application")
         try gcROMMonitorFolderEdit.Text := IniRead(g_sIniFile, gcArcadeDropDown.Text, "ROMFolder")            
 
-        if (!gcApplicationEdit.Text && InStr(gcArcadeDropDown.Text, "Arcade Time Capsule"))
-            gcApplicationEdit.Text := "RetroVRArcade.exe"      
+        if (!gcArcadeExeEdit.Text && InStr(gcArcadeDropDown.Text, "Arcade Time Capsule"))
+            gcArcadeExeEdit.Text := "RetroVRArcade.exe"      
 
         ;Set globals
         global g_sArcadeString := gcArcadeDropDown.Text
-        global g_sApplicationName := gcApplicationEdit.Text
+        global g_sArcadeExeName := gcArcadeExeEdit.Text
         global g_sROMMonitorFolder := gcROMMonitorFolderEdit.Text 
         global g_sDirectoryFile := g_sArcadeFolder "\" g_sArcadeString ".Directory.ini"
         global g_sFloorsFile := g_sArcadeFolder "\" g_sArcadeString ".Floors.json"
@@ -780,13 +780,13 @@ class Setup
     static Setup_CloseButton_Click(*)
     {
         ;get saved values
-        sArcade := sApplication := sROMFolder := ""
+        sArcade := sArcadeExe := sROMFolder := ""
         try sArcade := IniRead(g_sIniFile, "General", "Arcade")
-        try sApplication := IniRead(g_sIniFile, sArcade, "Application")
+        try sArcadeExe := IniRead(g_sIniFile, sArcade, "Application")
         try sROMFolder := IniRead(g_sIniFile, sArcade, "ROMFolder")
 
         ;handle case where settings haven't been applied
-        if(sArcade != gcArcadeDropDown.Text || sApplication != gcApplicationEdit.Text || sROMFolder != gcROMMonitorFolderEdit.Text)
+        if(sArcade != gcArcadeDropDown.Text || sArcadeExe != gcArcadeExeEdit.Text || sROMFolder != gcROMMonitorFolderEdit.Text)
         {
             result := "Yes"
             result := MsgBox("You have not applied these settings. Are you sure you want to exit?`n`nPress 'Yes' to exit without applying or 'No' to return to this screen.", "Close Initial Setup?", 36)
@@ -796,11 +796,11 @@ class Setup
 
         ;restore the settings
         try gcArcadeDropDown.Text := sArcade
-        try gcApplicationEdit.Text := sApplication
+        try gcArcadeExeEdit.Text := sArcadeExe
         try gcROMMonitorFolderEdit.Text := sROMFolder
 
         ;Go directly to Settings dialog if settings saved/good and Setup dialog had been automatically shown
-        if (Setup.bAutoshow && sArcade && sApplication && DirExist(sROMFolder))
+        if (Setup.bAutoshow && sArcade && sArcadeExe && DirExist(sROMFolder))
         {
             guiSetup.Hide()
             global g_bCancelPoll := true
@@ -821,7 +821,7 @@ class Setup
 
     static Setup_ApplyButton_Click(*)
     {
-        if (gcArcadeDropDown.Text && gcApplicationEdit.Text && DirExist(gcROMMonitorFolderEdit.Text))
+        if (gcArcadeDropDown.Text && gcArcadeExeEdit.Text && DirExist(gcROMMonitorFolderEdit.Text))
         {
             IniWrite(gcArcadeDropDown.Text, g_sIniFile, "General", "Arcade")
 
@@ -837,12 +837,12 @@ class Setup
 
             ;Also index these settings in their own section
             IniWrite(gcArcadeDropDown.Text, g_sIniFile, gcArcadeDropDown.Text, "Arcade")
-            IniWrite(gcApplicationEdit.Text, g_sIniFile, gcArcadeDropDown.Text, "Application")
+            IniWrite(gcArcadeExeEdit.Text, g_sIniFile, gcArcadeDropDown.Text, "Application")
             IniWrite(gcROMMonitorFolderEdit.Text, g_sIniFile, gcArcadeDropDown.Text, "ROMFolder")
 
             ;Set globals
             global g_sArcadeString := gcArcadeDropDown.Text
-            global g_sApplicationName := gcApplicationEdit.Text
+            global g_sArcadeExeName := gcArcadeExeEdit.Text
             global g_sROMMonitorFolder := gcROMMonitorFolderEdit.Text 
             global g_sDirectoryFile := g_sArcadeFolder "\" g_sArcadeString ".Directory.ini"
             global g_sFloorsFile := g_sArcadeFolder "\" g_sArcadeString ".Floors.json"
@@ -908,29 +908,29 @@ class Setup
         Setup.PopulateFields()
     }
 
-    Static ApplicationEdit_Change(*)
+    Static ArcadeExeEdit_Change(*)
     {
         Setup.UpdateApplyButton()
     }
 
-    static ApplicationBrowseButton_Click()
+    static ArcadeExeBrowseButton_Click()
     {
         ;Must force dismisal of ToolTip over browse window
-		tempTT := gcApplicationBrowseButton.TT
-		gcApplicationBrowseButton.TT := ""
+		tempTT := gcArcadeExeBrowseButton.TT
+		gcArcadeExeBrowseButton.TT := ""
 		ToolTip()
         
-		sApplicationPath := FileSelect("S",,, "Executables (*.exe)")
+		sArcadeExePath := FileSelect("S",,, "Executables (*.exe)")
 
-        gcApplicationBrowseButton.TT := tempTT
+        gcArcadeExeBrowseButton.TT := tempTT
 
-        if (!sApplicationPath) ;User cancelled
+        if (!sArcadeExePath) ;User cancelled
             return	
 
-        if (sApplicationPath)
+        if (sArcadeExePath)
         {
-            SplitPath(sApplicationPath,,,&OutExt, &OutNameNoExt)
-            gcApplicationEdit.Text := OutNameNoExt "." OutExt
+            SplitPath(sArcadeExePath,,,&OutExt, &OutNameNoExt)
+            gcArcadeExeEdit.Text := OutNameNoExt "." OutExt
         }
 
         Setup.UpdateApplyButton()
@@ -938,7 +938,7 @@ class Setup
 
     static UpdateApplyButton()
     {
-        if (gcArcadeDropDown.Text && gcApplicationEdit.Text && DirExist(gcROMMonitorFolderEdit.Text))
+        if (gcArcadeDropDown.Text && gcArcadeExeEdit.Text && DirExist(gcROMMonitorFolderEdit.Text))
             gcApplyButton.Enabled := true
         else 
             gcApplyButton.Enabled := false            

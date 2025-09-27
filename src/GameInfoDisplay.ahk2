@@ -407,7 +407,7 @@ class GameInfoDisplay
 			aLeaderboard := ""
 			if (g_sArcadeString != "Other")
 			{
-				aLeaderboard := HighScore.ReadHighScores(this._rom)
+				aLeaderboard := HighScore.HSOCreateLeaderboard(this._rom)
 				if (aLeaderboard) ;will be empty if no highscores
 				{
 					leader_board := HighScore.FormattedHighScore "`n`n"

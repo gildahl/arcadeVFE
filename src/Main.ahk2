@@ -151,7 +151,7 @@ global g_sRawAccelExe := "" ;plugin
 global g_sArcadeString := ""             ;Currently may be "Arcade Time Capsule 3.6" or "Other"
 global g_sDirectoryFile := ""
 global g_sFloorsFile := ""   
-global g_sApplicationName := ""
+global g_sArcadeExeName := ""
 global g_sROMMonitorFolder := ""
 global g_sATCFolder := ""
 global g_sATCHighScoreRootFolder := ""
@@ -668,16 +668,16 @@ RomAccess_Event(sFolder, aChanges)
 	global g_sCurrentROM := sNewROMFile ;this *must* be above the call to ShowGameInfo()
 
 	;Show GameInfo (but only if the option is turned on and the application is running)
-	if ((gcShowGameInfo_Checkbox.Value && gcShowGameInfo_Checkbox.Enabled) && g_bOnlyMonitorWhenArcadeIsLoaded && ProcessExist(g_sApplicationName))
+	if ((gcShowGameInfo_Checkbox.Value && gcShowGameInfo_Checkbox.Enabled) && g_bOnlyMonitorWhenArcadeIsLoaded && ProcessExist(g_sArcadeExeName))
 		ShowGameInfo(OutNameNoExt)	
 }
 
 /**
  * This gets called every 250ms when active. It is active whenever the main monitoring Poll() loop is 
- * not running and the g_bOnlyMonitorWhenArcadeIsLoaded is set to true. If it detects the application has
- * started/resumed running, it will kill its timer and resume monitoring by calling Poll().
+ * not running and the g_bOnlyMonitorWhenArcadeIsLoaded is set to true. If it detects the arcade software's 
+ * exe has started/resumed running, it will kill its timer and resume monitoring by calling Poll().
  */
-ApplicationProcessCheck_Callback()
+ArcadeExeProcessCheck_Callback()
 {
 	global g_bCancelPoll
 	global g_iRawAccelPID
@@ -688,15 +688,15 @@ ApplicationProcessCheck_Callback()
 	if (g_bCancelPoll)
 	{
 		g_bCancelPoll := false
-		SetTimer(ApplicationProcessCheck_Callback, 0)
+		SetTimer(ArcadeExeProcessCheck_Callback, 0)
 	}
 
 	;if we are only supposed to monitor when an application is loaded and it is
 	;now loaded, then call Poll() to start/resume monitoring
-	if (g_bOnlyMonitorWhenArcadeIsLoaded && ProcessExist(g_sApplicationName))
+	if (g_bOnlyMonitorWhenArcadeIsLoaded && ProcessExist(g_sArcadeExeName))
 	{
 		Hotkey("~LButton", OnMouseButtonEvent, "On")
-		g_oLog.LogLine("INFO: Application, `"" g_sApplicationName "`" detected.`n" )
+		g_oLog.LogLine("INFO: Application, `"" g_sArcadeExeName "`" detected.`n" )
 
 		;Run RawAccel if the option is checked and it's available
 		if (gcRawAccel_Checkbox.Value && FileExist(g_sRawAccelExe))
@@ -708,7 +708,7 @@ ApplicationProcessCheck_Callback()
 
 		;terminate this timer since Poll() will now take up monitoring 
 		;whether the app subsequently gets turned off
-		SetTimer(ApplicationProcessCheck_Callback, 0) 
+		SetTimer(ArcadeExeProcessCheck_Callback, 0) 
 		Poll() 
 	}
 }
@@ -766,9 +766,9 @@ Poll()
 		;if we are only supposed to monitor when an application is loaded and it is
 		;not currently loaded, then cancel the Poll() loop, and register a timer
 		;to wait for the application to be loaded.
-		if (g_bOnlyMonitorWhenArcadeIsLoaded && !ProcessExist(g_sApplicationName))
+		if (g_bOnlyMonitorWhenArcadeIsLoaded && !ProcessExist(g_sArcadeExeName))
 		{
-			g_oLog.LogLine("INFO: Application, `"" g_sApplicationName "`" not detected.`n" )
+			g_oLog.LogLine("INFO: Application, `"" g_sArcadeExeName "`" not detected.`n" )
 
 			Hotkey("~LButton", OnMouseButtonEvent, "On")
 
@@ -801,7 +801,7 @@ Poll()
 			global g_sCurrentROM := "" ;clear current rom
 
 			;Start a monitor to poll the application for its resumption
-			SetTimer(ApplicationProcessCheck_Callback)
+			SetTimer(ArcadeExeProcessCheck_Callback)
 		}
 
 		if (g_bCancelPoll)
@@ -1126,7 +1126,7 @@ RunAction(oAction, sModifier:="")
 				g_oGameInfoDisplay.GoPage("l")
 			Case "Home":	
 			    SplitPath(g_sCurrentROM,,,,&OutNameNoExt)
-				if ((gcShowGameInfo_Checkbox.Value && gcShowGameInfo_Checkbox.Enabled) && g_bOnlyMonitorWhenArcadeIsLoaded && ProcessExist(g_sApplicationName))
+				if ((gcShowGameInfo_Checkbox.Value && gcShowGameInfo_Checkbox.Enabled) && g_bOnlyMonitorWhenArcadeIsLoaded && ProcessExist(g_sArcadeExeName))
 					ShowGameInfo(OutNameNoExt)
 			Case "Exit":			
 				g_oGameInfoDisplay.Clear()

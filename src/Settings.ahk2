@@ -325,7 +325,7 @@ class Settings
 
 		try gcOnlyWhenArcadeActive_Checkbox.Value := Integer(IniRead(g_sIniFile, "General", "MonitorApplication", 1))
 		
-		gcOnlyWhenArcadeActive_Checkbox.Enabled := gcApplicationEdit.Text ? true : false
+		gcOnlyWhenArcadeActive_Checkbox.Enabled := gcArcadeExeEdit.Text ? true : false
 		global g_bOnlyMonitorWhenArcadeIsLoaded := gcOnlyWhenArcadeActive_Checkbox.Enabled && gcOnlyWhenArcadeActive_Checkbox.Value == 1
 
 		gcAlwaysAnnunciate_Checkbox := guiSettings.AddCheckbox("x" 45 " y" iLVBaseOffset_Y4 " Check3", "Always voice notify")
@@ -343,7 +343,7 @@ class Settings
 		try gcRawAccel_Checkbox.Value := Integer(IniRead(g_sIniFile, "General", "LoadRawAccel", 0))
 		gcRawAccel_Checkbox.TT := "Run the RawAccel plugin when the arcade application`nstarts and close it when the application terminates."
 
-		if (!FileExist(g_sRawAccelExe) || gcApplicationEdit.Text == '' || gcOnlyWhenArcadeActive_Checkbox.Value == 0)
+		if (!FileExist(g_sRawAccelExe) || gcArcadeExeEdit.Text == '' || gcOnlyWhenArcadeActive_Checkbox.Value == 0)
 			gcRawAccel_Checkbox.Enabled := false
 
 		gcToolTip_Checkbox := guiSettings.AddCheckbox("x" 275 " y" iLVBaseOffset_Y4, "Show Tooltips")
@@ -644,7 +644,7 @@ class Settings
 			g_oLog.LogLine("INFO: Closed Settings dialog.`n")
 			ToolTip("") ;kill any tooltips
 
-			SetTimer(ApplicationProcessCheck_Callback, 0)
+			SetTimer(ArcadeExeProcessCheck_Callback, 0)
 			Poll() ;resume monitoring
 		}
 		else
@@ -1474,10 +1474,10 @@ class Settings
 			IniWrite(gcOnlyWhenArcadeActive_Checkbox.Value, g_sIniFile, "General", "MonitorApplication")
 			global g_bOnlyMonitorWhenArcadeIsLoaded := gcOnlyWhenArcadeActive_Checkbox.Value
 
-			gcRawAccel_Checkbox.Enabled := FileExist(g_sRawAccelExe) && gcApplicationEdit.Text && gcOnlyWhenArcadeActive_Checkbox.Value ? true : false
-			gcShowGameInfo_Checkbox.Enabled := gcApplicationEdit.Text && gcOnlyWhenArcadeActive_Checkbox.Value ? true : false
-			gcGameInfoFontSizeEdit.Enabled := gcApplicationEdit.Text && gcOnlyWhenArcadeActive_Checkbox.Value ? true : false
-			gcGameInfoMonitorDropDown.Enabled := gcApplicationEdit.Text && gcOnlyWhenArcadeActive_Checkbox.Value ? true : false
+			gcRawAccel_Checkbox.Enabled := FileExist(g_sRawAccelExe) && gcArcadeExeEdit.Text && gcOnlyWhenArcadeActive_Checkbox.Value ? true : false
+			gcShowGameInfo_Checkbox.Enabled := gcArcadeExeEdit.Text && gcOnlyWhenArcadeActive_Checkbox.Value ? true : false
+			gcGameInfoFontSizeEdit.Enabled := gcArcadeExeEdit.Text && gcOnlyWhenArcadeActive_Checkbox.Value ? true : false
+			gcGameInfoMonitorDropDown.Enabled := gcArcadeExeEdit.Text && gcOnlyWhenArcadeActive_Checkbox.Value ? true : false
 			
 			ExitApp(1) ;1 indicates user forced shutdown
 		}
