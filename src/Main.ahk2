@@ -49,6 +49,8 @@ global CodeVersion := "1.2.2.0"
 global bTestMode := 0
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+CoordMode("Mouse", "Screen")
+
 ;register callbacks for tooltips
 OnMessage(WM_MOUSEMOVE  := 0x0200, OnMouseEvent)
 OnMessage(WM_MOUSELEAVE := 0x02A3, OnMouseEvent)
@@ -1450,14 +1452,17 @@ OnMouseButtonEvent(*)
 	{
 		g_oGameInfoDisplay.GetBounds(&X, &Y, &W, &H)
 
-		If (MouseX > 0 && MouseX < W//2 && MouseY > 0 && MouseY < H) ;screen mode version: if (MouseX > X && MouseX < X + W//2 && MouseY > Y && MouseY < Y + H)
+		;These setting depend on CoordMode("Mouse", "Screen") being set for the application
+		;Without this CoordMode, mouse clicks on other monitor may trigger page turns.
+		if (MouseX > X && MouseX < X + W//2 && MouseY > Y && MouseY < Y + H) ;CoordMode off version: If (MouseX > 0 && MouseX < W//2 && MouseY > 0 && MouseY < H)
 		{
 			;clicked on the left side
 			Sleep 0
 			g_oGameInfoDisplay.GoPage("l")
 			Sleep 100
 		}
-		else If (MouseX > W//2 && MouseX < W && MouseY > 0 && MouseY < H) ;screen mode version: else If (MouseX > X + W//2 && MouseX < X + W && MouseY > Y && MouseY < Y + H) 
+		
+		else If (MouseX > X + W//2 && MouseX < X + W && MouseY > Y && MouseY < Y + H) ;CoordMode off version: else If (MouseX > W//2 && MouseX < W && MouseY > 0 && MouseY < H)
 		{
 			;clicked on the right side
 			Sleep 0
