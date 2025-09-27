@@ -106,6 +106,7 @@ class GameInfoDisplay
             
 			;Position the label and logo on the screen
             screen_topThird := this._ScreenHeight * (1/3)
+			screen_topFourth := this._ScreenHeight * (1/4)
 			screen_centerH := this._ScreenHeight / 2
             screen_centerW := this._ScreenWidth / 2
 
@@ -115,7 +116,7 @@ class GameInfoDisplay
 			logo_ypos := screen_centerH
 			logo_xpos := screen_centerW - logoW / 2
             
-            this.gcGameInfoPleaseWait.Move(label_xpos, label_ypos)
+            this.gcGameInfoPleaseWait.Move(label_xpos, screen_topFourth)
             this.gcGameInfoLogo.Move(logo_xpos, logo_ypos, logoW, logoH)
 		}
 		else
@@ -123,7 +124,7 @@ class GameInfoDisplay
 			this.gcGameInfoPleaseWait.Move(,this._ScreenHeight / 3)
 		}
 
-		this.gcGameInfoProgress := this.guiGameInfo.AddProgress("x" this._ScreenWidth * (3/8) " y" this._ScreenHeight * (6/8) " w" this._ScreenWidth / 4 " h" 40)
+		this.gcGameInfoProgress := this.guiGameInfo.AddProgress("x" this._ScreenWidth * (3/8) " y" this._ScreenHeight * (8/10) " w" this._ScreenWidth / 4 " h" 40)
 		this.gcGameInfoProgress.Value := 3 ;start at 3%
 
 		this.ShowGameInfoScreen()

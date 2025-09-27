@@ -100,7 +100,7 @@ global g_bHideCursor := 0
 global g_iGameInfoFontSize := 18
 global g_iMonitor := 1
 global g_guiGameInfoOverlayHwnd := 0
-global g_iMaxHSTableRows := 20
+global g_iMaxHSTableRows := 10
 
 ;global delays
 global g_iRestartDelay := 0              ;Delay in between application close and restart (in ms)

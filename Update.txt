@@ -1,13 +1,14 @@
 arcadeVFE v.1.2.2
-* Added high scores from the arcade to GameInfo for supported games.
-* Also support alt high score files for unsupported games.
+* Added high scores from *.hi files to GameInfo for supported games.
 * vfe.ini setting MaxHighScoreTableRows can limit high score table rows,
   or turn them all on by setting to 0.
-* New "Player Initials" field added to Initial Setup. This is used to
-  highlight that user's initials in the high score tables.
-* Limited support for changing pages in GameInfo using motion controller 
-  or mouse clicks on the right and left sides of the page. Only works in
-  VR if GameInfo is displayed on screen 1.
+* Also support custom *.high files for unsupported games.
+* Backup now includes both *.cfg and *.hi/*.high file options.
+* "Player Initials" field added to Initial Setup. This is used to
+  highlight the user's initials in the high score tables.
+* Support for changing pages in GameInfo using motion controller or
+  mouse clicks on the right and left sides of the page. Only works in
+  VR desktop portal if GameInfo is displayed on screen 1.
 * Disable Setting screen while GameInfo is displayed to avoid side-effects.
 * Changed Vicinity combobox to an edit box to simplify its operation.
 * Moved Edit Directory preference to the top to improve its context. 
