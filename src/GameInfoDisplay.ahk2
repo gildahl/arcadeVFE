@@ -524,20 +524,12 @@ class GameInfoDisplay
 					;Create new dest control to accept the overflow
 					this.guiGameInfo_GameInfo%destIdx% := this.guiGameInfo.AddEdit("x" . x_pos . " y0 h" . edit_height . " w" edit_width . " c0xCCCCCC Background0x1F1F1F Hidden -VScroll -HScroll -E0x200 vGameInfo%" . destIdx . "%")
 					this.hwndInfo%destIdx% := this.guiGameInfo_GameInfo%destIdx%.Hwnd
+				
+					hwndSrc := ""
+					try hwndSrc := this.guiGameInfo_GameInfo%srcIdx%.Hwnd
 
-					try {
-						hwndSrc := this.guiGameInfo_GameInfo%srcIdx%.Hwnd
-					}
-					catch {
-						hwndSrc := ""
-					}
-
-					try {
-						hwndDest := this.guiGameInfo_GameInfo%destIdx%.Hwnd
-					}
-					catch {
-						hwndDest := ""
-					}
+					hwndDest := ""
+					hwndDest := this.guiGameInfo_GameInfo%destIdx%.Hwnd
 
 					;Use the first edit control, which contains all of the text, and copy
 					;overflow text to the next control.
@@ -742,10 +734,16 @@ class GameInfoDisplay
 							fsz := g_iGameInfoFontSize
 							nw := CreateField(idx, sControlType)
 							iRow := Number(StrReplace(StrReplace(sText, "<row>", ""), "</row>", ""))
+							
+							sLeaderboardName := aLeaderboard[iRow]
+
+							;if any title text starts with a "$!$" markup symbol remove the "$!$". 
+							;This is marker used to indicate the reserved arcadeVFE score data entry table.
+							if (SubStr(sLeaderboardName, 1, 3) == "$!$")
+								sLeaderboardName := StrReplace(sLeaderboardName, "$!$", "")
 
 							;if the line contains player initials (those defined in the Initial Setup dialog)
 							;they will be enclosed in element tags <player>DGD</player> 
-							sLeaderboardName := aLeaderboard[iRow]
 							if (InStr(sLeaderboardName, "<player>"))
 							{
 								sLeaderboardName := StrReplace(StrReplace(sLeaderboardName, "<player>", ""), "</player>", "")

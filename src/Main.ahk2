@@ -728,7 +728,7 @@ Poll()
 	global g_iRawAccelPID
 
 	if (!g_bCancelPoll)
-		g_oLog.LogLine("INFO: Polling started...`n" )
+		g_oLog.LogLine("INFO: Polling requested...`n" )
 
 	;Register plain old AHK hotkeys for keypress handling
 	for device, buttons in g_oActions

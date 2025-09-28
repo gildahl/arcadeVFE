@@ -476,6 +476,7 @@ class HighScore
     static HSOCreateLeaderboard(sRomName)
     {
         sDirective := "BOTH" ;could be "PREFER_HI", "PREFER_HIGH", or "BOTH"
+        bUsedConsole := false
  
         HighScore.ClearScore()
 
@@ -499,7 +500,7 @@ class HighScore
             
             if (!g_sHighScoreFolder)
             {
-                g_oLog.LogLine("INFO: No highscore file was found. Skipping high score table.`n")
+                g_oLog.LogLine("INFO: No high score file was found in " g_sArcadeString " for `"" sRomName "`".`n")
                 return this._aLeaderboard := ""
             }      
         }
@@ -509,75 +510,88 @@ class HighScore
             global g_sHighScoreFolder := IniRead(g_sIniFile, "Other", "HiFileFolder", "")
             if (!g_sHighScoreFolder || !DirExist(g_sHighScoreFolder) || !(FileExist(g_sHighScoreFolder "\" sHiFile) || FileExist(g_sHighScoreFolder "\" sHighFile)))
             {
-                g_oLog.LogLine("INFO: No highscore file was found. Skipping high score table.`n")
+                g_oLog.LogLine("INFO: No high score file was found in " g_sArcadeString " for `"" sRomName "`".`n")
                 return this._aLeaderboard := ""
             }
         }
 
-        sHi2txtCommand := '-hiscoredat "' g_sHiscoreDatFolder '\hiscore.dat" -r "' g_sHighScoreFolder '\' sHiFile '"'
+        sRawHighScoreTable := aRawHighScoreTable := aStdoutTable := ""
 
-        OG_DetectHiddenWindows := A_DetectHiddenWindows
-        DetectHiddenWindows True
-
-        ;These first three lines (and the later FreeConsole and ProcessClose)
-        ;are needed to hide the console. Without this, a console window will
-        ;flash briefly on screen during startup.
-        try 
+        ;Read *.high file if one exists 
+        if (FileExist(g_sHighScoreFolder '\' sHighFile))
         {
-            Run A_ComSpec,, "Hide", &com_pid
-            if (!WinWait("ahk_pid " com_pid, , 5))
-            {
-                g_oLog.LogLine("ERROR: Timeout error (exceeded 5 seconds). Could not attach to console`n")
-            }
-            DllCall("AttachConsole", "UInt", com_pid)
-        
-            WshShell := ComObject("WScript.Shell")
-        }
-        catch as e
-        {		
-            g_oLog.LogLine("ERROR: Attaching console for GetHi2TxtScores(): " g_oLog.FormatErrorMessage(e) "`n")
-            ExitApp
+            sRawHighScoreTable := FileRead(g_sHighScoreFolder '\' sHighFile)
+            aRawHighScoreTable := StrSplit(sRawHighScoreTable, "`r`n")
         }
 
-        try 
+        ;If exists, read *.hi file using the Hi2txt utility.
+        if (FileExist(g_sHighScoreFolder "\" sHiFile))
         {
-            sRawHighScoreTable := aRawHighScoreTable := stdout := stderr := aStdoutTable := ""
+            sHi2txtCommand := '-hiscoredat "' g_sHiscoreDatFolder '\hiscore.dat" -r "' g_sHighScoreFolder '\' sHiFile '"'
 
-            ;Read *.high file if one exists 
-            if (FileExist(g_sHighScoreFolder '\' sHighFile))
+            OG_DetectHiddenWindows := A_DetectHiddenWindows
+            DetectHiddenWindows True
+
+            ;These first three lines (and the later FreeConsole and ProcessClose)
+            ;are needed to hide the console. Without this, a console window will
+            ;flash briefly on screen during startup.
+            try 
             {
-                sRawHighScoreTable := FileRead(g_sHighScoreFolder '\' sHighFile)
-                aRawHighScoreTable := StrSplit(sRawHighScoreTable, "`r`n")
+                Run A_ComSpec,, "Hide", &com_pid
+                if (!WinWait("ahk_pid " com_pid, , 5))
+                {
+                    g_oLog.LogLine("ERROR: Timeout error (exceeded 5 seconds). Could not attach to console`n")
+                }
+                DllCall("AttachConsole", "UInt", com_pid)
+                bUsedConsole := true
+            }
+            catch as e
+            {		
+                g_oLog.LogLine("ERROR: Attaching console for GetHi2TxtScores(): " g_oLog.FormatErrorMessage(e) "`n")
+                ExitApp -1
             }
 
-            ;Read *.hi file using the Hi2txt utility if one exists.
-            if (FileExist(g_sHighScoreFolder "\" sHiFile))
+            try
             {
+                stdout := stderr := ""
+
+                WshShell := ComObject("WScript.Shell")
+
                 exec := WshShell.Exec(g_sHi2txtExe  " "  sHi2txtCommand)
                 stdout := exec.StdOut.ReadAll()
                 stderr := exec.StdErr.ReadAll()
+
+                ;The *.hi file culd not be read
+                if (stderr || !stdout) 
+                {
+                    stderr := StrReplace(stderr, "Error" , "Message") ;don't want this to trigger an error beep
+                    stderr := StrReplace(stderr, "`r`n", "") ;don't need the extra linefeed data
+                    g_oLog.LogLine("INFO: Hi2txt could not read high score file `"" . sHiFile . "`": " . stderr . ".`n")
+                    this._aLeaderboard := ""
+                }
+                else ;read the *.hi file output
+                {
+                    stdout := Trim(stdout, "`r`n `r `n")
+                    ChangeEncoding(&stdout, "CP0", "UTF-8")
+                    aStdoutTable := StrSplit(stdout, "`r`n", A_Space)
+                }
             }
+            catch as e
+            {		
+                g_oLog.LogLine("ERROR: Executing Hi2txt: " g_oLog.FormatErrorMessage(e) "`n")
+                ExitApp -1
+            }
+        }
         
-            ;if we could not read the *.hi file
-            if (stderr || !stdout) 
-            {
-                stderr := StrReplace(stderr, "Error" , "Message") ;don't want this to trigger an error beep
-                stderr := StrReplace(stderr, "`r`n", "") ;don't need the extra linefeed data
-                g_oLog.LogLine("INFO: Failed to read high score file `"" . sHiFile . "`": " . stderr . ".`n")
-                this._aLeaderboard := ""
-            }
-            else ;we read the *.hi file
-            {
-                stdout := Trim(stdout, "`r`n `r `n")
-                ChangeEncoding(&stdout, "CP0", "UTF-8")
-                aStdoutTable := StrSplit(stdout, "`r`n", A_Space)
-            }
-
-            ;No valid highscore data found, so exit
+        try 
+        {
+            ;No valid high score data of either type found, so return
             if (!aRawHighScoreTable && !aStdoutTable) {
-                g_oLog.LogLine("INFO: No valid high score file available.`n") 
+                g_oLog.LogLine("INFO: No high score data could be found for `"" sRomName "`".`n")
 
-                FreeConsole()
+                if (bUsedConsole)
+                    FreeConsole()
+
                 return this._aLeaderboard := ""
             }
 
@@ -598,24 +612,20 @@ class HighScore
             }
             else if (sDirective == "PREFER_HI" || sDirective == "BOTH") 
             {
-                if (aStdoutTable)
-                {   
+                if (aStdoutTable) {   
                     aRawHighScoreTable := aStdoutTable
                     g_oLog.LogLine("INFO: Using high score file: " sHiFile ".`n")
                 }
-                else
-                {   
+                else {   
                     g_oLog.LogLine("INFO: Using high score file: " sHighFile ".`n")
                 }
             }
             else if (sDirective == "PREFER_HIGH" || sDirective == "BOTH")
             {
-                if (aRawHighScoreTable) {   
-                    
+                if (aRawHighScoreTable) {                
                     g_oLog.LogLine("INFO: Using high score file: " sHighFile ".`n")
                 }
-                else
-                {   
+                else {   
                     aRawHighScoreTable := aStdoutTable
                     g_oLog.LogLine("INFO: Using high score file: " sHiFile ".`n")
                 }
@@ -632,8 +642,7 @@ class HighScore
                 iSubTableRows := 0
                 HEADER := 1
 
-                ;Fuzzy search columns for SCORE, NAME, and STAGE if they exist and if they have values.
-                ;Defender is a good example of having differently named columns (TODAYS SCORE)                
+                ;Fuzzy search columns for SCORE, NAME, and STAGE if they exist and have values.               
                 for i, aTable in oHS["TABLES"] 
                 { 
                     aTable["SCORE_COLUMN"] := 0
@@ -642,6 +651,9 @@ class HighScore
                     iScoreColumn := 0, bFound := false
                     for i, sHeader in aTable["DATA"][HEADER] ;1 is the record containing the headers
                     { 
+                        ;look for a column containing the text "SCORE"
+                        ;Defender, for example, may only have scores in the "TODAYS SCORE" column
+                        ;which this will resolve.
                         if (InStr(sHeader, "SCORE")) {
                             
                             loop aTable["DATA"].length ;go through each record  
@@ -665,12 +677,19 @@ class HighScore
                             }
                         }
                     }
+                    if (!iScoreColumn)
+                    {
+                        g_oLog.LogLine("WARNING: A required column header containing the text `"SCORE`" column not found in high score table.")
+                    }
 
                     iNameColumn := 0, bFound := false
                     for i, sHeader in aTable["DATA"][HEADER] 
                     { 
                         aTable["NAME_COLUMN"] := 0
 
+                        ;look for a column containing the text "NAME"
+                        ;Defender, for example, may only have names in the "TODAYS NAME" column
+                        ;which this will resolve.
                         if (InStr(sHeader, "NAME")) {
                             
                             loop aTable["DATA"].length ;go through each record  
@@ -693,6 +712,10 @@ class HighScore
                                 break
                             }
                         }
+                    }
+                    if (!iNameColumn)
+                    {
+                        g_oLog.LogLine("WARNING: A required column header containing the text `"NAME`" not found in high score table.")
                     }
 
                     iStageColumn := 0, bFound := false
@@ -723,7 +746,17 @@ class HighScore
                             }
                         }
                     }
+
+                    ;SCORE_COLUMN and NAME_COLUMN are required to continue processing
+                    if (!iScoreColumn || !iNameColumn)
+                    {
+                        if (bUsedConsole)
+                            FreeConsole()
+
+                         return this._aLeaderboard := ""
+                    }
                     
+                    ;Format the score column with commas
                     for i, aLine in aTable["DATA"]
                     {
                         if (A_Index == HEADER) ;skip the header
@@ -732,22 +765,24 @@ class HighScore
                         aLine[iScoreColumn] := IsNumber(aLine[iScoreColumn]) ? ThouSep(Number(aLine[iScoreColumn])) : aLine[iScoreColumn]
                     }
 
-                    ;Create a column-width catalog for this table based on
-                    ;each column's longest string
+                    ;Create a column-width helper catalog for this 
+                    ;table based on each column's longest string
                     aColumnWidths := Array()
-                    Loop aTable["DATA"][HEADER].length ;visit each column
+                    Loop aTable["DATA"][HEADER].Length ;loop through each column in table
                     {
-                        iSize := 0
-                        idx := A_Index
-                        loop aTable["DATA"].length ;go through each record
-                        {                          
-                            if (StrLen(aTable["DATA"][A_Index][idx]) > iSize)
-                                iSize := StrLen(aTable["DATA"][A_Index][idx])
+                        iWidth := 0
+                        iColumn := A_Index
+                        loop aTable["DATA"].Length ;Loop through each row in the column
+                        {                        
+                            ;find the widest string in the column  
+                            if (StrLen(aTable["DATA"][A_Index][iColumn]) > iWidth)
+                                iWidth := StrLen(aTable["DATA"][A_Index][iColumn])
                         }
-                        aColumnWidths.Push(iSize)
+
+                        aColumnWidths.Push(iWidth)
                     }
 
-                    ;if there's a title field and value, push it into the aLeaderboard
+                    ;if there's a title field and value, push it into aLeaderboard
                     if (aTable.Has("TITLE") && aTable["TITLE"]) 
                     {
                         if (A_Index > 1)
@@ -762,7 +797,7 @@ class HighScore
                     if (!bWideChar)
                     {
                         ;******************************************************
-                        ; Build aLeaderboard highscore table - grid
+                        ; Build aLeaderboard highscore table - grid format
                         ; This method builds a grid that assumes a monospace
                         ; font is always being used.
                         ;******************************************************
@@ -792,13 +827,15 @@ class HighScore
                         iRows := aTable["DATA"].Length-1
                         Loop iRows
                         {
-                            sLine := PadString("│" String(A_Index), 5)
-                            for i, sContent in aTable["DATA"][A_Index + 1]
+                            sLine := PadString("│" String(A_Index), 5) ;the RANK
+                            
+                            for iColumn, sContent in aTable["DATA"][A_Index + HEADER]
                             {
                                 ;tag the filed with <player>DGD</player> tags if it contains
                                 ;player initials (i.e. the initals defined in the Initial Setup dialog)
-                                if (i == aTable["NAME_COLUMN"]) {
-
+                                if (iColumn == aTable["NAME_COLUMN"]) 
+                                {
+                                    ;decorate the value if it is a player name (GameInfo needs this)
                                     if (IsValueInArray(g_oInitials, Trim(sContent)))
                                     {
                                         sLine := "<player>" sLine "</player>"
@@ -821,15 +858,17 @@ class HighScore
                     else
                     {
                         ;******************************************************
-                        ; Build aLeaderboard highscore table - no grid variant
-                        ; This version is used exclusively for titles in which
-                        ; the NAME column may contain non-monospace characters.
+                        ; Build aLeaderboard highscore table - gridless variant
+                        ; This version has no column dividers and moves the NAME
+                        ; column to the end to prevent format issues arising
+                        ; from the presence of non-monospace characters.
                         ;******************************************************
 
                         ;create the top line
                         sLine := RepeatChar("─", 5) ;rank column
                         sNameField := ""
-                        for i, sHeader in aTable["DATA"][HEADER] {
+                        for i, sHeader in aTable["DATA"][HEADER] 
+                        {
                             if (sHeader == "NAME")
                                 sNameField := RepeatChar("─", aColumnWidths[A_Index])
                             else
@@ -842,7 +881,8 @@ class HighScore
                         ;moves the NAME column to the last column position
                         sLine := "RANK "
                         sNameField := ""
-                        for i, sHeader in aTable["DATA"][HEADER] {
+                        for i, sHeader in aTable["DATA"][HEADER] 
+                        {
                             if (sHeader == "NAME")
                                 sNameField := PadString(sHeader, aColumnWidths[A_Index])
                             else
@@ -854,7 +894,8 @@ class HighScore
                         ;create the header separator line
                         sLine := RepeatChar("─", 5) ;rank column
                         sNameField := ""
-                        for i, sHeader in aTable["DATA"][HEADER] {
+                        for i, sHeader in aTable["DATA"][HEADER] 
+                        {
                             if (sHeader == "NAME")
                                 sNameField := RepeatChar("─", aColumnWidths[A_Index])
                             else
@@ -869,13 +910,16 @@ class HighScore
                         iRows:= aTable["DATA"].Length-1
                         Loop iRows
                         {
-                            sLine := PadString(String(A_Index), 5)
+                            sLine := PadString(String(A_Index), 5) ;the RANK
                             sNameField := ""
 
-                            for i, sContent in aTable["DATA"][A_Index + 1]
+                            for iColumn, sContent in aTable["DATA"][A_Index + HEADER]
                             {
-                                if (i == aTable["NAME_COLUMN"]) {
+                                if (iColumn == aTable["NAME_COLUMN"]) 
+                                {
                                     sNameField := PadString(sContent, aColumnWidths[A_Index])
+
+                                    ;decorate the value if it is a player name (GameInfo needs this)
                                     if (IsValueInArray(g_oInitials, Trim(sContent)))
                                     {
                                         sNameField := "<player>" sNameField "</player>"
@@ -890,7 +934,8 @@ class HighScore
 
                         sLine := RepeatChar("─", 5) ;rank column
                         sNameField := ""
-                        for i, sHeader in aTable["DATA"][HEADER] {
+                        for i, sHeader in aTable["DATA"][HEADER] 
+                        {
                             if (sHeader == "NAME")
                                 sNameField := RepeatChar("─", aColumnWidths[A_Index])
                             else
@@ -953,7 +998,9 @@ class HighScore
             g_oLog.LogLine("WARNING: Processing high scores: " . g_oLog.FormatErrorMessage(e) . "`n")
         }
 
-        FreeConsole()
+        if (bUsedConsole)
+            FreeConsole()
+
         return this._aLeaderboard
 
         FreeConsole()
