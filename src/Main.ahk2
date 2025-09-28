@@ -1313,7 +1313,7 @@ ShowGameInfo(sRomName)
 		return
 
 	if (!bFirstTime) {
-		if (IsSet(g_oGameInfoDisplay))
+		if (IsWinVisible("ahk_id " g_guiGameInfoOverlayHwnd))
 			g_oGameInfoDisplay.Clear()
 	}
 	
