@@ -541,7 +541,7 @@ class HighScore
 
         try 
         {
-            sRawHighScoreTable := aRawHighScoreTable := stdout := aStdoutTable := ""
+            sRawHighScoreTable := aRawHighScoreTable := stdout := stderr := aStdoutTable := ""
 
             ;Read *.high file if one exists 
             if (FileExist(g_sHighScoreFolder '\' sHighFile))
