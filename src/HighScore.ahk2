@@ -524,7 +524,7 @@ class HighScore
             aRawHighScoreTable := StrSplit(sRawHighScoreTable, "`r`n")
         }
 
-        ;If exists, read *.hi file using the Hi2txt utility.
+        ;If it exists, read *.hi file using the Hi2txt utility.
         if (FileExist(g_sHighScoreFolder "\" sHiFile))
         {
             sHi2txtCommand := '-hiscoredat "' g_sHiscoreDatFolder '\hiscore.dat" -r "' g_sHighScoreFolder '\' sHiFile '"'
@@ -569,7 +569,7 @@ class HighScore
                     g_oLog.LogLine("INFO: Hi2txt could not read high score file `"" . sHiFile . "`": " . stderr . ".`n")
                     this._aLeaderboard := ""
                 }
-                else ;read the *.hi file output
+                else ;process the output
                 {
                     stdout := Trim(stdout, "`r`n `r `n")
                     ChangeEncoding(&stdout, "CP0", "UTF-8")
@@ -651,11 +651,13 @@ class HighScore
                     iScoreColumn := 0, bFound := false
                     for iColumn, sHeader in aTable["DATA"][HEADER] ;1 is the record containing the headers
                     { 
-                        ;look for a column containing the text "SCORE"
+                        ;look for a column containing the text "SCORE" and values
                         ;Defender, for example, may only have scores in the "TODAYS SCORE" column
                         ;which this will resolve.
-                        if (InStr(sHeader, "SCORE")) {
-                            
+                        if (InStr(sHeader, "SCORE")) 
+                        {
+                            iProvisionalScoreColumn := iColumn
+
                             loop aTable["DATA"].length ;go through each record  
                             {
                                 if (A_Index == HEADER) ;skip header
@@ -674,11 +676,14 @@ class HighScore
                             if (bFound)
                             {
                                 iScoreColumn := iColumn
-                                aTable["SCORE_COLUMN"] := iScoreColumn 
+                                aTable["SCORE_COLUMN"] := iScoreColumn
                                 break
                             }
                         }
                     }
+
+                    iScoreColumn := iScoreColumn ? iScoreColumn : iProvisionalScoreColumn
+
                     if (!iScoreColumn)
                     {
                         g_oLog.LogLine("WARNING: A required column header containing the text `"SCORE`" column not found in high score table.")
@@ -720,11 +725,6 @@ class HighScore
 
                     iNameColumn := iNameColumn ? iNameColumn : iProvisionalNameColumn
 
-                    ;if (!iNameColumn)
-                    ;{
-                    ;    g_oLog.LogLine("WARNING: A required column header containing the text `"NAME`" not found in high score table.")
-                    ;}
-
                     iStageColumn := iProvisionalStageColumn := 0, bFound := false
                     for iColumn, sHeader in aTable["DATA"][HEADER] 
                     { 
@@ -757,18 +757,7 @@ class HighScore
                     }
 
                     iStageColumn := iStageColumn ? iStageColumn : iProvisionalStageColumn
-
-                    ;SCORE_COLUMN and NAME_COLUMN are required to continue processing
-                    /*
-                    if (!iScoreColumn || !iNameColumn)
-                    {
-                        if (bUsedConsole)
-                            FreeConsole()
-
-                         return this._aLeaderboard := ""
-                    }
-                    */
-                    
+        
                     ;Format the score column with commas
                     for i, aLine in aTable["DATA"]
                     {
