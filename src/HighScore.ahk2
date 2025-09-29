@@ -682,22 +682,24 @@ class HighScore
                         g_oLog.LogLine("WARNING: A required column header containing the text `"SCORE`" column not found in high score table.")
                     }
 
-                    iNameColumn := 0, bFound := false
-                    for i, sHeader in aTable["DATA"][HEADER] 
+                    iNameColumn := iProvisionalNameColumn := 0, bFound := false
+                    for iColumn, sHeader in aTable["DATA"][HEADER] 
                     { 
                         aTable["NAME_COLUMN"] := 0
 
                         ;look for a column containing the text "NAME"
                         ;Defender, for example, may only have names in the "TODAYS NAME" column
                         ;which this will resolve.
-                        if (InStr(sHeader, "NAME")) {
+                        if (InStr(sHeader, "NAME")) 
+                        {        
+                            iProvisionalNameColumn := iColumn 
                             
                             loop aTable["DATA"].length ;go through each record  
                             {
                                 if (A_Index == HEADER) ;skip header
                                     continue
                                
-                                iValue := aTable["DATA"][A_Index][i]
+                                iValue := aTable["DATA"][A_Index][iColumn]
                                 if (iValue)
                                 {
                                     bFound := true
@@ -705,9 +707,15 @@ class HighScore
                                 }
                             }
                     
-                            if (bFound)
+                            if (bFound) ;found a NAME column with a value
                             {
-                                iNameColumn := A_Index
+                                iNameColumn := iColumn
+                                aTable["NAME_COLUMN"] := iNameColumn 
+                                break
+                            }
+                            else ;found a NAME column, but no values (e.g. zaxxon in its default state after nvram clear)
+                            {
+                                iNameColumn := iProvisionalNameColumn
                                 aTable["NAME_COLUMN"] := iNameColumn 
                                 break
                             }
@@ -718,19 +726,21 @@ class HighScore
                         g_oLog.LogLine("WARNING: A required column header containing the text `"NAME`" not found in high score table.")
                     }
 
-                    iStageColumn := 0, bFound := false
-                    for i, sHeader in aTable["DATA"][HEADER] 
+                    iStageColumn := iProvisionalStageColumn := 0, bFound := false
+                    for iColumn, sHeader in aTable["DATA"][HEADER] 
                     { 
                         aTable["STAGE_COLUMN"] := 0
 
-                        if (InStr(sHeader, "STAGE")) {
+                        if (InStr(sHeader, "STAGE")) 
+                        {
+                            iProvisionalStageColumn := iColumn
                             
                             loop aTable["DATA"].length ;go through each record  
                             {
                                 if (A_Index == HEADER) ;skip header
                                     continue
                                
-                                iValue := aTable["DATA"][A_Index][i]
+                                iValue := aTable["DATA"][A_Index][iColumn]
                                 if (iValue)
                                 {
                                     bFound := true
@@ -740,7 +750,13 @@ class HighScore
                     
                             if (bFound)
                             {
-                                iStageColumn := A_Index
+                                iStageColumn := iColumn
+                                aTable["STAGE_COLUMN"] := iStageColumn 
+                                break
+                            }
+                            else ;found a STAGE column, but no values
+                            {
+                                iStageColumn := iProvisionalStageColumn
                                 aTable["STAGE_COLUMN"] := iStageColumn 
                                 break
                             }
@@ -748,6 +764,7 @@ class HighScore
                     }
 
                     ;SCORE_COLUMN and NAME_COLUMN are required to continue processing
+                    /*
                     if (!iScoreColumn || !iNameColumn)
                     {
                         if (bUsedConsole)
@@ -755,6 +772,7 @@ class HighScore
 
                          return this._aLeaderboard := ""
                     }
+                    */
                     
                     ;Format the score column with commas
                     for i, aLine in aTable["DATA"]
