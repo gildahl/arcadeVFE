@@ -649,7 +649,7 @@ class HighScore
 
                     ;identify output columns
                     iScoreColumn := 0, bFound := false
-                    for i, sHeader in aTable["DATA"][HEADER] ;1 is the record containing the headers
+                    for iColumn, sHeader in aTable["DATA"][HEADER] ;1 is the record containing the headers
                     { 
                         ;look for a column containing the text "SCORE"
                         ;Defender, for example, may only have scores in the "TODAYS SCORE" column
@@ -661,8 +661,10 @@ class HighScore
                                 if (A_Index == HEADER) ;skip header
                                     continue
                                
-                                iValue:= aTable["DATA"][A_Index][i]
-                                if (iValue && IsNumber(iValue))
+                                iValue:= aTable["DATA"][A_Index][iColumn]
+                                
+                                ;The zero check is to allow a literal zero to qualify as a value
+                                if (iValue == "0" || (iValue && IsNumber(iValue)))
                                 {
                                     bFound := true
                                     break
@@ -671,7 +673,7 @@ class HighScore
                     
                             if (bFound)
                             {
-                                iScoreColumn := A_Index
+                                iScoreColumn := iColumn
                                 aTable["SCORE_COLUMN"] := iScoreColumn 
                                 break
                             }
@@ -713,18 +715,15 @@ class HighScore
                                 aTable["NAME_COLUMN"] := iNameColumn 
                                 break
                             }
-                            else ;found a NAME column, but no values (e.g. zaxxon in its default state after nvram clear)
-                            {
-                                iNameColumn := iProvisionalNameColumn
-                                aTable["NAME_COLUMN"] := iNameColumn 
-                                break
-                            }
                         }
                     }
-                    if (!iNameColumn)
-                    {
-                        g_oLog.LogLine("WARNING: A required column header containing the text `"NAME`" not found in high score table.")
-                    }
+
+                    iNameColumn := iNameColumn ? iNameColumn : iProvisionalNameColumn
+
+                    ;if (!iNameColumn)
+                    ;{
+                    ;    g_oLog.LogLine("WARNING: A required column header containing the text `"NAME`" not found in high score table.")
+                    ;}
 
                     iStageColumn := iProvisionalStageColumn := 0, bFound := false
                     for iColumn, sHeader in aTable["DATA"][HEADER] 
@@ -754,14 +753,10 @@ class HighScore
                                 aTable["STAGE_COLUMN"] := iStageColumn 
                                 break
                             }
-                            else ;found a STAGE column, but no values
-                            {
-                                iStageColumn := iProvisionalStageColumn
-                                aTable["STAGE_COLUMN"] := iStageColumn 
-                                break
-                            }
                         }
                     }
+
+                    iStageColumn := iStageColumn ? iStageColumn : iProvisionalStageColumn
 
                     ;SCORE_COLUMN and NAME_COLUMN are required to continue processing
                     /*
@@ -990,7 +985,7 @@ class HighScore
 
                             try iHighScore := Number(StrReplace(aTable["DATA"][A_Index][iScoreColumn], ",", ""))
                     
-                            if (iHighScore > iHighestScore)
+                            if (iHighScore >= iHighestScore)
                             {
                                 iHighestScore := Number(StrReplace(iHighScore, ",", ""))
                                 sHighestName := iNameColumn ? aTable["DATA"][A_Index][iNameColumn] : ""
