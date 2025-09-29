@@ -3,7 +3,7 @@ arcadeVFE v.1.2.2
 * vfe.ini setting MaxHighScoreTableRows can limit high score table rows,
   or turn them all on by setting to 0.
 * Also support custom *.high files for unsupported games.
-* Backup now includes both *.cfg and *.hi/*.high file options.
+* Backup now includes high score and rom file options.
 * "Player Initials" field added to Initial Setup. This is used to
   highlight the user's initials in the high score tables.
 * Support for changing pages in GameInfo using motion controller or

@@ -96,20 +96,20 @@ class Setup
 		gcROMMonitorFolderBrowseButton.TT := "Browse for the folder containing this arcade's MAME roms.`nThe files in this folder must have an extension of *.zip."
         GuiButtonIcon(gcROMMonitorFolderBrowseButton, 'imageres.dll', 206, 's16')
 
-        gcAuditProgress := guiSetup.AddProgress("x" 25 " y" Setup.mSetup.Height - 70 " w" Setup.mSetup.Width - 50 " h" 20 " cBlue BackgroundSilver vAuditProgress") 
-        gcAuditProgress.Visible := false
+        ;gcFileToolsProgress := guiSetup.AddProgress("x" 25 " y" Setup.mSetup.Height - 70 " w" Setup.mSetup.Width - 50 " h" 20 " cBlue BackgroundSilver vAuditProgress") 
+        ;gcFileToolsProgress.Visible := false
 
-        gcCopyRomsButton := guiSetup.AddButton("x" 25 " y" Setup.mSetup.Height - 40 " w" 80 " h" 25, "Copy Roms...")
-        gcCopyRomsButton.OnEvent("Click", (*) => Setup.CopyRomsButton_Click())
-        gcCopyRomsButton.TT := "Copy roms from a source`nfolder to this rom folder."
+        ;gcCopyRomsButton := guiSetup.AddButton("x" 25 " y" Setup.mSetup.Height - 40 " w" 80 " h" 25, "Copy Roms...")
+        ;gcCopyRomsButton.OnEvent("Click", (*) => Setup.CopyRomsButton_Click())
+        ;gcCopyRomsButton.TT := "Copy roms from a source`nfolder to this rom folder."
 
-        gcAuditButton := guiSetup.AddButton("x" 108 " y" Setup.mSetup.Height - 40 " w" 80 " h" 25, "Audit Roms...")
-        gcAuditButton.OnEvent("Click", (*) => Setup.AuditButton_Click())
-        gcAuditButton.TT := "Press to perform an audit for missing and bad roms.`nA report will display when complete.`n`nIf you need a list of all Arcade Time Capsule roms and`ntheir MAME versions, run this audit on an empty folder."
+        ;gcAuditButton := guiSetup.AddButton("x" 108 " y" Setup.mSetup.Height - 40 " w" 80 " h" 25, "Audit Roms...")
+        ;gcAuditButton.OnEvent("Click", (*) => Setup.AuditButton_Click())
+        ;gcAuditButton.TT := "Press to perform an audit for missing and bad roms.`nA report will display when complete.`n`nIf you need a list of all Arcade Time Capsule roms and`ntheir MAME versions, run this audit on an empty folder."
 
-        gcConfigButton := guiSetup.AddButton("x" 191 " y" Setup.mSetup.Height - 40 " w" 80 " h" 25, "Backup...")
-        gcConfigButton.OnEvent("Click", (*) => Setup.ConfigToolsButton_Click())
-        gcConfigButton.TT := "Backup and restore ATC game controller`nconfiguration and high score files."
+        gcFileToolsButton := guiSetup.AddButton("x" 25 " y" Setup.mSetup.Height - 40 " w" 80 " h" 25, "File Tools...")
+        gcFileToolsButton.OnEvent("Click", (*) => Setup.FileToolsButton_Click())
+        gcFileToolsButton.TT := "Perform backup, restore, patch,`nand reset file functions."
 
         gcApplyButton := guiSetup.AddButton("x" 367 " y" Setup.mSetup.Height - 40 " w" 80 " h" 25, "Apply")
         gcApplyButton.OnEvent("Click", (*) => Setup.Setup_ApplyButton_Click())
@@ -147,56 +147,81 @@ class Setup
 
         ;****************************  Create the Config Tools dialog ********************************
         Setup.BackupDialog := Map()
-        Setup.BackupDialog.W := 500
-		Setup.BackupDialog.H := 250
+        Setup.BackupDialog.W := 730
+		Setup.BackupDialog.H := 265
         
-        guiBackup := Gui("-MaximizeBox -MinimizeBox", "Backup and Restore Files")
+        guiFileTools := Gui("-MaximizeBox -MinimizeBox", "File Tools")
 
-        guiBackup.OnEvent("Close", (*) => Setup.BackupDialogCloseButton_Click())
+        guiFileTools.OnEvent("Close", (*) => Setup.FileToolsDialogCloseButton_Click())
 
         ;Backup Config Files
-        iGB_X := 20, iGB_Y := 20, iGB_H := 160, iGB_W := 220
-        gcBackupConfigGroup := guiBackup.AddGroupBox("X" iGB_X " Y" iGB_Y " H" iGB_H " W" iGB_W, "TAB Menu Configuration Files")
+        iGB_W := 220, iGB_X := 20, iGB_Y := 20, iGB_H := 160
+        gcBackupConfigGroup := guiFileTools.AddGroupBox("X" iGB_X " Y" iGB_Y " H" iGB_H " W" iGB_W, "TAB Menu Controller Files (*.cfg)")
 
-        gcBackupConfigLabel := guiBackup.AddText("x" iGB_X + 5 " y" iGB_Y + 25 " w" iGB_W - 10 " h" 30 " Center")
+        gcBackupConfigLabel := guiFileTools.AddText("x" iGB_X + 5 " y" iGB_Y + 25 " w" iGB_W - 10 " h" 30 " Center")
 
-        gcBackupConfigButton := guiBackup.AddButton("x" iGB_X + iGB_W/2 - 85 " y" iGB_Y + 70 " w" 80 " h" 25, "Backup")
+        gcBackupConfigButton := guiFileTools.AddButton("x" iGB_X + iGB_W/2 - 85 " y" iGB_Y + 70 " w" 80 " h" 25, "Backup")
         gcBackupConfigButton.OnEvent("Click", (*) => Setup.gcBackupConfigButton_Click())
         gcBackupConfigButton.TT := "Press to backup all ATC *.cfg`nTAB menu configuration files."
 
-        gcRestoreConfigButton := guiBackup.AddButton("x" iGB_X + iGB_W/2 + 5 " y" iGB_Y + 70 " w" 80 " h" 25, "Restore")
+        gcRestoreConfigButton := guiFileTools.AddButton("x" iGB_X + iGB_W/2 + 5 " y" iGB_Y + 70 " w" 80 " h" 25, "Restore")
         gcRestoreConfigButton.OnEvent("Click", (*) => Setup.gcRestoreConfigButton_Click())
         gcRestoreConfigButton.TT := "Press to restore all backed-up ATC *.cfg`nTAB menu configuration files."
 
-        gcDeleteConfigButton := guiBackup.AddButton("x" iGB_X + iGB_W/2 - 85 " y" iGB_Y + 110 " w" 80 " h" 25, "Delete")
-        gcDeleteConfigButton.OnEvent("Click", (*) => Setup.gcDeleteConfigButton_Click())
-        gcDeleteConfigButton.TT := "Press to delete all ATC *.cfg TAB menu`nconfiguration files, restoring the defaults."
+        gcResetConfigButton := guiFileTools.AddButton("x" iGB_X + iGB_W/2 - 85 " y" iGB_Y + 110 " w" 80 " h" 25, "Reset")
+        gcResetConfigButton.OnEvent("Click", (*) => Setup.gcResetConfigButton_Click())
+        gcResetConfigButton.TT := "Press to delete all ATC *.cfg TAB menu`nconfiguration files, restoring the defaults."
 
-        gcPatchConfigButton := guiBackup.AddButton("x" iGB_X + iGB_W/2 + 5 " y" iGB_Y + 110 " w" 80 " h" 25, "Patch")
+        gcPatchConfigButton := guiFileTools.AddButton("x" iGB_X + iGB_W/2 + 5 " y" iGB_Y + 110 " w" 80 " h" 25, "Patch")
         gcPatchConfigButton.OnEvent("Click", (*) => Setup.gcPatchConfigButton_Click())
         gcPatchConfigButton.TT := "Press to patch ATC *.cfg`nTAB menu configuration files.`nSee documentation for more details."
 
         ;Backup High Score Files 
-        iGB_X := iGB_X + iGB_W + 20, iGB_Y := 20, iGB_H := 160, iGB_W := 220
-        gcBackupHSGroup := guiBackup.AddGroupBox("X" iGB_X " Y" iGB_Y " H" iGB_H " W" iGB_W, "High Score Files")
+        iGB_W := 220, iGB_X := iGB_X + iGB_W + 15, iGB_Y := 20, iGB_H := 160
+        gcBackupHSGroup := guiFileTools.AddGroupBox("X" iGB_X " Y" iGB_Y " H" iGB_H " W" iGB_W, "High Score Files (*.hi and *.nv)")
 
-        gcBackupHSLabel := guiBackup.AddText("x" iGB_X + 5 " y" iGB_Y + 25 " w" iGB_W - 10 " h" 30 " Center")
+        gcBackupHSLabel := guiFileTools.AddText("x" iGB_X + 5 " y" iGB_Y + 25 " w" iGB_W - 10 " h" 30 " Center")
 
-        gcBackupHSButton := guiBackup.AddButton("x" iGB_X + iGB_W/2 - 85 " y" iGB_Y + 70 " w" 80 " h" 25, "Backup")
+        gcBackupHSButton := guiFileTools.AddButton("x" iGB_X + iGB_W/2 - 85 " y" iGB_Y + 70 " w" 80 " h" 25, "Backup")
         gcBackupHSButton.OnEvent("Click", (*) => Setup.gcBackupHSButton_Click())
-        gcBackupHSButton.TT := "Press to backup all ATC *.hi`nand *.high, high score files."
+        gcBackupHSButton.TT := "Press to backup all ATC high score (*.hi and`n*.high) and machine state (*.nv) files."
 
-        gcRestoreHSButton := guiBackup.AddButton("x" iGB_X + iGB_W/2 + 5 " y" iGB_Y + 70 " w" 80 " h" 25, "Restore")
+        gcRestoreHSButton := guiFileTools.AddButton("x" iGB_X + iGB_W/2 + 5 " y" iGB_Y + 70 " w" 80 " h" 25, "Restore")
         gcRestoreHSButton.OnEvent("Click", (*) => Setup.gcRestoreHSButton_Click())
-        gcRestoreHSButton.TT := "Press to restore all backed-up ATC`n*.hi and *.high, high score files."
+        gcRestoreHSButton.TT := "Press to restore all backed-up ATC *.hi high`nscore and all *.nv machine state files."
 
-        gcClearHSButton := guiBackup.AddButton("x" iGB_X + iGB_W/2 - 40 " y" iGB_Y + 110 " w" 80 " h" 25, "Clear")
-        gcClearHSButton.OnEvent("Click", (*) => Setup.gcClearHSButton_Click())
-        gcClearHSButton.TT := "Press to delete all ATC *.hi files.`nA backup is recommended before performing this action.`nNote that *.high files are not cleared."
+        gcResetHSButton := guiFileTools.AddButton("x" iGB_X + iGB_W/2 - 40 " y" iGB_Y + 110 " w" 80 " h" 25, "Reset")
+        gcResetHSButton.OnEvent("Click", (*) => Setup.gcResetHSButton_Click())
+        gcResetHSButton.TT := "Press to delete all ATC *.hi high score and all *.nv machine state files.`nThis will restore all machines to their default states.`n`nA backup is recommended before performing this action."
+
+        ;Backup ROM files and folders
+        iGB_W := 220, iGB_X := iGB_X + iGB_W + 15, iGB_Y := 20, iGB_H := 160
+        gcBackupROMsGroup := guiFileTools.AddGroupBox("X" iGB_X " Y" iGB_Y " H" iGB_H " W" iGB_W, "ROM Files (*.zip)")
+
+        gcBackupROMsLabel := guiFileTools.AddText("x" iGB_X + 5 " y" iGB_Y + 25 " w" iGB_W - 10 " h" 30 " Center")
+
+        gcBackupROMsButton := guiFileTools.AddButton("x" iGB_X + iGB_W/2 - 85 " y" iGB_Y + 70 " w" 80 " h" 25, "Backup")
+        gcBackupROMsButton.OnEvent("Click", (*) => Setup.gcBackupROMsButton_Click())
+        gcBackupROMsButton.TT := "Press to backup all ATC *.cfg`nTAB menu configuration files."
+
+        gcRestoreROMsButton := guiFileTools.AddButton("x" iGB_X + iGB_W/2 + 5 " y" iGB_Y + 70 " w" 80 " h" 25, "Restore")
+        gcRestoreROMsButton.OnEvent("Click", (*) => Setup.gcRestoreROMsButton_Click())
+        gcRestoreROMsButton.TT := "Press to restore all backed-up ATC *.cfg`nTAB menu configuration files."
+
+        gcCopyRomsButton := guiFileTools.AddButton("x" iGB_X + iGB_W/2 - 85 " y" iGB_Y + 110 " w" 80 " h" 25, "Copy...")
+        gcCopyRomsButton.OnEvent("Click", (*) => Setup.CopyRomsButton_Click())
+        gcCopyRomsButton.TT := "Copy roms from a source`nfolder to the rom folder."
+
+        gcAuditButton := guiFileTools.AddButton("x" iGB_X + iGB_W/2 + 5 " y" iGB_Y + 110 " w" 80 " h" 25, "Audit...")
+        gcAuditButton.OnEvent("Click", (*) => Setup.AuditButton_Click())
+        gcAuditButton.TT := "Press to perform an audit for missing and bad roms.`nA report will display when complete.`n`nIf you need a list of all Arcade Time Capsule roms and`ntheir MAME versions, run this audit on an empty folder."
+
+        gcFileToolsProgress := guiFileTools.AddProgress("x" Setup.BackupDialog.W/2 - (Setup.BackupDialog.W - 50)/2 " y" Setup.BackupDialog.H - 70 " w" Setup.BackupDialog.W - 50 " h" 20 " cBlue BackgroundSilver vAuditProgress") 
+        gcFileToolsProgress.Visible := false
 
         ;Dialog close
-        gcBackupDialogCloseButton := guiBackup.AddButton("x" Setup.BackupDialog.W/2 - 40 " y" Setup.BackupDialog.H - 40 " w" 80 " h" 25, "Close")
-        gcBackupDialogCloseButton.OnEvent("Click", (*) => Setup.BackupDialogCloseButton_Click())
+        gcBackupDialogCloseButton := guiFileTools.AddButton("x" Setup.BackupDialog.W - 100 " y" Setup.BackupDialog.H - 40 " w" 80 " h" 25, "Close")
+        gcBackupDialogCloseButton.OnEvent("Click", (*) => Setup.FileToolsDialogCloseButton_Click())
     }
 
     static ShowSetupDialog()
@@ -260,35 +285,73 @@ class Setup
                 g_oLog.LogLine("ERROR: Arcade rom list is empty!`n")
         }
 
-        gcCopyRomsButton.Enabled := gcAuditButton.Enabled := g_sArcadeString != "Other" && DirExist(gcROMMonitorFolderEdit.Text) ? true : false
-        gcConfigButton.Enabled := g_sArcadeString != "Other" && DirExist(g_sATCFolder "\RetroVRArcade\Plugins\save") && DirExist(gcROMMonitorFolderEdit.Text "\..\..\..\RetroVRArcade\Plugins\save") && DirExist(gcROMMonitorFolderEdit.Text) ? true : false
+        gcFileToolsButton.Enabled := g_sArcadeString != "Other" && DirExist(g_sATCFolder "\RetroVRArcade\Plugins\save") && DirExist(gcROMMonitorFolderEdit.Text "\..\..\..\RetroVRArcade\Plugins\save") && DirExist(gcROMMonitorFolderEdit.Text) ? true : false
 
         Setup.UpdateApplyButton()
     }
 
-    static ConfigToolsButton_Click()
+    static FileToolsButton_Click()
     {
         try guiSetup.Opt("+Disabled")
 
-        guiBackup.Show("W" Setup.BackupDialog.W " H" Setup.BackupDialog.H " X" A_ScreenWidth / 2 - Setup.BackupDialog.W / 2 " Y" A_ScreenHeight / 2 - Setup.BackupDialog.H)
-        guiBackup.Opt("+Owner" guiSetup.Hwnd)
+        guiFileTools.Show("W" Setup.BackupDialog.W " H" Setup.BackupDialog.H " X" A_ScreenWidth / 2 - Setup.BackupDialog.W / 2 " Y" A_ScreenHeight / 2 - Setup.BackupDialog.H)
+        guiFileTools.Opt("+Owner" guiSetup.Hwnd)
 
+        ;Update config file status text
+        if (FileExist(g_sArcadeFolder "\" g_sArcadeString "\Backup\cfg\.backup"))
+        {
+            sDate := FileRead(g_sArcadeFolder "\" g_sArcadeString "\Backup\cfg\.backup")
+            gcBackupConfigLabel.Text := "Last backup performed on:`n" sDate
+        }
+        else 
+        {
+            gcBackupConfigLabel.Text := "Press Backup button now to`nbackup ATC cfg files."
+        }
+
+        ;Update high score file status text
+        if (FileExist(g_sArcadeFolder "\" g_sArcadeString "\Backup\hi\.backup")) 
+        {
+            sDate := FileRead(g_sArcadeFolder "\" g_sArcadeString "\Backup\hi\.backup")
+            gcBackupHSLabel.Text := "Last backup performed on:`n" sDate
+        }
+        else 
+        {
+             gcBackupHSLabel.Text := "Press Backup button now to backup`nATC high score and nvram files."
+        }
+
+        ;Update ROM file status text
+        if (FileExist(g_sArcadeFolder "\" g_sArcadeString "\Backup\roms\.backup")) 
+        {
+            sDate := FileRead(g_sArcadeFolder "\" g_sArcadeString "\Backup\roms\.backup")
+            gcBackupROMsLabel.Text := "Last backup performed on:`n" sDate
+        }
+        else 
+        {
+             gcBackupROMsLabel.Text := "Press Backup button now to backup`nATC rom files and chd folders."
+        }
+
+        Setup.UpdateFileToolsButtonStates()
+    }
+
+    static UpdateFileToolsButtonStates()
+    {
         ;******************************************
         ; config file tasks
         ;****************************************** 
         gcBackupConfigButton.Enabled := true
 
-        ;only enable the config restore button if there is something to restore
+        ;only enable the config restore, delete, and patch buttons if there is a backup
         if (FileExist(g_sArcadeFolder "\" g_sArcadeString "\Backup\cfg\.backup"))
         {
-            sDate := FileRead(g_sArcadeFolder "\" g_sArcadeString "\Backup\cfg\.backup")
-            gcBackupConfigLabel.Text := "Last backup performed on:`n" sDate
             gcRestoreConfigButton.Enabled := true
+            gcResetConfigButton.Enabled := true
+            gcPatchConfigButton.Enabled := true
         }
         else
         {
-            gcBackupConfigLabel.Text := "Press Backup button now to`nbackup ATC cfg files."
             gcRestoreConfigButton.Enabled := false
+            gcResetConfigButton.Enabled := false
+            gcPatchConfigButton.Enabled := false
         }
 
         ;******************************************
@@ -296,22 +359,180 @@ class Setup
         ;******************************************       
         gcBackupHSButton.Enabled := true
 
-        ;only enable the high score restore button if there is something to restore
-        if (FileExist(g_sArcadeFolder "\" g_sArcadeString "\Backup\hi\.backup"))
+        ;only enable the high score restore and reset buttons if there is a backup
+        if (FileExist(g_sArcadeFolder "\" g_sArcadeString "\Backup\hi\.backup") && g_sArcadeFolder "\" g_sArcadeString "\Backup\nvram\.backup")
         {
-            sDate := FileRead(g_sArcadeFolder "\" g_sArcadeString "\Backup\hi\.backup")
-            gcBackupHSLabel.Text := "Last backup performed on:`n" sDate
             gcRestoreHSButton.Enabled := true
-            return
+            gcResetHSButton.Enabled := true
         }
         else
         {
-            gcBackupHSLabel.Text := "Press Backup button now to`nbackup ATC high score files."
             gcRestoreHSButton.Enabled := false
+            gcResetHSButton.Enabled := false
+        }
+
+        ;******************************************
+        ; ROM file file tasks
+        ;******************************************  
+         gcCopyRomsButton.Enabled := gcAuditButton.Enabled := g_sArcadeString != "Other" && DirExist(gcROMMonitorFolderEdit.Text) ? true : false
+
+        if (FileExist(g_sArcadeFolder "\" g_sArcadeString "\Backup\roms\.backup"))
+        {
+            gcRestoreROMsButton.Enabled := true
+        }
+        else
+        {
+            gcRestoreROMsButton.Enabled := false
         }
     }
 
-static gcBackupHSButton_Click()
+    static gcBackupROMsButton_Click()
+    {
+        if (!DirExist(g_sROMMonitorFolder))
+            return
+
+        ;Must force dismisal of ToolTip over browse window
+		tempTT := gcBackupROMsButton.TT
+		gcBackupROMsButton.TT := ""
+		ToolTip()
+
+        result := "Yes"
+        if (FileExist(g_sArcadeFolder "\" g_sArcadeString "\Backup\roms\.backup"))
+            result := MsgBox("Performing this ROM file backup will overwrite any previous backups.`n`nAre you sure you would like to proceed?`nPress 'Yes' to backup now, or press 'No' to abort.", "Perform ROM backup?", 36 " Owner" guiFileTools.Hwnd)
+        else
+            result := MsgBox("Performing this operation will create a backup of all ATC *.zip ROM files and *.chd file folders.`n`nAre you ready to proceed?`nPress 'Yes' to backup now, or press 'No' to abort.", "Perform ROM backup?", 36 " Owner" guiFileTools.Hwnd)
+
+        if (result == "No")
+        {
+            gcBackupROMsButton.TT := tempTT
+            return
+        }
+
+        ;Delete and create the folders
+        for i, sVer in Setup.GetMAMEVersions()
+        {
+            try DirDelete(g_sArcadeFolder "\" g_sArcadeString "\Backup\roms\mame" sVer)
+            CreateDirAndLog(g_sArcadeFolder "\" g_sArcadeString "\Backup\roms\mame" sVer)
+        }
+
+        guiFileTools.Opt("+Disabled")
+        gcFileToolsProgress.Visible := true
+
+        iFilesCopied := 0
+        for i, sVer in Setup.GetMAMEVersions()
+        {
+            for sRom, mInfo in g_oArcadeRomList
+            {
+                gcFileToolsProgress.Value := iFilesCopied / g_oArcadeRomList.Count * 100 ;increment progress bar
+
+                ;copy the rom
+                if (mInfo["MAMEVersion"] == sVer)
+                {
+                    try FileCopy(g_sATCFolder "\RetroVRArcade\Content\Roms\" sRom ".zip", g_sArcadeFolder "\" g_sArcadeString "\Backup\roms\mame" sVer, 1)
+                    iFilesCopied++
+                }
+
+                ;copy folder (accompanying chd folder, for example)
+                if (mInfo["HasFolder"] == "1" && mInfo["MAMEVersion"] == sVer)
+                {
+                    try DirCopy(g_sATCFolder "\RetroVRArcade\Content\Roms\" sRom, g_sArcadeFolder "\" g_sArcadeString "\Backup\roms\mame" sVer "\" sRom, 1)
+                    iFilesCopied++
+                }
+            }
+        }
+
+        gcFileToolsProgress.Value := 100
+        Sleep 500
+        gcFileToolsProgress.Visible := false
+        gcFileToolsProgress.Value := 0
+
+        guiFileTools.Opt("-Disabled")
+
+        if (iFilesCopied > 0)
+        {
+            MsgBox("Successfully backed-up " iFilesCopied " ROM files.", "Backup Completed", 64 " Owner" guiFileTools.Hwnd)
+
+            try FileDelete(g_sArcadeFolder "\" g_sArcadeString "\Backup\roms\.backup")
+
+            sTimestamp := FormatTime(A_Now, "ShortDate") " at " FormatTime(A_Now, "Time")
+            FileAppend(sTimestamp, g_sArcadeFolder "\" g_sArcadeString "\Backup\roms\.backup")
+
+            gcBackupROMSLabel.Text := "Last backup performed on:`n" sTimestamp
+
+            Setup.UpdateFileToolsButtonStates()
+        }
+        else
+            MsgBox "No ROM files were found to back-up.", "Backup Unsuccessful", 16
+
+        gcBackupROMsButton.TT := tempTT
+
+        return
+    }
+
+    static gcRestoreROMsButton_Click()
+    {
+       if (!DirExist(g_sROMMonitorFolder))
+            return
+
+        ;Must force dismisal of ToolTip over browse window
+		tempTT := gcRestoreROMsButton.TT
+		gcRestoreROMsButton.TT := ""
+		ToolTip()
+
+        result := "Yes"
+        result := MsgBox("Performing this ROM file restore will overwrite existing files in ATC with the ones you had previously backed-up.`n`nAre you sure you would like to proceed?`nPress 'Yes' to restore now, or press 'No' to abort.", "Perform ROM file restore?", 36 " Owner" guiFileTools.Hwnd)
+
+        if (result == "No")
+        {
+            gcRestoreROMsButton.TT := tempTT
+            return
+        }
+
+        guiFileTools.Opt("+Disabled")
+        gcFileToolsProgress.Visible := true
+
+        iFilesCopied := 0
+        for i, sVer in Setup.GetMAMEVersions()
+        {        
+            for sRom, mInfo in g_oArcadeRomList
+            {
+                gcFileToolsProgress.Value := iFilesCopied / g_oArcadeRomList.Count * 100 ;increment progress bar
+
+                ;copy the rom
+                if (mInfo["MAMEVersion"] == sVer)
+                {
+                    try FileCopy(g_sArcadeFolder "\" g_sArcadeString "\Backup\roms\mame" sVer "\" sRom ".zip", g_sATCFolder "\RetroVRArcade\Content\Roms", 1)
+                    iFilesCopied++
+                }
+
+                ;copy folder (accompanying chd folder, for example)
+                if (mInfo["HasFolder"] == "1" && mInfo["MAMEVersion"] == sVer)
+                {
+                    try DirCopy(g_sArcadeFolder "\" g_sArcadeString "\Backup\roms\mame" sVer "\" sRom, g_sATCFolder "\RetroVRArcade\Content\Roms\" sRom, 1)
+                    iFilesCopied++
+                }
+            }
+        }
+
+        gcFileToolsProgress.Value := 100
+        Sleep 500
+        gcFileToolsProgress.Visible := false
+        gcFileToolsProgress.Value := 0
+
+        guiFileTools.Opt("-Disabled")
+
+        if (iFilesCopied > 0)
+            MsgBox("Successfully restored " iFilesCopied " ROM files.", "Restore Completed", 64 " Owner" guiFileTools.Hwnd)
+        else
+            MsgBox("There were no ROM files found to restore.", "Restore Unsuccessful", 16 " Owner" guiFileTools.Hwnd)
+
+        gcBackupROMsButton.Enabled := true
+
+        gcRestoreROMsButton.TT := tempTT
+        return
+    }
+
+    static gcBackupHSButton_Click()
     {
         if (!DirExist(g_sROMMonitorFolder))
             return
@@ -323,9 +544,9 @@ static gcBackupHSButton_Click()
 
         result := "Yes"
         if (FileExist(g_sArcadeFolder "\" g_sArcadeString "\Backup\hi\.backup"))
-            result := MsgBox("Performing this high score file backup will overwrite any previous backups.`n`nAre you sure you would like to proceed?`nPress 'Yes' to backup now, or press 'No' to abort.", "Perform high score file backup?", 36)
+            result := MsgBox("Performing this high score file backup will overwrite any previous backups.`n`nAre you sure you would like to proceed?`nPress 'Yes' to backup now, or press 'No' to abort.", "Perform high score file backup?", 36 " Owner" guiFileTools.Hwnd)
         else
-            result := MsgBox("Performing this operation will create a backup of all ATC *.hi and *.high high score files.`n`nAre you ready to proceed?`nPress 'Yes' to backup now, or press 'No' to abort.", "Perform high score file backup?", 36)
+            result := MsgBox("Performing this operation will create a backup of all ATC high score and and nvram files.`n`nAre you ready to proceed?`nPress 'Yes' to backup now, or press 'No' to abort.", "Perform high score file backup?", 36 " Owner" guiFileTools.Hwnd)
 
         if (result == "No")
         {
@@ -333,35 +554,75 @@ static gcBackupHSButton_Click()
             return
         }
 
+        ;Create the backup folders if needed
         for i, sVer in Setup.GetMAMEVersions()
         {
             if (!DirExist(g_sArcadeFolder "\" g_sArcadeString "\Backup\hi\mame" sVer))
                 CreateDirAndLog(g_sArcadeFolder "\" g_sArcadeString "\Backup\hi\mame" sVer)
+
+            if (!DirExist(g_sArcadeFolder "\" g_sArcadeString "\Backup\nvram\mame" sVer))
+                CreateDirAndLog(g_sArcadeFolder "\" g_sArcadeString "\Backup\nvram\mame" sVer)
         }
 
-        bFilesBackedUp := false
-        iFilesCopied := 0
+        ;Delete files in backup folders
         for i, sVer in Setup.GetMAMEVersions()
         {
-            Loop files g_sATCFolder "\RetroVRArcade\Plugins\save\mame" sVer "\hi\*.hi??" 
+            Loop files g_sArcadeFolder "\" g_sArcadeString "\Backup\hi\mame" sVer "\*.hi??" 
             {
-                bFilesBackedUp := true
-                FileCopy(A_LoopFileFullPath, g_sArcadeFolder "\" g_sArcadeString "\Backup\hi\mame" sVer, 1)
-                iFilesCopied++
+                FileDelete(A_LoopFileFullPath)
+            }
+
+            Loop files g_sArcadeFolder "\" g_sArcadeString "\Backup\nvram\mame" sVer "\*.nv"
+            {
+                FileDelete(A_LoopFileFullPath)
             }
         }
 
-        if (iFilesCopied > 0)
+        iHiFilesCopied := iHighFilesCopied := iNvramFilesCopied := 0
+        for i, sVer in Setup.GetMAMEVersions()
         {
-            MsgBox "Successfully backed-up " iFilesCopied " high score files.", "Backup Completed", 64
-            gcRestoreHSButton.Enabled := gcRestoreHSButton.Enabled ? true : bFilesBackedUp
+            ;Backup *.hi files
+            Loop files g_sATCFolder "\RetroVRArcade\Plugins\save\mame" sVer "\hi\*.hi" 
+            {
+                FileCopy(A_LoopFileFullPath, g_sArcadeFolder "\" g_sArcadeString "\Backup\hi\mame" sVer, 1)
+                iHiFilesCopied++
+            }
+
+            ;Backup *.high files
+            Loop files g_sATCFolder "\RetroVRArcade\Plugins\save\mame" sVer "\hi\*.high"
+            {
+                FileCopy(A_LoopFileFullPath, g_sArcadeFolder "\" g_sArcadeString "\Backup\hi\mame" sVer, 1)
+                iHighFilesCopied++
+            }
+
+            ;Backup *.nvram files
+            Loop files g_sATCFolder "\RetroVRArcade\Plugins\save\mame" sVer "\nvram\*.nv" 
+            {
+                FileCopy(A_LoopFileFullPath, g_sArcadeFolder "\" g_sArcadeString "\Backup\nvram\mame" sVer, 1)
+                iNvramFilesCopied++
+            }
+        }
+
+        iFilesBackedUp := iHiFilesCopied + iHighFilesCopied + iNvramFilesCopied
+
+        if (iFilesBackedUp > 0)
+        {
+            MsgBox("Successfully backed-up " iHiFilesCopied " *.hi files, " iHighFilesCopied " *.high files, and " iNvramFilesCopied " *.nv files backed-up.", "Backup Completed", 64 " Owner" guiFileTools.Hwnd)
+
             try FileDelete(g_sArcadeFolder "\" g_sArcadeString "\Backup\hi\.backup")
+            try FileDelete(g_sArcadeFolder "\" g_sArcadeString "\Backup\nvram\.backup")
+
             sTimestamp := FormatTime(A_Now, "ShortDate") " at " FormatTime(A_Now, "Time")
+
             FileAppend(sTimestamp, g_sArcadeFolder "\" g_sArcadeString "\Backup\hi\.backup")
+            FileAppend(sTimestamp, g_sArcadeFolder "\" g_sArcadeString "\Backup\nvram\.backup")
+
             gcBackupHSLabel.Text := "Last backup performed on:`n" sTimestamp
+
+            Setup.UpdateFileToolsButtonStates()
         }
         else
-            MsgBox "No high score files were found to back-up.", "Backup Unsuccessful", 16
+            MsgBox("No files were found to back-up.", "Backup Unsuccessful", 16 " Owner" guiFileTools.Hwnd)
 
         gcBackupHSButton.TT := tempTT
         return
@@ -378,7 +639,7 @@ static gcBackupHSButton_Click()
 		ToolTip()
 
         result := "Yes"
-        result := MsgBox("Performing this high score file restore will overwrite existing files in ATC with the ones you had previously backed-up.`n`nAre you sure you would like to proceed?`nPress 'Yes' to restore now, or press 'No' to abort.", "Perform high score file restore?", 36)
+        result := MsgBox("Performing this file restore will overwrite existing high score and nvram files in ATC with the ones you had previously backed-up.`n`nAre you sure you would like to proceed?`nPress 'Yes' to restore now, or press 'No' to abort.", "Perform high score file restore?", 36 " Owner" guiFileTools.Hwnd)
 
         if (result == "No")
         {
@@ -386,20 +647,34 @@ static gcBackupHSButton_Click()
             return
         }
 
-        iFilesCopied := 0
+        iHiFilesCopied := iHighFilesCopied := iNvramFilesCopied := 0
         for i, sVer in Setup.GetMAMEVersions()
         {        
-            Loop files g_sArcadeFolder "\" g_sArcadeString "\Backup\hi\mame" sVer "\*.hi??"
+            Loop files g_sArcadeFolder "\" g_sArcadeString "\Backup\hi\mame" sVer "\*.hi"
             {
                 FileCopy(A_LoopFileFullPath, g_sATCFolder "\RetroVRArcade\Plugins\save\mame" sVer "\hi", 1)
-                iFilesCopied++
+                iHiFilesCopied++
+            }
+
+            Loop files g_sArcadeFolder "\" g_sArcadeString "\Backup\hi\mame" sVer "\*.high"
+            {
+                FileCopy(A_LoopFileFullPath, g_sATCFolder "\RetroVRArcade\Plugins\save\mame" sVer "\hi", 1)
+                iHighFilesCopied++
+            }
+
+            Loop files g_sArcadeFolder "\" g_sArcadeString "\Backup\nvram\mame" sVer "\*.nv"
+            {
+                FileCopy(A_LoopFileFullPath, g_sATCFolder "\RetroVRArcade\Plugins\save\mame" sVer "\nvram", 1)
+                iNvramFilesCopied++
             }
         }
 
-        if (iFilesCopied > 0)
-            MsgBox "Successfully restored " iFilesCopied " high score files.", "Restore Completed", 64
+        iFilesRestored := iHiFilesCopied + iHighFilesCopied + iNvramFilesCopied
+
+        if (iFilesRestored > 0)
+            MsgBox("Successfully restored " iHiFilesCopied " *.hi, " iHighFilesCopied " *.high, and " iNvramFilesCopied " *.nv files copied.", "Restore Completed", 64 " Owner" guiFileTools.Hwnd)
         else
-            MsgBox "There were no high score files found to restore.", "Restore Unsuccessful", 16
+            MsgBox("There were no files found to restore.", "Restore Unsuccessful", 16 " Owner" guiFileTools.Hwnd)
 
         gcBackupHSButton.Enabled := true
 
@@ -407,42 +682,50 @@ static gcBackupHSButton_Click()
         return
     }
 
-    static gcClearHSButton_Click()
+    static gcResetHSButton_Click()
     {
         if (!DirExist(g_sROMMonitorFolder))
             return
 
         ;Must force dismisal of ToolTip over browse window
-		tempTT := gcClearHSButton.TT
-		gcClearHSButton.TT := ""
+		tempTT := gcResetHSButton.TT
+		gcResetHSButton.TT := ""
 		ToolTip()
 
         result := "Yes"
-        result := MsgBox("Performing this *.hi file clear operation will delete all *.hi files in ATC, effectively returning them to their defaults. Any backups you have made will not be affected and may still be restored later.`n`nAre you sure you would like to proceed?`nPress 'Yes' to reset now, or press 'No' to abort.", "Perform *.hi file delete?", 36)
+        result := MsgBox("Performing this operation will delete all *.hi and all *.nv files in ATC, effectively resetting all machines to their defaults. Any backups you have made will not be affected and may still be restored later.`n`nAre you sure you would like to proceed?`nPress 'Yes' to reset now, or press 'No' to abort.", "Perform arcade machine reset?", 36 " Owner" guiFileTools.Hwnd)
 
         if (result == "No")
         {
-            gcClearHSButton.TT := tempTT
+            gcResetHSButton.TT := tempTT
             return
         }
 
-        iFilesDeleted := 0
+        iHiFilesDeleted := iNvramFilesDeleted := 0
         for i, sVer in Setup.GetMAMEVersions()
         {
             Loop files g_sATCFolder "\RetroVRArcade\Plugins\save\mame" sVer "\hi\*.hi" 
             {
                 FileDelete(A_LoopFileFullPath)
-                iFilesDeleted++
+                iHiFilesDeleted++
+            }
+
+            Loop files g_sATCFolder "\RetroVRArcade\Plugins\save\mame" sVer "\nvram\*.nv" 
+            {
+                FileDelete(A_LoopFileFullPath)
+                iNvramFilesDeleted++
             }
         }
 
-        if (iFilesDeleted > 0)
-            MsgBox "Successfully deleted " iFilesDeleted " high score files.", "Delete Completed", 64
-        else
-            MsgBox "There were no high score files found to delete.", "Delete Unsuccessful", 16
+        iFilesDeleted := iHiFilesDeleted + iNvramFilesDeleted
 
-        gcClearHSButton.Enabled := false
-        gcClearHSButton.TT := tempTT
+        if (iFilesDeleted > 0)
+            MsgBox("Successfully deleted " iHiFilesDeleted " *.hi and " iNvramFilesDeleted " *.nv files.", "Delete Completed", 64 " Owner" guiFileTools.Hwnd)
+        else
+            MsgBox("There were no files found to delete.", "Delete Unsuccessful", 16 " Owner" guiFileTools.Hwnd)
+
+        gcResetHSButton.Enabled := false
+        gcResetHSButton.TT := tempTT
     }
     
     static gcBackupConfigButton_Click()
@@ -457,9 +740,9 @@ static gcBackupHSButton_Click()
 
         result := "Yes"
         if (FileExist(g_sArcadeFolder "\" g_sArcadeString "\Backup\cfg\.backup"))
-            result := MsgBox("Performing this *.cfg file backup will overwrite any previous backups.`n`nAre you sure you would like to proceed?`nPress 'Yes' to backup now, or press 'No' to abort.", "Perform *.cfg file backup?", 36)
+            result := MsgBox("Performing this *.cfg file backup will overwrite any previous backups.`n`nAre you sure you would like to proceed?`nPress 'Yes' to backup now, or press 'No' to abort.", "Perform *.cfg file backup?", 36 " Owner" guiFileTools.Hwnd)
         else
-            result := MsgBox("Performing this operation will create a backup of all ATC *.cfg controller configuration files.`n`nAre you ready to proceed?`nPress 'Yes' to backup now, or press 'No' to abort.", "Perform *.cfg file backup?", 36)
+            result := MsgBox("Performing this operation will create a backup of all ATC *.cfg controller configuration files.`n`nAre you ready to proceed?`nPress 'Yes' to backup now, or press 'No' to abort.", "Perform *.cfg file backup?", 36 " Owner" guiFileTools.Hwnd)
 
         if (result == "No")
         {
@@ -471,6 +754,15 @@ static gcBackupHSButton_Click()
         {
             if (!DirExist(g_sArcadeFolder "\" g_sArcadeString "\Backup\cfg\mame" sVer))
                 CreateDirAndLog(g_sArcadeFolder "\" g_sArcadeString "\Backup\cfg\mame" sVer)
+        }
+
+        ;Delete files in backup folders
+        for i, sVer in Setup.GetMAMEVersions()
+        {
+            Loop files g_sArcadeFolder "\" g_sArcadeString "\Backup\cfg\mame" sVer "\*.cfg"
+            {
+                FileDelete(A_LoopFileFullPath)
+            }
         }
 
         bFilesBackedUp := false
@@ -487,15 +779,19 @@ static gcBackupHSButton_Click()
 
         if (iFilesCopied > 0)
         {
-            MsgBox "Successfully backed-up " iFilesCopied " configuration files.", "Backup Completed", 64
-            gcRestoreConfigButton.Enabled := gcRestoreConfigButton.Enabled ? true : bFilesBackedUp
+            MsgBox("Successfully backed-up " iFilesCopied " configuration files.", "Backup Completed", 64 " Owner" guiFileTools.Hwnd)
+
             try FileDelete(g_sArcadeFolder "\" g_sArcadeString "\Backup\cfg\.backup")
+
             sTimestamp := FormatTime(A_Now, "ShortDate") " at " FormatTime(A_Now, "Time")
             FileAppend(sTimestamp, g_sArcadeFolder "\" g_sArcadeString "\Backup\cfg\.backup")
+
             gcBackupConfigLabel.Text := "Last backup performed on:`n" sTimestamp
+
+            Setup.UpdateFileToolsButtonStates()
         }
         else
-            MsgBox "No configuration files were found to back-up.", "Backup Unsuccessful", 16
+            MsgBox("No configuration files were found to back-up.", "Backup Unsuccessful", 16 " Owner" guiFileTools.Hwnd)
 
         gcBackupConfigButton.TT := tempTT
         return
@@ -512,7 +808,7 @@ static gcBackupHSButton_Click()
 		ToolTip()
 
         result := "Yes"
-        result := MsgBox("Performing this *.cfg file restore will overwrite existing files in ATC with the ones you had previously backed-up.`n`nAre you sure you would like to proceed?`nPress 'Yes' to restore now, or press 'No' to abort.", "Perform *.cfg file restore?", 36)
+        result := MsgBox("Performing this *.cfg file restore will overwrite existing files in ATC with the ones you had previously backed-up.`n`nAre you sure you would like to proceed?`nPress 'Yes' to restore now, or press 'No' to abort.", "Perform *.cfg file restore?", 36 " Owner" guiFileTools.Hwnd)
 
         if (result == "No")
         {
@@ -531,9 +827,9 @@ static gcBackupHSButton_Click()
         }
 
         if (iFilesCopied > 0)
-            MsgBox "Successfully restored " iFilesCopied " configuration files.", "Restore Completed", 64
+            MsgBox("Successfully restored " iFilesCopied " configuration files.", "Restore Completed", 64 " Owner" guiFileTools.Hwnd)
         else
-            MsgBox "There were no configuration files found to restore.", "Restore Unsuccessful", 16
+            MsgBox("There were no configuration files found to restore.", "Restore Unsuccessful", 16 " Owner" guiFileTools.Hwnd)
 
         gcBackupConfigButton.Enabled := true
 
@@ -541,22 +837,22 @@ static gcBackupHSButton_Click()
         return
     }
 
-    static gcDeleteConfigButton_Click()
+    static gcResetConfigButton_Click()
     {
         if (!DirExist(g_sROMMonitorFolder))
             return
 
         ;Must force dismisal of ToolTip over browse window
-		tempTT := gcDeleteConfigButton.TT
-		gcDeleteConfigButton.TT := ""
+		tempTT := gcResetConfigButton.TT
+		gcResetConfigButton.TT := ""
 		ToolTip()
 
         result := "Yes"
-        result := MsgBox("Performing this *.cfg delete operation will delete all *.cfg files in ATC, effectively returning them to their defaults. Any backups you have made will not be affected and may still be restored later.`n`nAre you sure you would like to proceed?`nPress 'Yes' to reset now, or press 'No' to abort.", "Perform *.cfg file delete?", 36)
+        result := MsgBox("Performing this *.cfg delete operation will delete all *.cfg files in ATC, effectively returning them to their defaults. Any backups you have made will not be affected and may still be restored later.`n`nAre you sure you would like to proceed?`nPress 'Yes' to reset now, or press 'No' to abort.", "Perform *.cfg file delete?", 36 " Owner" guiFileTools.Hwnd)
 
         if (result == "No")
         {
-            gcDeleteConfigButton.TT := tempTT
+            gcResetConfigButton.TT := tempTT
             return
         }
 
@@ -571,12 +867,12 @@ static gcBackupHSButton_Click()
         }
 
         if (iFilesDeleted > 0)
-            MsgBox "Successfully deleted " iFilesDeleted " configuration files.", "Delete Completed", 64
+            MsgBox("Successfully deleted " iFilesDeleted " configuration files.", "Delete Completed", 64 " Owner" guiFileTools.Hwnd)
         else
-            MsgBox "There were no configuration files found to delete.", "Delete Unsuccessful", 16
+            MsgBox("There were no configuration files found to delete.", "Delete Unsuccessful", 16 " Owner" guiFileTools.Hwnd)
 
         gcBackupConfigButton.Enabled := false
-        gcDeleteConfigButton.TT := tempTT
+        gcResetConfigButton.TT := tempTT
     }
 
     static gcPatchConfigButton_Click()
@@ -587,7 +883,7 @@ static gcBackupHSButton_Click()
 		ToolTip()
 
         result := "Yes"
-        result := MsgBox("This operation will copy configuration files into ATC that will make it easier to map a rotary joystick to games that use rotary joysticks. It is recommended that you perform a backup before applying this patch.`n`nAre you sure you would like to proceed?`nPress 'Yes' to reset now, or press 'No' to abort.", "Perform *.cfg file patch?", 36)
+        result := MsgBox("This operation will copy configuration files into ATC that will make it easier to map a rotary joystick to games that use rotary joysticks. It is recommended that you perform a backup before applying this patch.`n`nAre you sure you would like to proceed?`nPress 'Yes' to reset now, or press 'No' to abort.", "Perform *.cfg file patch?", 36 " Owner" guiFileTools.Hwnd)
 
         if (result == "No")
         {
@@ -607,20 +903,20 @@ static gcBackupHSButton_Click()
 
         if (iFilesCopied > 0)
         {
-            MsgBox "Successfully patched " iFilesCopied " configuration files.", "Patch Completed", 64
+            MsgBox("Successfully patched " iFilesCopied " configuration files.", "Patch Completed", 64 " Owner" guiFileTools.Hwnd)
             gcBackupConfigButton.Enabled := true
         }
         else
-            MsgBox "There were no patch files found to install.", "Patch Unsuccessful", 16
+            MsgBox("There were no patch files found to install.", "Patch Unsuccessful", 16 " Owner" guiFileTools.Hwnd)
 
         gcPatchConfigButton.TT := tempTT
         return
     }
 
-    static BackupDialogCloseButton_Click()
+    static FileToolsDialogCloseButton_Click()
     {
         try guiSetup.Opt("-Disabled")
-        guiBackup.Hide()
+        guiFileTools.Hide()
     }
 
     static CopyRomsBrowseButton_Click()
@@ -642,14 +938,14 @@ static gcBackupHSButton_Click()
             return
 		
         result := "Yes"
-        result := MsgBox("Begin copy of " gcRomVersionDropDown.Text " roms from folder:`n   " sFolder "`n`nTo folder:`n   " gcROMMonitorFolderEdit.Text "`n`nDuplicate files will be overwritten. Are you sure you would like to proceed?", "Begin Copy", 36)
+        result := MsgBox("Begin copy of " gcRomVersionDropDown.Text " roms from folder:`n   " sFolder "`n`nTo folder:`n   " gcROMMonitorFolderEdit.Text "`n`nDuplicate files will be overwritten. Are you sure you would like to proceed?", "Begin Copy", 36 " Owner" guiCopyRoms.Hwnd)
 
         if (result == "Yes")
         {
-            try guiSetup.Opt("-Disabled")
+            try guiFileTools.Opt("-Disabled")
             guiCopyRoms.Hide()
 
-            gcAuditProgress.Visible := true
+            gcFileToolsProgress.Visible := true
 
             ;As a future convenience, remember the folder that had been selected for this version of the roms
             try IniWrite(sFolder, g_sIniFile, "General", gcRomVersionDropDown.Text "RomVersionFolder")
@@ -658,7 +954,7 @@ static gcBackupHSButton_Click()
             iFilesCopied := 0
             for sRom, mInfo in g_oArcadeRomList
             {
-                gcAuditProgress.Value := A_Index / g_oArcadeRomList.Count * 100 ;increment progress bar
+                gcFileToolsProgress.Value := A_Index / g_oArcadeRomList.Count * 100 ;increment progress bar
 
                 ;copy the rom
                 if (mInfo["MAMEVersion"] == gcRomVersionDropDown.Text)
@@ -674,13 +970,13 @@ static gcBackupHSButton_Click()
             ;Reset all the rom access timestamps since they were just touched.
             FileSetTime DateAdd(A_Now, -7, "days"), g_sROMMonitorFolder "\*.zip", "A"
 
-            gcAuditProgress.Visible := false
-            gcAuditProgress.Value := 0
+            gcFileToolsProgress.Visible := false
+            gcFileToolsProgress.Value := 0
 
             if (iFilesCopied > 0)
-                MsgBox "Successfully copied " iFilesCopied " rom files.", "Copy Completed", 64
+                MsgBox("Successfully copied " iFilesCopied " rom files.", "Copy Completed", 64 " Owner" guiCopyRoms.Hwnd)
             else
-                MsgBox "There were rom files found to copy.", "Copy Unsuccessful", 16
+                MsgBox("There were rom files found to copy.", "Copy Unsuccessful", 16 " Owner" guiCopyRoms.Hwnd)
         }
 
         return
@@ -688,10 +984,10 @@ static gcBackupHSButton_Click()
 
     static CopyRomsButton_Click()
     {
-        try guiSetup.Opt("+Disabled")
+        try guiFileTools.Opt("+Disabled")
 
         guiCopyRoms.Show("W" 250 " H" 100 " X" A_ScreenWidth / 2 - 250 / 2 " Y" A_ScreenHeight / 2 - 100 / 2 - 75)
-        guiCopyRoms.Opt("+Owner" guiSetup.Hwnd)
+        guiCopyRoms.Opt("+Owner" guiFileTools.Hwnd)
 
         ;Delete contents of the list since user may have changed arcades
         gcRomVersionDropDown.Delete()
@@ -731,7 +1027,7 @@ static gcBackupHSButton_Click()
 
     static CopyRomsCloseButton_Click(*)
     {
-        try guiSetup.Opt("-Disabled")
+        try guiFileTools.Opt("-Disabled")
         guiCopyRoms.Hide()
     }
     
@@ -745,10 +1041,10 @@ static gcBackupHSButton_Click()
     static AuditButton_Click() 
     {
         iErrorCount := 0
-        guiSetup.Opt("+Disabled")
+        guiFileTools.Opt("+Disabled")
         gcAuditButton.Enabled := false
         gcSetup_CloseButton.Enabled := false
-        gcAuditProgress.Visible := true
+        gcFileToolsProgress.Visible := true
         Setup.oAuditLog.Init(g_sAuditFolder "\audit.txt", "arcadeVFE ROM File Audit")
 
         sROMFolder := gcROMMonitorFolderEdit.Text
@@ -777,7 +1073,7 @@ static gcBackupHSButton_Click()
         ;Loop through each file in the rom list for this arcade, doing a version-specific validation of each.
         for sRom, mInfo in g_oArcadeRomList
         {
-            gcAuditProgress.Value := A_Index / g_oArcadeRomList.Count * 100
+            gcFileToolsProgress.Value := A_Index / g_oArcadeRomList.Count * 100
 
             ;Missing file check
             if (!FileExist(sROMFolder "\" sRom ".zip"))
@@ -844,14 +1140,14 @@ static gcBackupHSButton_Click()
         ;Reset all the rom access timestamps since mame just touched them all.
         FileSetTime DateAdd(A_Now, -7, "days"), g_sROMMonitorFolder "\*.zip", "A"
 
-        gcAuditProgress.Visible := false
-        gcAuditProgress.Value := 0
+        gcFileToolsProgress.Visible := false
+        gcFileToolsProgress.Value := 0
 
         Setup.oAuditLog.ShowLog()    
 
         gcAuditButton.Enabled := true
         gcSetup_CloseButton.Enabled := true
-        guiSetup.Opt("-Disabled")
+        guiFileTools.Opt("-Disabled")
 
         DetectHiddenWindows OG_DetectHiddenWindows
     }
@@ -975,7 +1271,7 @@ static gcBackupHSButton_Click()
         if(sArcade != gcArcadeDropDown.Text || sArcadeExe != gcArcadeExeEdit.Text || sROMFolder != gcROMMonitorFolderEdit.Text)
         {
             result := "Yes"
-            result := MsgBox("You have not applied these settings. Are you sure you want to exit?`n`nPress 'Yes' to exit without applying or 'No' to return to this screen.", "Close Initial Setup?", 36)
+            result := MsgBox("You have not applied these settings. Are you sure you want to exit?`n`nPress 'Yes' to exit without applying or 'No' to return to this screen.", "Close Initial Setup?", 36 " Owner" guiSetup.Hwnd)
             if (result == "No")
                 return
         }
@@ -1047,7 +1343,7 @@ static gcBackupHSButton_Click()
             ;Machine location editor is not supported for "Other" arcade
             ;Use try since this may be called before Settings is created
             try gcEditDirectoryCheckbox.Enabled := g_sArcadeString == "Other" ? false : true
-            gcConfigButton.Enabled := g_sArcadeString != "Other" && DirExist(g_sATCFolder "\RetroVRArcade\Plugins\save") && DirExist(gcROMMonitorFolderEdit.Text "\..\..\..\RetroVRArcade\Plugins\save") && DirExist(gcROMMonitorFolderEdit.Text) ? true : false
+            gcFileToolsButton.Enabled := g_sArcadeString != "Other" && DirExist(g_sATCFolder "\RetroVRArcade\Plugins\save") && DirExist(gcROMMonitorFolderEdit.Text "\..\..\..\RetroVRArcade\Plugins\save") && DirExist(gcROMMonitorFolderEdit.Text) ? true : false
 
             ;Save initials if a new one is ready to be saved
             if (gcAddInitialsButton.Enabled)
@@ -1060,7 +1356,7 @@ static gcBackupHSButton_Click()
     static ROMMonitorFolderEdit_Change(*)
     {
         gcCopyRomsButton.Enabled := gcAuditButton.Enabled := g_sArcadeString != "Other" && DirExist(gcROMMonitorFolderEdit.Text) ? true : false
-        gcConfigButton.Enabled := g_sArcadeString != "Other" && DirExist(g_sATCFolder "\RetroVRArcade\Plugins\save") && DirExist(gcROMMonitorFolderEdit.Text "\..\..\..\RetroVRArcade\Plugins\save") && DirExist(gcROMMonitorFolderEdit.Text) ? true : false
+        gcFileToolsButton.Enabled := g_sArcadeString != "Other" && DirExist(g_sATCFolder "\RetroVRArcade\Plugins\save") && DirExist(gcROMMonitorFolderEdit.Text "\..\..\..\RetroVRArcade\Plugins\save") && DirExist(gcROMMonitorFolderEdit.Text) ? true : false
 
         Setup.UpdateApplyButton()
     }
@@ -1084,7 +1380,7 @@ static gcBackupHSButton_Click()
         gcROMMonitorFolderEdit.Value := sFolder
 
         gcCopyRomsButton.Enabled := gcAuditButton.Enabled := g_sArcadeString != "Other" && DirExist(gcROMMonitorFolderEdit.Text) ? true : false
-        gcConfigButton.Enabled := g_sArcadeString != "Other" && DirExist(g_sATCFolder "\RetroVRArcade\Plugins\save") && DirExist(gcROMMonitorFolderEdit.Text "\..\..\..\RetroVRArcade\Plugins\save") && DirExist(gcROMMonitorFolderEdit.Text) ? true : false
+        gcFileToolsButton.Enabled := g_sArcadeString != "Other" && DirExist(g_sATCFolder "\RetroVRArcade\Plugins\save") && DirExist(gcROMMonitorFolderEdit.Text "\..\..\..\RetroVRArcade\Plugins\save") && DirExist(gcROMMonitorFolderEdit.Text) ? true : false
 
         Setup.UpdateApplyButton()
     }
