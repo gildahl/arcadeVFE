@@ -737,10 +737,10 @@ class GameInfoDisplay
 							
 							sLeaderboardName := aLeaderboard[iRow]
 
-							;if any title text starts with a "$!$" markup symbol remove the "$!$". 
+							;if any title text starts with a "<TYPE1>" markup symbol remove the "<TYPE1>". 
 							;This is marker used to indicate the reserved arcadeVFE score data entry table.
-							if (SubStr(sLeaderboardName, 1, 3) == "$!$")
-								sLeaderboardName := StrReplace(sLeaderboardName, "$!$", "")
+							if (SubStr(sLeaderboardName, 1, 7) == "<TYPE1>")
+								sLeaderboardName := StrReplace(sLeaderboardName, "<TYPE1>", "")
 
 							;if the line contains player initials (those defined in the Initial Setup dialog)
 							;they will be enclosed in element tags <player>DGD</player> 

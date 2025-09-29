@@ -175,6 +175,25 @@ class HighScore
     }
 
     /**
+     * Get the index of the first discovered table that has the specified tag 
+     * (such as "<VFE1>" for data entry "Leaderboard" tables). The tags are found 
+     * as prefixes to a table's title.  For example: "<VFE1>ENTERED SCORE".
+     * @param oHS - The high score object that will be searched
+     * @param sTag  - The tag that will be searched for
+     * @returns {integer} - the index of the tagged table, or zero if not found
+     */
+    static HSOGetTaggedTableId(oHS, sTag)
+    {
+        for i, sTable in oHS["TABLES"]
+        {
+            if (SubStr(sTable["TITLE"], 1, StrLen(sTag)) == sTag)
+            {
+                return i
+            }
+        }
+    }
+
+    /**
      * Adds a high score to the designated high score object table. This function also sorts the
      * table by score after adding the score, and truncates the list if it exceeds iMaxRows.
      * @param oHS - ByRef: the high score object that will be modified
@@ -196,7 +215,7 @@ class HighScore
             if (Type(xScore) == "String")
                 aScore := StrSplit(xScore, "|")
             else
-                aScore := xScore 
+                aScore := xScore
 
             if (!oHS["TABLES"][iTable]["DATA"].Has(HEADER))
                 return 0 ;no header found, so can't accept scores
