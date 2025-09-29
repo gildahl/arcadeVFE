@@ -96,18 +96,18 @@ class Setup
 		gcROMMonitorFolderBrowseButton.TT := "Browse for the folder containing this arcade's MAME roms.`nThe files in this folder must have an extension of *.zip."
         GuiButtonIcon(gcROMMonitorFolderBrowseButton, 'imageres.dll', 206, 's16')
 
-        ;gcFileToolsProgress := guiSetup.AddProgress("x" 25 " y" Setup.mSetup.Height - 70 " w" Setup.mSetup.Width - 50 " h" 20 " cBlue BackgroundSilver vAuditProgress") 
-        ;gcFileToolsProgress.Visible := false
+        gcSetupCopyRomsButton := guiSetup.AddButton("x" 25 " y" Setup.mSetup.Height - 40 " w" 80 " h" 25, "Copy Roms...")
+        gcSetupCopyRomsButton.OnEvent("Click", (*) => Setup.CopyRomsButton_Click(guiSetup.Hwnd))
+        gcSetupCopyRomsButton.TT := "Copy roms from a source`nfolder to this rom folder."
 
-        ;gcCopyRomsButton := guiSetup.AddButton("x" 25 " y" Setup.mSetup.Height - 40 " w" 80 " h" 25, "Copy Roms...")
-        ;gcCopyRomsButton.OnEvent("Click", (*) => Setup.CopyRomsButton_Click())
-        ;gcCopyRomsButton.TT := "Copy roms from a source`nfolder to this rom folder."
+        gcSetupAuditProgress := guiSetup.AddProgress("x" 25 " y" Setup.mSetup.Height - 70 " w" Setup.mSetup.Width - 50 " h" 20 " cBlue BackgroundSilver vAuditProgress") 
+        gcSetupAuditProgress.Visible := false
 
-        ;gcAuditButton := guiSetup.AddButton("x" 108 " y" Setup.mSetup.Height - 40 " w" 80 " h" 25, "Audit Roms...")
-        ;gcAuditButton.OnEvent("Click", (*) => Setup.AuditButton_Click())
-        ;gcAuditButton.TT := "Press to perform an audit for missing and bad roms.`nA report will display when complete.`n`nIf you need a list of all Arcade Time Capsule roms and`ntheir MAME versions, run this audit on an empty folder."
+        gcSetupAuditButton := guiSetup.AddButton("x" 108 " y" Setup.mSetup.Height - 40 " w" 80 " h" 25, "Audit Roms...")
+        gcSetupAuditButton.OnEvent("Click", (*) => Setup.AuditButton_Click(gcSetupAuditProgress))
+        gcSetupAuditButton.TT := "Press to perform an audit for missing and bad roms.`nA report will display when complete.`n`nIf you need a list of all Arcade Time Capsule roms and`ntheir MAME versions, run this audit on an empty folder."
 
-        gcFileToolsButton := guiSetup.AddButton("x" 25 " y" Setup.mSetup.Height - 40 " w" 80 " h" 25, "File Tools...")
+        gcFileToolsButton := guiSetup.AddButton("x" 191 " y" Setup.mSetup.Height - 40 " w" 80 " h" 25, "File Tools...")
         gcFileToolsButton.OnEvent("Click", (*) => Setup.FileToolsButton_Click())
         gcFileToolsButton.TT := "Perform backup, restore, patch,`nand reset file functions."
 
@@ -146,16 +146,41 @@ class Setup
         gcCopyRomsCloseButton.OnEvent("Click", (*) => Setup.CopyRomsCloseButton_Click())
 
         ;****************************  Create the Config Tools dialog ********************************
-        Setup.BackupDialog := Map()
-        Setup.BackupDialog.W := 730
-		Setup.BackupDialog.H := 265
+        Setup.FileTools := Map()
+        Setup.FileTools.W := 730
+		Setup.FileTools.H := 265
         
         guiFileTools := Gui("-MaximizeBox -MinimizeBox", "File Tools")
 
         guiFileTools.OnEvent("Close", (*) => Setup.FileToolsDialogCloseButton_Click())
 
-        ;Backup Config Files
+        gcFileToolsProgress := guiFileTools.AddProgress("x" Setup.FileTools.W/2 - (Setup.FileTools.W - 50)/2 " y" Setup.FileTools.H - 70 " w" Setup.FileTools.W - 50 " h" 20 " cBlue BackgroundSilver vAuditProgress") 
+        gcFileToolsProgress.Visible := false
+
+        ;Backup ROM files and folders
         iGB_W := 220, iGB_X := 20, iGB_Y := 20, iGB_H := 160
+        gcBackupROMsGroup := guiFileTools.AddGroupBox("X" iGB_X " Y" iGB_Y " H" iGB_H " W" iGB_W, "ROM Files (*.zip)")
+
+        gcBackupROMsLabel := guiFileTools.AddText("x" iGB_X + 5 " y" iGB_Y + 25 " w" iGB_W - 10 " h" 30 " Center")
+
+        gcBackupROMsButton := guiFileTools.AddButton("x" iGB_X + iGB_W/2 - 85 " y" iGB_Y + 70 " w" 80 " h" 25, "Backup")
+        gcBackupROMsButton.OnEvent("Click", (*) => Setup.gcBackupROMsButton_Click())
+        gcBackupROMsButton.TT := "Press to backup all ATC *.cfg`nTAB menu configuration files."
+
+        gcRestoreROMsButton := guiFileTools.AddButton("x" iGB_X + iGB_W/2 + 5 " y" iGB_Y + 70 " w" 80 " h" 25, "Restore")
+        gcRestoreROMsButton.OnEvent("Click", (*) => Setup.gcRestoreROMsButton_Click())
+        gcRestoreROMsButton.TT := "Press to restore all backed-up ATC *.cfg`nTAB menu configuration files."
+
+        gcCopyRomsButton := guiFileTools.AddButton("x" iGB_X + iGB_W/2 - 85 " y" iGB_Y + 110 " w" 80 " h" 25, "Copy...")
+        gcCopyRomsButton.OnEvent("Click", (*) => Setup.CopyRomsButton_Click(guiFileTools.Hwnd))
+        gcCopyRomsButton.TT := "Copy roms from a source`nfolder to the rom folder."
+
+        gcAuditButton := guiFileTools.AddButton("x" iGB_X + iGB_W/2 + 5 " y" iGB_Y + 110 " w" 80 " h" 25, "Audit...")
+        gcAuditButton.OnEvent("Click", (*) => Setup.AuditButton_Click(gcFileToolsProgress))
+        gcAuditButton.TT := "Press to perform an audit for missing and bad roms.`nA report will display when complete.`n`nIf you need a list of all Arcade Time Capsule roms and`ntheir MAME versions, run this audit on an empty folder."
+
+        ;Backup Config Files
+        iGB_W := 220, iGB_X := iGB_X + iGB_W + 15, iGB_Y := 20, iGB_H := 160
         gcBackupConfigGroup := guiFileTools.AddGroupBox("X" iGB_X " Y" iGB_Y " H" iGB_H " W" iGB_W, "TAB Menu Controller Files (*.cfg)")
 
         gcBackupConfigLabel := guiFileTools.AddText("x" iGB_X + 5 " y" iGB_Y + 25 " w" iGB_W - 10 " h" 30 " Center")
@@ -194,33 +219,8 @@ class Setup
         gcResetHSButton.OnEvent("Click", (*) => Setup.gcResetHSButton_Click())
         gcResetHSButton.TT := "Press to delete all ATC *.hi high score and all *.nv machine state files.`nThis will restore all machines to their default states.`n`nA backup is recommended before performing this action."
 
-        ;Backup ROM files and folders
-        iGB_W := 220, iGB_X := iGB_X + iGB_W + 15, iGB_Y := 20, iGB_H := 160
-        gcBackupROMsGroup := guiFileTools.AddGroupBox("X" iGB_X " Y" iGB_Y " H" iGB_H " W" iGB_W, "ROM Files (*.zip)")
-
-        gcBackupROMsLabel := guiFileTools.AddText("x" iGB_X + 5 " y" iGB_Y + 25 " w" iGB_W - 10 " h" 30 " Center")
-
-        gcBackupROMsButton := guiFileTools.AddButton("x" iGB_X + iGB_W/2 - 85 " y" iGB_Y + 70 " w" 80 " h" 25, "Backup")
-        gcBackupROMsButton.OnEvent("Click", (*) => Setup.gcBackupROMsButton_Click())
-        gcBackupROMsButton.TT := "Press to backup all ATC *.cfg`nTAB menu configuration files."
-
-        gcRestoreROMsButton := guiFileTools.AddButton("x" iGB_X + iGB_W/2 + 5 " y" iGB_Y + 70 " w" 80 " h" 25, "Restore")
-        gcRestoreROMsButton.OnEvent("Click", (*) => Setup.gcRestoreROMsButton_Click())
-        gcRestoreROMsButton.TT := "Press to restore all backed-up ATC *.cfg`nTAB menu configuration files."
-
-        gcCopyRomsButton := guiFileTools.AddButton("x" iGB_X + iGB_W/2 - 85 " y" iGB_Y + 110 " w" 80 " h" 25, "Copy...")
-        gcCopyRomsButton.OnEvent("Click", (*) => Setup.CopyRomsButton_Click())
-        gcCopyRomsButton.TT := "Copy roms from a source`nfolder to the rom folder."
-
-        gcAuditButton := guiFileTools.AddButton("x" iGB_X + iGB_W/2 + 5 " y" iGB_Y + 110 " w" 80 " h" 25, "Audit...")
-        gcAuditButton.OnEvent("Click", (*) => Setup.AuditButton_Click())
-        gcAuditButton.TT := "Press to perform an audit for missing and bad roms.`nA report will display when complete.`n`nIf you need a list of all Arcade Time Capsule roms and`ntheir MAME versions, run this audit on an empty folder."
-
-        gcFileToolsProgress := guiFileTools.AddProgress("x" Setup.BackupDialog.W/2 - (Setup.BackupDialog.W - 50)/2 " y" Setup.BackupDialog.H - 70 " w" Setup.BackupDialog.W - 50 " h" 20 " cBlue BackgroundSilver vAuditProgress") 
-        gcFileToolsProgress.Visible := false
-
         ;Dialog close
-        gcBackupDialogCloseButton := guiFileTools.AddButton("x" Setup.BackupDialog.W - 100 " y" Setup.BackupDialog.H - 40 " w" 80 " h" 25, "Close")
+        gcBackupDialogCloseButton := guiFileTools.AddButton("x" Setup.FileTools.W/2 - 40 " y" Setup.FileTools.H - 40 " w" 80 " h" 25, "Close")
         gcBackupDialogCloseButton.OnEvent("Click", (*) => Setup.FileToolsDialogCloseButton_Click())
     }
 
@@ -285,6 +285,7 @@ class Setup
                 g_oLog.LogLine("ERROR: Arcade rom list is empty!`n")
         }
 
+        gcSetupCopyRomsButton.Enabled := gcSetupAuditButton.Enabled := g_sArcadeString != "Other" && DirExist(gcROMMonitorFolderEdit.Text) ? true : false
         gcFileToolsButton.Enabled := g_sArcadeString != "Other" && DirExist(g_sATCFolder "\RetroVRArcade\Plugins\save") && DirExist(gcROMMonitorFolderEdit.Text "\..\..\..\RetroVRArcade\Plugins\save") && DirExist(gcROMMonitorFolderEdit.Text) ? true : false
 
         Setup.UpdateApplyButton()
@@ -294,7 +295,7 @@ class Setup
     {
         try guiSetup.Opt("+Disabled")
 
-        guiFileTools.Show("W" Setup.BackupDialog.W " H" Setup.BackupDialog.H " X" A_ScreenWidth / 2 - Setup.BackupDialog.W / 2 " Y" A_ScreenHeight / 2 - Setup.BackupDialog.H)
+        guiFileTools.Show("W" Setup.FileTools.W " H" Setup.FileTools.H " X" A_ScreenWidth / 2 - Setup.FileTools.W / 2 " Y" A_ScreenHeight / 2 - Setup.FileTools.H)
         guiFileTools.Opt("+Owner" guiSetup.Hwnd)
 
         ;Update config file status text
@@ -921,6 +922,15 @@ class Setup
 
     static CopyRomsBrowseButton_Click()
     {
+        ;guiCopyRoms can be owned by either guiSetup or guiFileTools which both have their own
+        ;progress bars, so determine which one to use from the dialog's owner.
+        hOwned := guiCopyRoms.Hwnd
+        hOwner := DllCall("GetWindowLongPtr", "Ptr", hOwned, "Int", -8, "Ptr") ;GWLP_HWNDPARENT is -8
+        if (hOwner == guiSetup.Hwnd)
+            oProgress := gcSetupAuditProgress
+        else
+            oProgress := gcFileToolsProgress
+        
         sSourceFolder := ""
 
         try sSourceFolder := IniRead(g_sIniFile, "General", gcRomVersionDropDown.Text "RomVersionFolder")
@@ -945,7 +955,7 @@ class Setup
             try guiFileTools.Opt("-Disabled")
             guiCopyRoms.Hide()
 
-            gcFileToolsProgress.Visible := true
+            oProgress.Visible := true
 
             ;As a future convenience, remember the folder that had been selected for this version of the roms
             try IniWrite(sFolder, g_sIniFile, "General", gcRomVersionDropDown.Text "RomVersionFolder")
@@ -954,7 +964,7 @@ class Setup
             iFilesCopied := 0
             for sRom, mInfo in g_oArcadeRomList
             {
-                gcFileToolsProgress.Value := A_Index / g_oArcadeRomList.Count * 100 ;increment progress bar
+                oProgress.Value := A_Index / g_oArcadeRomList.Count * 100 ;increment progress bar
 
                 ;copy the rom
                 if (mInfo["MAMEVersion"] == gcRomVersionDropDown.Text)
@@ -970,8 +980,8 @@ class Setup
             ;Reset all the rom access timestamps since they were just touched.
             FileSetTime DateAdd(A_Now, -7, "days"), g_sROMMonitorFolder "\*.zip", "A"
 
-            gcFileToolsProgress.Visible := false
-            gcFileToolsProgress.Value := 0
+            oProgress.Visible := false
+            oProgress.Value := 0
 
             if (iFilesCopied > 0)
                 MsgBox("Successfully copied " iFilesCopied " rom files.", "Copy Completed", 64 " Owner" guiCopyRoms.Hwnd)
@@ -982,12 +992,16 @@ class Setup
         return
     }
 
-    static CopyRomsButton_Click()
+    /**
+     * Shows the Copy Roms dialog. This button can be called from either guiSetup or guiFileTools
+     * @param param - param[1] = the dialog that will be the owner of this dialog
+     */
+    static CopyRomsButton_Click(param*)
     {
         try guiFileTools.Opt("+Disabled")
 
         guiCopyRoms.Show("W" 250 " H" 100 " X" A_ScreenWidth / 2 - 250 / 2 " Y" A_ScreenHeight / 2 - 100 / 2 - 75)
-        guiCopyRoms.Opt("+Owner" guiFileTools.Hwnd)
+        guiCopyRoms.Opt("+Owner" param[1])
 
         ;Delete contents of the list since user may have changed arcades
         gcRomVersionDropDown.Delete()
@@ -1037,14 +1051,15 @@ class Setup
 
     /**
      * Perform an audit for missing files as well as calling MAME's rom verification function
+     * @param param - param[1] = the progress bar control to use 
      */
-    static AuditButton_Click() 
+    static AuditButton_Click(param*) 
     {
         iErrorCount := 0
         guiFileTools.Opt("+Disabled")
         gcAuditButton.Enabled := false
         gcSetup_CloseButton.Enabled := false
-        gcFileToolsProgress.Visible := true
+        param[1].Visible := true
         Setup.oAuditLog.Init(g_sAuditFolder "\audit.txt", "arcadeVFE ROM File Audit")
 
         sROMFolder := gcROMMonitorFolderEdit.Text
@@ -1073,7 +1088,7 @@ class Setup
         ;Loop through each file in the rom list for this arcade, doing a version-specific validation of each.
         for sRom, mInfo in g_oArcadeRomList
         {
-            gcFileToolsProgress.Value := A_Index / g_oArcadeRomList.Count * 100
+            param[1].Value := A_Index / g_oArcadeRomList.Count * 100
 
             ;Missing file check
             if (!FileExist(sROMFolder "\" sRom ".zip"))
@@ -1140,8 +1155,8 @@ class Setup
         ;Reset all the rom access timestamps since mame just touched them all.
         FileSetTime DateAdd(A_Now, -7, "days"), g_sROMMonitorFolder "\*.zip", "A"
 
-        gcFileToolsProgress.Visible := false
-        gcFileToolsProgress.Value := 0
+        param[1].Visible := false
+        param[1].Value := 0
 
         Setup.oAuditLog.ShowLog()    
 
