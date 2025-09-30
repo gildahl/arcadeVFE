@@ -12,6 +12,7 @@ arcadeVFE v.1.2.2
 * Disable Setting screen while GameInfo is displayed to avoid side-effects.
 * Changed Vicinity combobox to an edit box to simplify its operation.
 * Moved Edit Directory preference to the top to improve its context. 
+* (fixed) added missing metadata for xmen6pu rom (X-Men 2-screen version).
 * (fixed) progress bar failed to hide in GameInfo if logo was missing.
 * (fixed) space and enter keys no longer force a refresh of GameInfo.
 

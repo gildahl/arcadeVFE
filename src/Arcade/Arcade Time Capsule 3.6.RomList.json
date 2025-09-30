@@ -1149,7 +1149,11 @@
     "MAMEVersion":"2010"
   },
   "xmen":{
-    "HasFolder":0,
+   "HasFolder":0,
+    "MAMEVersion":"2010"
+  },
+  "xmen6pu":{
+   "HasFolder":0,
     "MAMEVersion":"2010"
   },
   "xmultipl":{
