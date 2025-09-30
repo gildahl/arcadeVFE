@@ -536,9 +536,17 @@ class GameInfoDisplay
 					sLines := ""
 					loop screen_lines
 					{
-						sLines := sLines EditGetLine(A_Index + iLineIndex, hwndInfo1) "`n"
+						if (EditGetLineCount(hwndInfo1)) >= A_Index + iLineIndex
+						{
+							sLines := sLines EditGetLine(A_Index + iLineIndex, hwndInfo1) "`n"
 
-						if (A_Index + iLineIndex == total_lines)
+							if (A_Index + iLineIndex == total_lines)
+							{
+								bDone := true
+								break
+							}
+						}
+						else
 						{
 							bDone := true
 							break
@@ -737,10 +745,10 @@ class GameInfoDisplay
 							
 							sLeaderboardName := aLeaderboard[iRow]
 
-							;if any title text starts with a "<TYPE1>" markup symbol remove the "<TYPE1>". 
-							;This is marker used to indicate the reserved arcadeVFE score data entry table.
-							if (SubStr(sLeaderboardName, 1, 7) == "<TYPE1>")
-								sLeaderboardName := StrReplace(sLeaderboardName, "<TYPE1>", "")
+							;if any title text starts with a "<MSC/>" markup symbol, replace it with 
+							;"MARQUEE SCORECARD".
+							if (SubStr(sLeaderboardName, 1, 6) == "<MSC/>")
+								sLeaderboardName := StrReplace(sLeaderboardName, "<MSC/>", "MARQUEE SCORECARD")
 
 							;if the line contains player initials (those defined in the Initial Setup dialog)
 							;they will be enclosed in element tags <player>DGD</player> 

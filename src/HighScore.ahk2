@@ -176,8 +176,7 @@ class HighScore
 
     /**
      * Get the index of the first discovered table that has the specified tag 
-     * (such as "<VFE1>" for data entry "Leaderboard" tables). The tags are found 
-     * as prefixes to a table's title.  For example: "<VFE1>ENTERED SCORE".
+     * as a table title such as "<MSC/>" for MARQUEE SCORECARD tables.
      * @param oHS - The high score object that will be searched
      * @param sTag  - The tag that will be searched for
      * @returns {integer} - the index of the tagged table, or zero if not found
