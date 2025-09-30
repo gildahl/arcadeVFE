@@ -45074,7 +45074,7 @@
 		<driver status="good" emulation="good" savestate="supported"/>
 	</machine>
 	<machine name="xmen" sourcefile="konami/xmen.cpp">
-		<description>X-Men [1 screen] (4 Players ver EBA)</description>
+		<description>X-Men: 1 screen (4 Players ver EBA)</description>
 		<year>1992</year>
 		<manufacturer>Konami</manufacturer>
 		<driver status="imperfect" emulation="good" savestate="supported"/>
@@ -45110,7 +45110,7 @@
 		<driver status="imperfect" emulation="good" savestate="supported"/>
 	</machine>
 	<machine name="xmen6pu" sourcefile="konami/xmen.cpp" cloneof="xmen" romof="xmen">
-		<description>X-Men [2 screens] (6 Players ver UCB)</description>
+		<description>X-Men: 2 screens (6 Players ver UCB)</description>
 		<year>1992</year>
 		<manufacturer>Konami</manufacturer>
 		<driver status="imperfect" emulation="good" savestate="supported"/>
