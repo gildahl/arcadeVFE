@@ -39,3 +39,7 @@ with this...
 	<system name="wwfwfestu" />
 	<system name="wwfwfestu1" />
 </systems>
+
+changed title for name="detatwin" 
+from: ???!! Twin Bee (c) 1991 Konami.
+to: 出たな!! Twin Bee (c) 1991 Konami.
