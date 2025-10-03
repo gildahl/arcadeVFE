@@ -411,7 +411,8 @@ class GameInfoDisplay
 				aLeaderboard := HighScore.HSOCreateLeaderboard(this._rom)
 				if (aLeaderboard) ;will be empty if no highscores
 				{
-					leader_board := HighScore.FormattedHighScore "`n`n"
+					if (HighScore.Score > 0)
+						leader_board := HighScore.FormattedHighScore "`n`n"
 
 					;since the length of a row is variable and we never want the unformatted linelength to
 					;force a linebreak, at this stage we only write the rows as indexes in the form
@@ -749,6 +750,11 @@ class GameInfoDisplay
 							;"MARQUEE SCORECARD".
 							if (SubStr(sLeaderboardName, 1, 6) == "<MSC/>")
 								sLeaderboardName := StrReplace(sLeaderboardName, "<MSC/>", "MARQUEE SCORECARD")
+
+							;if any title text starts with a "<RECORD/>" markup symbol, replace it with 
+							;"OFFICIAL RECORD".
+							if (SubStr(sLeaderboardName, 1, 9) == "<RECORD/>")
+								sLeaderboardName := StrReplace(sLeaderboardName, "<RECORD/>", "OFFICIAL RECORD")
 
 							;if the line contains player initials (those defined in the Initial Setup dialog)
 							;they will be enclosed in element tags <player>DGD</player> 

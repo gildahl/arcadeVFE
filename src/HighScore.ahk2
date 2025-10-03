@@ -518,8 +518,8 @@ class HighScore
             
             if (!g_sHighScoreFolder)
             {
-                g_oLog.LogLine("INFO: No high score file was found in " g_sArcadeString " for `"" sRomName "`".`n")
-                return this._aLeaderboard := ""
+                ;g_oLog.LogLine("INFO: No high score file was found in " g_sArcadeString " for `"" sRomName "`".`n")
+                ;return this._aLeaderboard := ""
             }      
         }
         else 
@@ -528,12 +528,12 @@ class HighScore
             global g_sHighScoreFolder := IniRead(g_sIniFile, "Other", "HiFileFolder", "")
             if (!g_sHighScoreFolder || !DirExist(g_sHighScoreFolder) || !(FileExist(g_sHighScoreFolder "\" sHiFile) || FileExist(g_sHighScoreFolder "\" sHighFile)))
             {
-                g_oLog.LogLine("INFO: No high score file was found in " g_sArcadeString " for `"" sRomName "`".`n")
-                return this._aLeaderboard := ""
+                ;g_oLog.LogLine("INFO: No high score file was found in " g_sArcadeString " for `"" sRomName "`".`n")
+                ;return this._aLeaderboard := ""
             }
         }
 
-        sRawHighScoreTable := aRawHighScoreTable := aStdoutTable := ""
+        sRawHighScoreTable := aRawHighScoreTable := aStdoutTable := aRecordScoreTable := ""
 
         ;Read *.high file if one exists 
         if (FileExist(g_sHighScoreFolder '\' sHighFile))
@@ -600,11 +600,18 @@ class HighScore
                 ExitApp -1
             }
         }
+
+        ;Load any world record tables
+        if (FileExist(g_sRecordHighScoreFolder "\" sHighFile))
+        {
+            sRecordScoreTable := FileRead(g_sRecordHighScoreFolder '\' sHighFile)
+            aRecordScoreTable := StrSplit(sRecordScoreTable, "`r`n")
+        }
         
         try 
         {
             ;No valid high score data of either type found, so return
-            if (!aRawHighScoreTable && !aStdoutTable) {
+            if (!aRawHighScoreTable && !aStdoutTable && !aRecordScoreTable) {
                 g_oLog.LogLine("INFO: No high score data could be found for `"" sRomName "`".`n")
 
                 if (bUsedConsole)
@@ -628,7 +635,7 @@ class HighScore
 
                 aRawHighScoreTable := aStdoutTable
             }
-            else if (sDirective == "PREFER_HI" || sDirective == "BOTH") 
+            else if ((aRawHighScoreTable || aStdoutTable) && (sDirective == "PREFER_HI" || sDirective == "BOTH")) 
             {
                 if (aStdoutTable) {   
                     aRawHighScoreTable := aStdoutTable
@@ -638,7 +645,7 @@ class HighScore
                     g_oLog.LogLine("INFO: Using high score file: " sHighFile ".`n")
                 }
             }
-            else if (sDirective == "PREFER_HIGH" || sDirective == "BOTH")
+            else if ((aRawHighScoreTable || aStdoutTable) && (sDirective == "PREFER_HIGH" || sDirective == "BOTH"))
             {
                 if (aRawHighScoreTable) {                
                     g_oLog.LogLine("INFO: Using high score file: " sHighFile ".`n")
@@ -646,6 +653,21 @@ class HighScore
                 else {   
                     aRawHighScoreTable := aStdoutTable
                     g_oLog.LogLine("INFO: Using high score file: " sHiFile ".`n")
+                }
+            }
+
+            ;Add any world record scores
+            if (aRecordScoreTable)
+            {
+                for i, sLine in aRecordScoreTable
+                {                    
+                    if (A_Index == 1 && SubStr(sLine, 1, 1) != "#")
+                        aRecordScoreTable.Push("#")
+                    
+                    if (!aRawHighScoreTable)
+                        aRawHighScoreTable := Array()
+
+                    aRawHighScoreTable.Push(sLine)
                 }
             }
     
@@ -694,13 +716,12 @@ class HighScore
                             if (bFound)
                             {
                                 iScoreColumn := iColumn
-                                aTable["SCORE_COLUMN"] := iScoreColumn
                                 break
                             }
                         }
                     }
 
-                    iScoreColumn := iScoreColumn ? iScoreColumn : iProvisionalScoreColumn
+                    aTable["SCORE_COLUMN"] := iScoreColumn := iScoreColumn ? iScoreColumn : iProvisionalScoreColumn
 
                     if (!iScoreColumn)
                     {
@@ -734,14 +755,13 @@ class HighScore
                     
                             if (bFound) ;found a NAME column with a value
                             {
-                                iNameColumn := iColumn
-                                aTable["NAME_COLUMN"] := iNameColumn 
+                                iNameColumn := iColumn 
                                 break
                             }
                         }
                     }
 
-                    iNameColumn := iNameColumn ? iNameColumn : iProvisionalNameColumn
+                    aTable["NAME_COLUMN"] := iNameColumn := iNameColumn ? iNameColumn : iProvisionalNameColumn
 
                     iStageColumn := iProvisionalStageColumn := 0, bFound := false
                     for iColumn, sHeader in aTable["DATA"][HEADER] 
@@ -767,14 +787,45 @@ class HighScore
                     
                             if (bFound)
                             {
-                                iStageColumn := iColumn
-                                aTable["STAGE_COLUMN"] := iStageColumn 
+                                iStageColumn := iColumn 
                                 break
                             }
                         }
                     }
 
-                    iStageColumn := iStageColumn ? iStageColumn : iProvisionalStageColumn
+                    aTable["STAGE_COLUMN"] := iStageColumn := iStageColumn ? iStageColumn : iProvisionalStageColumn
+
+                    iLocationColumn := iProvisionalLocationColumn := 0, bFound := false
+                    for iColumn, sHeader in aTable["DATA"][HEADER] 
+                    { 
+                        aTable["LOCATION_COLUMN"] := 0
+
+                        if (InStr(sHeader, "LOCATION")) 
+                        {
+                            iProvisionalLocationColumn := iColumn
+                            
+                            loop aTable["DATA"].length ;go through each record  
+                            {
+                                if (A_Index == HEADER) ;skip header
+                                    continue
+                               
+                                iValue := aTable["DATA"][A_Index][iColumn]
+                                if (iValue)
+                                {
+                                    bFound := true
+                                    break
+                                }
+                            }
+                    
+                            if (bFound)
+                            {
+                                iLocationColumn := iColumn 
+                                break
+                            }
+                        }
+                    }
+
+                    aTable["LOCATION_COLUMN"] := iLocationColumn := iLocationColumn ? iLocationColumn : iProvisionalLocationColumn
         
                     ;Format the score column with commas
                     for i, aLine in aTable["DATA"]
@@ -803,12 +854,17 @@ class HighScore
                     }
 
                     ;if there's a title field and value, push it into aLeaderboard
+                    aSkipColumns := Array()
                     if (aTable.Has("TITLE") && aTable["TITLE"]) 
                     {
                         if (A_Index > 1)
                             aLeaderboard.Push("`n")
 
                         aLeaderboard.Push(aTable["TITLE"])
+
+                        ;if columns in a table should be skipped, mark them here
+                        if (InStr(aTable["TITLE"], "<RECORD/>")) ;Locations are long so provisionally remove them
+                            aSkipColumns.Push(iLocationColumn)
                     }
                     
                     ;Look-up whether the game needs to support non-monospace 
@@ -824,21 +880,27 @@ class HighScore
 
                         ;create the top line
                         sLine := "┌" RepeatChar("─", 4) ;rank column
-                        for i, sHeader in aTable["DATA"][HEADER] {  
+                        for iColumn, sHeader in aTable["DATA"][HEADER] {  
+                            if (IsValueInArray(aSkipColumns, iColumn))
+                                continue
                             sLine := sLine "┬" RepeatChar("─", aColumnWidths[A_Index])
                         }
                         aLeaderboard.Push(sLine "┐")
 
                         ;create the header line
                         sLine := "│RANK"
-                        for i, sHeader in aTable["DATA"][HEADER] { 
+                        for iColumn, sHeader in aTable["DATA"][HEADER] { 
+                            if (IsValueInArray(aSkipColumns, iColumn))
+                                continue
                             sLine := sLine "│" PadString(sHeader, aColumnWidths[A_Index])
                         }
                         aLeaderboard.Push(sLine "│")
 
                         ;create the header separator bar
                         sLine := "├" RepeatChar("─", 4) ;rank column
-                        for i, sHeader in aTable["DATA"][HEADER] {
+                        for iColumn, sHeader in aTable["DATA"][HEADER] {
+                            if (IsValueInArray(aSkipColumns, iColumn))
+                                continue
                             sLine := sLine "┼" RepeatChar("─", aColumnWidths[A_Index])
                         }
                         aLeaderboard.Push(sLine "┤")
@@ -851,6 +913,9 @@ class HighScore
                             
                             for iColumn, sContent in aTable["DATA"][A_Index + HEADER]
                             {
+                                if (IsValueInArray(aSkipColumns, iColumn))
+                                    continue
+
                                 ;tag the filed with <player>DGD</player> tags if it contains
                                 ;player initials (i.e. the initals defined in the Initial Setup dialog)
                                 if (iColumn == aTable["NAME_COLUMN"]) 
@@ -869,7 +934,10 @@ class HighScore
 
                         ;create the bottom line
                         sLine := "└" RepeatChar("─", 4) ;rank column
-                        for i, sHeader in aTable["DATA"][HEADER] {        
+                        for iColumn, sHeader in aTable["DATA"][HEADER] {     
+                            if (IsValueInArray(aSkipColumns, iColumn))
+                                continue
+
                             sLine := sLine "┴" RepeatChar("─", aColumnWidths[A_Index])
                         }
                         aLeaderboard.Push(sLine "┘")
@@ -887,8 +955,13 @@ class HighScore
                         ;create the top line
                         sLine := RepeatChar("─", 5) ;rank column
                         sNameField := ""
-                        for i, sHeader in aTable["DATA"][HEADER] 
+                        for iColumn, sHeader in aTable["DATA"][HEADER] 
                         {
+                            ;skip this/these column(s)
+                            if (IsValueInArray(aSkipColumns, iColumn))
+                                continue
+
+                            ;move this column to the end
                             if (sHeader == "NAME")
                                 sNameField := RepeatChar("─", aColumnWidths[A_Index])
                             else
@@ -901,8 +974,11 @@ class HighScore
                         ;moves the NAME column to the last column position
                         sLine := "RANK "
                         sNameField := ""
-                        for i, sHeader in aTable["DATA"][HEADER] 
+                        for iColumn, sHeader in aTable["DATA"][HEADER] 
                         {
+                            if (IsValueInArray(aSkipColumns, iColumn))
+                                continue
+
                             if (sHeader == "NAME")
                                 sNameField := PadString(sHeader, aColumnWidths[A_Index])
                             else
@@ -914,8 +990,11 @@ class HighScore
                         ;create the header separator line
                         sLine := RepeatChar("─", 5) ;rank column
                         sNameField := ""
-                        for i, sHeader in aTable["DATA"][HEADER] 
+                        for iColumn, sHeader in aTable["DATA"][HEADER] 
                         {
+                            if (IsValueInArray(aSkipColumns, iColumn))
+                                continue
+
                             if (sHeader == "NAME")
                                 sNameField := RepeatChar("─", aColumnWidths[A_Index])
                             else
@@ -935,6 +1014,9 @@ class HighScore
 
                             for iColumn, sContent in aTable["DATA"][A_Index + HEADER]
                             {
+                                if (IsValueInArray(aSkipColumns, iColumn))
+                                    continue
+
                                 if (iColumn == aTable["NAME_COLUMN"]) 
                                 {
                                     sNameField := PadString(sContent, aColumnWidths[A_Index])
@@ -954,8 +1036,11 @@ class HighScore
 
                         sLine := RepeatChar("─", 5) ;rank column
                         sNameField := ""
-                        for i, sHeader in aTable["DATA"][HEADER] 
+                        for iColumn, sHeader in aTable["DATA"][HEADER] 
                         {
+                            if (IsValueInArray(aSkipColumns, iColumn))
+                                continue
+
                             if (sHeader == "NAME")
                                 sNameField := RepeatChar("─", aColumnWidths[A_Index])
                             else
@@ -984,6 +1069,12 @@ class HighScore
                         iScoreColumn := aTable["SCORE_COLUMN"]
                         iNameColumn := aTable["NAME_COLUMN"]
                         iStageColumn := aTable["STAGE_COLUMN"]
+
+                        ;Don't include world record score
+                        iTableTitle := ""
+                        try iTableTitle := aTable["TITLE"]
+                        if (iTableTitle == "<RECORD/>")
+                            break
 
                         loop aTable["DATA"].length ;go through each record
                         {             

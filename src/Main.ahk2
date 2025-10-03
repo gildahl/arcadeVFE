@@ -170,6 +170,7 @@ global g_sControlsIniFile := g_sGameInfoFolder "\controls.ini"
 global g_sGamesXMLFile := g_sGameInfoFolder "\games.xml"
 global g_sRomRefFile := g_sGameInfoFolder "\romref.ini"
 global g_sLogoFolder := A_ScriptDir "\GameInfo\Logo"
+global g_sRecordHighScoreFolder := A_ScriptDir "\GameInfo\High"
 global g_oMameData := MAMEData(g_sMameInfoFile, g_sMameHistoryFile)
 global g_oGameInfoDisplay := GameInfoDisplay()
 global g_aImageOrder := Array()    
