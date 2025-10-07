@@ -58,7 +58,7 @@ class TrayMenu
 		Settings.RefreshList()
 
 		g_oLog.LogLine("INFO: Showing Settings dialog.`n")
-		guiSettings.Show("X" Settings.mMetrics.X " Y" Settings.mMetrics.Y " W" Settings.mMetrics.Width " H" Settings.mMetrics.Height)
+		Settings.Settings_Show()
 	}
 
 	/**

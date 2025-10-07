@@ -37,7 +37,7 @@ class GameInfoDisplay
 	CreateGameInfoScreen(sRom)
 	{
 		iMonitorCount := SysGet(80)
-		global g_iMonitor := iMonitorCount < g_iMonitor ? 1 : g_iMonitor
+		global g_iMonitor := (iMonitorCount < g_iMonitor) || !Settings.Active ? 1 : g_iMonitor
 
 		;Get the relative bounds of the monitor we will be using for GameInfo.
 		;For multimonitor support, note that we only need to move the gui to the
@@ -307,11 +307,28 @@ class GameInfoDisplay
 			case "r":
 				HidePages()
 				newPage := this.GetPageNext()
+				oBASS.Play("click")
 			case "l":
 				HidePages()
 				newPage := this.GetPagePrevious()
+				oBASS.Play("click")
 		}
 
+		pageType := pages[newPage]["type"]
+
+		;Show the new page
+		if (pageType != "info") ;if an image type
+		{
+			this.guiGameInfo.BackColor := "Black" ;0x1F1F1F			
+			(this.%pages[newPage]["control1"]%).Visible := true
+		}
+		else if (pageType == "info")
+		{
+			this.guiGameInfo.BackColor := g_color_edit_bg			
+			ShowPages()
+		}
+
+		;closure functions
 		ShowPages()
 		{
 			thisPage := this._currentPage
@@ -346,20 +363,6 @@ class GameInfoDisplay
 				for i, field in pages[thisPage]["control2Fields"]
 					field.Visible := false
 			}
-		}
-	 
-		pageType := pages[newPage]["type"]
-
-		;Show the new page
-		if (pageType != "info") ;if an image type
-		{
-			this.guiGameInfo.BackColor := "Black" ;0x1F1F1F			
-			(this.%pages[newPage]["control1"]%).Visible := true
-		}
-		else if (pageType == "info")
-		{
-			this.guiGameInfo.BackColor := g_color_edit_bg			
-			ShowPages()
 		}
 	}
 
@@ -613,7 +616,7 @@ class GameInfoDisplay
 						{
 							CreateField(idx, sControlType)
 							this.gcFormatField%idx%.Value := sText
-							this.gcFormatField%idx%.SetFont("italic " g_color_dark_blue, "Verdana")
+							this.gcFormatField%idx%.SetFont("italic c" g_color_dark_blue, "Verdana")
 						} 	
 
 						;The order of the following group of statements must not be changed
@@ -650,7 +653,7 @@ class GameInfoDisplay
 								sLastBaseRomTitleFontSize := fsz
 
 								this.gcFormatField%idx%.Value := sText
-								this.gcFormatField%idx%.SetFont("s" fsz " " g_color_light_green, "Verdana")
+								this.gcFormatField%idx%.SetFont("s" fsz " c" g_color_light_green, "Verdana")
 							}
 
 							;an empy line means we have reached end of the line group
@@ -666,7 +669,7 @@ class GameInfoDisplay
 						{
 							CreateField(idx, sControlType)
 							this.gcFormatField%idx%.Value := sText
-							this.gcFormatField%idx%.SetFont("italic " g_color_dark_blue)
+							this.gcFormatField%idx%.SetFont("italic c" g_color_dark_blue)
 							this._sNextStyle := "underline" ;Next line with text will be underlined
 						}
 
@@ -703,7 +706,7 @@ class GameInfoDisplay
 							sLastTitleFontSize := fsz
 
 							this.gcFormatField%idx%.Value := sText
-							this.gcFormatField%idx%.SetFont("s" fsz " " g_color_light_green " bold", "Verdana")
+							this.gcFormatField%idx%.SetFont("s" fsz " c" g_color_light_green " bold", "Verdana")
 						}
 							 
 						sPhrases := "
@@ -721,7 +724,7 @@ class GameInfoDisplay
 						if (InStr(sText, "<===")) ;signifies a section header
 						{		
 							CreateField(idx, sControlType)
-							this.gcFormatField%idx%.SetFont("s" g_iGameInfoFontSize " " g_color_light_blue " bold underline", "Verdana")
+							this.gcFormatField%idx%.SetFont("s" g_iGameInfoFontSize " c" g_color_light_blue " bold underline", "Verdana")
 
 							Switch sText
 							{
@@ -746,10 +749,10 @@ class GameInfoDisplay
 							
 							sLeaderboardName := aLeaderboard[iRow]
 
-							;if any title text starts with a "<MSC/>" markup symbol, replace it with 
+							;if any title text starts with a "<MARQUEE/>" markup symbol, replace it with 
 							;"MARQUEE SCORECARD".
-							if (SubStr(sLeaderboardName, 1, 6) == "<MSC/>")
-								sLeaderboardName := StrReplace(sLeaderboardName, "<MSC/>", "MARQUEE SCORECARD")
+							if (SubStr(sLeaderboardName, 1, 10) == "<MARQUEE/>")
+								sLeaderboardName := StrReplace(sLeaderboardName, "<MARQUEE/>", "MARQUEE SCORECARD")
 
 							;if any title text starts with a "<RECORD/>" markup symbol, replace it with 
 							;"OFFICIAL RECORD".

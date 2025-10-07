@@ -176,7 +176,7 @@ class HighScore
 
     /**
      * Get the index of the first discovered table that has the specified tag 
-     * as a table title such as "<MSC/>" for MARQUEE SCORECARD tables.
+     * as a table title such as "<MARQUEE/>" for MARQUEE SCORECARD tables.
      * @param oHS - The high score object that will be searched
      * @param sTag  - The tag that will be searched for
      * @returns {integer} - the index of the tagged table, or zero if not found
@@ -278,11 +278,15 @@ class HighScore
     /**
      * Convert the contents of a high score, *.high text file into an object.
      * @param sRomName - the rom (with no extension) whose high scores this object represents
-     * @param sPathOrText - ByRef: this should be received blank, and will contain the path
-     *                      to the *.high file found when the method returns.
+     * @param sPathOrText - ByRef: this should be blank when called, and will contain the path
+     *                      to *either* the *.high file found *or* where it was expected to be found.
+     * @param sHighScore - ByRef: returns the score in the rank 1 position
+     * @param sHighInitials - ByRef: returns the name in the rank 1 position
+     * @param sHighDate - ByRef: returns the date in the rank 1 position
      * @returns {Map} - the returned/deserialized object representation of the high score file
+     *                  If it is not found, null ("") will be returned
      */
-    static HSODeserializeHighFile(sRomName, &sPath:="")
+    static HSODeserializeHighFile(sRomName, &sPath:="", &sHighScore:="", &sHighName:="", &sHighDate:="")
     {
         try
         {
@@ -306,7 +310,14 @@ class HighScore
                 sHighScoreFolder := IniRead(g_sIniFile, "Other", "HiFileFolder", "")
             }
 
-            sPath := sHighScoreFolder ;set the ByRef sPath to return
+            ;set the ByRef sPath to return
+            sPath := sHighScoreFolder 
+
+            ;if no file was found, return the path the file was expected to be found in
+            if (!sPath)
+            {
+                sPath := HighScore.GetHighFilePath(sRomName)
+            }
 
             ;get the file contents
             if (FileExist(sHighScoreFolder "\" sHighFile)) {
@@ -318,7 +329,7 @@ class HighScore
             }
 
             if (sHighFileContents)
-                oHS := HighScore.HSODeserialize(sRomName, sHighFileContents)
+                oHS := HighScore.HSODeserialize(sRomName, sHighFileContents, &sHighScore, &sHighName, &sHighDate)
             else
                 oHS := ""
         }
@@ -332,13 +343,43 @@ class HighScore
     }
 
     /**
-     * Deserialize a string or array representation of a high score table and
-     * return it as an object.
+     * Return the path to where a rom's *.high file would be located
+     * @param sRomName - the name of the rom without an extension
+     */
+    static GetHighFilePath(sRomName)
+    {
+        if (g_sArcadeString != "Other")
+        {
+            for sRom, mInfo in g_oArcadeRomList
+            {
+                if (sRom == sRomName)
+                {
+                    ver := ""
+                    try ver := mInfo["MAMEVersion"]
+                    return sPath := g_sATCHighScoreRootFolder "\mame" ver "\hi"
+                }
+            }
+        }
+        else
+        {
+            ;Currently hi file support in "Other" arcades is only supported if this vfe.ini key is defined
+            return sPath := IniRead(g_sIniFile, "Other", "HiFileFolder", "")
+        }
+
+        return ""
+    }
+
+    /**
+     * Deserialize a string or array representation of a *.high high score
+     * table and return it as an object.
      * @param sRomName - the rom that this high score table is for
      * @param xValue - overloaded to accept either an array or a string
+     * @param sHighScore - ByRef: returns the score in the rank 1 position
+     * @param sHighInitials - ByRef: returns the name in the rank 1 position
+     * @param sHighDate - ByRef: returns the date in the rank 1 position
      * @returns {Object} - an oHS high score table object  
      */
-    static HSODeserialize(sRomName, xValue) 
+    static HSODeserialize(sRomName, xValue, &sHighScore:="", &sHighName:="", &sHighDate:="") 
     {
         if (!sRomName || !xValue)
             return ""
@@ -388,6 +429,15 @@ class HighScore
                     if (sLine)
                     {
                         aContents := StrSplit(sLine, "|", "`r`n")
+
+                        ;populate high score return values
+                        if (aContents[1] = "1")
+                        {
+                            try sHighScore := aContents[2]
+                            try sHighName := aContents[3]
+                            try sHighDate := aContents[4]
+                        }
+
                         aContents.RemoveAt(1) ;remove the RANK column
                         oHS["TABLES"][iTableIdx]["DATA"].Push(aContents)
                     }
@@ -471,12 +521,11 @@ class HighScore
      * The following shows the structure of the expected format of the source data from the 
      * *.hi and/or *.high files.
      * 
-     * if the line beginning with ! is a directive to indicate what should be done if there is
-     * both a valid *.hi and valid *.high file for the rom.  "" will process both and present
-     * output from both. "USE_HIGH" will only use the *.high file, and "PREFER_HI" will only use
-     * the *.hi file.
-     * 
-     * ! USE_HIGH    <= May be empty, "USE_HIGH", or "PREFER_HI"
+     * The title line must start with a # symbol and be followed by a space. Internal tables
+     * (i.e. created by arcadeVFE) may use tags to identify the type of table such as
+     * # <RECORD/>   -- indicates an official highscore record table
+     * # <MARQUEE/>  -- indicates a "marquee" highscore table     * 
+     *
      * # TOP SCORES
      *  RANK|SCORE|NAME|STAGE|SHIP
      *  1|92387|DGD|6|Corvette
@@ -493,6 +542,8 @@ class HighScore
      */
     static HSOCreateLeaderboard(sRomName)
     {
+        ;The directive indicates what should be done if a game has both a *.hi file
+        ;and a "marquee" style *.high file. 
         sDirective := "BOTH" ;could be "PREFER_HI", "PREFER_HIGH", or "BOTH"
         bUsedConsole := false
  

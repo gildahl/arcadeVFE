@@ -1,0 +1,1270 @@
+#Requires AutoHotkey v2.0
+
+/************************************************************************
+ * @description Implements high score entry
+ * @file ScoreCardDialog.ahk2
+ * @author  © 2025 David G. Dahlstrom
+ ***********************************************************************/
+
+/******************************************************************************
+* LICENSE
+* The code in this file is distributed freely on GitHub for hobbyist 
+* users, and may be used and modified freely for personal, non-commercial 
+* use. It may not be sold or distributed with any other product or software 
+* without permission.
+*******************************************************************************/
+
+;See the Scorecard class for the code that creates the components of this screen.
+class ScoreCardDialog
+{
+    static _bScorecardActive := false
+    static _bButtonPressed := false
+    static _pCaptureBitmap := []
+    static _pHCaptureBitmap := []
+    static _tRegisteredTime := ""   ;date/time of high score registration
+    static _sGameName := ""         ;current game full name
+    static _sRomName := ""          ;current game rom name with no extension
+    static _sHighScore := ""        ;current game score
+    static _sHighName := ""         ;current game player initials
+    static _bReloadGameInfoOnExit := false
+    static _bTakeScreenshots := false
+
+    static TakeScreenshots
+    {
+        set => ScoreCardDialog._bTakeScreenshots := value
+        get => ScoreCardDialog._bTakeScreenshots
+    }
+
+    static RegisteredTime
+    {
+        set => ScoreCardDialog._tRegisteredTime := Value
+        get => ScoreCardDialog._tRegisteredTime
+    }
+
+    static GameName
+    {
+        set => ScoreCardDialog._sGameName := value
+        get => ScoreCardDialog._sGameName
+    }
+
+    static RomName
+    {
+        set => ScoreCardDialog._sRomName := value
+        get => ScoreCardDialog._sRomName
+    }
+
+    static HighName
+    {
+        set => ScoreCardDialog._sHighName := Value
+        get => ScoreCardDialog._sHighName
+    }
+
+    static HighScore
+    {
+        set => ScoreCardDialog._sHighScore := Value
+        get => ScoreCardDialog._sHighScore
+    }
+
+    static Active
+    {
+        set => ScoreCardDialog._bScorecardActive := value
+        get => ScoreCardDialog._bScorecardActive
+    }
+
+    /**
+     * Retrieve the initials entered into the highscore dialog
+     * @returns {string} 
+     */
+    static GetInitials()
+    {
+        sInitials := ""
+        Loop 3
+        {
+            sInitials := sInitials . gGui.guiDialog_HighScore_%A_Index%.Value
+        }
+
+        return sInitials
+    }
+
+    /**
+     * Retrieve the score entered into the highscore dialog
+     * @returns {string} 
+     */
+    static GetScore()
+    {
+        sScore := ""
+        Loop 10
+        {
+            if (gGui.guiDialog_HighScore_%A_Index+3%.Value != "-")
+                sScore := sScore . gGui.guiDialog_HighScore_%A_Index+3%.Value
+        }
+
+        return sScore
+    }
+
+    /**
+     * Captures a screen image (but doesn't save it)
+     */
+    static CaptureScreen()
+    {
+        global gGui
+
+        ;specify the screen area for the screenshot (fullscreen of monitor 1)
+        Area := Area ?? { X: 0, Y: 0, W: A_ScreenWidth, H: A_ScreenHeight }
+
+        ;Take a full resolution snapshot. This Bitmap is what will later get saved as a png.
+        this._pCaptureBitmap := Gdip_BitmapFromScreen(0 "|" 0 "|" A_ScreenWidth "|" A_ScreenHeight) 
+
+        ;A full-sized HBitmap is used for compatibility with the pause image
+        this._pHCaptureBitmap := "HBITMAP:" Gdip_CreateHBITMAPFromBitmap(this._pCaptureBitmap)
+        WinSetTransparent 255, "ahk_id " gGui.guiDialog_Picture2.Hwnd ;make thumbnail opaque
+
+        ;Use GDI+ to perform Bicubic interpolation on the above screenshot
+        ;to give it maximum quality when downsized into a "thumbnail"
+        pic_w := Integer(Scorecard.DialogPictureW)
+        pic_h := Integer(Scorecard.DialogPictureH)
+
+        pBitmap:=Gdip_CreateBitmap(pic_w,pic_h,0x26200A)	; Create a new 32-bit RGBA bitmap at the smaller size
+        G:=Gdip_GraphicsFromImage(pBitmap)			        ; Get a pointer to the graphics of the bitmap
+        Gdip_SetInterpolationMode(G,7)				        ; Set Interpolation Mode (7 is high quality bicubic)
+        Gdip_DrawImage(G,this._pCaptureBitmap,0,0,pic_w, pic_h)	; Draw the original image into the new bitmap
+        pHBitmap := Gdip_CreateHBITMAPFromBitmap(pBitmap)   ; Get an HBitmap for compatibility with Picture control
+
+        ;Display the resized "new" screen capture
+        gGui.guiDialog_Picture2.Value := "HBITMAP:* " pHBitmap 
+
+        ;clean-up
+        Gdip_DisposeImage(pBitmap)
+        Gdip_DeleteGraphics(G)
+
+        ;*********************************************************************
+        ;Also load the "Old" highscore screen if available
+        ;*********************************************************************
+        sOldScorePicture := g_sAssetsFolder "\highscore\" ScoreCardDialog.RomName ".png"
+        if (!FileExist(sOldScorePicture) || !ScoreCardDialog.HighScore)
+            sOldScorePicture := g_sScorecardDefaultFile
+
+        WinSetTransparent 255, "ahk_id " gGui.guiDialog_Picture1.Hwnd ;make thumbnail opaque
+
+        ;do same processing as above to rescale the imported "old" image
+        pOldScoreBitmap := Gdip_CreateBitmapFromFile(sOldScorePicture)
+
+        pBitmap := Gdip_CreateBitmap(pic_w,pic_h,0x26200A)	;0x26200A is bitmap format
+        G:=Gdip_GraphicsFromImage(pBitmap)			        
+        Gdip_SetInterpolationMode(G, 7)	;7 is the highest quality bicubic interpolation			       
+        Gdip_DrawImage(G,pOldScoreBitmap,0,0,pic_w, pic_h)		
+        pHBitmap := Gdip_CreateHBITMAPFromBitmap(pBitmap)   
+
+        ;Display the resized "old" score screenshot
+        gGui.guiDialog_Picture1.Value := "HBITMAP:* " pHBitmap
+        gGui.guiDialog_Picture1.Move(,,pic_w, pic_h)
+
+        Gdip_DisposeImage(pOldScoreBitmap) ;critical to making the .png file able to be deleted/updated
+        Gdip_DisposeImage(pBitmap)
+        Gdip_DeleteGraphics(G)
+    }
+
+    ;Saves the captured screen image to a png file.
+    static SaveScreen()
+    {
+        if (ScoreCardDialog.TakeScreenshots)
+        {
+            if (CreateDirAndLog(g_sAssetsFolder "\highscore"))
+            {
+                gGui.guiDialog_Picture1.Value := ""
+                if (DeleteAndLog("F", g_sAssetsFolder "\highscore\" ScoreCardDialog.RomName ".png") <= 0) ;if file successfully deleted or doesn't exist
+                {
+                    if (g_bUseWatermark)
+                        ScoreCardDialog.SaveWithWatermark()
+                    else
+                        Gdip_SaveBitmapToFile(ScoreCardDialog._pCaptureBitmap, g_sAssetsFolder "\highscore\" ScoreCardDialog.RomName ".png")
+                }
+            }
+            else
+                g_oLog.LogEntry("ERROR: Could not save highscore image.`n")
+        }
+    }
+
+    static SaveWithWatermark()
+    {
+        sHSText := "Record High Score`n" ThouSep(Trim(ScoreCardDialog.GetScore())) "`nby " ScoreCardDialog.GetInitials() "`n" FormatTime(ScoreCardDialog.RegisteredTime, "LongDate") "`n" FormatTime(ScoreCardDialog.RegisteredTime, "Time")
+
+        nWidth := Gdip_GetImageWidth(ScoreCardDialog._pCaptureBitmap) 
+        nHeight := Gdip_GetImageHeight(ScoreCardDialog._pCaptureBitmap)
+
+        pic_x := pic_y := 0
+        pic_sx := pic_sy := 0
+        pic_w := nWidth 
+        pic_h := nHeight 
+        pic_sw := pic_w
+        pic_sh := pic_h
+        dx := 0 
+        dy := 0 
+
+        hDIB_Capture := CreateDIBSection(pic_w, pic_h)
+        hDC_Capture := CreateCompatibleDC() 
+        obm_Capture := SelectObject(hDC_Capture, hDIB_Capture)
+        G_Capture := Gdip_GraphicsFromHDC(hDC_Capture)
+
+        ;Use high quality Bicubic (7) to resize here since it is probably the best quality
+        Gdip_SetInterpolationMode(G_Capture, 7)
+        Gdip_DrawImage(G_Capture, this._pCaptureBitmap, 0, 0, pic_w, pic_h, pic_sx, pic_sy, pic_sw, pic_sh)
+
+        pBitmap_Text := Gdip_CreateBitmap(pic_w,pic_h, 0x26200A)
+        G_Text := Gdip_GraphicsFromImage(pBitmap_Text)			
+
+        ;Format the text
+        pBrush := Gdip_BrushCreateSolid(ARGB:=0xffffffff)
+        hFamily := Gdip_FontFamilyCreate("Verdana")
+        hFont := Gdip_FontCreate(hFamily, 100, 1)
+        nFormatStyle :=  "" ? 0x4000 | 0x1000 : 0x4000
+        hFormat := Gdip_StringFormatCreate(nFormatStyle)
+
+        ;Align and position the text
+        Gdip_SetStringFormatAlign(hFormat, 1) ;1=center (i.e. centers multiple lines)
+        Gdip_SetTextRenderingHint(G_Text, 4)
+        CreateRectF(&RC:="", 0, 0, 0, 0) ;initialize a string rectangle
+        rcString := Gdip_MeasureString(G_Text, sHSText, hFont, hFormat, &RC) ;last 2 elements are chars & lines
+        aStringRC := StrSplit(rcString, "|")
+        CreateRectF(&rcTextPosition:="", Round(pic_w/2 - aStringRC[3]/2), Round(pic_h*0.60 - aStringRC[4]/2), aStringRC[3], aStringRC[4])
+
+        ;Draw the watermark text on the image
+        Gdip_DrawString(G_Text, sHSText, hFont, hFormat, pBrush, &rcTextPosition)
+        Gdip_DrawImage(G_Capture, pBitmap_Text, 0, 0, pic_w, pic_h, pic_sx, pic_sy, pic_sw, pic_sh, 0.5) ;0.5 is the transparency of the text layer
+        hDC_Capture := Gdip_GetDC(G_Capture)
+
+        ;Flatten and save the image with watermark text
+        hDIB_Merge := CreateDIBSection(pic_w, pic_h)
+        hDC_Merge := CreateCompatibleDC() 
+        obm_Merge := SelectObject(hDC_Merge, hDIB_Merge)
+        BitBlt(hDC_Merge, 0, 0, pic_w, pic_h, hDC_Capture, 0, 0)
+        pBitmap_Merge := Gdip_CreateBitmapFromHBITMAP(hDIB_Merge)
+        Gdip_SaveBitmapToFile(pBitmap_Merge, g_sAssetsFolder "\highscore\" ScoreCardDialog.RomName ".png")
+
+        ;Display the image (uncomment if needed for testing)
+        ;gGui := Gui()
+        ;gGui.Opt("-Caption +E0x80000 +LastFound +AlwaysOnTop +ToolWindow +OwnDialogs")
+        ;gGui.Show("NA") ;show the window
+        ;UpdateLayeredWindow(gGui.Hwnd, hDC_Capture, dx, dy, pic_w, pic_h) ;the combined image
+        ;UpdateLayeredWindow(gGui.Hwnd, hDC_Text, dx, dy, pic_w, pic_h) ;text only
+
+        ;Clean-up
+        Gdip_DeleteGraphics(G_Capture)
+        Gdip_DeleteGraphics(G_Text)
+        SelectObject(hDC_Capture, obm_Capture)
+        DeleteObject(hDIB_Capture)
+        DeleteDC(hDC_Capture)
+        SelectObject(hDC_Merge, obm_Merge)
+        ;DeleteObject(hDIB_Merge)
+        DeleteDC(hDC_Merge)
+        ;Gdip_DisposeImage(pBitmap_Capture)
+        Gdip_DisposeImage(pBitmap_Text)
+        Gdip_DisposeImage(pBitmap_Merge)
+
+        ScoreCardDialog._pHCaptureBitmap := "HBITMAP:" hDIB_Merge
+    }
+
+    static DeleteScreen()
+    {
+        gGui.guiDialog_Picture1.Value := ""
+
+        try DeleteAndLog("F", g_sAssetsFolder "\highscore\" ScoreCardDialog.RomName ".png")
+    }
+
+    ;Dispose the captured screen image
+    static DisposeScreen()
+    {
+        if (ScoreCardDialog.TakeScreenshots)
+            Gdip_DisposeImage(ScoreCardDialog._pCaptureBitmap)
+    }
+
+    /**
+     * Handle navigation in the high score dialog
+     * 
+     * @param sKey - s (select), u,d,r,l (up, down, right, left), 'reset' (resets screen) 
+     * @returns {void} 
+     */
+    static HighScoreNavigate(sKey)
+    {
+        global gGui
+
+        static nSelected := 1
+        static oControl := gGui.guiDialog_HighScore_1
+        static oControlFirstDigit := gGui.guiDialog_HighScore_4
+        static oControlRegisterButton := gGui.guiDialog_HighScore_14
+        static oInitials := Array("-"," ","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R",
+                                "S","T","U","V","W","X","Y","Z","a","b","c","d","e","f","g","h","i","j","k","l",
+                                "m","n","o","p","q","r","s","t","u","v","w","x","y","z","0","1","2","3","4","5",
+                                "6","7","8","9","~","!","@","#","$","%","^","&","*","(",")","=","+","[","]","<",
+                                ">","?","{","}",":",";",",",".","/","\","_") 
+
+        static oDigits := Array("-","0","1","2","3","4","5","6","7","8","9")
+
+        nMaxControls := 14
+
+        ;select/launch key was pressed
+        if (sKey == "s")
+        {
+            if (!ScoreCardDialog._bButtonPressed)
+            {
+                if (oControlRegisterButton.Enabled)
+                {
+                    ScoreCardDialog._bButtonPressed := true
+                    oBASS.Play("select")
+
+                    ;simulate a button press
+                    ControlClick oControlRegisterButton,,,,, "D"
+                    Sleep 500
+                    ControlClick oControlRegisterButton,,,,, "U"
+                    oControlRegisterButton.Enabled := false
+
+                    if (oControlRegisterButton.Text == "Register")
+                    {        
+                        sNewTime := A_Now
+                        sNewScore := ScoreCardDialog.GetScore()
+                        sNewName := ScoreCardDialog.GetInitials()
+
+                        oHS := HighScore.HSODeserializeHighFile(ScoreCardDialog.RomName, &sPath:="", &sHighScore:="", &sHighInitials:="", &sHighDate:="")
+                        if (oHS)
+                        {
+                            val := HighScore.HSOAddTableScore(&oHS, 1, sNewScore "|" sNewName "|" FormatTime(sNewTime, "yyyy-MM-dd"), g_iMaxHSTableRows)
+                            HighScore.HSOSerializeHighFile(oHS, ScoreCardDialog.RomName, sPath)
+                        }  
+                        else
+                        {
+                            oHS := HighScore.HSOCreate(ScoreCardDialog.RomName)
+                            iTable := HighScore.HSOAddTable(&oHS, sTitle:="<MARQUEE/>")
+                            iHeader := HighScore.HSOAddTableHeader(&oHS, iTable, "SCORE|NAME|DATE")
+
+                            val := HighScore.HSOAddTableScore(&oHS, iTable, sNewScore "|" sNewName "|" FormatTime(sNewTime, "yyyy-MM-dd"), g_iMaxHSTableRows)
+                            HighScore.HSOSerializeHighFile(oHS, ScoreCardDialog.RomName, sPath)
+                        }
+
+                        ScoreCardDialog.RegisteredTime := sNewTime
+                        ScoreCardDialog.HighScore:= sNewScore
+                        ScoreCardDialog.HighName := sNewName
+
+                        if (ScoreCardDialog.TakeScreenshots)
+                        {
+                            ScoreCardDialog.SaveScreen() 
+                        }
+                        
+                        ScoreCardDialog.Scorecard()   
+                        
+                        sleep 100
+                    }
+
+                    if (oControlRegisterButton.Text == "Clear")
+                    {
+                        try FileDelete(HighScore.GetHighFilePath(ScoreCardDialog.RomName) "\" ScoreCardDialog.RomName ".high")
+    
+                        ScoreCardDialog.DeleteScreen() ;delete the high score .png image (if present)
+                        ScoreCardDialog.Scorecard() 
+                    }
+
+                    if (oControlRegisterButton.Text == "Cancel")
+                    {
+                        ScoreCardDialog.Scorecard()
+                    }
+                }
+            }
+        }
+
+        ;Up
+        ;Keep in mind that for up and down, oControl is the currently selected control
+        if (sKey == "u")
+        {
+            ;if first digit of score is a 0, don't permit any other digits to be changed
+            if (nSelected >= 5 && nSelected <= 13 && oControlFirstDigit.Value == 0)
+                return
+
+            GetArrayIndex(oArray, val)
+            {
+                for i, j in oArray
+                    if (j == val)
+                        return i
+                return 0
+            }
+
+            ;if user is changing an initial
+            if (nSelected >= 1 && nSelected <= 3) 
+            {
+                ;permit list to wrap
+                if (oControl.Value == oInitials[1])
+                    oControl.Value := oInitials[oInitials.Length]
+                else 
+                    oControl.Value := oInitials[GetArrayIndex(oInitials, oControl.Value)-1]
+            }            
+
+            ;if user is changing a digit in the score
+            else if (nSelected >= 4 && nSelected <= 13) 
+            {
+                ;do nothing if cell is disabled
+                if (oControl.Enabled) == false
+                    return
+
+                ;Skip "0" and/or "-" depending on the context
+                if (oControl.Value == "0" && gGui.guiDialog_HighScore_%nSelected+1%.Enabled == true && nSelected < 13)
+                    oControl.Value := oDigits[oDigits.Length]
+                else if (oControl.Value == "-") 
+                    oControl.Value := oDigits[oDigits.Length]
+                else 
+                    oControl.Value := oDigits[GetArrayIndex(oDigits, oControl.Value)-1]
+            }
+
+            oBASS.Play("click")
+
+            if (nSelected == 4)
+            {
+                ;Don't allow zero if digit to right is enabled
+                if (oControl.Value == "0" && gGui.guiDialog_HighScore_%nSelected+1%.Enabled)
+                    oControl.Value := oDigits[oDigits.Length]
+            }
+
+            ;allow pushing up the joystick to move back
+            if (nSelected == 14)
+            {
+                oControl.Enable := false
+
+                nSelected--
+                oControl := gGui.guiDialog_HighScore_%nSelected%
+
+                if (oControl.Value != "-")
+                    oControl.Enabled := true
+
+                oControl.Opt("+Border")
+                oControl.Redraw
+            }
+
+            SetControlColor()
+            SetHighScoreText()
+        }
+
+        ;Down
+        if (sKey == "d")
+        {
+            ;if first digit of score is a 0, don't permit any other digits to be changed
+            if (nSelected >= 5 && nSelected <= 13 && oControlFirstDigit.Value == 0)
+                return
+
+            ;if user is changing an initial
+            if (nSelected >= 1 && nSelected <= 3)
+            {
+                ;permit list to wrap
+                if (oControl.Value == oInitials[oInitials.Length])
+                    oControl.Value := oInitials[1]
+                else 
+                    oControl.Value := oInitials[GetArrayIndex(oInitials, oControl.Value)+1]              
+            }
+
+            ;if user is changing a digit in the score
+            else if (nSelected >= 4 && nSelected <= 13) 
+            {
+                ;do nothing if cell is disabled
+                if (oControl.Enabled) == false
+                    return
+
+                ;skip zero and "-" on first digit if second digit is enabled (special case)
+                if (nSelected == 4 && oControl.Value == "9" && gGui.guiDialog_HighScore_%nSelected+1%.Enabled)
+                    oControl.Value := "1"
+
+                ;Skip "0" and/or "-" depending on the context
+                else if (oControl.Value == oDigits[oDigits.Length] && gGui.guiDialog_HighScore_%nSelected+1%.Enabled == true && nSelected < 13)
+                    oControl.Value := "0"
+                else if (oControl.Value == oDigits[oDigits.Length])
+                    oControl.Value := "-"
+                else 
+                    oControl.Value := oDigits[GetArrayIndex(oDigits, oControl.Value)+1]
+
+                SetControlColor()
+            }
+
+            oBASS.Play("click")
+
+            SetHighScoreText()
+        }
+
+        ;Right
+        if (sKey == "r")
+        {
+            if (nSelected <= 13)
+                oBASS.Play("browse")
+
+            ;don't go anywhere when on the last control in the set
+            if (nSelected == nMaxControls)
+                return
+
+            ;always remove the border from the cell we're leaving
+            if (nSelected <= 14)
+            {
+                oControl.Opt("-Border")
+                oControl.Redraw
+            }
+
+            ;disable digit if we are about to step off of it (going right) and it contains a "-"
+            if (nSelected >= 4 && nSelected <= 13 && oControl.Value == "-")
+                oControl.Enabled := false
+
+            ;advance to the next control
+            nSelected++
+            oControl := gGui.guiDialog_HighScore_%nSelected%
+
+            ;enable the next control
+            if (nSelected == 4 && oControl.Enabled == false)
+            {
+                oControl.Enabled := true
+                SetControlColor()
+            }
+
+            ;enable control if the digit to the left of it was enabled
+            if (nSelected >=5 && nSelected <= 13 && gGui.guiDialog_HighScore_%nSelected-1%.Enabled == true && oControlFirstDigit.Value != "0") 
+            {
+                oControl.Enabled := true
+                SetControlColor()
+            }
+
+            ;if on the register button, enable it and update 
+            ;button's instructive text.
+            if (nSelected == 14)
+            {
+                oBASS.Play("page")
+                ;SetTimer HighscoreBump, -1 ;HighscoreBump is a haptic feedback effect
+                oControl.Enabled := true
+                ControlFocus oControl
+            }
+            else ;otherwise give it a border
+            {
+                oControl.Opt("+Border")
+                oControl.Redraw
+            }
+
+            SetHighScoreText()
+
+            return
+        }
+
+        ;Left
+        if (sKey == "l")
+        {
+            if (nSelected >= 3)
+                oBASS.Play("browse")
+            else if (nSelected == 2)
+            {
+                oBASS.Play("error")
+                ;SetTimer HighscoreBump, -1
+            }
+
+            ;don't go anywhere if we're on the first control in the set
+            if (nSelected == 1)
+                return
+
+            ;always remove the border from any cell we're leaving.
+            if (nSelected < 14)
+            {
+                oControl.Opt("-Border")
+                oControl.Redraw
+            }
+
+            ;Always disable digit field when stepping off it going to the left if it contains a "-"
+            if (nSelected >= 4 && nSelected <= 14 && oControl.Value == "-")
+                oControl.Enabled := false
+
+            ;go to the previous control
+            nSelected--
+            oControl := gGui.guiDialog_HighScore_%nSelected%
+
+            ;Always enable leftmost digit when moving to the left
+            if (nSelected == 4)
+                oControl.Enabled := true
+
+            ;Enable other digits only if the previous one was enabled
+            if (nSelected >= 5 && nSelected <= 14 && gGui.guiDialog_HighScore_%nSelected-1%.Enabled == true)
+                oControl.Enabled := true
+
+            ;put border around last digit when coming back from the registration button
+            ;and disable the button
+            if (nSelected == 13)
+            {
+                oControl.Opt("+Border")
+                oControl.Redraw
+
+                oControlRegisterButton.Enabled := false
+            }
+            else ;otherwise, just enable the border
+            {
+                oControl.Opt("+Border")
+                oControl.Redraw
+            }
+
+            SetHighScoreText()
+
+            return
+        }
+
+        if (sKey == "reset") ;this is an internal option (not intended to be public)
+        {
+            nSelected := 1
+            oControl := gGui.guiDialog_HighScore_1
+            this._bButtonPressed := false
+
+            SetHighScoreText()
+            
+            HighScore.HSODeserializeHighFile(ScoreCardDialog.RomName, &sPath:="", &sHighScore:="0", &sHighName:="", &sHighDate:="")
+            gGui.guiDialog_HighScore_CurrentScore.Value := HighScore.FormatHighScore("High Score", ThouSep(Number(sHighScore)), sHighName, "")
+            gGui.guiDialog_HighScore_Warning.Value := ""
+
+            if (sHighDate)
+                gGui.guiDialog_HighScore_DateTime.Value := "Set on: " FormatTime(StrReplace(sHighDate, "-", ""), "LongDate")
+            else
+                gGui.guiDialog_HighScore_DateTime.Value := ""
+
+            ScoreCardDialog.HighScore := sHighScore
+            ScoreCardDialog.HighName := sHighName
+
+            loop 14
+            {
+                if (A_Index == 1)
+                {
+                    gGui.guiDialog_HighScore_%A_Index%.Opt("+Border")
+                    gGui.guiDialog_HighScore_%A_Index%.Value := sHighName ? SubStr(sHighName, A_Index, 1) : "A"
+                }
+                if (A_Index >= 2 and A_Index <= 3)
+                {
+                    gGui.guiDialog_HighScore_%A_Index%.Opt("-Border")
+                    gGui.guiDialog_HighScore_%A_Index%.Value := sHighName ? SubStr(sHighName, A_Index, 1) : "A"
+                }
+                if (A_Index >= 4 and A_Index <= 13)
+                {
+                    gGui.guiDialog_HighScore_%A_Index%.Opt("-Border")
+                    gGui.guiDialog_HighScore_%A_Index%.Value := "-"
+                    gGui.guiDialog_HighScore_%A_Index%.Enabled := false
+                }
+                if (A_Index == 14)
+                {
+                    gGui.guiDialog_HighScore_%A_Index%.Enabled := false
+                }
+            }        
+            
+            SetHighScoreText()
+        }
+
+        ;Closure function used above that calls this.SetDialogHighScoreText
+        SetHighScoreText()
+        {
+            ;Set button text
+            if (gGui.guiDialog_HighScore_4.Value == "-")
+                gGui.guiDialog_HighScore_14.Text := "Cancel"
+            else if (gGui.guiDialog_HighScore_4.Value == "0")
+                gGui.guiDialog_HighScore_14.Text := "Clear"
+            else 
+                gGui.guiDialog_HighScore_14.Text := "Register"
+
+            sType := ""
+            if (nSelected >= 1 && nSelected <= 3)
+                sType := "initials"
+            else if (nSelected >= 4 && nSelected <= 13)
+                sType := "score"
+            else if (nSelected == 14)
+                sType := "button"
+
+            ;Update message based on context
+            if (nSelected == "button")
+                ScoreCardDialog.SetDialogHighScoreText(sType, oControlRegisterButton.Text, oControlRegisterButton.Enabled, gGui.guiDialog_HighScore_14.Text)
+            else
+                ScoreCardDialog.SetDialogHighScoreText(sType, oControl.Value, oControl.Enabled, gGui.guiDialog_HighScore_14.Text)                
+        }
+
+        SetControlColor()
+        {
+            if (nSelected > 4 && nSelected < 14)
+            {
+                if (oControl.Value == "-")
+                    oControl.Opt("cLime")
+                else
+                    oControl.Opt("cWhite")
+            }
+            ;first digit has an additional color state
+            else if (nSelected == 4)
+            {
+                if (oControl.Value == "-")
+                    oControl.Opt("cLime")
+                else if (oControl.Value == "0")
+                    oControl.Opt("cyellow")
+                else 
+                    oControl.Opt("cWhite")
+            }   
+        }
+    }    
+
+    /**
+     * Sets the instruction text of the high score dialog based on context
+     * @param sType - May be "initials", "score", or "button"
+     * @param sValue - The value of the currently selected element
+     * @param bEnabled - Whether the element is enabled
+     */
+    static SetDialogHighScoreText(sType, sValue, bEnabled, sButtonText)
+    {
+        ;***** Display Debug information ************************
+        ;gGui.guiDialog_HighScore_Debug.Visible := true
+        ;enab := bEnabled == true ? "true" : "false"
+        ;gGui.guiDialog_HighScore_Debug.Value := "sType: `"" sType "`"" ", sValue: `"" sValue "`", bEnabled: `"" enab "`" sButtonText: `"" sButtonText "`"" 
+        ;********************************************************
+
+        if (sType == "initials")
+        {
+            if (sButtonText == "Register" || sButtonText == "Cancel")
+            {
+                gGui.guiDialog_HighScore_Warning.Opt("clime")
+                gGui.guiDialog_HighScore_Warning.Value := "Enter your initials!"
+
+                gGui.guiDialog_HighScore_Instructions1.Value := "Did you break the current record high score?"
+                gGui.guiDialog_HighScore_Instructions2.Value := "If so, enter your initials and the new high score!"
+
+                if (bEnabled == true)
+                    return
+            }
+        }
+        else if (sType == "score")
+        {
+            if ((sButtonText == "Register" || sButtonText == "Cancel") && bEnabled)
+            {
+                gGui.guiDialog_HighScore_Warning.Opt("clime")
+                gGui.guiDialog_HighScore_Warning.Value := "Enter your score!"
+
+                gGui.guiDialog_HighScore_Instructions1.Value := "Did you break the current record high score?"
+                gGui.guiDialog_HighScore_Instructions2.Value := "If so, enter your initials and the new high score!"
+
+                return
+            }
+            if (sButtonText == "Cancel" && !bEnabled)
+            {
+                gGui.guiDialog_HighScore_Warning.Opt("clime")
+                gGui.guiDialog_HighScore_Warning.Value := "Enter your score!"
+
+                gGui.guiDialog_HighScore_Instructions1.Value := "Move back to the green cursor to begin entering your score,"
+                gGui.guiDialog_HighScore_Instructions2.Value := "or move forward to the button to cancel."
+            }
+            else if (sButtonText == "Register" && !bEnabled)
+            {
+                gGui.guiDialog_HighScore_Warning.Opt("clime")
+                gGui.guiDialog_HighScore_Warning.Value := "Enter your score!"
+
+                gGui.guiDialog_HighScore_Instructions1.Value := "Move back to the green cursor to continue entering your score,"
+                gGui.guiDialog_HighScore_Instructions2.Value := "or move forward to the button to register this score."
+            }
+            else if (sButtonText == "Clear")
+            {
+                gGui.guiDialog_HighScore_Warning.Opt("cyellow")
+                gGui.guiDialog_HighScore_Warning.Value := "Saving a score of zero will clear all high scores for this game."
+                gGui.guiDialog_HighScore_Instructions1.Value := "Move to the Register button to clear the score(s),"
+                gGui.guiDialog_HighScore_Instructions2.Value := "or change it to register a new high score."
+            }
+        }
+        else if (sType == "button")
+        {
+            if (sButtonText == "Register")
+            {
+                if (this.GetScore() < ScoreCardDialog.HighScore)
+                {
+                    gGui.guiDialog_HighScore_Warning.Opt("cyellow")
+                    gGui.guiDialog_HighScore_Warning.Value := "New score is lower than the currently registered score."
+                    gGui.guiDialog_HighScore_Instructions1.Value := "You may go back to edit, or press select to register anyway."
+                    gGui.guiDialog_HighScore_Instructions2.Value := "To cancel, press the show/hide scorecard button again."
+                }
+                else if (this.GetScore() == ScoreCardDialog.HighScore)
+                {
+                    gGui.guiDialog_HighScore_Warning.Opt("cyellow")
+                    gGui.guiDialog_HighScore_Warning.Value := "New score is the same as the currently registered score." 
+                    gGui.guiDialog_HighScore_Instructions1.Value := "You may go back to edit, or press select to register anyway."
+                    gGui.guiDialog_HighScore_Instructions2.Value := "To cancel, press the show/hide scorecard button again."
+                }
+                else
+                {
+                    gGui.guiDialog_HighScore_Warning.Opt("clime")
+                    gGui.guiDialog_HighScore_Warning.Value := "Register now!"
+                    gGui.guiDialog_HighScore_Instructions1.Value := "Press select to register this new high score. To exit without"
+                    gGui.guiDialog_HighScore_Instructions2.Value := "registering, press the show/hide scorecard button again."
+                }
+            }
+            else if (sButtonText == "Clear")
+            {
+                gGui.guiDialog_HighScore_Warning.Opt("cYellow")
+                gGui.guiDialog_HighScore_Warning.Value := "Press select to clear the currently saved high score for this game."
+                gGui.guiDialog_HighScore_Instructions1.Value := "To cancel without clearing, press the show/hide scorecard button again,"
+                gGui.guiDialog_HighScore_Instructions2.Value := "or go back to change the score to another value."
+            }
+            else ;Cancel
+            {
+                gGui.guiDialog_HighScore_Warning.Opt("cyellow")
+                gGui.guiDialog_HighScore_Warning.Value := "You didn't enter a score!"
+                gGui.guiDialog_HighScore_Instructions1.Value := "Go back to enter your score, or press select to cancel."
+                gGui.guiDialog_HighScore_Instructions2.Value := ""
+            }
+        }
+    }
+
+    ;Initializes and displays the Scorecard dialog
+    static Scorecard(bReloadGameInfoOnExit:=false)
+    {
+        global gGui
+
+        if (bReloadGameInfoOnExit)
+            ScoreCardDialog._bReloadGameInfoOnExit := true
+
+        ;If the Scorecard dialog is not currently displayed, initialize it.
+        if (!ScoreCardDialog._bScorecardActive)
+        {
+            if (ScoreCardDialog.TakeScreenshots)
+                oBASS.Play("shutter")
+            else
+                oBASS.Play("highscore")
+
+            ;Capture the screen (but don't save it yet)
+            if (ScoreCardDialog.TakeScreenshots)
+                ScorecardDialog.CaptureScreen()
+
+            ScorecardDialog.HighScoreNavigate("reset")
+
+            guiScorecard.Opt("+AlwaysOnTop")
+
+            nX := Scorecard.DialogScreenX
+            nY := Scorecard.DialogScreenY
+            nW := Scorecard.DialogScreenWidth
+            nH := Scorecard.DialogScreenHeight
+ 
+            Sleep(100) ;delay to allow fade-in to start
+
+            ;Get the game name
+            romTitle := ScoreCardDialog.GameName
+            
+            ;strip name of enclosures if needed
+            gGui.guiDialog_HighScore_Title.Value := romTitle
+
+            ;reduce the font if game name won't fit
+            fsz := Scorecard.DialogScreenTitleFontSize
+            fnt := Scorecard._sFontType
+            Loop
+            {
+                tsz := GetTextExtentPoint(romTitle, "Verdana", fsz, true)
+                if (tsz < Scorecard.DialogTitleWidth) 
+                    break
+                else
+                    fsz--
+            }
+
+            gGui.guiDialog_HighScore_Title.SetFont("s" fsz " c" g_color_light_green " bold", fnt)
+
+            Loop 14
+            {
+                gGui.guiDialog_HighScore_%A_Index%.Visible := true
+            }
+
+            gGui.guiDialog_HighScore_Title.Visible := true
+            gGui.guiDialog_HighScore_CurrentScore.Visible := true
+            gGui.guiDialog_HighScore_DateTime.Visible := true
+            gGui.guiDialog_HighScore_Instructions1.Visible := true
+            gGui.guiDialog_HighScore_Instructions2.Visible := true
+            gGui.guiDialog_HighScore_Warning.Visible := true
+            if (ScoreCardDialog.TakeScreenshots)
+            {
+                gGui.guiDialog_Picture1.Visible := true
+                gGui.guiDialog_Picture2.Visible := true
+                gGui.guiDialog_PictureLabel1.Visible := true
+                gGui.guiDialog_PictureLabel2.Visible := true
+                gGui.guiDialog_HighScore_Keymap.Visible := false
+            }
+            else
+            {
+                gGui.guiDialog_HighScore_Keymap.Text := "Use: LEFT/RIGHT arrows to move; UP/DOWN arrows to change values; ENTER to select (button); and ESCAPE to exit. "
+                gGui.guiDialog_HighScore_Keymap.Visible := true
+            }
+
+            WinSetTransparent 255, "ahk_id " . guiScorecard.Hwnd
+
+            ;global that lets us know the high score screen is displayed
+            ScoreCardDialog.Active := true
+        }
+        else ;Turn off the Scorecard dialog
+        {
+            ;clean-up screen bitmap
+            if (ScoreCardDialog.TakeScreenshots)
+                ScorecardDialog.DisposeScreen()
+
+            ;Hide the overlay text
+            Loop 14
+            {
+                gGui.guiDialog_HighScore_%A_Index%.Visible := false
+            }
+
+            gGui.guiDialog_HighScore_Title.Visible := false
+            gGui.guiDialog_HighScore_CurrentScore.Visible := false
+            gGui.guiDialog_HighScore_DateTime.Visible := false
+            gGui.guiDialog_HighScore_Instructions1.Visible := false
+            gGui.guiDialog_HighScore_Instructions2.Visible := false
+            gGui.guiDialog_HighScore_Warning.Visible := false
+            gGui.guiDialog_Picture1.Visible := false
+            gGui.guiDialog_Picture2.Visible := false
+            gGui.guiDialog_PictureLabel1.Visible := false
+            gGui.guiDialog_PictureLabel2.Visible := false
+
+            Settings.ExitHighScoreEntry()
+
+            WinSetTransparent 0, "ahk_id " . guiScorecard.Hwnd
+
+            ;global to let us know the high score screen is hidden
+            ScoreCardDialog._bScorecardActive := false
+
+            if (ScoreCardDialog._bReloadGameInfoOnExit)
+            {
+                ShowGameInfo(ScoreCardDialog.RomName)
+                ScoreCardDialog._bReloadGameInfoOnExit := false
+            }
+        }
+
+        return
+    }
+}
+
+class Scorecard
+{
+    static _nDialogScreenWidth := 0
+    static _nDialogScreenHeight := 0
+    static _nDialogPositionX := 0
+    static _nDialogPositionY := 0
+    static _nDialogScreenTitleFontSize := 40*3/4
+    static _nDialogPictureH := 0
+    static _nDialogPictureW := 0
+    static _nDialogTitleW := 0
+    static _bTakeScreenshots := 1
+    static _sFontType := "Tahoma"
+
+    static CreateScorecardDialog()
+    {
+        Scorecard._nDialogScreenWidth := g_nScreenWidth
+        Scorecard._nDialogScreenHeight := g_nScreenHeight
+
+        Scorecard.CreateDialogScreen()      ;Overlay screen containing various messages, inputs, etc.
+
+        ;Show the Dialog screen
+		guiScorecard.Opt("+AlwaysOnTop")
+		guiScorecard.Show("W" g_nScreenWidth " H" g_nScreenHeight " X0 Y0 NA")
+
+        global g_guiScorecardHwnd := guiScorecard.Hwnd 
+
+        ;This overlay protects the underlying screen from receiving mouse clicks
+		;guiScorecardOverlay.Opt("+AlwaysOnTop +E0x08000000") 
+		;guiScorecardOverlay.Opt("+Owner" guiScorecard.Hwnd)
+		;guiScorecardOverlay.Show("W" g_nScreenWidth " H" g_nScreenHeight " X0 Y0 NA")
+		;WinSetTransparent(1, "ahk_id " guiScorecardOverlay.Hwnd) ;don't set this completely transparent (0) or mouse clicks will leak through
+
+		;global g_guiScorecardOverlayHwnd := guiScorecardOverlay.Hwnd
+    }
+
+    ;This is a general purpose screen for presenting static and interactive dialogs
+    ;such as for the "Game Locked" message or the "Scorecard" dialog.
+    static CreateDialogScreen()
+    {
+        global gGui, guiScorecard ;, guiScorecardOverlay
+
+        nScreenTopY := 0
+        nScreenBottomY := 0
+        nScreenLeftX := 0
+        nScreenRightX := 0
+
+        if (IsSet(guiScorecard))
+            guiScorecard.Destroy()
+
+        guiScorecard := Gui(, "vfeGui - guiScorecard")
+        guiScorecard.Opt("-Caption +ToolWindow +E0x08000000") ;+Toolwindow prevents Windows taskbar icon
+
+        ;Also create an overlay to protect the Scorecard screen from mouse clicks
+		;guiScorecardOverlay := Gui(, "vfeGui - guiScorecardOverlay")
+		;guiScorecardOverlay.Opt("-Caption -DPIScale")
+
+        ;initially set the dialog transparent
+        guiScorecard.BackColor := "Black" 
+        WinSetTransColor("Black", guiScorecard)
+
+        ;Create the dialog screen
+
+        ;All controls and their positions in this dialog are keyed to the font size. Thus, changing
+        ;the font size will automatically rescale and reposition the screen relative to that size
+        if (ScoreCardDialog.TakeScreenshots)
+        {
+             nBaseFontSize := g_nScreenWidth / 40
+             Scorecard.IsInScreenshotMode := true
+        }
+        else
+        {
+             nBaseFontSize := g_nScreenWidth / 25
+             Scorecard.IsInScreenshotMode := false
+        }
+       
+        guiScorecard.SetFont("s" nBaseFontSize, Scorecard._sFontType)
+
+        ;********************************************************************************************************
+
+        ;This label is for any general message displayed in the center of the screen
+        ;Such as for "Game Locked" messages
+        gGui.guiDialog_Banner := guiScorecard.AddText("cWhite w" . g_nScreenWidth . " Center vDialogLabel", "Pause")
+        gGui.guiDialog_Banner.GetPos(&label_posX, &label_posY, &label_posW, &label_posH)
+        label_xpos := g_nScreenWidth / 2 - label_posW / 2
+        label_ypos := g_nScreenHeight / 2 - label_posH / 2 
+
+        gGui.guiDialog_Banner.Move(label_xpos, label_ypos)
+        gGui.guiDialog_Banner.Visible := false ;hide this for now.    
+        
+        ;This label is for large watermarks, like that used by the scorecard screen capture
+        ; *** No longer needed for watermark...may be repurposed ***
+        /*
+        guiScorecard.SetFont("s" 100, "Impact")
+        gGui.guiDialog_Watermark := guiScorecard.AddText("cWhite w" . g_nScreenWidth . " Center vDialogWatermark", gCfg.watermark)
+        gGui.guiDialog_Watermark.GetPos(&wm_posX, &wm_posY, &wm_posW, &wm_posH)
+        wm_xpos := g_nScreenWidth / 2 - wm_posW / 2
+        wm_ypos := (g_nScreenHeight * (3/4)) - (wm_posH/2) 
+        gGui.guiDialog_Watermark.Move(wm_xpos, wm_ypos)
+        WinSetTransColor "Black 100", "ahk_id " . gGui.guiDialog_Watermark.Hwnd
+        gGui.guiDialog_Watermark.Visible := false ;hide this for now.
+        */
+
+        ;restore font
+        guiScorecard.SetFont("s" nBaseFontSize, Scorecard._sFontType)
+
+        ;********************************************************************************************************
+        ;Build the high score dialog components
+        ;********************************************************************************************************
+        nScreenTopY := g_nScreenHeight / 2 - label_posH * 3 ;where top of dialog box should be
+        nUnitHeight := label_posH ;a standard unit height based on font size
+
+        loop 3
+        {
+            nControl := A_Index
+
+            oControl := guiScorecard.AddText("cWhite Border Center vDialog_Control_%" nControl "%", "W") ;initially setting to "W" ensures width is sufficient
+            oControl.GetPos(&label_posX, &label_posY, &label_posW, &label_posH)
+            label_xpos := g_nScreenWidth / 2 - label_posW * 3 + label_posW * A_Index + label_posW / 2
+            label_ypos := g_nScreenHeight / 2 - label_posH * 1.2 ;vertical center (adjusts the center stack up/down. 1 centers the initials)
+            initials_posY := label_ypos 
+            initials_posH := label_posH
+        
+            oControl.Move(label_xpos, label_ypos)
+            oControl.Value := "A"
+            if (nControl >1 )
+                oControl.Opt("-Border")
+            oControl.Visible := false ;hide this for now.
+
+            gGui.guiDialog_HighScore_%nControl% := oControl
+        }
+
+        nScreenLeftX := g_nScreenWidth / 2 - label_posW * 6 
+        nScreenRightX := g_nScreenWidth / 2 - label_posW * 6 + label_posW * 12
+
+        Scorecard._nDialogScreenTitleFontSize := nBaseFontSize*3/4 ;save as a property for external use
+
+        ;Title
+        guiScorecard.SetFont("s" Ceil(nBaseFontSize*3/4) " c" g_color_light_green " bold", "Verdana")
+        gGui.guiDialog_HighScore_Title := guiScorecard.AddText("cWhite x" 0 " y" initials_posY - label_posH*2 " w" . g_nScreenWidth . " Center vCurrentHighScore", "Current High Score")
+        gGui.guiDialog_HighScore_Title.GetPos(, &title_posY, &title_posW, &title_posH)
+        gGui.guiDialog_HighScore_Title.Visible := false
+        Scorecard._nDialogTitleW := title_posW
+
+        ;Current Score
+        guiScorecard.SetFont("s" nBaseFontSize/2 " cWhite norm", "Tahoma")
+        gGui.guiDialog_HighScore_CurrentScore := guiScorecard.AddText("cWhite x" nScreenLeftX " y" title_posY + title_posH + 5 " w" . nScreenRightX-nScreenLeftX . " Center vHighScore", "123456789  By: DGD")
+        gGui.guiDialog_HighScore_CurrentScore.GetPos(, &score_posY, , &score_posH)
+        guiScorecard.SetFont("s" nBaseFontSize)
+        gGui.guiDialog_HighScore_CurrentScore.Visible := false
+
+        ;Score date/time
+        guiScorecard.SetFont("s" nBaseFontSize/4)
+        gGui.guiDialog_HighScore_DateTime := guiScorecard.AddText("cWhite x" nScreenLeftX " y" score_posY + score_posH + 5 " w" . nScreenRightX-nScreenLeftX . " Center vDateTime", "Monday, July 4, 2023 at 11:00PM")
+        gGui.guiDialog_HighScore_DateTime.GetPos(, &dt_posY, , &dt_posH)
+        guiScorecard.SetFont("s" nBaseFontSize)
+        gGui.guiDialog_HighScore_DateTime.Visible := false
+
+        ;Create score editor
+        loop 10
+        {
+            nControl := A_Index + 3
+
+            oControl := guiScorecard.AddText("cWhite Border Center vDialog_Control_%" nControl "%", "W") ;initially setting to "W" ensures width is sufficient
+            oControl.GetPos(&label_posX, &label_posY, &label_posW, &label_posH)
+            label_xpos := g_nScreenWidth / 2 - label_posW * 6 + label_posW * A_Index 
+            label_ypos := initials_posY + initials_posH + 10
+        
+            oControl.Move(label_xpos, label_ypos)
+            oControl.Value := "-"
+            oControl.Opt("-Border")
+            oControl.Visible := false ;hide this for now.
+
+            gGui.guiDialog_HighScore_%nControl% := oControl
+        }
+
+        gGui.guiDialog_HighScore_4.GetPos(,&score_posY,,&score_posH)
+
+        nControl := 14
+
+        ;Register Button
+        guiScorecard.SetFont("s" nBaseFontSize/2, "cGreen")
+        oControl := guiScorecard.AddButton("BackgroundGray -Wrap +0x1 +0xC00 vDialog_Control_%" nControl "%", "Register") 
+        oControl.GetPos(&reg_posX, &reg_posY, &reg_posW, &reg_posH)
+        label_xpos := g_nScreenWidth / 2 - reg_posW / 2 
+        label_ypos := score_posY + score_posH + 20
+    
+        oControl.Move(label_xpos, label_ypos)
+        oControl.Visible := false ;hide this for now.
+ 
+        gGui.guiDialog_HighScore_%nControl% := oControl
+
+        nScreenBottomY := g_nScreenHeight / 2 + nUnitHeight * 4
+
+        Scorecard._nDialogScreenWidth := nScreenRightX - nScreenLeftX
+        Scorecard._nDialogScreenHeight := nScreenBottomY - nScreenTopY
+        Scorecard._nDialogPositionX := nScreenLeftX
+        Scorecard._nDialogPositionY := nScreenTopY 
+
+        ;"Previous Score" Scorecard screenshot "thumbnail"
+        nWMax := nScreenLeftX - 20
+        nHMax := Round((nScreenBottomY - nScreenTopY) * 0.85)
+
+        nW := nWMax
+        nH := Round(nW * g_nScreenHeight/g_nScreenWidth)
+        ;OutputDebug "nW: " nW " nH: " nH " nHMax: " nHMax " nWMax: " nWMax "`n"
+
+        if (nH > nHMax)
+        {
+            nH := nHMax
+            nW := Round(nH * g_nScreenWidth/g_nScreenHeight)
+        }
+        
+        ;Picture 1 (Current Score)
+        nX := nScreenLeftX - nW
+        nY := g_nScreenHeight/2 - nH/2
+        gGui.guiDialog_Picture1 := guiScorecard.AddPicture("BackgroundTrans +Border x" nX " y" nY " w" nW " h" nH " vDialogHighscoreThumbnail1")
+        gGui.guiDialog_Picture1.Visible := false
+        Scorecard._nDialogPictureH := nH
+        Scorecard._nDialogPictureW := nW
+
+        ;Picture 2 (New Score)
+        nX := nScreenRightX
+        gGui.guiDialog_Picture2 := guiScorecard.AddPicture("BackgroundTrans +Border x" nX " y" nY " w" nW " h" nH " vDialogHighscoreThumbnail2")
+        gGui.guiDialog_Picture2.Visible := false
+
+        ;"Previous Score" label
+        nX := nScreenLeftX - nW
+        nY := nY + nH + 10
+        nH := 100
+        gGui.guiDialog_PictureLabel1 := guiScorecard.AddText("BackgroundTrans cWhite x" nX " y" nY " w" nW " h" nH " Center vPictureLabel1", "Current Record")
+        gGui.guiDialog_PictureLabel1.SetFont("s" nBaseFontSize/2 " c" g_color_edit_text)
+        gGui.guiDialog_PictureLabel1.Visible := false
+        
+        ; "New Score" label
+        nX := nScreenRightX
+        gGui.guiDialog_PictureLabel2 := guiScorecard.AddText("BackgroundTrans cWhite x" nX " y" nY " w" nW " h" nH " Center vPictureLabel2", "New Record?")
+        gGui.guiDialog_PictureLabel2.SetFont("s" nBaseFontSize/2 " c" g_color_edit_text)
+        gGui.guiDialog_PictureLabel2.Visible := false
+        
+        ;Instructional text
+        gGui.guiDialog_HighScore_14.GetPos(,&button_posY,,&button_posH) ;button
+
+        guiScorecard.SetFont("s" nBaseFontSize/4+1)
+        gGui.guiDialog_HighScore_Warning := guiScorecard.AddText("cRed x" nScreenLeftX " w" . nScreenRightX-nScreenLeftX . " Center vWarning", "Warning")
+        gGui.guiDialog_HighScore_Warning.Move(, button_posY + button_posH + 30)
+        gGui.guiDialog_HighScore_Warning.GetPos(,&warning_posY,,&warning_posH)
+        gGui.guiDialog_HighScore_Warning.Visible := false
+
+        gGui.guiDialog_HighScore_Instructions1 := guiScorecard.AddText("cWhite x" nScreenLeftX " y" warning_posY + warning_posH " w" . nScreenRightX-nScreenLeftX . " Center vInstructions1", "Instructions2")
+        gGui.guiDialog_HighScore_Instructions1.Visible := false
+        gGui.guiDialog_HighScore_Instructions1.GetPos(,&ins_posY,,&ins_posH)        
+        
+        guiScorecard.SetFont("s" nBaseFontSize/4)
+        gGui.guiDialog_HighScore_Instructions2 := guiScorecard.AddText("cWhite x" nScreenLeftX " y" ins_posY + ins_posH " w" . nScreenRightX-nScreenLeftX . " Center vInstructions2", "Instructions1")
+        gGui.guiDialog_HighScore_Instructions2.GetPos(, &ins2_posY, , &ins2_posH)
+        gGui.guiDialog_HighScore_Instructions2.Visible := false
+
+        guiScorecard.SetFont("s" nBaseFontSize/4)
+        gGui.guiDialog_HighScore_Debug := guiScorecard.AddText("c" g_color_bright_yellow " x" nScreenLeftX " y" ins2_posY + ins2_posH " w" . nScreenRightX-nScreenLeftX . " Center vHighScoreDebug", "Warning")
+        gGui.guiDialog_HighScore_Debug.Visible := false
+
+        guiScorecard.SetFont("s" 16)
+        gGui.guiDialog_HighScore_Keymap := guiScorecard.AddText("cgray" " x" nScreenLeftX " y" ins2_posY + ins2_posH*2 " w" . nScreenRightX-nScreenLeftX . " Center vHighScoreKeyMap", "")
+        gGui.guiDialog_HighScore_Keymap.Visible := false
+
+        ;Adding this stretches the alpha background to include the two screenshots
+        if (ScoreCardDialog.TakeScreenshots)
+        {
+            nX := nScreenLeftX - nW - 10
+            nw := (nW*2) + 20 + (nScreenRightx - nScreenLeftX)
+            Scorecard._nDialogScreenWidth := nW
+            Scorecard._nDialogPositionX := nX
+        }
+    }
+
+    static GetButtonPos()
+    {
+        gGui.guiDialog_HighScore_14.GetPos(&X, &Y, &W, &H)
+        return {X: X, Y: Y, W: W, H: H}
+    } 
+
+    ;Coords of a bounding box surrounding the initials
+    ;and score data entry fields
+    static GetEntryBoxPos()
+    {
+        gGui.guiDialog_HighScore_1.GetPos(,&Y1)          ; First initial
+        gGui.guiDialog_HighScore_4.GetPos(&X1,&Y2,,&H1)  ; First score number
+        gGui.guiDialog_HighScore_13.GetPos(&X2,,&W1)     ; Last score number
+
+        return {X: X1, Y: Y1, W: (X2 + W1) - X1, H: (Y2 + H1) - Y1}
+    }
+
+    static ScorecardPos
+    {
+        get => {X: 0, Y: 0, W: g_nScreenWidth, H: g_nScreenHeight}
+    }
+    
+    static DialogTitleWidth
+    {
+        get => Scorecard._nDialogTitleW 
+    }
+
+    static DialogScreenWidth
+    {
+        get => Scorecard._nDialogScreenWidth
+    }
+
+    static DialogScreenHeight
+    {
+        get => Scorecard._nDialogScreenHeight
+    }
+
+    static DialogScreenX
+    {
+        get => Scorecard._nDialogPositionX
+    }
+
+    static DialogScreenY
+    {
+        get => Scorecard._nDialogPositionY
+    }
+
+    static DialogScreenTitleFontSize
+    {
+        get => Scorecard._nDialogScreenTitleFontSize
+    }
+
+    static DialogPictureH
+    {
+        get => Scorecard._nDialogPictureH
+    }
+
+    static DialogPictureW
+    {
+        get => Scorecard._nDialogPictureW
+    }
+
+    static IsInScreenshotMode
+    {
+        set => Scorecard._bTakeScreenshots := value
+        get => Scorecard._bTakeScreenshots
+    }
+}

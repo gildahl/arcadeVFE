@@ -43,6 +43,9 @@ global CodeVersion := "1.2.2.0"
 #include SystemCursor.ahk2
 #include Utility.ahk2
 #include HighScore.ahk2
+#include Scorecard.ahk2
+#include Gdip.ahk2
+#include BASS.ahk2
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;Turn test mode on/off
@@ -70,23 +73,21 @@ global g_nScreenHeight := A_ScreenHeight * 96 // A_ScreenDPI
 global g_sResourceFolder := A_ScriptDir "\Resources"
 global g_sVFEIconFile := g_sResourceFolder "\vfe.ico"
 global g_sVFEImageFile := g_sResourceFolder "\vfe.png"
+global g_sScorecardDefaultFile := g_sResourceFolder "\noscore.png"
 
 ;tray icon settings
 TraySetIcon g_sVFEIconFile
 A_IconTip := "arcadeVFE`nThe Virtual Arcade`nFront End"
 
-;dll libraries
-global g_oSDL2 := SDL2DLL() ;SDL library for game device discovery and polling
-global g_oPacDrive := PacDriveDLL() ;Support for Ultimarc ServoStik rotation
-
 ;global colors colors
-global g_color_light_green := "c4EC9A2"
-global g_color_dark_green := "c6A9955"
-global g_color_dark_blue := "c61abff"
-global g_color_light_blue := "c9cc9fd"
+global g_color_light_green := "4EC9A2"
+global g_color_dark_green := "6A9955"
+global g_color_dark_blue := "61abff"
+global g_color_light_blue := "9cc9fd"
 global g_color_pale_yellow := "ccfaf9cd"
 global g_color_edit_bg := "0x1F1F1F"
 global g_color_edit_text := "0xCCCCCC"
+global g_color_bright_yellow := "0xFFEA00"
 
 ;global value and flag initializations
 global g_sCurrentROM := ""
@@ -102,7 +103,9 @@ global g_bHideCursor := 0
 global g_iGameInfoFontSize := 18
 global g_iMonitor := 1
 global g_guiGameInfoOverlayHwnd := 0
+global g_guiScorecardHwnd := 0
 global g_iMaxHSTableRows := 10
+global g_bBeepOnProfileChange := 0
 
 ;global delays
 global g_iRestartDelay := 0              ;Delay in between application close and restart (in ms)
@@ -161,6 +164,16 @@ global g_sHighScoreFolder := ""          ;Location of the mame *.hi files
 global g_oArcadeRomList := Map()         ;Holds the curated arcade rom list including rom versions 
 global g_oFloors                         ;initialized in Settings.ReadFloors()
 
+;globals related to Scorecard
+global gGui := {}
+global g_bUseWatermark := 1
+global g_sScorecardSettingsExitKey := "Escape"
+global g_sScorecardSettingsSelectKey := "Enter"
+global g_sScorecardSettingsRightKey := "Right"
+global g_sScorecardSettingsLeftKey := "Left" 
+global g_sScorecardSettingsUpKey := "Up"
+global g_sScorecardSettingsDownKey := "Down"
+
 ;globals related to GameInfo
 global g_sGameInfoFolder := A_ScriptDir "\GameInfo"
 global g_sAssetsFolder := g_sGameInfoFolder "\Assets"
@@ -174,7 +187,7 @@ global g_sRecordHighScoreFolder := A_ScriptDir "\GameInfo\High"
 global g_oMameData := MAMEData(g_sMameInfoFile, g_sMameHistoryFile)
 global g_oGameInfoDisplay := GameInfoDisplay()
 global g_aImageOrder := Array()    
-global g_sImageOrder := "cabinets,cpanel,instructions,instructions_2,flyers,flyers_back,pcb" 
+global g_sImageOrder := "cabinets,cpanel,instructions,instructions_2,flyers,flyers_back,pcb,highscore" 
 global g_sGameInfoSettingsExitKey := "Escape"
 global g_sGameInfoSettingsRightKey := "Right"
 global g_sGameInfoSettingsLeftKey := "Left" 
@@ -195,6 +208,22 @@ global TRACKBALL :=  "[Group, trackball]"
 global g_oLog := AppLog()
 g_oLog.Init(g_sLogFolder "\log.txt", "arcadeVFE") ;initialize the application log
 OnError LogError ;deal with unhandled exceptions
+
+;dll libraries
+global g_oSDL2 := SDL2DLL() ;SDL library for game device discovery and polling
+global g_oPacDrive := PacDriveDLL() ;Support for Ultimarc ServoStik rotation
+global g_sSoundDevice := "1" ;The sound device to use
+global oBASS := BASS() ;Support for BASS.dll sound
+
+;init BASS sound
+oBASS.Init()
+
+;initialize the GDI+ (gdip) library (in gdip.ahk)
+If !pToken := Gdip_Startup()
+{
+	g_oLog.LogLine("ERROR: Gdiplus failed to start. Please ensure your system supports gdiplus.")
+	ExitApp -1
+}
 
 ;Update files and folders for the current version
 if (FileExist(g_sConfigFolder "\arcadeVFE.ini"))
@@ -272,6 +301,7 @@ LoadPlugins()					   ;Load plugins (RawAccel)
 LoadTweaks()				       ;Load custom tweaks
 Setup.CreateSetupDialog()          ;Load initial setup
 Settings.CreateSettingsDialog()    ;Build Settings screen
+Scorecard.CreateScorecardDialog()  ;Build Scorecard screen
 StartRomWatcher()                  ;Begin monitoring the rom folder  
 
 ;Turn off splash screen after at least 4 seconds
@@ -394,6 +424,9 @@ CreateDefaultActionList()
  */
 LoadConfig()
 {
+	;Intialize general preferences
+	global g_bBeepOnProfileChange := InitializeIniNumber("General", "BeepOnProfileChange", g_bBeepOnProfileChange)
+
 	;Initialize Settings GameInfo preferences
 	global g_iMonitor := InitializeIniNumber("GameInfo", "Monitor", g_iMonitor)
 	global g_bHideCursor := InitializeIniNumber("GameInfo", "HideCursor", g_bHideCursor)
@@ -407,6 +440,17 @@ LoadConfig()
 	global g_sGameInfoSettingsExitKey := InitializeIniString("GameInfo", "SettingsExitKey", g_sGameInfoSettingsExitKey)
 	global g_sGameInfoSettingsRightKey := InitializeIniString("GameInfo", "SettingsRightKey", g_sGameInfoSettingsRightKey)
 	global g_sGameInfoSettingsLeftKey := InitializeIniString("GameInfo", "SettingsLeftKey", g_sGameInfoSettingsLeftKey)
+
+	;Initialize Settings Scorecard navigation keys
+	global g_sScorecardSettingsExitKey := InitializeIniString("Scorecard", "SettingsExitKey", g_sScorecardSettingsExitKey)
+	global g_sScorecardSettingsSelectKey := InitializeIniString("Scorecard", "SettingsSelectKey", g_sScorecardSettingsSelectKey)
+	global g_sScorecardSettingsRightKey := InitializeIniString("Scorecard", "SettingsRightKey", g_sScorecardSettingsRightKey)
+	global g_sScorecardSettingsLeftKey := InitializeIniString("Scorecard", "SettingsLeftKey", g_sScorecardSettingsLeftKey)
+	global g_sScorecardSettingsUpKey := InitializeIniString("Scorecard", "SettingsUpKey", g_sScorecardSettingsUpKey)
+	global g_sScorecardSettingsDownKey := InitializeIniString("Scorecard", "SettingsDownKey", g_sScorecardSettingsDownKey)
+
+	;Initialize Scorecard preference
+	global g_bUseWatermark := InitializeIniNumber("Scorecard", "UseWatermark", g_bUseWatermark)
 
     ;Initialize GameInfo image order
 	global g_sImageOrder := InitializeIniString("GameInfo", "ImageOrder", g_sImageOrder)
@@ -563,6 +607,10 @@ StartRomWatcher()
 RomAccess_Event(sFolder, aChanges) 
 {
     static tLastFileName := ""
+
+	;Turn off the scorecard display if it is visible
+	if (ScoreCardDialog.Active)
+		ScoreCardDialog.Scorecard()
 
 	if (g_bSuppressLastAccess)
 	{
@@ -757,6 +805,7 @@ Poll()
 	g_oSDL2.SDL_FlushEvent(SDL_EventType.SDL_JOYBUTTONDOWN)
 	g_oSDL2.SDL_FlushEvent(SDL_EventType.SDL_JOYBUTTONUP)
 	g_oSDL2.SDL_FlushEvent(SDL_EventType.SDL_JOYHATMOTION)
+	g_oSDL2.SDL_FlushEvent(SDL_EventType.SDL_JOYAXISMOTION)	
    
 	mIndexer := Map() ;Used to keep track of button/key sequences
 
@@ -783,9 +832,20 @@ Poll()
 				g_oLog.LogLine("INFO: RawAccel Closed.`n" )
 			}
 
+			;Turn off the scorecard display if it is visible
+			;(Note this must be turned off BEFORE the GameInfo display)
+			if (ScoreCardDialog.Active)
+			{
+				ScoreCardDialog.Scorecard()
+				g_oLog.LogLine("INFO: Scorecard Closed.`n" )
+			}
+
 			;Turn off the GameInfo display if it is running
 			if (g_oGameInfoDisplay.Active)
+			{
 				g_oGameInfoDisplay.Clear()
+				g_oLog.LogLine("INFO: GameInfo Closed.`n" )
+			}
 
 			g_bCancelPoll := true
 
@@ -814,6 +874,7 @@ Poll()
 			g_oSDL2.SDL_FlushEvent(SDL_EventType.SDL_JOYBUTTONDOWN)
 			g_oSDL2.SDL_FlushEvent(SDL_EventType.SDL_JOYBUTTONUP)
 			g_oSDL2.SDL_FlushEvent(SDL_EventType.SDL_JOYHATMOTION)
+			g_oSDL2.SDL_FlushEvent(SDL_EventType.SDL_JOYAXISMOTION)	
 
 			;disable hotkeys
 			for device, buttons in g_oActions
@@ -883,7 +944,7 @@ Poll()
 				g_oSDL2.SDL_FlushEvent(SDL_EventType.SDL_JOYHATMOTION)				
 			}
 
-			/* ;Omit axis handling for now
+			;Omit axis handling for now
 			else if (evt.type == SDL_EventType.SDL_JOYAXISMOTION)
 			{
 				if (Abs(evt.jaxis.axisValue) >= 32767)
@@ -903,17 +964,33 @@ Poll()
 
 					if (sDirection != "Skip")
 					{
+						;hardcode joystick support for the scorecard dialog
+						if (ScoreCardDialog.Active)
+						{
+							Switch sDirection		
+							{
+								Case "Right":
+									try ScoreCardDialog.HighScoreNavigate("r")
+								Case "Left":
+									try ScoreCardDialog.HighScoreNavigate("l")
+								Case "Up":
+									try ScoreCardDialog.HighScoreNavigate("u")
+								Case "Down":
+									try ScoreCardDialog.HighScoreNavigate("d")
+							}
+						}
+
 						;Get the next logical action from the action list based on the axis movement, then run it
-						oAction := GetAction(g_aDevices[g_mDeviceIndex[evt.jaxis.which]], "Axis " evt.jaxis.axis " " sDirection, mIndexer)			
+						;oAction := GetAction(g_aDevices[g_mDeviceIndex[evt.jaxis.which]], "Axis " evt.jaxis.axis " " sDirection, mIndexer)			
 						
-						if (oAction.Key) ;Don't run null actions
-							RunAction(oAction)	
+						;if (oAction.Key) ;Don't run null actions
+						;	RunAction(oAction)	
 					}
 
 					g_oSDL2.SDL_FlushEvent(SDL_EventType.SDL_JOYAXISMOTION)	
 				}
 			}
-			*/
+			
 		}
 		g_oSDL2.SDL_Delay(1)
     }
@@ -1086,7 +1163,9 @@ RunAction(oAction, sModifier:="")
 			iLength := iEndPos - iStartPos
 
 			;separate down/up actions needed for MAME
+			;the "{" open bracket is intentionally left in sKey
 			sKey := SubStr(oAction.CommandLine, iStartPos, iLength)
+
 			Send sKey " down}"
 
 			if (!sModifier) {
@@ -1132,12 +1211,65 @@ RunAction(oAction, sModifier:="")
 				if ((gcShowGameInfo_Checkbox.Value && gcShowGameInfo_Checkbox.Enabled) && g_bOnlyMonitorWhenArcadeIsLoaded && ProcessExist(g_sArcadeExeName))
 					ShowGameInfo(OutNameNoExt)
 			Case "Exit":			
-				g_oGameInfoDisplay.Clear()
-
-			Sleep 100
+				g_oGameInfoDisplay.Clear()	
+				Sleep 100
 		}
+	}
 
-		return
+	;if a Scorecard navigation action, do the nav action
+	if (InStr(oAction.CommandLine, "Scorecard Navigation:") && sModifier != "Up")
+	{
+		iStartPos := InStr(oAction.CommandLine, "{") + 1
+		iEndPos := InStr(oAction.CommandLine, "}")
+		iLength := iEndPos - iStartPos
+
+		;extract the nav action
+		sNavAction := SubStr(oAction.CommandLine, iStartPos, iLength)
+
+		Sleep 0
+
+		Switch sNavAction
+		{
+			Case "Right":
+				try ScoreCardDialog.HighScoreNavigate("r")
+			Case "Left"	:		
+				try ScoreCardDialog.HighScoreNavigate("l")
+			Case "Up":
+				try ScoreCardDialog.HighScoreNavigate("u")
+			Case "Down"	:		
+				try ScoreCardDialog.HighScoreNavigate("d")			    
+			Case "Select":			
+				try ScoreCardDialog.HighScoreNavigate("s")
+			Case "Show/Hide":
+				;provide rom information for the scorecard
+				SplitPath(g_sCurrentROM,,,,&sCurrentRom)
+				ScoreCardDialog.RomName := sCurrentRom
+				for sGameName, sRomName in g_mRomsByName
+				{
+					if (sRomName == sCurrentRom)
+					{
+						ScoreCardDialog.GameName := sGameName
+						break
+					}
+				}
+				
+				bReloadGameInfoOnExit := false
+				if (g_oGameInfoDisplay.Active && g_iMonitor == 1)
+				{
+					g_oGameInfoDisplay.Clear()
+					bReloadGameInfoOnExit := true
+				}
+				
+				;Set the screenshot mode to true
+				ScoreCardDialog.TakeScreenshots := true
+
+				;if the scorecard wasn't previousl in screenshot mode, destroy 
+				;and re-create it with the screenshot windows included.
+				if (!Scorecard.IsInScreenshotMode)
+					Scorecard.CreateScorecardDialog() 
+
+				ScoreCardDialog.Scorecard(bReloadGameInfoOnExit)
+		} ;case
 	}
 
 	;if a command line action, don't run the same action twice in a row
@@ -1150,7 +1282,7 @@ RunAction(oAction, sModifier:="")
 			if (gcAlwaysAnnunciate_Checkbox.Value == -1)
 				g_oVoice.Speak(oAction.Annunciation)
 			
-			if (gcBeep_Checkbox.Value == 1)
+			if (g_bBeepOnProfileChange == 1)
 				SoundBeep
 			
 			RunCommandLine(oAction.CommandLine)
@@ -1430,45 +1562,111 @@ LogError(e, mode)
 
 
 /**
- * This callback provides the handling needed to support clicking on the GameInfo screen such that
- * clicking on the right side advances one page and clicking on the left side goes back a page.
- * This must be done in a way that does not cause the GameInfo screen to actually get activated
+ * This callback provides the handling needed to support clicking on the GameInfo and Scorecard
+ * screens such that clicking on different regions perform navigation actions.
+ * This must be done in a way that does not cause the screens to actually get activated
  * otherwise trackball/mouse movements will be lost as soon as the user clicks on the window.
  */
 OnMouseButtonEvent(*)
 {
+	dpi := 96 / A_ScreenDPI
+
 	;Only handle when the GameInfo screen exists
-	if (!WinExist("ahk_id " g_guiGameInfoOverlayHwnd))
-		return
-
-	;if calling from the Settings screen, testing shows that the mouse coords are incorrect on the
-	;first click unless the overlay is activated first. This doesn't seem to be an issue when 
-	;activated by the game while the Settings dialog is closed.
-	if (IsWinVisible("ahk_id " guiSettings.Hwnd))
-		try WinActivate("ahk_id " g_guiGameInfoOverlayHwnd)
-
-	MouseGetPos(&MouseX, &MouseY, &MouseWin, &MouseControl)
-
-	if (MouseWin := g_guiGameInfoOverlayHwnd)
+	if (WinExist("ahk_id " g_guiGameInfoOverlayHwnd))
 	{
-		g_oGameInfoDisplay.GetBounds(&X, &Y, &W, &H)
+		;if calling from the Settings screen, testing shows that the mouse coords are incorrect on the
+		;first click unless the overlay is activated first. This doesn't seem to be an issue when 
+		;activated by the game while the Settings dialog is closed.
+		if (IsWinVisible("ahk_id " guiSettings.Hwnd))
+			try WinActivate("ahk_id " g_guiGameInfoOverlayHwnd)
 
-		;These setting depend on CoordMode("Mouse", "Screen") being set for the application
-		;Without this CoordMode, mouse clicks on other monitor may trigger page turns.
-		if (MouseX > X && MouseX < X + W//2 && MouseY > Y && MouseY < Y + H) ;CoordMode off version: If (MouseX > 0 && MouseX < W//2 && MouseY > 0 && MouseY < H)
+		MouseGetPos(&MouseX, &MouseY, &MouseWin, &MouseControl)
+
+		if (MouseWin := g_guiGameInfoOverlayHwnd)
 		{
-			;clicked on the left side
-			Sleep 0
-			g_oGameInfoDisplay.GoPage("l")
-			Sleep 100
+			g_oGameInfoDisplay.GetBounds(&X, &Y, &W, &H)
+
+			;These setting depend on CoordMode("Mouse", "Screen") being set for the application
+			;Without this CoordMode, mouse clicks on other monitor may trigger page turns.
+			if (MouseX > X && MouseX < X + W//2 && MouseY > Y && MouseY < Y + H) ;CoordMode off version: If (MouseX > 0 && MouseX < W//2 && MouseY > 0 && MouseY < H)
+			{
+				;clicked on the left side
+				Sleep 0
+				g_oGameInfoDisplay.GoPage("l")
+				Sleep 100
+			}
+			
+			else If (MouseX > X + W//2 && MouseX < X + W && MouseY > Y && MouseY < Y + H) ;CoordMode off version: else If (MouseX > W//2 && MouseX < W && MouseY > 0 && MouseY < H)
+			{
+				;clicked on the right side
+				Sleep 0
+				g_oGameInfoDisplay.GoPage("r")
+				Sleep 100
+			}
 		}
-		
-		else If (MouseX > X + W//2 && MouseX < X + W && MouseY > Y && MouseY < Y + H) ;CoordMode off version: else If (MouseX > W//2 && MouseX < W && MouseY > 0 && MouseY < H)
+	}
+	
+	;Handle mouse clicks in the Scorecard dialog
+	else if (ScoreCardDialog.Active)
+	{
+		MouseGetPos(&MouseX, &MouseY, &MouseWin, &MouseControl)
+
+		if (MouseWin := g_guiScorecardHwnd)
 		{
-			;clicked on the right side
-			Sleep 0
-			g_oGameInfoDisplay.GoPage("r")
-			Sleep 100
+			mButtonPos := Scorecard.GetButtonPos()
+			ButtonX := mButtonPos.X/dpi
+			ButtonY := mButtonPos.Y/dpi
+			ButtonW := mButtonPos.W/dpi
+			ButtonH := mButtonPos.H/dpi
+
+			mEntryBoxPos := Scorecard.GetEntryBoxPos()
+			BoxX := mEntryBoxPos.X/dpi
+			BoxY := mEntryBoxPos.Y/dpi
+			BoxW := mEntryBoxPos.W/dpi
+			BoxH := mEntryBoxPos.H/dpi
+			
+			;Scorecard screen 
+			mScreenPos := Scorecard.ScorecardPos
+			X := mScreenPos.X/dpi
+            Y := mScreenPos.Y/dpi
+            W := mScreenPos.W/dpi
+            H := mScreenPos.H/dpi
+
+			if (MouseX > ButtonX && MouseX < ButtonX + ButtonW && MouseY > ButtonY && MouseY < ButtonY + ButtonH)
+			{
+				;clicked on the button
+				Sleep 0
+				try ScoreCardDialog.HighScoreNavigate("s")
+				Sleep 100
+			}
+			else if (MouseX > X && MouseX < BoxX && MouseY > BoxY && MouseY < BoxY + BoxH)
+			{
+				;clicked on the left side
+				Sleep 0
+				try ScoreCardDialog.HighScoreNavigate("l")
+				Sleep 100
+			}			
+			else If (MouseX > BoxX + BoxW && MouseX < W && MouseY > BoxY && MouseY < BoxY + BoxH)
+			{
+				;clicked on the right side
+				Sleep 0
+				try ScoreCardDialog.HighScoreNavigate("r")
+				Sleep 100
+			}
+			else If (MouseX > BoxX && MouseX < BoxX + BoxW && MouseY > Y && MouseY < BoxY)
+			{
+				;clicked on the top
+				Sleep 0
+				try ScoreCardDialog.HighScoreNavigate("u")
+				Sleep 100
+			}
+			else If (MouseX > BoxX && MouseX < BoxX + BoxW && MouseY > BoxY + BoxH && MouseY < H)
+			{
+				;clicked on the bottom
+				Sleep 0
+				try ScoreCardDialog.HighScoreNavigate("d")
+				Sleep 100
+			}
 		}
 	}
 }
