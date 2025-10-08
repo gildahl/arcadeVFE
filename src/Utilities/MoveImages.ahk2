@@ -6,11 +6,12 @@
 
 #include ..\ReadListXML.ahk2
 
-sAsset := "pcb"
+sAsset := "marquees"
 
 sROMFolder := "D:\Stand Alone\Arcade Time Capsule\RetroVRArcade\Content\Roms"
 sSourceImageFolder := "E:\Development\Projects\arcadeVFE\src\Media\" sAsset
 sDestinationFolder := "E:\Development\Projects\arcadeVFE\src\GameInfo\Assets\" sAsset
+sLogoFolder := "E:\Development\Projects\arcadeVFE\src\Media\Logo"
 sGamesXMLFile := "E:\Development\Projects\arcadeVFE\src\GameInfo\games.xml"
 
 
@@ -36,6 +37,10 @@ Loop Files sROMFolder "\*.zip"
         sDescription := ""
         try sDescription := oGameInfo["description"]
         FileAppend(OutNameNoExt " - " sDescription "`n", sDestinationFolder "\!missing.txt")
+
+        ;This line will copy logo files for any missing items (useful for filling in missing marquees)
+        ;try FileCopy(sLogoFolder "\" OutNameNoExt ".png", sDestinationFolder)
+
         iMissing++
     }
 }
