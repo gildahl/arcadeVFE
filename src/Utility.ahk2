@@ -172,4 +172,26 @@ IsWinVisible(winTitle)
         return false
     }
 }
- 
+
+/**
+ * Use cross product to discover whether the point is on the same side
+ * of all line segments. If so, the point is inside the polygon.
+ * @param Points - the points in the polygon (in right rotational order)
+ * @param p - the point
+ * @returns {Boolean} - true if the point is inside, false if outside 
+ */
+IsPointInsideConvexPolygon(Points, p)
+{
+    ;Duplicate the first point at the end to complete the polygon
+    Points.Push(Points[1])
+
+    ;use cross product to test whether point is on the same side of all line segments
+    loop Points.length - 1
+    {
+        i := A_Index
+        if ((Points[i+1].X - Points[i].X) * (p.Y - Points[i].Y) - (Points[i+1].Y - Points[i].Y) * (p.X - Points[i].X)) < 0
+            return false
+    }
+
+    return true
+}
