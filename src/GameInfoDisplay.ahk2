@@ -751,13 +751,13 @@ class GameInfoDisplay
 
 							;if any title text starts with a "<MARQUEE/>" markup symbol, replace it with 
 							;"MARQUEE SCORECARD".
-							if (SubStr(sLeaderboardName, 1, 10) == "<MARQUEE/>")
+							if (SubStr(sLeaderboardName, 1, StrLen("<MARQUEE/>")) == "<MARQUEE/>")
 								sLeaderboardName := StrReplace(sLeaderboardName, "<MARQUEE/>", "MARQUEE SCORECARD")
 
-							;if any title text starts with a "<RECORD/>" markup symbol, replace it with 
+							;if any title text starts with a "<OFFICIAL/>" markup symbol, replace it with 
 							;"OFFICIAL RECORD".
-							if (SubStr(sLeaderboardName, 1, 9) == "<RECORD/>")
-								sLeaderboardName := StrReplace(sLeaderboardName, "<RECORD/>", "OFFICIAL RECORD")
+							if (SubStr(sLeaderboardName, 1, StrLen("<OFFICIAL/>")) == "<OFFICIAL/>")
+								sLeaderboardName := StrReplace(sLeaderboardName, "<OFFICIAL/>", "OFFICIAL RECORD")
 
 							;if the line contains player initials (those defined in the Initial Setup dialog)
 							;they will be enclosed in element tags <player>DGD</player> 

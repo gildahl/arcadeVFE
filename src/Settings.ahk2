@@ -94,7 +94,7 @@ class Settings
 		gcGameInfo_ComboBox.OnEvent("Change", (*) => Settings.GameInfo_ComboBox_Change())
 
 		gcSendKey_ComboBox.Add(Settings.GetKeysArray())
-		gcGameInfo_ComboBox.Add(["GameInfo Navigation: {Right}","GameInfo Navigation: {Left}","GameInfo Navigation: {Home}","GameInfo Navigation: {Exit}","Scorecard Navigation: {Show/Hide}","Scorecard Navigation: {Select}","Scorecard Navigation: {Left}","Scorecard Navigation: {Right}","Scorecard Navigation: {Up}","Scorecard Navigation: {Down}"])
+		gcGameInfo_ComboBox.Add(["General: {Exit}","General: {Forward}","General: {Back}","GameInfo: {Home}","Scorecard: {Show/Hide}","Scorecard: {Select}","Scorecard: {Up}","Scorecard: {Down}"])
 
 		gcButtonOptionsGroupBox.Visible := gcSendKey_Radio.Visible := gcCommandLine_Radio.Visible := gcSendKey_ComboBox.Visible := gcGameInfo_Radio.Visible := gcGameInfo_ComboBox.Visible := false
 
@@ -325,7 +325,7 @@ class Settings
 		;********************************************************************************************************
 		gcUserPreferencesGroupBox := guiSettings.AddGroupBox("x" 30 " y" iLVBaseOffset_Y2 " w" 500 " h" 95, "User Preferences")
 
-		gcOnlyWhenArcadeActive_Checkbox := guiSettings.AddCheckbox("x" 45 " y" iLVBaseOffset_Y3 " w" 220, "Monitor only when arcade is running")
+		gcOnlyWhenArcadeActive_Checkbox := guiSettings.AddCheckbox("x" 45 " y" iLVBaseOffset_Y3, "Monitor only when arcade is running")
 		gcOnlyWhenArcadeActive_Checkbox.OnEvent("Click", (*) => Settings.OnlyWhenArcadeActive_Checkbox_Click())
 		gcOnlyWhenArcadeActive_Checkbox.TT := "Keep arcadeVFE inactive while the arcade emulator system`nsoftware is not running (recommended).`n`nTurning this off is primarily intended for testing. You will`nnot have access to GameInfo or RawAccel when turned off`nand may experience side effects in other applications. Note`nthat you will need to restart arcadeVFE after changing this setting."
 
@@ -448,14 +448,25 @@ class Settings
 
 		ScoreCardDialog.RomName := sRomName
 		ScoreCardDialog.GameName := gcROMDropDown.Text
-		
-		;turn off screenshot mode
-		ScoreCardDialog.TakeScreenshots := false
 
-		;if the scorecard wasn't previously in non-screenshot mode, 
-		;destroy and re-create it without the screenshot windows.
-		if (Scorecard.IsInScreenshotMode)
-			Scorecard.CreateScorecardDialog()
+		;set this to true to force picture mode for debugging
+		debug_force_picture_mode := true
+		if (debug_force_picture_mode)
+		{
+			ScoreCardDialog.TakeScreenshots := true
+			if (!Scorecard.IsInScreenshotMode)
+				Scorecard.CreateScorecardDialog()
+		}
+		else ;normal operation
+		{
+			;turn off screenshot mode
+			ScoreCardDialog.TakeScreenshots := false
+
+			;if the scorecard wasn't previously in non-screenshot mode, 
+			;destroy and re-create it without the screenshot windows.
+			if (Scorecard.IsInScreenshotMode)
+				Scorecard.CreateScorecardDialog()
+		}
 
 		;Now turn on the scorecard
 		ScoreCardDialog.Scorecard()
@@ -1625,8 +1636,6 @@ class Settings
 
 	static Mouse_Callback(Hotkey)
 	{
-
-		OutputDebug Hotkey
 		if (Settings.WriteActionToList("Mouse", Hotkey))
 		{
 			Settings.DisableMouseHotkeys()

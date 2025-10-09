@@ -88,6 +88,7 @@ global g_color_pale_yellow := "ccfaf9cd"
 global g_color_edit_bg := "0x1F1F1F"
 global g_color_edit_text := "0xCCCCCC"
 global g_color_bright_yellow := "0xFFEA00"
+global g_color_pale_yellow := "0xfcfae7"
 
 ;global value and flag initializations
 global g_sCurrentROM := ""
@@ -101,10 +102,13 @@ global g_sLastActionKey := ""
 global g_bSuppressLastAccess := false
 global g_bHideCursor := 0
 global g_iGameInfoFontSize := 18
+global g_iScorecardScale1 := 35
+global g_iScorecardScale2 := 50
 global g_iMonitor := 1
 global g_guiGameInfoOverlayHwnd := 0
 global g_guiScorecardHwnd := 0
 global g_iMaxHSTableRows := 10
+global g_iMaxMarqueeTableRows := 1
 global g_bBeepOnProfileChange := 0
 
 ;global delays
@@ -183,7 +187,9 @@ global g_sControlsIniFile := g_sGameInfoFolder "\controls.ini"
 global g_sGamesXMLFile := g_sGameInfoFolder "\games.xml"
 global g_sRomRefFile := g_sGameInfoFolder "\romref.ini"
 global g_sLogoFolder := A_ScriptDir "\GameInfo\Logo"
-global g_sRecordHighScoreFolder := A_ScriptDir "\GameInfo\High"
+global g_sMarqueeFolder := A_ScriptDir "\GameInfo\Marquee"
+global g_sOfficialHighScoreFolder := A_ScriptDir "\GameInfo\Scores\Official"
+global g_sPlayerHighScoreFolder := A_ScriptDir "\GameInfo\Scores\Player"
 global g_oMameData := MAMEData(g_sMameInfoFile, g_sMameHistoryFile)
 global g_oGameInfoDisplay := GameInfoDisplay()
 global g_aImageOrder := Array()    
@@ -226,11 +232,12 @@ If !pToken := Gdip_Startup()
 }
 
 ;Update files and folders for the current version
+;**********************************************************************************************
 if (FileExist(g_sConfigFolder "\arcadeVFE.ini"))
 	try FileMove(g_sConfigFolder "\arcadeVFE.ini", g_sConfigFolder "\vfe.ini")
 if (FileExist(g_sGameInfoFolder "\void.png"))
 	try FileDelete(g_sGameInfoFolder "\void.png")
-if (FileExist(g_sArcadeFolder "\Arcade Time Capsule 3.6.Vicinities.json")) ;ver 1.2.2
+if (FileExist(g_sArcadeFolder "\Arcade Time Capsule 3.6.Vicinities.json"))     ;ver 1.2.2
 	try FileDelete(g_sArcadeFolder "\Arcade Time Capsule 3.6.Vicinities.json") ;ver 1.2.2
 if (FileExist(g_sGameInfoFolder "\baseroms.ini"))
 	try FileDelete(g_sGameInfoFolder "\baseroms.ini")
@@ -246,6 +253,24 @@ if (sEditDir != "NA")
 	try IniDelete(g_sIniFile, "General", "EditLocations")
 	try IniDelete(g_sIniFile, "General", "ShowLocations")
 }
+
+;Replace pre 1.2.2 GameInfo Navigation options with General Navigation versions
+if (FileExist(g_sUserFile))
+{
+	sContents := FileRead(g_sUserFile)
+	if (InStr(sContents, "GameInfo Navigation"))
+	{
+		sContents := StrReplace(sContents, "GameInfo Navigation: {Left}", "General: {Back}")
+		sContents := StrReplace(sContents, "GameInfo Navigation: {Right}", "General: {Forward}")
+		sContents := StrReplace(sContents, "GameInfo Navigation: {Exit}", "General: {Exit}")
+		sContents := StrReplace(sContents, "GameInfo Navigation: {Home}", "GameInfo: {Home}")
+
+		try FileDelete(g_sUserFile)
+		if (!FileExist(g_sUserFile))
+			FileAppend(sContents, g_sUserFile)
+	}
+}
+;**********************************************************************************************
 
 ;exit function
 OnExit ExitArcadeVFE
@@ -393,16 +418,41 @@ CreateDefaultActionList()
 		mInfo["template_3"] := ""
 		mInfo["profile_3"] := ""
 		mInfo["command_line_3"] := ""
-		
+
 		mInfo := mInfo.Clone()
-		mInfo["command_line"] := "GameInfo Navigation: {Right}"
+		mInfo["command_line"] := "General: {Exit}"
+		mConfig["Keyboard"]["Escape"] := Map()
+		mConfig["Keyboard"]["Escape"]["1"] := mInfo
+
+		mInfo := mInfo.Clone()
+		mInfo["command_line"] := "General: {Forward}"
 		mConfig["Keyboard"]["Right"] := Map()
 		mConfig["Keyboard"]["Right"]["1"] := mInfo
 
 		mInfo := mInfo.Clone()
-		mInfo["command_line"] := "GameInfo Navigation: {Left}"
+		mInfo["command_line"] := "General: {Back}"
 		mConfig["Keyboard"]["Left"] := Map()
 		mConfig["Keyboard"]["Left"]["1"] := mInfo
+
+		mInfo := mInfo.Clone()
+		mInfo["command_line"] := "Scorecard: {Show/Hide}"
+		mConfig["Keyboard"]["Space"] := Map()
+		mConfig["Keyboard"]["Space"]["1"] := mInfo	
+
+		mInfo := mInfo.Clone()
+		mInfo["command_line"] := "Scorecard: {Select}"
+		mConfig["Keyboard"]["Enter"] := Map()
+		mConfig["Keyboard"]["Enter"]["1"] := mInfo
+
+		mInfo := mInfo.Clone()
+		mInfo["command_line"] := "Scorecard: {Up}"
+		mConfig["Keyboard"]["Up"] := Map()
+		mConfig["Keyboard"]["Up"]["1"] := mInfo	
+
+		mInfo := mInfo.Clone()
+		mInfo["command_line"] := "Scorecard: {Down}"
+		mConfig["Keyboard"]["Down"] := Map()
+		mConfig["Keyboard"]["Down"]["1"] := mInfo
 
 		;Write the default action list
 		sJSON := JSON.stringify(mConfig)
@@ -451,6 +501,9 @@ LoadConfig()
 
 	;Initialize Scorecard preference
 	global g_bUseWatermark := InitializeIniNumber("Scorecard", "UseWatermark", g_bUseWatermark)
+	global g_iScorecardScale1 := InitializeIniNumber("Scorecard", "Scale1", g_iScorecardScale1)
+	global g_iScorecardScale2 := InitializeIniNumber("Scorecard", "Scale2", g_iScorecardScale2)
+	global g_iMaxMarqueeTableRows := InitializeIniNumber("Scorecard", "MaxMarqueeTableRows", g_iMaxMarqueeTableRows)
 
     ;Initialize GameInfo image order
 	global g_sImageOrder := InitializeIniString("GameInfo", "ImageOrder", g_sImageOrder)
@@ -888,7 +941,7 @@ Poll()
 			    		Hotkey(button " Up", PressedKey_Callback, "Off")
 				}
 			}
-
+		
 			;set global flags
 			g_bCancelPoll := false 
 			g_bActive := false
@@ -1188,9 +1241,62 @@ RunAction(oAction, sModifier:="")
 		}
 	}
 
-	;if a GameInfo navigation action, do the nav action
-	if (InStr(oAction.CommandLine, "GameInfo Navigation:") && sModifier != "Up")
+	;if a Scorecard navigation action, do the nav action
+	if (SubStr(oAction.CommandLine, 1, StrLen("Scorecard:")) == "Scorecard:")
 	{
+		if (sModifier == "Up")
+			return
+
+		iStartPos := InStr(oAction.CommandLine, "{") + 1
+		iEndPos := InStr(oAction.CommandLine, "}")
+		iLength := iEndPos - iStartPos
+
+		;extract the nav action
+		sNavAction := SubStr(oAction.CommandLine, iStartPos, iLength)
+
+		Sleep 0  
+
+		if (sNavAction == "Show/Hide")
+		{
+			;provide rom information for the scorecard
+			SplitPath(g_sCurrentROM,,,,&sCurrentRom)
+			ScoreCardDialog.RomName := sCurrentRom
+			for sGameName, sRomName in g_mRomsByName
+			{
+				if (sRomName == sCurrentRom)
+				{
+					ScoreCardDialog.GameName := sGameName
+					break
+				}
+			}
+			
+			bReloadGameInfoOnExit := false
+			if (g_oGameInfoDisplay.Active && g_iMonitor == 1)
+			{
+				g_oGameInfoDisplay.Clear()
+				bReloadGameInfoOnExit := true
+			}
+			
+			;Set the screenshot mode to true
+			ScoreCardDialog.TakeScreenshots := true
+
+			;if the scorecard wasn't previously in screenshot mode, destroy 
+			;and re-create it with the screenshot windows included.
+			if (!Scorecard.IsInScreenshotMode)
+				Scorecard.CreateScorecardDialog() 
+
+			ScoreCardDialog.Scorecard(bReloadGameInfoOnExit)
+
+			return
+		}
+	}
+
+	;if a GameInfo navigation action, do the nav action
+	if ((SubStr(oAction.CommandLine, 1, StrLen("GameInfo:")) == "GameInfo:" || SubStr(oAction.CommandLine, 1, StrLen("General:")) == "General:") && WinExist("ahk_id " g_guiGameInfoOverlayHwnd))
+	{
+		if (sModifier == "Up")
+			return
+
 		iStartPos := InStr(oAction.CommandLine, "{") + 1
 		iEndPos := InStr(oAction.CommandLine, "}")
 		iLength := iEndPos - iStartPos
@@ -1202,9 +1308,9 @@ RunAction(oAction, sModifier:="")
 
 		Switch sNavAction
 		{
-			Case "Right":
+			Case "Forward":                          
 				g_oGameInfoDisplay.GoPage("r")
-			Case "Left"	:		
+			Case "Back":
 				g_oGameInfoDisplay.GoPage("l")
 			Case "Home":	
 			    SplitPath(g_sCurrentROM,,,,&OutNameNoExt)
@@ -1214,11 +1320,16 @@ RunAction(oAction, sModifier:="")
 				g_oGameInfoDisplay.Clear()	
 				Sleep 100
 		}
+
+		return
 	}
 
 	;if a Scorecard navigation action, do the nav action
-	if (InStr(oAction.CommandLine, "Scorecard Navigation:") && sModifier != "Up")
+	if (SubStr(oAction.CommandLine, 1, StrLen("Scorecard:")) == "Scorecard:" || SubStr(oAction.CommandLine, 1, StrLen("General:")) == "General:")
 	{
+		if (sModifier == "Up")
+			return
+
 		iStartPos := InStr(oAction.CommandLine, "{") + 1
 		iEndPos := InStr(oAction.CommandLine, "}")
 		iLength := iEndPos - iStartPos
@@ -1226,50 +1337,59 @@ RunAction(oAction, sModifier:="")
 		;extract the nav action
 		sNavAction := SubStr(oAction.CommandLine, iStartPos, iLength)
 
-		Sleep 0
+		Sleep 0  
 
-		Switch sNavAction
+		if (sNavAction == "Show/Hide")
 		{
-			Case "Right":
-				try ScoreCardDialog.HighScoreNavigate("r")
-			Case "Left"	:		
-				try ScoreCardDialog.HighScoreNavigate("l")
-			Case "Up":
-				try ScoreCardDialog.HighScoreNavigate("u")
-			Case "Down"	:		
-				try ScoreCardDialog.HighScoreNavigate("d")			    
-			Case "Select":			
-				try ScoreCardDialog.HighScoreNavigate("s")
-			Case "Show/Hide":
-				;provide rom information for the scorecard
-				SplitPath(g_sCurrentROM,,,,&sCurrentRom)
-				ScoreCardDialog.RomName := sCurrentRom
-				for sGameName, sRomName in g_mRomsByName
+			;provide rom information for the scorecard
+			SplitPath(g_sCurrentROM,,,,&sCurrentRom)
+			ScoreCardDialog.RomName := sCurrentRom
+			for sGameName, sRomName in g_mRomsByName
+			{
+				if (sRomName == sCurrentRom)
 				{
-					if (sRomName == sCurrentRom)
-					{
-						ScoreCardDialog.GameName := sGameName
-						break
-					}
+					ScoreCardDialog.GameName := sGameName
+					break
 				}
-				
-				bReloadGameInfoOnExit := false
-				if (g_oGameInfoDisplay.Active && g_iMonitor == 1)
-				{
-					g_oGameInfoDisplay.Clear()
-					bReloadGameInfoOnExit := true
-				}
-				
-				;Set the screenshot mode to true
-				ScoreCardDialog.TakeScreenshots := true
+			}
+			
+			bReloadGameInfoOnExit := false
+			if (g_oGameInfoDisplay.Active && g_iMonitor == 1)
+			{
+				g_oGameInfoDisplay.Clear()
+				bReloadGameInfoOnExit := true
+			}
+			
+			;Set the screenshot mode to true
+			ScoreCardDialog.TakeScreenshots := true
 
-				;if the scorecard wasn't previousl in screenshot mode, destroy 
-				;and re-create it with the screenshot windows included.
-				if (!Scorecard.IsInScreenshotMode)
-					Scorecard.CreateScorecardDialog() 
+			;if the scorecard wasn't previousl in screenshot mode, destroy 
+			;and re-create it with the screenshot windows included.
+			if (!Scorecard.IsInScreenshotMode)
+				Scorecard.CreateScorecardDialog() 
 
-				ScoreCardDialog.Scorecard(bReloadGameInfoOnExit)
-		} ;case
+			ScoreCardDialog.Scorecard(bReloadGameInfoOnExit)
+		}
+		else if (ScoreCardDialog.Active)
+		{
+			Switch sNavAction
+			{
+				Case "Exit":
+					try ScoreCardDialog.ScorecardExit()
+				Case "Forward":
+					try ScoreCardDialog.HighScoreNavigate("r")
+				Case "Back"	:		
+					try ScoreCardDialog.HighScoreNavigate("l")
+				Case "Up":
+					try ScoreCardDialog.HighScoreNavigate("u")
+				Case "Down"	:		
+					try ScoreCardDialog.HighScoreNavigate("d")			    
+				Case "Select":			
+					try ScoreCardDialog.HighScoreNavigate("s")		
+			} ;case
+		}
+
+		return
 	}
 
 	;if a command line action, don't run the same action twice in a row
@@ -1569,7 +1689,12 @@ LogError(e, mode)
  */
 OnMouseButtonEvent(*)
 {
-	dpi := 96 / A_ScreenDPI
+	static dpi := 96 / A_ScreenDPI
+	static bScreenshotMode := -1
+	static ButtonX, ButtonY, ButtonW, ButtonH
+	static BoxX, BoxY, BoxW, BoxH
+	static X, Y, W, H
+	static rightPoints, leftPoints, topPoints, bottomPoints
 
 	;Only handle when the GameInfo screen exists
 	if (WinExist("ahk_id " g_guiGameInfoOverlayHwnd))
@@ -1613,59 +1738,89 @@ OnMouseButtonEvent(*)
 
 		if (MouseWin := g_guiScorecardHwnd)
 		{
-			mButtonPos := Scorecard.GetButtonPos()
-			ButtonX := mButtonPos.X/dpi
-			ButtonY := mButtonPos.Y/dpi
-			ButtonW := mButtonPos.W/dpi
-			ButtonH := mButtonPos.H/dpi
+			p := {X: MouseX, Y: MouseY}
 
-			mEntryBoxPos := Scorecard.GetEntryBoxPos()
-			BoxX := mEntryBoxPos.X/dpi
-			BoxY := mEntryBoxPos.Y/dpi
-			BoxW := mEntryBoxPos.W/dpi
-			BoxH := mEntryBoxPos.H/dpi
-			
-			;Scorecard screen 
-			mScreenPos := Scorecard.ScorecardPos
-			X := mScreenPos.X/dpi
-            Y := mScreenPos.Y/dpi
-            W := mScreenPos.W/dpi
-            H := mScreenPos.H/dpi
+			;Only need to update these static fields if we've switched modes
+			if (bScreenshotMode != Scorecard.IsInScreenshotMode)
+			{
+				mButtonPos := Scorecard.GetButtonPos()
+				ButtonX := mButtonPos.X/dpi
+				ButtonY := mButtonPos.Y/dpi
+				ButtonW := mButtonPos.W/dpi
+				ButtonH := mButtonPos.H/dpi
 
+				mEntryBoxPos := Scorecard.GetEntryBoxPos()
+				BoxX := mEntryBoxPos.X/dpi
+				BoxY := mEntryBoxPos.Y/dpi
+				BoxW := mEntryBoxPos.W/dpi
+				BoxH := mEntryBoxPos.H/dpi
+				
+				;Scorecard screen 
+				mScreenPos := Scorecard.ScorecardPos
+				X := mScreenPos.X/dpi
+				Y := mScreenPos.Y/dpi
+				W := mScreenPos.W/dpi
+				H := mScreenPos.H/dpi
+
+				;Right trapazoid
+				rightPoints := Array()
+				rightPoints.Push({X: BoxX + BoxW, Y: BoxY})
+				rightPoints.Push({X: W, Y: Y})
+				rightPoints.Push({X: W, Y: H})
+				rightPoints.Push({X: BoxX + BoxW, Y: BoxY + BoxH})
+
+				;Left trapazoid
+				leftPoints := Array()
+				leftPoints.Push({X: X, Y: Y})
+				leftPoints.Push({X: BoxX, Y: BoxY})
+				leftPoints.Push({X: BoxX, Y: BoxY + BoxH})
+				leftPoints.Push({X: X, Y: H})
+
+				;top trapazoid
+				topPoints := Array()
+				topPoints.Push({X: X, Y: Y})
+				topPoints.Push({X: W, Y: Y})
+				topPoints.Push({X: BoxX + BoxW, Y: BoxY})
+				topPoints.Push({X: BoxX, Y: BoxY})
+
+				;bottom trapazoid
+				bottomPoints := Array()
+				bottomPoints.Push({X: BoxX, Y: BoxY + BoxH})
+				bottomPoints.Push({X: BoxX + BoxW, Y: BoxY + BoxH})
+				bottomPoints.Push({X: W, Y: H})
+				bottomPoints.Push({X: X, Y: H})
+			}
+
+			;clicked on the button
 			if (MouseX > ButtonX && MouseX < ButtonX + ButtonW && MouseY > ButtonY && MouseY < ButtonY + ButtonH)
 			{
-				;clicked on the button
 				Sleep 0
 				try ScoreCardDialog.HighScoreNavigate("s")
-				Sleep 100
-			}
-			else if (MouseX > X && MouseX < BoxX && MouseY > BoxY && MouseY < BoxY + BoxH)
-			{
-				;clicked on the left side
-				Sleep 0
-				try ScoreCardDialog.HighScoreNavigate("l")
-				Sleep 100
+				Sleep 50
 			}			
-			else If (MouseX > BoxX + BoxW && MouseX < W && MouseY > BoxY && MouseY < BoxY + BoxH)
+			else if (IsPointInsideConvexPolygon(bottomPoints, p)) ;clicked on the bottom
 			{
-				;clicked on the right side
-				Sleep 0
-				try ScoreCardDialog.HighScoreNavigate("r")
-				Sleep 100
-			}
-			else If (MouseX > BoxX && MouseX < BoxX + BoxW && MouseY > Y && MouseY < BoxY)
-			{
-				;clicked on the top
-				Sleep 0
-				try ScoreCardDialog.HighScoreNavigate("u")
-				Sleep 100
-			}
-			else If (MouseX > BoxX && MouseX < BoxX + BoxW && MouseY > BoxY + BoxH && MouseY < H)
-			{
-				;clicked on the bottom
 				Sleep 0
 				try ScoreCardDialog.HighScoreNavigate("d")
-				Sleep 100
+				Sleep 50
+			}
+			else if (IsPointInsideConvexPolygon(rightPoints, p)) ;clicked on the right side
+			{
+				Sleep 0
+				try ScoreCardDialog.HighScoreNavigate("r")
+				Sleep 50
+			}
+			else if (IsPointInsideConvexPolygon(topPoints, p)) ;clicked on the top
+			{
+				Sleep 0
+				try ScoreCardDialog.HighScoreNavigate("u")
+				Sleep 50
+			}
+			if (IsPointInsideConvexPolygon(leftPoints, p)) ;clicked on the left side
+			{
+				Sleep 0
+				try ScoreCardDialog.HighScoreNavigate("l")
+				Sleep 50
 			}
 		}
 	}

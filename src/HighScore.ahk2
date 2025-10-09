@@ -290,11 +290,15 @@ class HighScore
     {
         try
         {
-            sHighScoreFolder:= ""
+            sHighScoreFolder := ""
             sHighFile := sRomName . ".high" ;the arcadeVFE alternate .high file
 
-            ;search for the *.high file
-            if (g_sArcadeString != "Other")
+            if (sPath)
+            {
+                if (FileExist(sPath "\" sHighFile))
+                    sHighScoreFolder := sPath
+            }
+            else if (g_sArcadeString != "Other")
             {
                 for i, sVer in Setup.GetMAMEVersions()
                 {
@@ -523,7 +527,7 @@ class HighScore
      * 
      * The title line must start with a # symbol and be followed by a space. Internal tables
      * (i.e. created by arcadeVFE) may use tags to identify the type of table such as
-     * # <RECORD/>   -- indicates an official highscore record table
+     * # <OFFICIAL/>   -- indicates an official highscore record table
      * # <MARQUEE/>  -- indicates a "marquee" highscore table     * 
      *
      * # TOP SCORES
@@ -560,7 +564,7 @@ class HighScore
             {
                 global g_sHighScoreFolder := ""
 
-                if (FileExist(g_sATCHighScoreRootFolder "\mame" sVer "\hi\" sHiFile) || FileExist(g_sATCHighScoreRootFolder "\mame" sVer "\hi\" sHighFile)) 
+                if (FileExist(g_sATCHighScoreRootFolder "\mame" sVer "\hi\" sHiFile)) 
                 {
                     global g_sHighScoreFolder := g_sATCHighScoreRootFolder "\mame" sVer "\hi"
                     break
@@ -577,7 +581,7 @@ class HighScore
         {
             ;Currently hi file support in "Other" arcades is only supported if this vfe.ini key is defined
             global g_sHighScoreFolder := IniRead(g_sIniFile, "Other", "HiFileFolder", "")
-            if (!g_sHighScoreFolder || !DirExist(g_sHighScoreFolder) || !(FileExist(g_sHighScoreFolder "\" sHiFile) || FileExist(g_sHighScoreFolder "\" sHighFile)))
+            if (!g_sHighScoreFolder || !DirExist(g_sHighScoreFolder) || ! FileExist(g_sHighScoreFolder "\" sHiFile))
             {
                 ;g_oLog.LogLine("INFO: No high score file was found in " g_sArcadeString " for `"" sRomName "`".`n")
                 ;return this._aLeaderboard := ""
@@ -587,9 +591,10 @@ class HighScore
         sRawHighScoreTable := aRawHighScoreTable := aStdoutTable := aRecordScoreTable := ""
 
         ;Read *.high file if one exists 
-        if (FileExist(g_sHighScoreFolder '\' sHighFile))
+        ;if (FileExist(g_sHighScoreFolder '\' sHighFile))
+        if (FileExist(g_sPlayerHighScoreFolder "\" sHighFile))
         {
-            sRawHighScoreTable := FileRead(g_sHighScoreFolder '\' sHighFile)
+            sRawHighScoreTable := FileRead(g_sPlayerHighScoreFolder '\' sHighFile)
             aRawHighScoreTable := StrSplit(sRawHighScoreTable, "`r`n")
         }
 
@@ -653,9 +658,9 @@ class HighScore
         }
 
         ;Load any world record tables
-        if (FileExist(g_sRecordHighScoreFolder "\" sHighFile))
+        if (FileExist(g_sOfficialHighScoreFolder "\" sHighFile))
         {
-            sRecordScoreTable := FileRead(g_sRecordHighScoreFolder '\' sHighFile)
+            sRecordScoreTable := FileRead(g_sOfficialHighScoreFolder '\' sHighFile)
             aRecordScoreTable := StrSplit(sRecordScoreTable, "`r`n")
         }
         
@@ -914,7 +919,7 @@ class HighScore
                         aLeaderboard.Push(aTable["TITLE"])
 
                         ;if columns in a table should be skipped, mark them here
-                        if (InStr(aTable["TITLE"], "<RECORD/>")) ;Locations are long so provisionally remove them
+                        if (InStr(aTable["TITLE"], "<OFFICIAL/>")) ;Locations are long so provisionally remove them
                             aSkipColumns.Push(iLocationColumn)
                     }
                     
@@ -1124,7 +1129,7 @@ class HighScore
                         ;Don't include world record score
                         iTableTitle := ""
                         try iTableTitle := aTable["TITLE"]
-                        if (iTableTitle == "<RECORD/>")
+                        if (iTableTitle == "<OFFICIAL/>")
                             break
 
                         loop aTable["DATA"].length ;go through each record

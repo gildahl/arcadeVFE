@@ -165,11 +165,11 @@ class Setup
 
         gcBackupROMsButton := guiFileTools.AddButton("x" iGB_X + iGB_W/2 - 85 " y" iGB_Y + 70 " w" 80 " h" 25, "Backup")
         gcBackupROMsButton.OnEvent("Click", (*) => Setup.gcBackupROMsButton_Click())
-        gcBackupROMsButton.TT := "Press to backup all ATC *.cfg`nTAB menu configuration files."
+        gcBackupROMsButton.TT := "Press to backup all ATC rom files."
 
         gcRestoreROMsButton := guiFileTools.AddButton("x" iGB_X + iGB_W/2 + 5 " y" iGB_Y + 70 " w" 80 " h" 25, "Restore")
         gcRestoreROMsButton.OnEvent("Click", (*) => Setup.gcRestoreROMsButton_Click())
-        gcRestoreROMsButton.TT := "Press to restore all backed-up ATC *.cfg`nTAB menu configuration files."
+        gcRestoreROMsButton.TT := "Press to restore all backed-up ATC rom files."
 
         gcCopyRomsButton := guiFileTools.AddButton("x" iGB_X + iGB_W/2 - 85 " y" iGB_Y + 110 " w" 80 " h" 25, "Copy...")
         gcCopyRomsButton.OnEvent("Click", (*) => Setup.CopyRomsButton_Click(guiFileTools.Hwnd))
@@ -209,7 +209,7 @@ class Setup
 
         gcBackupHSButton := guiFileTools.AddButton("x" iGB_X + iGB_W/2 - 85 " y" iGB_Y + 70 " w" 80 " h" 25, "Backup")
         gcBackupHSButton.OnEvent("Click", (*) => Setup.gcBackupHSButton_Click())
-        gcBackupHSButton.TT := "Press to backup all ATC high score (*.hi and`n*.high) and machine state (*.nv) files."
+        gcBackupHSButton.TT := "Press to backup all ATC high score (*.hi) and machine state (*.nv) files."
 
         gcRestoreHSButton := guiFileTools.AddButton("x" iGB_X + iGB_W/2 + 5 " y" iGB_Y + 70 " w" 80 " h" 25, "Restore")
         gcRestoreHSButton.OnEvent("Click", (*) => Setup.gcRestoreHSButton_Click())
