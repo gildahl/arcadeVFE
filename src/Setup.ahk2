@@ -589,13 +589,6 @@ class Setup
                 iHiFilesCopied++
             }
 
-            ;Backup *.high files
-            Loop files g_sATCFolder "\RetroVRArcade\Plugins\save\mame" sVer "\hi\*.high"
-            {
-                FileCopy(A_LoopFileFullPath, g_sArcadeFolder "\" g_sArcadeString "\Backup\hi\mame" sVer, 1)
-                iHighFilesCopied++
-            }
-
             ;Backup *.nvram files
             Loop files g_sATCFolder "\RetroVRArcade\Plugins\save\mame" sVer "\nvram\*.nv" 
             {
@@ -608,7 +601,7 @@ class Setup
 
         if (iFilesBackedUp > 0)
         {
-            MsgBox("Successfully backed-up " iHiFilesCopied " *.hi files, " iHighFilesCopied " *.high files, and " iNvramFilesCopied " *.nv files backed-up.", "Backup Completed", 64 " Owner" guiFileTools.Hwnd)
+            MsgBox("Successfully backed-up " iHiFilesCopied " *.hi files, and " iNvramFilesCopied " *.nv files.", "Backup Completed", 64 " Owner" guiFileTools.Hwnd)
 
             try FileDelete(g_sArcadeFolder "\" g_sArcadeString "\Backup\hi\.backup")
             try FileDelete(g_sArcadeFolder "\" g_sArcadeString "\Backup\nvram\.backup")
@@ -648,19 +641,13 @@ class Setup
             return
         }
 
-        iHiFilesCopied := iHighFilesCopied := iNvramFilesCopied := 0
+        iHiFilesCopied := iNvramFilesCopied := 0
         for i, sVer in Setup.GetMAMEVersions()
         {        
             Loop files g_sArcadeFolder "\" g_sArcadeString "\Backup\hi\mame" sVer "\*.hi"
             {
                 FileCopy(A_LoopFileFullPath, g_sATCFolder "\RetroVRArcade\Plugins\save\mame" sVer "\hi", 1)
                 iHiFilesCopied++
-            }
-
-            Loop files g_sArcadeFolder "\" g_sArcadeString "\Backup\hi\mame" sVer "\*.high"
-            {
-                FileCopy(A_LoopFileFullPath, g_sATCFolder "\RetroVRArcade\Plugins\save\mame" sVer "\hi", 1)
-                iHighFilesCopied++
             }
 
             Loop files g_sArcadeFolder "\" g_sArcadeString "\Backup\nvram\mame" sVer "\*.nv"
@@ -670,10 +657,10 @@ class Setup
             }
         }
 
-        iFilesRestored := iHiFilesCopied + iHighFilesCopied + iNvramFilesCopied
+        iFilesRestored := iHiFilesCopied + iNvramFilesCopied
 
         if (iFilesRestored > 0)
-            MsgBox("Successfully restored " iHiFilesCopied " *.hi, " iHighFilesCopied " *.high, and " iNvramFilesCopied " *.nv files copied.", "Restore Completed", 64 " Owner" guiFileTools.Hwnd)
+            MsgBox("Successfully restored " iHiFilesCopied " *.hi, and " iNvramFilesCopied " *.nv files copied.", "Restore Completed", 64 " Owner" guiFileTools.Hwnd)
         else
             MsgBox("There were no files found to restore.", "Restore Unsuccessful", 16 " Owner" guiFileTools.Hwnd)
 

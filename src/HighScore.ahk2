@@ -190,6 +190,8 @@ class HighScore
                 return i
             }
         }
+
+        return 0
     }
 
     /**
@@ -278,8 +280,7 @@ class HighScore
     /**
      * Convert the contents of a high score, *.high text file into an object.
      * @param sRomName - the rom (with no extension) whose high scores this object represents
-     * @param sPathOrText - ByRef: this should be blank when called, and will contain the path
-     *                      to *either* the *.high file found *or* where it was expected to be found.
+     * @param sPathOr - the path where the *.high file is expected to be found
      * @param sHighScore - ByRef: returns the score in the rank 1 position
      * @param sHighInitials - ByRef: returns the name in the rank 1 position
      * @param sHighDate - ByRef: returns the date in the rank 1 position
@@ -290,45 +291,15 @@ class HighScore
     {
         try
         {
-            sHighScoreFolder := ""
             sHighFile := sRomName . ".high" ;the arcadeVFE alternate .high file
 
-            if (sPath)
-            {
-                if (FileExist(sPath "\" sHighFile))
-                    sHighScoreFolder := sPath
-            }
-            else if (g_sArcadeString != "Other")
-            {
-                for i, sVer in Setup.GetMAMEVersions()
-                {
-                    if (FileExist(g_sATCHighScoreRootFolder "\mame" sVer "\hi\" sHighFile)) 
-                    {
-                        sHighScoreFolder := g_sATCHighScoreRootFolder "\mame" sVer "\hi"
-                        break
-                    }  
-                }
-            }
-            else {
-                ;Currently hi file support in "Other" arcades is only supported if this vfe.ini key is defined
-                sHighScoreFolder := IniRead(g_sIniFile, "Other", "HiFileFolder", "")
-            }
-
-            ;set the ByRef sPath to return
-            sPath := sHighScoreFolder 
-
-            ;if no file was found, return the path the file was expected to be found in
-            if (!sPath)
-            {
-                sPath := HighScore.GetHighFilePath(sRomName)
-            }
-
             ;get the file contents
-            if (FileExist(sHighScoreFolder "\" sHighFile)) {
-                sHighFileContents := FileRead(sHighScoreFolder "\" sHighFile)
+            if (FileExist(sPath "\" sHighFile)) 
+            {
+                sHighFileContents := FileRead(sPath "\" sHighFile)
             }
             else {
-                g_oLog.LogLine("INFO: The highscore file " sHighScoreFolder "\" sHighFile " could not be found.`n")
+                g_oLog.LogLine("INFO: The highscore file " sPath "\" sHighFile " could not be found.`n")
                 return ""
             }
 
@@ -344,33 +315,6 @@ class HighScore
         }
         
         return oHS
-    }
-
-    /**
-     * Return the path to where a rom's *.high file would be located
-     * @param sRomName - the name of the rom without an extension
-     */
-    static GetHighFilePath(sRomName)
-    {
-        if (g_sArcadeString != "Other")
-        {
-            for sRom, mInfo in g_oArcadeRomList
-            {
-                if (sRom == sRomName)
-                {
-                    ver := ""
-                    try ver := mInfo["MAMEVersion"]
-                    return sPath := g_sATCHighScoreRootFolder "\mame" ver "\hi"
-                }
-            }
-        }
-        else
-        {
-            ;Currently hi file support in "Other" arcades is only supported if this vfe.ini key is defined
-            return sPath := IniRead(g_sIniFile, "Other", "HiFileFolder", "")
-        }
-
-        return ""
     }
 
     /**
@@ -556,7 +500,7 @@ class HighScore
         sHiFile := sRomName . ".hi" ;the native .hi file
         sHighFile := sRomName . ".high" ;the arcadeVFE alternate .high file
 
-        ;search for *.hi and *.high files in all possible folders
+        ;search for *.hi files in all possible folders
         ;then set g_sHighScoreFolder to where it was found
         if (g_sArcadeString != "Other")
         {
@@ -569,36 +513,24 @@ class HighScore
                     global g_sHighScoreFolder := g_sATCHighScoreRootFolder "\mame" sVer "\hi"
                     break
                 }            
-            }      
-            
-            if (!g_sHighScoreFolder)
-            {
-                ;g_oLog.LogLine("INFO: No high score file was found in " g_sArcadeString " for `"" sRomName "`".`n")
-                ;return this._aLeaderboard := ""
-            }      
+            }          
         }
         else 
         {
             ;Currently hi file support in "Other" arcades is only supported if this vfe.ini key is defined
             global g_sHighScoreFolder := IniRead(g_sIniFile, "Other", "HiFileFolder", "")
-            if (!g_sHighScoreFolder || !DirExist(g_sHighScoreFolder) || ! FileExist(g_sHighScoreFolder "\" sHiFile))
-            {
-                ;g_oLog.LogLine("INFO: No high score file was found in " g_sArcadeString " for `"" sRomName "`".`n")
-                ;return this._aLeaderboard := ""
-            }
         }
 
         sRawHighScoreTable := aRawHighScoreTable := aStdoutTable := aRecordScoreTable := ""
 
-        ;Read *.high file if one exists 
-        ;if (FileExist(g_sHighScoreFolder '\' sHighFile))
+        ;Read *.high file for the game if one exists 
         if (FileExist(g_sPlayerHighScoreFolder "\" sHighFile))
         {
             sRawHighScoreTable := FileRead(g_sPlayerHighScoreFolder '\' sHighFile)
             aRawHighScoreTable := StrSplit(sRawHighScoreTable, "`r`n")
         }
 
-        ;If it exists, read *.hi file using the Hi2txt utility.
+        ;Read *.hi file if it exists using the Hi2txt utility.
         if (FileExist(g_sHighScoreFolder "\" sHiFile))
         {
             sHi2txtCommand := '-hiscoredat "' g_sHiscoreDatFolder '\hiscore.dat" -r "' g_sHighScoreFolder '\' sHiFile '"'

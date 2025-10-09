@@ -450,7 +450,7 @@ class Settings
 		ScoreCardDialog.GameName := gcROMDropDown.Text
 
 		;set this to true to force picture mode for debugging
-		debug_force_picture_mode := true
+		debug_force_picture_mode := false
 		if (debug_force_picture_mode)
 		{
 			ScoreCardDialog.TakeScreenshots := true

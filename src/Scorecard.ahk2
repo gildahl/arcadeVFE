@@ -321,7 +321,7 @@ class ScoreCardDialog
                     if (oControlRegisterButton.Text == "Register")
                     {        
                         sNewTime := A_Now
-                        sNewScore := ScoreCardDialog.GetScore()
+                        sNewScore := ScoreCardDialog.GetScore()  
                         sNewName := ScoreCardDialog.GetInitials()
 
                         ;registering a lower score clears any previous high scores
@@ -331,13 +331,21 @@ class ScoreCardDialog
                             ScoreCardDialog.DeleteScreen() ;delete the high score .png image (if present)
                         }
 
+                        ;get the contents of any existing *.high file for the rom
                         oHS := HighScore.HSODeserializeHighFile(ScoreCardDialog.RomName, &sPath:=g_sPlayerHighScoreFolder, &sHighScore:="", &sHighInitials:="", &sHighDate:="")
-                        if (oHS)
+
+                        if (oHS) ;add the new marquee score. if the <MARQUEE/> table doesn't exist, add it first
                         {
-                            val := HighScore.HSOAddTableScore(&oHS, 1, sNewScore "|" sNewName "|" FormatTime(sNewTime, "yyyy-MM-dd"), g_iMaxMarqueeTableRows)
+                            iTable := HighScore.HSOGetTaggedTableId(oHS, "<MARQUEE/>")
+                            if (!iTable)
+                            {
+                                iTable := HighScore.HSOAddTable(&oHS, sTitle:="<MARQUEE/>")
+                                iHeader := HighScore.HSOAddTableHeader(&oHS, iTable, "SCORE|NAME|DATE")
+                            }
+                            val := HighScore.HSOAddTableScore(&oHS, iTable, sNewScore "|" sNewName "|" FormatTime(sNewTime, "yyyy-MM-dd"), g_iMaxMarqueeTableRows)
                             HighScore.HSOSerializeHighFile(oHS, ScoreCardDialog.RomName, g_sPlayerHighScoreFolder)
                         }  
-                        else
+                        else ;if there was no *.high file for the game, create one, then add the score.
                         {
                             oHS := HighScore.HSOCreate(ScoreCardDialog.RomName)
                             iTable := HighScore.HSOAddTable(&oHS, sTitle:="<MARQUEE/>")
@@ -363,7 +371,6 @@ class ScoreCardDialog
 
                     if (oControlRegisterButton.Text == "Clear")
                     {
-                        ;try FileDelete(HighScore.GetHighFilePath(ScoreCardDialog.RomName) "\" ScoreCardDialog.RomName ".high")
                         try FileDelete(g_sPlayerHighScoreFolder "\" ScoreCardDialog.RomName ".high")
     
                         ScoreCardDialog.DeleteScreen() ;delete the high score .png image (if present)
@@ -683,7 +690,7 @@ class ScoreCardDialog
         }
 
         SetControlColor()
-        {
+        {           
             if (nSelected > 4 && nSelected < 14)
             {
                 if (oControl.Value == "-")
@@ -701,6 +708,25 @@ class ScoreCardDialog
                 else 
                     oControl.Opt("cWhite")
             }   
+
+            ;make all digits yellow if score is below current high score
+            if (ScoreCardDialog.GetScore() <= ScoreCardDialog.HighScore)
+            {
+                loop 10
+                {
+                    if (gGui.guiDialog_HighScore_%A_Index+3%.Value != "-")
+                        gGui.guiDialog_HighScore_%A_Index+3%.Opt("cyellow")
+                }
+            }
+
+            if (ScoreCardDialog.GetScore() > ScoreCardDialog.HighScore)
+            {
+                loop 10
+                {
+                    if (gGui.guiDialog_HighScore_%A_Index+3%.Value != "-")
+                        gGui.guiDialog_HighScore_%A_Index+3%.Opt("cwhite")
+                }
+            }
         }
     }    
 
