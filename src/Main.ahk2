@@ -88,7 +88,6 @@ global g_color_pale_yellow := "ccfaf9cd"
 global g_color_edit_bg := "0x1F1F1F"
 global g_color_edit_text := "0xCCCCCC"
 global g_color_bright_yellow := "0xFFEA00"
-global g_color_pale_yellow := "0xfcfae7"
 
 ;global value and flag initializations
 global g_sCurrentROM := ""
@@ -352,6 +351,7 @@ DoFileAudit()
 	AuditFile(A_ScriptDir "\PacDrive64.dll")
 	AuditFile(A_ScriptDir "\SDL2.dll")
 	AuditFile(A_ScriptDir "\UltraStik64.dll")
+	AuditFile(A_ScriptDir "\bass.dll")
 
 	;.\GameInfo folder files
 	AuditFile(g_sMameInfoFile)
@@ -367,6 +367,29 @@ DoFileAudit()
 	;.\Resources folder files
 	AuditFile(g_sVFEIconFile)
 	AuditFile(g_sVFEImageFile)
+	AuditFile(g_sScorecardDefaultFile)
+
+	;.\Resources\Sound files
+	AuditFile(A_ScriptDir . "\Resources\Sound\add.wav")
+	AuditFile(A_ScriptDir . "\Resources\Sound\browse.wav")
+	AuditFile(A_ScriptDir . "\Resources\Sound\click.wav")
+	AuditFile(A_ScriptDir . "\Resources\Sound\edit_off.wav")
+	AuditFile(A_ScriptDir . "\Resources\Sound\edit_on.wav")
+	AuditFile(A_ScriptDir . "\Resources\Sound\error.wav")
+	AuditFile(A_ScriptDir . "\Resources\Sound\fav.wav")
+	AuditFile(A_ScriptDir . "\Resources\Sound\highscore.wav")
+	AuditFile(A_ScriptDir . "\Resources\Sound\master.wav")
+	AuditFile(A_ScriptDir . "\Resources\Sound\menu.wav")
+	AuditFile(A_ScriptDir . "\Resources\Sound\nostar.wav")
+	AuditFile(A_ScriptDir . "\Resources\Sound\page.wav")
+	AuditFile(A_ScriptDir . "\Resources\Sound\pause.wav")
+	AuditFile(A_ScriptDir . "\Resources\Sound\picks.wav")
+	AuditFile(A_ScriptDir . "\Resources\Sound\remove.wav")
+	AuditFile(A_ScriptDir . "\Resources\Sound\select.wav")
+	AuditFile(A_ScriptDir . "\Resources\Sound\shutter.wav")
+	AuditFile(A_ScriptDir . "\Resources\Sound\star.wav")
+	AuditFile(A_ScriptDir . "\Resources\Sound\unfav.wav")
+	AuditFile(A_ScriptDir . "\Resources\Sound\unpause.wav")
 
 	;.\Arcade folder files
 	AuditFile(A_ScriptDir "\Arcade\Arcade Time Capsule 3.6.Floors.json")
