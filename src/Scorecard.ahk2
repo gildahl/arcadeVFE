@@ -1076,8 +1076,6 @@ class ScorecardDialog
         guiScorecard.BackColor := "Black" 
         WinSetTransColor("Black", guiScorecard)
 
-        ;Create the dialog screen
-
         ;All controls and their positions in this dialog are keyed to the font size. Thus, changing
         ;the font size will automatically rescale and reposition the screen relative to that size
         if (Scorecard.TakeScreenshots && g_bUseScreenshots) {
@@ -1179,26 +1177,26 @@ class ScorecardDialog
 
         ;"Previous Score" Scorecard screenshot "thumbnail"
         nWMax := nScreenLeftX - 20
-        nHMax := (nScreenBottomY - nScreenTopY) ;* 0.85
+        nHMax := (nScreenBottomY - nScreenTopY)
 
         nW := nWMax
-        nH := nW * 3/4 ;g_nScreenHeight/g_nScreenWidth
+        nH := nW * 3/4
 
         if (nH > nHMax)
         {
             nH := nHMax
-            nW := nH * 4/3 ;g_nScreenWidth/g_nScreenHeight
+            nW := nH * 4/3
         }
         
         ;Picture 1 (Current Score)
-        nX := 10 ;nScreenLeftX - nW - 10
+        nX := 10 
         nY := initials_posY - label_posH
         gGui.guiDialog_Picture1 := guiScorecard.AddPicture("Hidden BackgroundTrans +Border x" nX " y" nY " w" nW " h" nH " vDialogHighscoreThumbnail1")
         ScorecardDialog._nDialogPictureH := nH
         ScorecardDialog._nDialogPictureW := nW
 
         ;Picture 2 (New Score)
-        nX := g_nScreenWidth - nW - 10 ;nScreenRightX + 10
+        nX := g_nScreenWidth - nW - 10 
         gGui.guiDialog_Picture2 := guiScorecard.AddPicture("Hidden BackgroundTrans +Border x" nX " y" nY " w" nW " h" nH " vDialogHighscoreThumbnail2")
 
         ScorecardDialog._nDialogScreenTitleFontSize := nBaseFontSize * 3/4 ;save as a property for external use
