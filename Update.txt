@@ -1,30 +1,25 @@
 arcadeVFE v.1.2.2
-
-* Added high scores from *.hi files to GameInfo for supported games.
-* Added a new "Marquee" High Score editor that can take screenshots and 
-  record high scores for all games.
-* Added "official" high score records for games where such records exist.
-* vfe.ini setting MaxHighScoreTableRows can limit high score table rows,
-  or turn them all on by setting to 0.
-* The Monitor preference now only affects the GameInfo preview location
-  when launching from the Settings screen. In-game, GameInfo and the new
-  Marquee High Score editor always appear on screen 1.
-* Backup now includes high score and rom file options.
-* "Player Initials" field added to Initial Setup. This is used to
-  highlight the user's initials in the high score tables.
-* Support for changing pages in GameInfo using motion controller or
+* Added high scores (via *.hi files) to GameInfo for supported games.
+* Added "Marquee High Score" editor supporting all games.
+* Added "Official" high score records for games where such records exist.
+* "Player Initials" field added to Initial Setup, used to highlight
+  the player's initials in the high score tables.
+* Added support to change pages in GameInfo using motion controller or
   mouse clicks on the right and left sides of the page.
+* Added sound.
+* Backup expanded to include high score and rom file options.
 * Disable Setting screen while GameInfo is displayed to avoid side-effects.
 * Changed Vicinity combobox to an edit box to simplify its operation.
 * Moved Edit Directory preference to the top to improve its context. 
 * Removed "Beep on action" user preference checkbox from Settings and made
   it a vfe.ini setting only (since it is really more of a debugging tool).
   Set BeepOnProfileChange to 1 or 0 to turn on/off (default is off).
-* Added sound.
 * (fixed) added missing metadata for xmen6pu rom (X-Men 2-screen version).
 * (fixed) progress bar failed to hide in GameInfo if logo was missing.
 * (fixed) space and enter keys no longer force a refresh of GameInfo.
-* (fixed) corrected Detana Twin Bee title in history.xml
+* (fixed) fixed Detana Twin Bee title in history.xml
+* vfe.ini setting MaxHighScoreTableRows can limit high score table rows,
+  or turn them all on by setting to 0.
 
 arcadeVFE v.1.2.1
 
