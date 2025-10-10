@@ -643,7 +643,7 @@ class GameInfoDisplay
 									loop
 									{
 										tsz := GetTextExtentPoint(sText, "Verdana", fsz, true)
-										if (tsz < nw * 96/A_ScreenDPI)
+										if (tsz < nw * g_dpi)
 											break
 										else
 											fsz--
@@ -696,7 +696,7 @@ class GameInfoDisplay
 								loop
 								{
 									tsz := GetTextExtentPoint(sText, "Verdana", fsz, true)
-									if (tsz < nw * 96/A_ScreenDPI)
+									if (tsz < nw * g_dpi)
 										break
 									else
 										fsz--
@@ -770,7 +770,7 @@ class GameInfoDisplay
 							loop
 							{
 								tsz := GetTextExtentPoint(sLeaderboardName, "Consolas", fsz, true)
-								if (tsz < nw * 96/A_ScreenDPI)
+								if (tsz < nw * g_dpi)
 									break
 								else
 									fsz--

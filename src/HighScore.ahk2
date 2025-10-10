@@ -472,7 +472,7 @@ class HighScore
      * The title line must start with a # symbol and be followed by a space. Internal tables
      * (i.e. created by arcadeVFE) may use tags to identify the type of table such as
      * # <OFFICIAL/>   -- indicates an official highscore record table
-     * # <MARQUEE/>  -- indicates a "marquee" highscore table     * 
+     * # <MARQUEE/>  -- indicates a "marquee" highscore table 
      *
      * # TOP SCORES
      *  RANK|SCORE|NAME|STAGE|SHIP
@@ -521,7 +521,7 @@ class HighScore
             global g_sHighScoreFolder := IniRead(g_sIniFile, "Other", "HiFileFolder", "")
         }
 
-        sRawHighScoreTable := aRawHighScoreTable := aStdoutTable := aRecordScoreTable := ""
+        sRawHighScoreTable := aRawHighScoreTable := aStdoutTable := aOfficialScoreTable := ""
 
         ;Read *.high file for the game if one exists 
         if (FileExist(g_sPlayerHighScoreFolder "\" sHighFile))
@@ -593,13 +593,13 @@ class HighScore
         if (FileExist(g_sOfficialHighScoreFolder "\" sHighFile))
         {
             sRecordScoreTable := FileRead(g_sOfficialHighScoreFolder '\' sHighFile)
-            aRecordScoreTable := StrSplit(sRecordScoreTable, "`r`n")
+            aOfficialScoreTable := StrSplit(sRecordScoreTable, "`r`n")
         }
         
         try 
         {
             ;No valid high score data of either type found, so return
-            if (!aRawHighScoreTable && !aStdoutTable && !aRecordScoreTable) {
+            if (!aRawHighScoreTable && !aStdoutTable && !aOfficialScoreTable) {
                 g_oLog.LogLine("INFO: No high score data could be found for `"" sRomName "`".`n")
 
                 if (bUsedConsole)
@@ -644,13 +644,13 @@ class HighScore
                 }
             }
 
-            ;Add any world record scores
-            if (aRecordScoreTable)
+            ;Add any "official" scores
+            if (aOfficialScoreTable)
             {
-                for i, sLine in aRecordScoreTable
+                for i, sLine in aOfficialScoreTable
                 {                    
                     if (A_Index == 1 && SubStr(sLine, 1, 1) != "#")
-                        aRecordScoreTable.Push("#")
+                        aOfficialScoreTable.Push("#")
                     
                     if (!aRawHighScoreTable)
                         aRawHighScoreTable := Array()

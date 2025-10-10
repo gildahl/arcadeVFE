@@ -66,13 +66,15 @@ global g_sCodeVersion := SubStr(CodeVersion, 1, InStr(CodeVersion, ".",,,2)-1)
 global g_sCodeVersionMinor := SubStr(CodeVersion, 1, InStr(CodeVersion, ".",,,3)-1)
 
 ;dpi adjusted screen dimensions
-global g_nScreenWidth := A_ScreenWidth * 96 // A_ScreenDPI
-global g_nScreenHeight := A_ScreenHeight * 96 // A_ScreenDPI
+global g_dpi := 96 / A_ScreenDPI
+global g_nScreenWidth := A_ScreenWidth * g_dpi
+global g_nScreenHeight := A_ScreenHeight * g_dpi
 
 ;global resources
 global g_sResourceFolder := A_ScriptDir "\Resources"
 global g_sVFEIconFile := g_sResourceFolder "\vfe.ico"
 global g_sVFEImageFile := g_sResourceFolder "\vfe.png"
+global g_sVFEMachineFile := g_sResourceFolder "\machine.png"
 global g_sScorecardDefaultFile := g_sResourceFolder "\noscore.png"
 
 ;tray icon settings
@@ -170,6 +172,7 @@ global g_oFloors                         ;initialized in Settings.ReadFloors()
 ;globals related to Scorecard
 global gGui := {}
 global g_bUseWatermark := 1
+global g_bUseScreenshots := 1
 global g_sScorecardSettingsExitKey := "Escape"
 global g_sScorecardSettingsSelectKey := "Enter"
 global g_sScorecardSettingsRightKey := "Right"
@@ -316,17 +319,18 @@ else
 ;  Main Application Startup
 ;==============================
 
-ShowSplash()                       ;Show splash screen
-DoFileAudit()                      ;Confirm that all required runtime files are present
-TrayMenu.BuildMenu()               ;Build tray menu
-CreateDefaultActionList()          ;Create a default action list if one does not exist
-LoadConfig()				       ;Load initializations from vfe.ini file
-LoadPlugins()					   ;Load plugins (RawAccel)
-LoadTweaks()				       ;Load custom tweaks
-Setup.CreateSetupDialog()          ;Load initial setup
-Settings.CreateSettingsDialog()    ;Build Settings screen
-Scorecard.CreateScorecardDialog()  ;Build Scorecard screen
-StartRomWatcher()                  ;Begin monitoring the rom folder  
+ShowSplash()                             ;Show splash screen
+DoFileAudit()                            ;Confirm that all required runtime files are present
+TrayMenu.BuildMenu()                     ;Build tray menu
+CreateDefaultActionList()                ;Create a default action list if one does not exist
+LoadConfig()				             ;Load initializations from vfe.ini file
+LoadPlugins()					         ;Load plugins (RawAccel)
+LoadTweaks()				             ;Load custom tweaks
+Setup.CreateSetupDialog()                ;Load initial setup
+Settings.CreateSettingsDialog()          ;Build Settings screen
+Scorecard.TakeScreenshots := true        ;Initialize in TakeScreenshot mode
+ScorecardDialog.CreateScorecardDialog()  ;Build Scorecard screen
+StartRomWatcher()                        ;Begin monitoring the rom folder  
 
 ;Turn off splash screen after at least 4 seconds
 if (IsSet(guiSplash))
@@ -368,6 +372,7 @@ DoFileAudit()
 	AuditFile(g_sVFEIconFile)
 	AuditFile(g_sVFEImageFile)
 	AuditFile(g_sScorecardDefaultFile)
+	AuditFile(g_sVFEMachineFile)
 
 	;.\Resources\Sound files
 	AuditFile(A_ScriptDir . "\Resources\Sound\add.wav")
@@ -523,7 +528,8 @@ LoadConfig()
 	global g_sScorecardSettingsDownKey := InitializeIniString("Scorecard", "SettingsDownKey", g_sScorecardSettingsDownKey)
 
 	;Initialize Scorecard preference
-	global g_bUseWatermark := InitializeIniNumber("Scorecard", "UseWatermark", g_bUseWatermark)
+	global g_bUseWatermark := InitializeIniNumber("Scorecard", "UseWatermark", g_bUseWatermark) 
+	global g_bUseScreenshots := InitializeIniNumber("Scorecard", "UseScreenshots", g_bUseScreenshots) 
 	global g_iScorecardScale1 := InitializeIniNumber("Scorecard", "Scale1", g_iScorecardScale1)
 	global g_iScorecardScale2 := InitializeIniNumber("Scorecard", "Scale2", g_iScorecardScale2)
 	global g_iMaxMarqueeTableRows := InitializeIniNumber("Scorecard", "MaxMarqueeTableRows", g_iMaxMarqueeTableRows)
@@ -685,8 +691,8 @@ RomAccess_Event(sFolder, aChanges)
     static tLastFileName := ""
 
 	;Turn off the scorecard display if it is visible
-	if (ScoreCardDialog.Active)
-		ScoreCardDialog.Scorecard()
+	if (Scorecard.Active)
+		Scorecard.ScorecardToggle()
 
 	if (g_bSuppressLastAccess)
 	{
@@ -910,9 +916,9 @@ Poll()
 
 			;Turn off the scorecard display if it is visible
 			;(Note this must be turned off BEFORE the GameInfo display)
-			if (ScoreCardDialog.Active)
+			if (Scorecard.Active)
 			{
-				ScoreCardDialog.Scorecard()
+				Scorecard.ScorecardToggle()
 				g_oLog.LogLine("INFO: Scorecard Closed.`n" )
 			}
 
@@ -1041,18 +1047,18 @@ Poll()
 					if (sDirection != "Skip")
 					{
 						;hardcode joystick support for the scorecard dialog
-						if (ScoreCardDialog.Active)
+						if (Scorecard.Active)
 						{
 							Switch sDirection		
 							{
 								Case "Right":
-									try ScoreCardDialog.HighScoreNavigate("r")
+									try Scorecard.HighScoreNavigate("r")
 								Case "Left":
-									try ScoreCardDialog.HighScoreNavigate("l")
+									try Scorecard.HighScoreNavigate("l")
 								Case "Up":
-									try ScoreCardDialog.HighScoreNavigate("u")
+									try Scorecard.HighScoreNavigate("u")
 								Case "Down":
-									try ScoreCardDialog.HighScoreNavigate("d")
+									try Scorecard.HighScoreNavigate("d")
 							}
 						}
 
@@ -1283,12 +1289,12 @@ RunAction(oAction, sModifier:="")
 		{
 			;provide rom information for the scorecard
 			SplitPath(g_sCurrentROM,,,,&sCurrentRom)
-			ScoreCardDialog.RomName := sCurrentRom
+			Scorecard.RomName := sCurrentRom
 			for sGameName, sRomName in g_mRomsByName
 			{
 				if (sRomName == sCurrentRom)
 				{
-					ScoreCardDialog.GameName := sGameName
+					Scorecard.GameName := sGameName
 					break
 				}
 			}
@@ -1300,15 +1306,25 @@ RunAction(oAction, sModifier:="")
 				bReloadGameInfoOnExit := true
 			}
 			
-			;Set the screenshot mode to true
-			ScoreCardDialog.TakeScreenshots := true
+			;Select the appropriate screenshot mode
+			if (g_bUseScreenshots)
+			{
+				Scorecard.TakeScreenshots := true
 
-			;if the scorecard wasn't previously in screenshot mode, destroy 
-			;and re-create it with the screenshot windows included.
-			if (!Scorecard.IsInScreenshotMode)
-				Scorecard.CreateScorecardDialog() 
+				;if the scorecard wasn't previously in screenshot mode, destroy 
+				;and re-create it with the screenshot windows included.
+				if (!ScorecardDialog.IsInScreenshotMode)
+					ScorecardDialog.CreateScorecardDialog() 
+			}
+			else ;screenshots were turned off in the vfe.ini file
+			{
+				Scorecard.TakeScreenshots := false
 
-			ScoreCardDialog.Scorecard(bReloadGameInfoOnExit)
+				if (ScorecardDialog.IsInScreenshotMode)
+					ScorecardDialog.CreateScorecardDialog() 
+			}
+
+			Scorecard.ScorecardToggle(bReloadGameInfoOnExit)
 
 			return
 		}
@@ -1366,12 +1382,12 @@ RunAction(oAction, sModifier:="")
 		{
 			;provide rom information for the scorecard
 			SplitPath(g_sCurrentROM,,,,&sCurrentRom)
-			ScoreCardDialog.RomName := sCurrentRom
+			Scorecard.RomName := sCurrentRom
 			for sGameName, sRomName in g_mRomsByName
 			{
 				if (sRomName == sCurrentRom)
 				{
-					ScoreCardDialog.GameName := sGameName
+					Scorecard.GameName := sGameName
 					break
 				}
 			}
@@ -1384,31 +1400,31 @@ RunAction(oAction, sModifier:="")
 			}
 			
 			;Set the screenshot mode to true
-			ScoreCardDialog.TakeScreenshots := true
+			Scorecard.TakeScreenshots := true
 
 			;if the scorecard wasn't previousl in screenshot mode, destroy 
 			;and re-create it with the screenshot windows included.
-			if (!Scorecard.IsInScreenshotMode)
-				Scorecard.CreateScorecardDialog() 
+			if (!ScorecardDialog.IsInScreenshotMode)
+				ScorecardDialog.CreateScorecardDialog() 
 
-			ScoreCardDialog.Scorecard(bReloadGameInfoOnExit)
+			Scorecard.ScorecardToggle(bReloadGameInfoOnExit)
 		}
-		else if (ScoreCardDialog.Active)
+		else if (Scorecard.Active)
 		{
 			Switch sNavAction
 			{
 				Case "Exit":
-					try ScoreCardDialog.ScorecardExit()
+					try Scorecard.ScorecardExit()
 				Case "Forward":
-					try ScoreCardDialog.HighScoreNavigate("r")
+					try Scorecard.HighScoreNavigate("r")
 				Case "Back"	:		
-					try ScoreCardDialog.HighScoreNavigate("l")
+					try Scorecard.HighScoreNavigate("l")
 				Case "Up":
-					try ScoreCardDialog.HighScoreNavigate("u")
+					try Scorecard.HighScoreNavigate("u")
 				Case "Down"	:		
-					try ScoreCardDialog.HighScoreNavigate("d")			    
+					try Scorecard.HighScoreNavigate("d")			    
 				Case "Select":			
-					try ScoreCardDialog.HighScoreNavigate("s")		
+					try Scorecard.HighScoreNavigate("s")		
 			} ;case
 		}
 
@@ -1647,7 +1663,6 @@ ShowSplash()
 
 	global guiSplash := Gui(, "vfeGuiSplash")
 
-	dpi := 96 / A_ScreenDPI
 	guiSplash.Opt("-Caption +ToolWindow +LastFound +AlwaysOnTop")
 	guiSplash.BackColor := g_color_edit_text
 
@@ -1657,7 +1672,7 @@ ShowSplash()
 	x1 := g_nScreenWidth / 2 - iWidth / 2
 	y1 := g_nScreenHeight / 2 - iHeight / 2
 	
-	WinSetRegion x1/dpi "-" y1/dpi " w" iWidth/dpi " h" iHeight/dpi " r40-40" 
+	WinSetRegion x1/g_dpi "-" y1/g_dpi " w" iWidth/g_dpi " h" iHeight/g_dpi " r40-40" 
 
 	global gcSplashIcon := guiSplash.AddPicture(, g_sVFEImageFile)
 
@@ -1712,7 +1727,6 @@ LogError(e, mode)
  */
 OnMouseButtonEvent(*)
 {
-	static dpi := 96 / A_ScreenDPI
 	static bScreenshotMode := -1
 	static ButtonX, ButtonY, ButtonW, ButtonH
 	static BoxX, BoxY, BoxW, BoxH
@@ -1755,7 +1769,7 @@ OnMouseButtonEvent(*)
 	}
 	
 	;Handle mouse clicks in the Scorecard dialog
-	else if (ScoreCardDialog.Active)
+	else if (Scorecard.Active)
 	{
 		MouseGetPos(&MouseX, &MouseY, &MouseWin, &MouseControl)
 
@@ -1764,26 +1778,26 @@ OnMouseButtonEvent(*)
 			p := {X: MouseX, Y: MouseY}
 
 			;Only need to update these static fields if we've switched modes
-			if (bScreenshotMode != Scorecard.IsInScreenshotMode)
+			if (bScreenshotMode != ScorecardDialog.IsInScreenshotMode)
 			{
-				mButtonPos := Scorecard.GetButtonPos()
-				ButtonX := mButtonPos.X/dpi
-				ButtonY := mButtonPos.Y/dpi
-				ButtonW := mButtonPos.W/dpi
-				ButtonH := mButtonPos.H/dpi
+				mButtonPos := ScorecardDialog.GetButtonPos()
+				ButtonX := mButtonPos.X/g_dpi
+				ButtonY := mButtonPos.Y/g_dpi
+				ButtonW := mButtonPos.W/g_dpi
+				ButtonH := mButtonPos.H/g_dpi
 
-				mEntryBoxPos := Scorecard.GetEntryBoxPos()
-				BoxX := mEntryBoxPos.X/dpi
-				BoxY := mEntryBoxPos.Y/dpi
-				BoxW := mEntryBoxPos.W/dpi
-				BoxH := mEntryBoxPos.H/dpi
+				mEntryBoxPos := ScorecardDialog.GetEntryBoxPos()
+				BoxX := mEntryBoxPos.X/g_dpi
+				BoxY := mEntryBoxPos.Y/g_dpi
+				BoxW := mEntryBoxPos.W/g_dpi
+				BoxH := mEntryBoxPos.H/g_dpi
 				
 				;Scorecard screen 
-				mScreenPos := Scorecard.ScorecardPos
-				X := mScreenPos.X/dpi
-				Y := mScreenPos.Y/dpi
-				W := mScreenPos.W/dpi
-				H := mScreenPos.H/dpi
+				mScreenPos := ScorecardDialog.ScorecardPos
+				X := mScreenPos.X/g_dpi
+				Y := mScreenPos.Y/g_dpi
+				W := mScreenPos.W/g_dpi
+				H := mScreenPos.H/g_dpi
 
 				;Right trapazoid
 				rightPoints := Array()
@@ -1812,37 +1826,39 @@ OnMouseButtonEvent(*)
 				bottomPoints.Push({X: BoxX + BoxW, Y: BoxY + BoxH})
 				bottomPoints.Push({X: W, Y: H})
 				bottomPoints.Push({X: X, Y: H})
+
+				bScreenshotMode := ScorecardDialog.IsInScreenshotMode
 			}
 
 			;clicked on the button
 			if (MouseX > ButtonX && MouseX < ButtonX + ButtonW && MouseY > ButtonY && MouseY < ButtonY + ButtonH)
 			{
 				Sleep 0
-				try ScoreCardDialog.HighScoreNavigate("s")
+				try Scorecard.HighScoreNavigate("s")
 				Sleep 50
 			}			
 			else if (IsPointInsideConvexPolygon(bottomPoints, p)) ;clicked on the bottom
 			{
 				Sleep 0
-				try ScoreCardDialog.HighScoreNavigate("d")
+				try Scorecard.HighScoreNavigate("d")
 				Sleep 50
 			}
 			else if (IsPointInsideConvexPolygon(rightPoints, p)) ;clicked on the right side
 			{
 				Sleep 0
-				try ScoreCardDialog.HighScoreNavigate("r")
+				try Scorecard.HighScoreNavigate("r")
 				Sleep 50
 			}
 			else if (IsPointInsideConvexPolygon(topPoints, p)) ;clicked on the top
 			{
 				Sleep 0
-				try ScoreCardDialog.HighScoreNavigate("u")
+				try Scorecard.HighScoreNavigate("u")
 				Sleep 50
 			}
 			if (IsPointInsideConvexPolygon(leftPoints, p)) ;clicked on the left side
 			{
 				Sleep 0
-				try ScoreCardDialog.HighScoreNavigate("l")
+				try Scorecard.HighScoreNavigate("l")
 				Sleep 50
 			}
 		}

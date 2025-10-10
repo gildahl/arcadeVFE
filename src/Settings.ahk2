@@ -57,8 +57,8 @@ class Settings
 
 		Settings.mMetrics.Width := 910
 		Settings.mMetrics.Height := 750
-		Settings.mMetrics.X := Round((g_nScreenWidth / 2) - (Settings.mMetrics.Width * 96 // A_ScreenDPI / 2))
-		Settings.mMetrics.Y := Round((g_nScreenHeight / 2) - (Settings.mMetrics.Height * 96 // A_ScreenDPI / 2)) - 100
+		Settings.mMetrics.X := Round((g_nScreenWidth / 2) - (Settings.mMetrics.Width * g_dpi / 2))
+		Settings.mMetrics.Y := Round((g_nScreenHeight / 2) - (Settings.mMetrics.Height * g_dpi / 2)) - 100
 		guiSettings := Gui(,sSettingsTitle)
 
 		guiSettings.OnEvent("Close", (*) => Settings.Settings_Close())
@@ -94,7 +94,7 @@ class Settings
 		gcGameInfo_ComboBox.OnEvent("Change", (*) => Settings.GameInfo_ComboBox_Change())
 
 		gcSendKey_ComboBox.Add(Settings.GetKeysArray())
-		gcGameInfo_ComboBox.Add(["General: {Exit}","General: {Forward}","General: {Back}","GameInfo: {Home}","Scorecard: {Show/Hide}","Scorecard: {Select}","Scorecard: {Up}","Scorecard: {Down}"])
+		gcGameInfo_ComboBox.Add(["General: {Exit}","General: {Forward}","General: {Back}","GameInfo: {Home}","Scorecard: {Show/Hide}","ScorecardDialog: {Select}","ScorecardDialog: {Up}","ScorecardDialog: {Down}"])
 
 		gcButtonOptionsGroupBox.Visible := gcSendKey_Radio.Visible := gcCommandLine_Radio.Visible := gcSendKey_ComboBox.Visible := gcGameInfo_Radio.Visible := gcGameInfo_ComboBox.Visible := false
 
@@ -446,30 +446,30 @@ class Settings
 			SystemCursor("Off")
 		SplitPath(gcROMDropDownGameRom.Text,,,,&sRomName)
 
-		ScoreCardDialog.RomName := sRomName
-		ScoreCardDialog.GameName := gcROMDropDown.Text
+		Scorecard.RomName := sRomName
+		Scorecard.GameName := gcROMDropDown.Text
 
 		;set this to true to force picture mode for debugging
 		debug_force_picture_mode := false
 		if (debug_force_picture_mode)
 		{
-			ScoreCardDialog.TakeScreenshots := true
-			if (!Scorecard.IsInScreenshotMode)
-				Scorecard.CreateScorecardDialog()
+			Scorecard.TakeScreenshots := true
+			if (!ScorecardDialog.IsInScreenshotMode)
+				ScorecardDialog.CreateScorecardDialog()
 		}
 		else ;normal operation
 		{
 			;turn off screenshot mode
-			ScoreCardDialog.TakeScreenshots := false
+			Scorecard.TakeScreenshots := false
 
-			;if the scorecard wasn't previously in non-screenshot mode, 
+			;if the ScorecardDialog wasn't previously in non-screenshot mode, 
 			;destroy and re-create it without the screenshot windows.
-			if (Scorecard.IsInScreenshotMode)
-				Scorecard.CreateScorecardDialog()
+			if (ScorecardDialog.IsInScreenshotMode)
+				ScorecardDialog.CreateScorecardDialog()
 		}
 
 		;Now turn on the scorecard
-		ScoreCardDialog.Scorecard()
+		Scorecard.ScorecardToggle()
 
 		Hotkey(g_sScorecardSettingsRightKey, ObjBindMethod(Settings.HighScoreEntry_Callback,,g_sScorecardSettingsRightKey), "On")
 		Hotkey(g_sScorecardSettingsLeftKey, ObjBindMethod(Settings.HighScoreEntry_Callback,,g_sScorecardSettingsLeftKey), "On")
@@ -490,17 +490,18 @@ class Settings
 		Switch params[1]
 		{
 			Case "Right":
-				try ScoreCardDialog.HighScoreNavigate("r")
+				try Scorecard.HighScoreNavigate("r")
 			Case "Left"	:		
-				try ScoreCardDialog.HighScoreNavigate("l")
+				try Scorecard.HighScoreNavigate("l")
 			Case "Up":
-				try ScoreCardDialog.HighScoreNavigate("u")
+				try Scorecard.HighScoreNavigate("u")
 			Case "Down"	:		
-				try ScoreCardDialog.HighScoreNavigate("d")
+				try Scorecard.HighScoreNavigate("d")
 			Case "Enter"	:		
-				try ScoreCardDialog.HighScoreNavigate("s") ;select/press button
-			Case "Escape":	
-				try ScoreCardDialog.Scorecard() ;toggle the scorecard dialog
+				try Scorecard.HighScoreNavigate("s") ;select/press button
+			Case "Escape":					
+            	oBASS.Play("menu")
+				try Scorecard.ScorecardToggle() ;toggle the scorecard dialog
 		}
 	}
 
@@ -862,7 +863,8 @@ class Settings
 				g_oGameInfoDisplay.GoPage("r")
 			Case "Left"	:		
 				g_oGameInfoDisplay.GoPage("l")
-			Case "Escape":	
+			Case "Escape":					
+            	oBASS.Play("menu")
 				g_oGameInfoDisplay.Clear()
 				try guiSettings.Opt("-Disabled")
 				gcViewGameInfoButton.Enabled := true
