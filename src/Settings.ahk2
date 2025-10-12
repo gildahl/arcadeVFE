@@ -94,7 +94,7 @@ class Settings
 		gcGameInfo_ComboBox.OnEvent("Change", (*) => Settings.GameInfo_ComboBox_Change())
 
 		gcSendKey_ComboBox.Add(Settings.GetKeysArray())
-		gcGameInfo_ComboBox.Add(["General: {Exit}","General: {Forward}","General: {Back}","GameInfo: {Home}","Scorecard: {Show/Hide}","ScorecardDialog: {Select}","ScorecardDialog: {Up}","ScorecardDialog: {Down}"])
+		gcGameInfo_ComboBox.Add(["General: {Exit}","General: {Forward}","General: {Back}","GameInfo: {Home}","Scorecard: {Snap/Reset}","ScorecardDialog: {Select}","ScorecardDialog: {Up}","ScorecardDialog: {Down}"])
 
 		gcButtonOptionsGroupBox.Visible := gcSendKey_Radio.Visible := gcCommandLine_Radio.Visible := gcSendKey_ComboBox.Visible := gcGameInfo_Radio.Visible := gcGameInfo_ComboBox.Visible := false
 

@@ -464,7 +464,7 @@ CreateDefaultActionList()
 		mConfig["Keyboard"]["Left"]["1"] := mInfo
 
 		mInfo := mInfo.Clone()
-		mInfo["command_line"] := "Scorecard: {Show/Hide}"
+		mInfo["command_line"] := "Scorecard: {Snap/Reset}"
 		mConfig["Keyboard"]["Space"] := Map()
 		mConfig["Keyboard"]["Space"]["1"] := mInfo	
 
@@ -1379,7 +1379,7 @@ RunAction(oAction, sModifier:="")
 
 		Sleep 0  
 
-		if (sNavAction == "Show/Hide")
+		if (sNavAction == "Snap/Reset")
 		{
 			;Block if GameInfo is still loading
 			if (g_oGameInfoDisplay.Loading)
@@ -1479,7 +1479,7 @@ RunAction(oAction, sModifier:="")
 
 		Sleep 0  
 
-		if (sNavAction == "Show/Hide")
+		if (sNavAction == "Snap/Reset")
 		{
 			;provide rom information for the scorecard
 			SplitPath(g_sCurrentROM,,,,&sCurrentRom)

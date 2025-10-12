@@ -800,35 +800,35 @@ class Scorecard
                     gGui.guiDialog_HighScore_Warning.Opt("cyellow")
                     gGui.guiDialog_HighScore_Warning.Value := "New score is lower than the currently registered score."
                     gGui.guiDialog_HighScore_Instructions1.Value := "You may go back to edit, or register this as the new high score."
-                    gGui.guiDialog_HighScore_Instructions2.Value := "To cancel, press the show/hide scorecard button again."
+                    gGui.guiDialog_HighScore_Instructions2.Value := "To cancel, press the Snap/Reset button to reset."
                 }
                 else if (Scorecard.GetScore() == Scorecard.HighScore)
                 {
                     gGui.guiDialog_HighScore_Warning.Opt("cyellow")
                     gGui.guiDialog_HighScore_Warning.Value := "New score is the same as the currently registered score." 
                     gGui.guiDialog_HighScore_Instructions1.Value := "You may go back to edit, or register this as the new high score."
-                    gGui.guiDialog_HighScore_Instructions2.Value := "To cancel, press the show/hide scorecard button again."
+                    gGui.guiDialog_HighScore_Instructions2.Value := "To cancel, press the Snap/Reset button to reset."
                 }
                 else
                 {
                     gGui.guiDialog_HighScore_Warning.Opt("clime")
                     gGui.guiDialog_HighScore_Warning.Value := "Register now!"
                     gGui.guiDialog_HighScore_Instructions1.Value := "Press select to register this new high score. To exit without"
-                    gGui.guiDialog_HighScore_Instructions2.Value := "registering, press the show/hide scorecard button again."
+                    gGui.guiDialog_HighScore_Instructions2.Value := "registering, press the Snap/Reset button to reset."
                 }
             }
             else if (sButtonText == "Clear")
             {
                 gGui.guiDialog_HighScore_Warning.Opt("cYellow")
                 gGui.guiDialog_HighScore_Warning.Value := "Press select to clear the currently saved high score for this game."
-                gGui.guiDialog_HighScore_Instructions1.Value := "To cancel without clearing, press the show/hide scorecard button again,"
+                gGui.guiDialog_HighScore_Instructions1.Value := "To cancel without clearing, press the Snap/Reset button to reset,"
                 gGui.guiDialog_HighScore_Instructions2.Value := "or go back to change the score to another value."
             }
             else ;Cancel
             {
                 gGui.guiDialog_HighScore_Warning.Opt("cyellow")
                 gGui.guiDialog_HighScore_Warning.Value := "You didn't enter a score!"
-                gGui.guiDialog_HighScore_Instructions1.Value := "Go back to enter your score, or press select to cancel."
+                gGui.guiDialog_HighScore_Instructions1.Value := "Go back to enter your score, or select to cancel."
                 gGui.guiDialog_HighScore_Instructions2.Value := ""
             }
         }
