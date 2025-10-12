@@ -293,6 +293,7 @@ ExitArcadeVFE(ExitReason, ExitCode)
 CreateDirAndLog(g_sConfigFolder)
 CreateDirAndLog(g_sUserFolder)
 CreateDirAndLog(g_sPlayerHighScoreFolder)
+CreateDirAndLog(g_sAssetsFolder "\highscore")
 
 ;Process the command line if any args 
 ;Currently, the only supported parameter is the name of a specific named/saved
