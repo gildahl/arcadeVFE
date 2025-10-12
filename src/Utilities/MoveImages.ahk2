@@ -6,12 +6,12 @@
 
 #include ..\ReadListXML.ahk2
 
-sAsset := "marquees"
+sAsset := "Marquee"
 
 sROMFolder := "D:\Stand Alone\Arcade Time Capsule\RetroVRArcade\Content\Roms"
 sSourceImageFolder := "E:\Development\Projects\arcadeVFE\src\Media\" sAsset
-sDestinationFolder := "E:\Development\Projects\arcadeVFE\src\GameInfo\Assets\" sAsset
-sLogoFolder := "E:\Development\Projects\arcadeVFE\src\Media\Logo"
+sDestinationFolder := "E:\Development\Projects\arcadeVFE\src\GameInfo\" sAsset
+;sLogoFolder := "E:\Development\Projects\arcadeVFE\src\Media\Logo"
 sGamesXMLFile := "E:\Development\Projects\arcadeVFE\src\GameInfo\games.xml"
 
 
@@ -31,7 +31,7 @@ Loop Files sROMFolder "\*.zip"
 {
     SplitPath(A_LoopFileName,,,,&OutNameNoExt)
  
-    if (!FileExist(sDestinationFolder "\" OutNameNoExt ".png") && !FileExist(sDestinationFolder "\" OutNameNoExt ".jpg"))
+    if (!FileExist(sDestinationFolder "\" OutNameNoExt ".png")) ;&& !FileExist(sDestinationFolder "\" OutNameNoExt ".jpg"))
     {
         oGameInfo := ReadListXML.GetXMLMetaInfo(sGamesXMLFile, OutNameNoExt)
         sDescription := ""

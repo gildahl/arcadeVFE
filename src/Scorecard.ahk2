@@ -442,19 +442,10 @@ class Scorecard
                     oControl.Value := oDigits[oDigits.Length]
             }
 
-            ;allow pushing up the joystick to move back
+            ;allow pushing down the joystick to activate button
             if (nSelected == 14)
             {
-                oControl.Enable := false
-
-                nSelected--
-                oControl := gGui.guiDialog_HighScore_%nSelected%
-
-                if (oControl.Value != "-")
-                    oControl.Enabled := true
-
-                oControl.Opt("+Border")
-                oControl.Redraw
+                Scorecard.HighScoreNavigate("s")
             }
 
             SetControlColor()
@@ -862,6 +853,12 @@ class Scorecard
         ;If the Scorecard dialog is not currently displayed, initialize it.
         if (!Scorecard.Active)
         {
+            if (!Scorecard.RomName)
+            {
+                oBass.Play("unfav")
+                return
+            }
+
             if (Scorecard.TakeScreenshots)
                 oBASS.Play("shutter")
             else
@@ -895,40 +892,51 @@ class Scorecard
                     fsz--
             }
 
-            if (FileExist(g_sMarqueeFolder "\" Scorecard.RomName ".png"))
+            if (FileExist(g_sMarqueeFolder "\" Scorecard.RomName ".png") || FileExist(g_sLogoFolder "\" Scorecard.RomName ".png"))
             {
                 gGui.guiDialog_HighScore_Title.SetFont("s" fsz " c" g_color_light_green " bold", fnt)
-                gGui.guiDialog_HighScore_Title.GetPos(,&title_posY,,&title_posH)
+                gGui.guiDialog_HighScore_Title.GetPos(,&oldY,,&oldH)
+                newH := GetTextHeight("s" fsz " bold", fnt)
 
-                gGui.guiDialog_Marquee.Value := g_sMarqueeFolder "\" Scorecard.RomName ".png"
-
+                if (FileExist(g_sMarqueeFolder "\" Scorecard.RomName ".png"))
+                {
+                    picDim := GetPicDimensions(g_sMarqueeFolder "\" Scorecard.RomName ".png") ;used to compute aspect ratio
+                    gGui.guiDialog_Marquee.Value := g_sMarqueeFolder "\" Scorecard.RomName ".png"
+                    gGui.guiDialog_Marquee.Opt("+Border")
+                }
+                else if (FileExist(g_sLogoFolder "\" Scorecard.RomName ".png")) ;use logo if marquee not found
+                {
+                    picDim := GetPicDimensions(g_sLogoFolder "\" Scorecard.RomName ".png") ;used to compute aspect ratio
+                    gGui.guiDialog_Marquee.Value := g_sLogoFolder "\" Scorecard.RomName ".png"
+                    gGui.guiDialog_Marquee.Opt("-Border")
+                }
                 gGui.guiDialog_Marquee.GetPos(,,&marquee_posW, &marquee_posH)
 
-                iMargin := 20
-                marqueeH := title_posY - iMargin
-                marqueeW := Floor(marqueeH * marquee_posW/marquee_posH)
+                ;marquee height is a fraction of the scale of the arcade machine background image
+                marqueeH := Scorecard.TakeScreenshots ? ScorecardDialog.ScorecardPos.H * 0.175 : ScorecardDialog.ScorecardPos.H * 0.195
 
+                ;fill the space while preserving the aspect ratio
+                marqueeW := marqueeH * picDim.W/picDim.H 
                 if marqueeW > ScorecardDialog._nDialogTitleW
                 {
                     marqueeW := ScorecardDialog._nDialogTitleW
-                    marqueeH := Floor(marqueeW * marquee_posH/marquee_posW)
+                    marqueeH := marqueeW * picDim.H/picDim.W 
                 }
                 
-                marqueeY := iMargin - iMargin/2
-                gGui.guiDialog_Marquee.Move(ScorecardDialog.ScorecardPos.W / 2 - marqueeW / 2, marqueeY, marqueeW, marqueeH)
+                gGui.guiDialog_Marquee.Move(ScorecardDialog.ScorecardPos.W / 2 - marqueeW / 2, 0, marqueeW, marqueeH)
                 gGui.guiDialog_Marquee.Visible := true
 
-                if (Scorecard.TakeScreenshots)
-                    titleY := marqueeY + marqueeH + iMargin/2 + 5
-                else
-                    titleY := marqueeY + marqueeH + iMargin/2 - 15
-
+                ;position the title based on the scale of a full width marquee image
+                scaleH := Scorecard.TakeScreenshots ? 0.320 : 0.277 
+                marqueeRectH := ScorecardDialog._nDialogTitleW * scaleH
+                    
+                titleY := marqueeRectH + (oldH/2 - newH/2) ;(oldH/2 - newH/2) vertically centers title text if font size was reduced
                 gGui.guiDialog_HighScore_Title.Move(,titleY)
-                scoreY := titleY + title_posH + 5
+                scoreY := marqueeRectH + oldH + ScorecardDialog.ScorecardPos.H * 0.01
                 gGui.guiDialog_HighScore_CurrentScore.Move(,scoreY)
                 gGui.guiDialog_HighScore_CurrentScore.GetPos(,,,&scoreH)
-                scoredtY := scoreY + scoreH + 5
-                gGui.guiDialog_HighScore_DateTime.Move(,scoredtY)
+                scoredtY := scoreY + scoreH + ScorecardDialog.ScorecardPos.H * 0.005
+                gGui.guiDialog_HighScore_DateTime.Move(,scoredtY)                
             }                
 
             Loop 14

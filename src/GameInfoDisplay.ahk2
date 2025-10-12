@@ -32,6 +32,7 @@ class GameInfoDisplay
 		this._boundsBottom := 0
 		this._sNextStyle := ""
 		this._bLineGroup := false
+		this._bLoading:=false
 	}
 
 	CreateGameInfoScreen(sRom)
@@ -380,6 +381,8 @@ class GameInfoDisplay
 		iProgressLinesPerPage := 0
 		iLineIndex := 0
 		bDone := false
+
+		this._bLoading := true
 
 		if (assetType == "info")
 		{
@@ -843,6 +846,8 @@ class GameInfoDisplay
 			;Add this control to the oGameControl collection manager
 			this.AddPage(assetType, bPageVisible, "guiGameInfo_GameImage" . assetType)
 		}
+
+		this._bLoading:=false
 	}
 
 	HasContent()
@@ -867,5 +872,10 @@ class GameInfoDisplay
 	Active
 	{
 		get => this._active
+	}
+
+	Loading
+	{
+		get => this._bLoading
 	}
 }

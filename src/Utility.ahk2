@@ -195,3 +195,39 @@ IsPointInsideConvexPolygon(Points, p)
 
     return true
 }
+
+/**
+ * Get the text control height for a specified font
+ * @param sOptions - font options such as size, bold, etc.
+ * @param sFont - the font name such as "Tahoma"
+ * @returns {Integer} 
+ */
+GetTextHeight(sOptions, sFont)
+{
+    h := 0
+
+    guiTemp := Gui()
+    guiTemp.SetFont(sOptions, sFont)
+    gcText := guiTemp.AddText(,"A")
+    gcText.GetPos(,,,&h)
+    guiTemp.Destroy()
+
+    return h
+}
+
+/**
+ * Get the height and width of an image.
+ * @param sImage - full path to the image
+ * @returns {Object} - object containing height and width (obj.H & obj.W) 
+ */
+GetPicDimensions(sImage)
+{
+    h := 0, w := 0
+
+    guiTemp := Gui()
+    gcText := guiTemp.AddPicture(,sImage)
+    gcText.GetPos(,,&w,&h)
+    guiTemp.Destroy()
+
+    return {H:h, W:w}
+}

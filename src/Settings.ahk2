@@ -477,6 +477,95 @@ class Settings
 		Hotkey(g_sScorecardSettingsDownKey, ObjBindMethod(Settings.HighScoreEntry_Callback,,g_sScorecardSettingsDownKey), "On")
 		Hotkey(g_sScorecardSettingsExitKey, ObjBindMethod(Settings.HighScoreEntry_Callback,,g_sScorecardSettingsExitKey), "On")
 		Hotkey(g_sScorecardSettingsSelectKey, ObjBindMethod(Settings.HighScoreEntry_Callback,,g_sScorecardSettingsSelectKey), "On")
+
+		Settings.StartJoystickHandler()
+	}
+
+	static StartJoystickHandler()
+	{
+		;Create buffer to receive SDL_Event
+		evtBuffer := Buffer(56,0)
+		fJoyRepeater := ""
+
+		;purge the buffer
+		g_oSDL2.SDL_PumpEvents()
+		g_oSDL2.SDL_FlushEvent(SDL_EventType.SDL_JOYAXISMOTION)	
+
+		;Poll for SDL_Event 
+		loop
+		{
+			if (!Scorecard.Active)
+			{
+				g_oSDL2.SDL_FlushEvent(SDL_EventType.SDL_JOYAXISMOTION)	
+				break
+			}
+
+			PollEvent := g_oSDL2.SDL_PollEvent(evtBuffer)
+			evt := SDL2DLL.SDL_Event(evtBuffer)
+
+			if (PollEvent)
+			{
+				if (evt.type == SDL_EventType.SDL_QUIT) ; Close event
+				{
+					g_oSDL2.SDL_Quit()		 
+				}
+
+				else if (evt.type == SDL_EventType.SDL_JOYAXISMOTION)
+				{
+					if (Abs(evt.jaxis.axisValue) >= 32767)
+					{
+						sDirection := ""
+
+						Switch evt.jaxis.axis
+						{
+							Case 0, 2: ;XInput joystick right and left axis values
+								sDirection := evt.jaxis.axisValue > 0 ? "Right" : "Left"
+							Case 1, 3: ;XInput joystick up and down axis values
+								sDirection := evt.jaxis.axisValue > 0 ? "Down" : "Up" 
+							Case 4, 5: ;XInput left and right trigger axis values
+								if (evt.jaxis.axisValue < 0) ;skip trigger release
+									sDirection := "Skip"
+						}
+
+						if (sDirection != "Skip")
+						{
+							;hardcode joystick support for the scorecard dialog
+							if (Scorecard.Active)
+							{
+								oJoystick := GetJoystick(evt.jdevice.which)
+
+								if (fJoyRepeater)
+									SetTimer(fJoyRepeater, 0)
+
+								Switch sDirection		
+								{
+									Case "Right":
+										try Scorecard.HighScoreNavigate("r")									
+										fJoyRepeater := JoyRightRepeater.Bind(oJoystick)						
+									Case "Left":
+										try Scorecard.HighScoreNavigate("l")										
+										fJoyRepeater := JoyLeftRepeater.Bind(oJoystick)
+									Case "Up":
+										try Scorecard.HighScoreNavigate("u")
+										fJoyRepeater := JoyUpRepeater.Bind(oJoystick)
+									Case "Down":
+										try Scorecard.HighScoreNavigate("d")
+										fJoyRepeater := JoyDownRepeater.Bind(oJoystick)
+								}
+
+								SetTimer(fJoyRepeater, 200)
+							}
+						}
+
+						g_oSDL2.SDL_FlushEvent(SDL_EventType.SDL_JOYAXISMOTION)	
+					}
+				}		
+			}
+			g_oSDL2.SDL_Delay(1)
+		}
+
+		if (fJoyRepeater)
+			SetTimer(fJoyRepeater, 0)
 	}
 
 	/**
@@ -552,6 +641,7 @@ class Settings
 					g_mDevices[pguid] := Array()
 				}
 				mDeviceInfo := Map()
+				mDeviceInfo["joystick"] := joystick
 				mDeviceInfo["name"] := name
 				mDeviceInfo["index"] := jidx
 				g_mDevices[pguid].Push(mDeviceInfo)

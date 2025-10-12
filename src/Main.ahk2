@@ -95,7 +95,7 @@ global g_color_bright_yellow := "0xFFEA00"
 global g_sCurrentROM := ""
 global g_bCancelAssign := false
 global g_bCancelPoll := false
-global g_bActive := false
+global g_bActive := false ;Whether application is actively montoring (false when in Settings screen)
 global g_bOnlyMonitorWhenArcadeIsLoaded := false
 global g_sArcadePID := 0
 global g_iRawAccelPID := 0
@@ -859,6 +859,8 @@ Poll()
 	global g_bActive := true
 	global g_iRawAccelPID
 
+	fJoyRepeater := ""
+
 	if (!g_bCancelPoll)
 		g_oLog.LogLine("INFO: Polling requested...`n" )
 
@@ -1050,17 +1052,28 @@ Poll()
 						;hardcode joystick support for the scorecard dialog
 						if (Scorecard.Active)
 						{
+							oJoystick := GetJoystick(evt.jdevice.which)
+
+							if (fJoyRepeater)
+								SetTimer(fJoyRepeater, 0)
+
 							Switch sDirection		
 							{
 								Case "Right":
-									try Scorecard.HighScoreNavigate("r")
+									try Scorecard.HighScoreNavigate("r")									
+									fJoyRepeater := JoyRightRepeater.Bind(oJoystick)						
 								Case "Left":
-									try Scorecard.HighScoreNavigate("l")
+									try Scorecard.HighScoreNavigate("l")										
+									fJoyRepeater := JoyLeftRepeater.Bind(oJoystick)
 								Case "Up":
 									try Scorecard.HighScoreNavigate("u")
+									fJoyRepeater := JoyUpRepeater.Bind(oJoystick)
 								Case "Down":
 									try Scorecard.HighScoreNavigate("d")
+									fJoyRepeater := JoyDownRepeater.Bind(oJoystick)
 							}
+
+							SetTimer(fJoyRepeater, 200)
 						}
 
 						;Get the next logical action from the action list based on the axis movement, then run it
@@ -1072,12 +1085,92 @@ Poll()
 
 					g_oSDL2.SDL_FlushEvent(SDL_EventType.SDL_JOYAXISMOTION)	
 				}
-			}
-			
+			}			
 		}
 		g_oSDL2.SDL_Delay(1)
     }
+
+	if (fJoyRepeater)
+		SetTimer(fJoyRepeater, 0)
 }
+
+GetJoystick(iIndex)
+{
+	for i, j in g_mDevices
+	{
+		if (g_mDevices[i][1]["index"] == iIndex)
+		{
+			oJoystick := g_mDevices[i][1]["joystick"]
+			break
+		}
+	}
+
+	return oJoystick
+}
+
+JoyRightRepeater(oJoystick)
+{
+	static iDelay := 0
+
+	if (iDelay++ < 2)
+		return
+
+	if (g_oSDL2.SDL_JoystickGetAxis(oJoystick, 0) > 15000) {
+		try Scorecard.HighScoreNavigate("r")
+	}
+	else {
+		iDelay := 0
+		SetTimer(,0)
+	}
+}		
+
+JoyLeftRepeater(oJoystick)
+{
+	static iDelay := 0
+
+	if (iDelay++ < 2)
+		return
+
+	if (g_oSDL2.SDL_JoystickGetAxis(oJoystick, 0) < -15000) {
+		try Scorecard.HighScoreNavigate("l")
+	}
+	else {
+		iDelay := 0
+		SetTimer(,0)
+	}
+}		
+
+JoyUpRepeater(oJoystick)
+{
+	static iDelay := 0
+
+	if (iDelay++ < 2)
+		return
+
+	if (g_oSDL2.SDL_JoystickGetAxis(oJoystick, 1) < -15000) {
+		try Scorecard.HighScoreNavigate("u")
+	}
+	else {
+		iDelay := 0
+		SetTimer(,0)
+	}
+}		
+
+JoyDownRepeater(oJoystick)
+{
+	static iDelay := 0
+
+	if (iDelay++ < 2)
+		return
+
+	if (g_oSDL2.SDL_JoystickGetAxis(oJoystick, 1) > 15000) {
+		try Scorecard.HighScoreNavigate("d")
+	}
+	else {
+		iDelay := 0
+		SetTimer(,0)
+	}
+}	
 
 /**
  * Handler for the "Keyboard" and "Mouse" device types.
@@ -1288,6 +1381,13 @@ RunAction(oAction, sModifier:="")
 
 		if (sNavAction == "Show/Hide")
 		{
+			;Block if GameInfo is still loading
+			if (g_oGameInfoDisplay.Loading)
+			{
+				oBASS.Play("unfav")
+				return
+			}
+
 			;provide rom information for the scorecard
 			SplitPath(g_sCurrentROM,,,,&sCurrentRom)
 			Scorecard.RomName := sCurrentRom

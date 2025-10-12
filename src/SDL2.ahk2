@@ -228,6 +228,8 @@ Class SDL2DLL{
 
     SDL_JoystickOpen(index) => DllCall("SDL2.dll\SDL_JoystickOpen", "Int", index,"CDecl Ptr") ;~ Get Joystick num
 
+    SDL_JoystickGetAxis(joystick,axis) => DllCall("SDL2.dll\SDL_JoystickGetAxis", "Ptr", joystick, "Int", axis, "CDecl Short")
+
     SDL_JoystickClose(joystick) => DllCall("SDL2.dll\SDL_JoystickClose", "Ptr", joystick)
 
     SDL_JoystickInstanceID(joystick) => DllCall("SDL2.dll\SDL_JoystickInstanceID","Ptr", joystick,"CDecl Ptr") ;~ Get Joystick Index Id, Start with 0
