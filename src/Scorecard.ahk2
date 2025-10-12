@@ -94,18 +94,18 @@ class Scorecard
 
     /**
      * Retrieve the score entered into the highscore dialog
-     * @returns {string} 
+     * @returns {integer} 
      */
     static GetScore()
     {
-        sScore := ""
+        sScore := 0
         Loop 10
         {
             if (gGui.guiDialog_HighScore_%A_Index+3%.Value != "-")
                 sScore := sScore . gGui.guiDialog_HighScore_%A_Index+3%.Value
         }
 
-        return sScore
+        return Number(sScore)
     }
 
     /**
@@ -707,7 +707,7 @@ class Scorecard
             }   
 
             ;make all digits yellow if score is below current high score
-            if (Scorecard.GetScore() <= Scorecard.HighScore)
+            if (Scorecard.GetScore() <= Number(Scorecard.HighScore))
             {
                 loop 10
                 {
@@ -716,7 +716,7 @@ class Scorecard
                 }
             }
 
-            if (Scorecard.GetScore() > Scorecard.HighScore)
+            if (Scorecard.GetScore() > Number(Scorecard.HighScore))
             {
                 loop 10
                 {
