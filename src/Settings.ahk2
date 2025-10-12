@@ -401,7 +401,7 @@ class Settings
 		
 		gcViewGameInfoButton := guiSettings.AddButton("x" Settings.mMetrics.Width - nButtonWidthBottom*4 - 45 " y" 685 " w" nButtonWidthBottom " h" 40, "Preview`n   GameInfo...")
 		gcViewGameInfoButton.OnEvent("Click", (*) => Settings.ViewGameInfoButton_Click())
-		gcViewGameInfoButton.TT := "Preview GameInfo for the selected game. Use left and right arrow`nkeyboard keys to navigate and Escape to exit. You may adjust the`nfont size and monitor that the GameInfo appears on using the`nsettings to the left.`n`nNote that when you use the GameInfo Overlay during gameplay`n(rather than this Settings dialog), navigation will use the keys or`nbuttons specified in the Action List."
+		gcViewGameInfoButton.TT := "Preview GameInfo for the selected game. Use left and right arrow`nkeyboard keys to navigate and Escape to exit.`n`nNote that when you use the GameInfo Overlay during gameplay`n(rather than this Settings dialog), monitor 1 will always be used`nand navigation will use the keys or buttons specified in the Action List."
 		gcUserPreferencesGroupBox.GetPos(,&gb_posY,,&gb_posH)
 		gcViewGameInfoButton.GetPos(,,,&bt_posH)
 		gcViewGameInfoButton.Move(, gb_posY + gb_posH - bt_posH)
@@ -409,7 +409,7 @@ class Settings
 
 		gcEnterHighScoreButton := guiSettings.AddButton("x" Settings.mMetrics.Width - nButtonWidthBottom*3 - 40 " y" 685 " w" nButtonWidthBottom " h" 40, "Enter`nHigh Score...")
 		gcEnterHighScoreButton.OnEvent("Click", (*) => Settings.EnterHighScoreButton_Click())
-		gcEnterHighScoreButton.TT := "Enter a `"Marquee`" High Score for the currently selected game.`n`nIf you would like to take a high score screenshot to go with your`nhigh score, enter your high score from inside the arcade."
+		gcEnterHighScoreButton.TT := "Enter a `"Marquee`" High Score for the currently selected game.`n`nIf you would like to take a watermarked screenshot to go with your`nhigh score, enter the arcade and press the Snap/Reset button`nwhile viewing your high score on the machine you achieved it on.`nThen use a desktop portal to enter and register your high score."
 		gcEnterHighScoreButton.Move(, gb_posY + gb_posH - bt_posH)
 		gcEnterHighScoreButton.Enabled := false
 
