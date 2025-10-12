@@ -531,8 +531,8 @@ LoadConfig()
 	;Initialize Scorecard preference
 	global g_bUseWatermark := InitializeIniNumber("Scorecard", "UseWatermark", g_bUseWatermark) 
 	global g_bUseScreenshots := InitializeIniNumber("Scorecard", "UseScreenshots", g_bUseScreenshots) 
-	global g_iScorecardScale1 := InitializeIniNumber("Scorecard", "Scale1", g_iScorecardScale1)
-	global g_iScorecardScale2 := InitializeIniNumber("Scorecard", "Scale2", g_iScorecardScale2)
+	;global g_iScorecardScale1 := InitializeIniNumber("Scorecard", "Scale1", g_iScorecardScale1)
+	;global g_iScorecardScale2 := InitializeIniNumber("Scorecard", "Scale2", g_iScorecardScale2)
 	global g_iMaxMarqueeTableRows := InitializeIniNumber("Scorecard", "MaxMarqueeTableRows", g_iMaxMarqueeTableRows)
 
     ;Initialize GameInfo image order
