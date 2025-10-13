@@ -359,7 +359,7 @@ class Settings
 
 		gcShowGameInfo_Checkbox := guiSettings.AddCheckbox("x" 375 " y" iLVBaseOffset_Y3, "Use GameInfo Overlay")
 		gcShowGameInfo_Checkbox.OnEvent("Click", (*) => Settings.ShowGameInfo_Checkbox_Click())
-		try gcShowGameInfo_Checkbox.Value := IniRead(g_sIniFile, "General", "ShowGameInfo", 0)	
+		try gcShowGameInfo_Checkbox.Value := IniRead(g_sIniFile, "General", "ShowGameInfo", 1)	
 		gcShowGameInfo_Checkbox.TT := "Show GameInfo overlay on the desktop when the arcade`napplication starts and close it when the application terminates.`nUse a desktop portal while in VR to browse the GameInfo."
 	
 		gcGameInfoFontSizeLabel := guiSettings.AddText("x" 440 " y" iLVBaseOffset_Y4 - 2 " w" 60 " h" 20, "Font Size")
