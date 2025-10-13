@@ -951,6 +951,8 @@ class Scorecard
             gGui.guiDialog_HighScore_Instructions2.Visible := true
             gGui.guiDialog_HighScore_Warning.Visible := true
             gGui.guiDialog_Machine.Visible := true
+            gGui.guiDialog_Background.Visible := true
+            gGui.guiDialog_Screen.Visible := true
             if (Scorecard.TakeScreenshots)
             {
                 gGui.guiDialog_Picture1.Visible := true
@@ -1001,6 +1003,8 @@ class Scorecard
             gGui.guiDialog_PictureLabel1.Visible := false
             gGui.guiDialog_PictureLabel2.Visible := false
             gGui.guiDialog_Machine.Visible := false
+            gGui.guiDialog_Background.Visible := false
+            gGui.guiDialog_Screen.Visible := false
 
             ;disable built-in hotkeys if launched from Settings
             if (Settings.Active)
@@ -1125,6 +1129,29 @@ class ScorecardDialog
         nScreenTopY := g_nScreenHeight / 2 - label_posH * 3 ;where top of dialog box should be
         nUnitHeight := label_posH ;a standard unit height based on font size
 
+        ;Background image
+        gGui.guiDialog_Background := guiScorecard.AddPicture("Hidden x" 0 " y" 0 " w" g_nScreenWidth " h" g_nScreenHeight)
+        pBackgroundBitmap := Gdip_CreateBitmapFromFile(g_sBackgroundFile)
+        Gdip_GetImageDimensions(pBackgroundBitmap, &w, &h)
+        BackgroundH := g_nScreenHeight
+
+        pBitmap := Gdip_CreateBitmap(g_nScreenWidth, BackgroundH, 0x26200A)	;0x26200A is bitmap format
+        G:=Gdip_GraphicsFromImage(pBitmap)			        
+        Gdip_SetInterpolationMode(G, 6)	;7 is the highest quality bicubic interpolation			       
+        Gdip_DrawImage(G,pBackgroundBitmap,0,0,g_nScreenWidth, g_nScreenHeight)		
+        pHBitmap := Gdip_CreateHBITMAPFromBitmap(pBitmap)   
+
+        ;Display the resized machine screenshot
+        gGui.guiDialog_Background.Value := "HBITMAP:* " pHBitmap
+        
+        Gdip_DisposeImage(pBackgroundBitmap) ;critical to making the .png file able to be deleted/updated
+        Gdip_DisposeImage(pBitmap)
+        Gdip_DeleteGraphics(G)
+
+        ;Screen background
+        gGui.guiDialog_Screen := guiScorecard.AddPicture("Hidden cBlack")
+
+        ;Arcade machine
         gGui.guiDialog_Machine := guiScorecard.AddPicture("Hidden BackgroundTrans")
 
         ;Marquee
@@ -1160,6 +1187,10 @@ class ScorecardDialog
         ScorecardDialog._nDialogScreenHeight := nScreenBottomY - nScreenTopY
         ScorecardDialog._nDialogPositionX := nScreenLeftX
         ScorecardDialog._nDialogPositionY := nScreenTopY 
+
+        ;load the screen background image
+        gGui.guiDialog_Screen.Move(ScorecardDialog._nDialogPositionX, ScorecardDialog._nDialogPositionY, ScorecardDialog._nDialogScreenWidth, ScorecardDialog._nDialogScreenHeight+30)
+        gGui.guiDialog_Screen.Value := g_sScreenFile
 
         nMachineWidthFactor := 2.0
         nMachineHeightFactor := 0.340

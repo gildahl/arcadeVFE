@@ -76,6 +76,8 @@ global g_sVFEIconFile := g_sResourceFolder "\vfe.ico"
 global g_sVFEImageFile := g_sResourceFolder "\vfe.png"
 global g_sVFEMachineFile := g_sResourceFolder "\machine.png"
 global g_sScorecardDefaultFile := g_sResourceFolder "\noscore.png"
+global g_sBackgroundFile := g_sResourceFolder "\background.jpeg"
+global g_sScreenFile := g_sResourceFolder "\screen.png"
 
 ;tray icon settings
 TraySetIcon g_sVFEIconFile
@@ -386,6 +388,8 @@ DoFileAudit()
 	AuditFile(g_sVFEImageFile)
 	AuditFile(g_sScorecardDefaultFile)
 	AuditFile(g_sVFEMachineFile)
+	AuditFile(g_sBackgroundFile)
+	AuditFile(g_sScreenFile)
 
 	;.\Resources\Sound files
 	AuditFile(A_ScriptDir . "\Resources\Sound\add.wav")
