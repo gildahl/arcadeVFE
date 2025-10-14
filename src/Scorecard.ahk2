@@ -296,7 +296,6 @@ class Scorecard
 
         static nSelected := 1
         static oControl := gGui.guiDialog_HighScore_1
-        static oControlFirstDigit := gGui.guiDialog_HighScore_4
         static oInitials := Array("-"," ","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R",
                                 "S","T","U","V","W","X","Y","Z","a","b","c","d","e","f","g","h","i","j","k","l",
                                 "m","n","o","p","q","r","s","t","u","v","w","x","y","z","0","1","2","3","4","5",
@@ -305,7 +304,6 @@ class Scorecard
 
         static oDigits := Array("-","0","1","2","3","4","5","6","7","8","9")
 
-        oControlRegisterButton := gGui.guiDialog_HighScore_14 
         nMaxControls := 14
 
         ;select/launch key was pressed
@@ -313,18 +311,18 @@ class Scorecard
         {
             if (!Scorecard._bButtonPressed)
             {
-                if (oControlRegisterButton.Enabled)
+                if (gGui.guiDialog_HighScore_14.Enabled)
                 {
                     Scorecard._bButtonPressed := true
                     oBASS.Play("select")
 
                     ;simulate a button press
-                    ControlClick oControlRegisterButton,,,,, "D"
+                    ControlClick gGui.guiDialog_HighScore_14,,,,, "D"
                     Sleep 500
-                    ControlClick oControlRegisterButton,,,,, "U"
-                    oControlRegisterButton.Enabled := false
+                    ControlClick gGui.guiDialog_HighScore_14,,,,, "U"
+                    gGui.guiDialog_HighScore_14.Enabled := false
 
-                    if (oControlRegisterButton.Text == "Register")
+                    if (gGui.guiDialog_HighScore_14.Text == "Register")
                     {        
                         sNewTime := A_Now
                         sNewScore := Scorecard.GetScore()  
@@ -375,7 +373,7 @@ class Scorecard
                         sleep 100
                     }
 
-                    if (oControlRegisterButton.Text == "Clear")
+                    if (gGui.guiDialog_HighScore_14.Text == "Clear")
                     {
                         try FileDelete(g_sPlayerHighScoreFolder "\" Scorecard.RomName ".high")
     
@@ -383,7 +381,7 @@ class Scorecard
                         Scorecard.ScorecardToggle() 
                     }
 
-                    if (oControlRegisterButton.Text == "Cancel")
+                    if (gGui.guiDialog_HighScore_14.Text == "Cancel")
                     {
                         Scorecard.ScorecardToggle()
                     }
@@ -396,7 +394,7 @@ class Scorecard
         if (sKey == "d")
         {
             ;if first digit of score is a 0, don't permit any other digits to be changed
-            if (nSelected >= 5 && nSelected <= 13 && oControlFirstDigit.Value == 0)
+            if (nSelected >= 5 && nSelected <= 13 && gGui.guiDialog_HighScore_4.Value == 0)
                 return
 
             GetArrayIndex(oArray, val)
@@ -456,7 +454,7 @@ class Scorecard
         if (sKey == "u")
         {
             ;if first digit of score is a 0, don't permit any other digits to be changed
-            if (nSelected >= 5 && nSelected <= 13 && oControlFirstDigit.Value == 0)
+            if (nSelected >= 5 && nSelected <= 13 && gGui.guiDialog_HighScore_4.Value == 0)
                 return
 
             ;if user is changing an initial
@@ -529,7 +527,7 @@ class Scorecard
             }
 
             ;enable control if the digit to the left of it was enabled
-            if (nSelected >=5 && nSelected <= 13 && gGui.guiDialog_HighScore_%nSelected-1%.Enabled == true && oControlFirstDigit.Value != "0") 
+            if (nSelected >=5 && nSelected <= 13 && gGui.guiDialog_HighScore_%nSelected-1%.Enabled == true && gGui.guiDialog_HighScore_4.Value != "0") 
             {
                 oControl.Enabled := true
                 SetControlColor()
@@ -600,7 +598,7 @@ class Scorecard
                 oControl.Opt("+Border")
                 oControl.Redraw
 
-                oControlRegisterButton.Enabled := false
+                gGui.guiDialog_HighScore_14.Enabled := false
             }
             else ;otherwise, just enable the border
             {
@@ -681,7 +679,7 @@ class Scorecard
 
             ;Update message based on context
             if (nSelected == "button")
-                Scorecard.SetDialogHighScoreText(sType, oControlRegisterButton.Text, oControlRegisterButton.Enabled, gGui.guiDialog_HighScore_14.Text)
+                Scorecard.SetDialogHighScoreText(sType, gGui.guiDialog_HighScore_14.Text, gGui.guiDialog_HighScore_14.Enabled, gGui.guiDialog_HighScore_14.Text)
             else
                 Scorecard.SetDialogHighScoreText(sType, oControl.Value, oControl.Enabled, gGui.guiDialog_HighScore_14.Text)                
         }

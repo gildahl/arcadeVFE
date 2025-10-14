@@ -943,10 +943,7 @@ Poll()
 
 			;Turn off the GameInfo display if it is running
 			if (g_oGameInfoDisplay.Active)
-			{
 				g_oGameInfoDisplay.Clear()
-				g_oLog.LogLine("INFO: GameInfo Closed.`n" )
-			}
 
 			g_bCancelPoll := true
 
@@ -1076,16 +1073,16 @@ Poll()
 							Switch sDirection		
 							{
 								Case "Right":
-									try Scorecard.HighScoreNavigate("r")									
+									Scorecard.HighScoreNavigate("r")									
 									fJoyRepeater := JoyRightRepeater.Bind(oJoystick)						
 								Case "Left":
-									try Scorecard.HighScoreNavigate("l")										
+									Scorecard.HighScoreNavigate("l")										
 									fJoyRepeater := JoyLeftRepeater.Bind(oJoystick)
 								Case "Up":
-									try Scorecard.HighScoreNavigate("u")
+									Scorecard.HighScoreNavigate("u")
 									fJoyRepeater := JoyUpRepeater.Bind(oJoystick)
 								Case "Down":
-									try Scorecard.HighScoreNavigate("d")
+									Scorecard.HighScoreNavigate("d")
 									fJoyRepeater := JoyDownRepeater.Bind(oJoystick)
 							}
 
@@ -1132,7 +1129,7 @@ JoyRightRepeater(oJoystick)
 		return
 
 	if (g_oSDL2.SDL_JoystickGetAxis(oJoystick, 0) > 15000) {
-		try Scorecard.HighScoreNavigate("r")
+		Scorecard.HighScoreNavigate("r")
 	}
 	else {
 		iDelay := 0
@@ -1148,7 +1145,7 @@ JoyLeftRepeater(oJoystick)
 		return
 
 	if (g_oSDL2.SDL_JoystickGetAxis(oJoystick, 0) < -15000) {
-		try Scorecard.HighScoreNavigate("l")
+		Scorecard.HighScoreNavigate("l")
 	}
 	else {
 		iDelay := 0
@@ -1164,7 +1161,7 @@ JoyUpRepeater(oJoystick)
 		return
 
 	if (g_oSDL2.SDL_JoystickGetAxis(oJoystick, 1) < -15000) {
-		try Scorecard.HighScoreNavigate("u")
+		Scorecard.HighScoreNavigate("u")
 	}
 	else {
 		iDelay := 0
@@ -1180,7 +1177,7 @@ JoyDownRepeater(oJoystick)
 		return
 
 	if (g_oSDL2.SDL_JoystickGetAxis(oJoystick, 1) > 15000) {
-		try Scorecard.HighScoreNavigate("d")
+		Scorecard.HighScoreNavigate("d")
 	}
 	else {
 		iDelay := 0
@@ -1534,17 +1531,17 @@ RunAction(oAction, sModifier:="")
 			Switch sNavAction
 			{
 				Case "Exit":
-					try Scorecard.ScorecardExit()
+					Scorecard.ScorecardExit()
 				Case "Forward":
-					try Scorecard.HighScoreNavigate("r")
+					Scorecard.HighScoreNavigate("r")
 				Case "Back"	:		
-					try Scorecard.HighScoreNavigate("l")
+					Scorecard.HighScoreNavigate("l")
 				Case "Up":
-					try Scorecard.HighScoreNavigate("u")
+					Scorecard.HighScoreNavigate("u")
 				Case "Down"	:		
-					try Scorecard.HighScoreNavigate("d")			    
+					Scorecard.HighScoreNavigate("d")			    
 				Case "Select":			
-					try Scorecard.HighScoreNavigate("s")		
+					Scorecard.HighScoreNavigate("s")		
 			} ;case
 		}
 
@@ -1954,31 +1951,31 @@ OnMouseButtonEvent(*)
 			if (MouseX > ButtonX && MouseX < ButtonX + ButtonW && MouseY > ButtonY && MouseY < ButtonY + ButtonH)
 			{
 				Sleep 0
-				try Scorecard.HighScoreNavigate("s")
+				Scorecard.HighScoreNavigate("s")
 				Sleep 50
 			}			
 			else if (IsPointInsideConvexPolygon(bottomPoints, p)) ;clicked on the bottom
 			{
 				Sleep 0
-				try Scorecard.HighScoreNavigate("d")
+				Scorecard.HighScoreNavigate("d")
 				Sleep 50
 			}
 			else if (IsPointInsideConvexPolygon(rightPoints, p)) ;clicked on the right side
 			{
 				Sleep 0
-				try Scorecard.HighScoreNavigate("r")
+				Scorecard.HighScoreNavigate("r")
 				Sleep 50
 			}
 			else if (IsPointInsideConvexPolygon(topPoints, p)) ;clicked on the top
 			{
 				Sleep 0
-				try Scorecard.HighScoreNavigate("u")
+				Scorecard.HighScoreNavigate("u")
 				Sleep 50
 			}
 			if (IsPointInsideConvexPolygon(leftPoints, p)) ;clicked on the left side
 			{
 				Sleep 0
-				try Scorecard.HighScoreNavigate("l")
+				Scorecard.HighScoreNavigate("l")
 				Sleep 50
 			}
 		}

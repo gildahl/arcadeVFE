@@ -540,16 +540,16 @@ class Settings
 								Switch sDirection		
 								{
 									Case "Right":
-										try Scorecard.HighScoreNavigate("r")									
+										Scorecard.HighScoreNavigate("r")									
 										fJoyRepeater := JoyRightRepeater.Bind(oJoystick)						
 									Case "Left":
-										try Scorecard.HighScoreNavigate("l")										
+										Scorecard.HighScoreNavigate("l")										
 										fJoyRepeater := JoyLeftRepeater.Bind(oJoystick)
 									Case "Up":
-										try Scorecard.HighScoreNavigate("u")
+										Scorecard.HighScoreNavigate("u")
 										fJoyRepeater := JoyUpRepeater.Bind(oJoystick)
 									Case "Down":
-										try Scorecard.HighScoreNavigate("d")
+										Scorecard.HighScoreNavigate("d")
 										fJoyRepeater := JoyDownRepeater.Bind(oJoystick)
 								}
 
@@ -579,18 +579,18 @@ class Settings
 		Switch params[1]
 		{
 			Case "Right":
-				try Scorecard.HighScoreNavigate("r")
+				Scorecard.HighScoreNavigate("r")
 			Case "Left"	:		
-				try Scorecard.HighScoreNavigate("l")
+				Scorecard.HighScoreNavigate("l")
 			Case "Up":
-				try Scorecard.HighScoreNavigate("u")
+				Scorecard.HighScoreNavigate("u")
 			Case "Down"	:		
-				try Scorecard.HighScoreNavigate("d")
+				Scorecard.HighScoreNavigate("d")
 			Case "Enter"	:		
-				try Scorecard.HighScoreNavigate("s") ;select/press button
+				Scorecard.HighScoreNavigate("s") ;select/press button
 			Case "Escape":					
             	;oBASS.Play("menu")
-				try Scorecard.ScorecardToggle() ;toggle the scorecard dialog
+				Scorecard.ScorecardToggle() ;toggle the scorecard dialog
 		}
 	}
 

@@ -176,12 +176,15 @@ IsWinVisible(winTitle)
 /**
  * Use cross product to discover whether the point is on the same side
  * of all line segments. If so, the point is inside the polygon.
- * @param Points - the points in the polygon (in right rotational order)
+ * @param Points - an array of points in the polygon (in clockwise order)
  * @param p - the point
  * @returns {Boolean} - true if the point is inside, false if outside 
  */
 IsPointInsideConvexPolygon(Points, p)
 {
+    if (!Points || Points.length < 2)
+        throw ValueError("IsPointInsideConvexPolygon called with bad Points argument", -1, !Points ? "Points is null" : "Points.length was: " Points.length)
+
     ;Duplicate the first point at the end to complete the polygon
     Points.Push(Points[1])
 
