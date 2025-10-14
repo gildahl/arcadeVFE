@@ -589,7 +589,7 @@ class Settings
 			Case "Enter"	:		
 				try Scorecard.HighScoreNavigate("s") ;select/press button
 			Case "Escape":					
-            	oBASS.Play("menu")
+            	;oBASS.Play("menu")
 				try Scorecard.ScorecardToggle() ;toggle the scorecard dialog
 		}
 	}
