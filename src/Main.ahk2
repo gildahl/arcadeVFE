@@ -1441,6 +1441,9 @@ RunAction(oAction, sModifier:="")
 					ScorecardDialog.CreateScorecardDialog() 
 			}
 
+			if (Scorecard.Active)
+				oBASS.Play("remove")
+
 			Scorecard.ScorecardToggle(bReloadGameInfoOnExit)
 
 			return
