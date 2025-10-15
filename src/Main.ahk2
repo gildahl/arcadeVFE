@@ -1890,7 +1890,7 @@ OnMouseButtonEvent(*)
 	{
 		MouseGetPos(&MouseX, &MouseY, &MouseWin, &MouseControl)
 
-		if (MouseWin := g_guiScorecardHwnd)
+		if (MouseWin == g_guiScorecardHwnd)
 		{
 			p := {X: MouseX, Y: MouseY}
 
