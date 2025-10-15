@@ -221,8 +221,8 @@ class Scorecard
 
         ;Format the text
         pBrush := Gdip_BrushCreateSolid(ARGB:=0xffffffff)
-        hFamily := Gdip_FontFamilyCreate("Verdana")
-        hFont := Gdip_FontCreate(hFamily, 100, 1)
+        hFamily := Gdip_FontFamilyCreate("Verdana")            ;Set font type
+        hFont := Gdip_FontCreate(hFamily, g_iWatermarkSize, 1) ;Set font size and style
         nFormatStyle :=  "" ? 0x4000 | 0x1000 : 0x4000
         hFormat := Gdip_StringFormatCreate(nFormatStyle)
 
@@ -232,7 +232,7 @@ class Scorecard
         CreateRectF(&RC:="", 0, 0, 0, 0) ;initialize a string rectangle
         rcString := Gdip_MeasureString(G_Text, sHSText, hFont, hFormat, &RC) ;last 2 elements are chars & lines
         aStringRC := StrSplit(rcString, "|")
-        CreateRectF(&rcTextPosition:="", Round(pic_w/2 - aStringRC[3]/2), Round(pic_h*0.60 - aStringRC[4]/2), aStringRC[3], aStringRC[4])
+        CreateRectF(&rcTextPosition:="", Round(pic_w/2 - aStringRC[3]/2), Round(pic_h * g_iWatermarkPercentFromTop/100 - aStringRC[4]/2), aStringRC[3], aStringRC[4])  ;set on-screen watermark location
 
         ;Draw the watermark text on the image
         Gdip_DrawString(G_Text, sHSText, hFont, hFormat, pBrush, &rcTextPosition)
