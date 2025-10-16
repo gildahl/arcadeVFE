@@ -1863,7 +1863,7 @@ OnMouseButtonEvent(*)
 
 		MouseGetPos(&MouseX, &MouseY, &MouseWin, &MouseControl)
 
-		if (MouseWin := g_guiGameInfoOverlayHwnd)
+		if (MouseWin == g_guiGameInfoOverlayHwnd)
 		{
 			g_oGameInfoDisplay.GetBounds(&X, &Y, &W, &H)
 
