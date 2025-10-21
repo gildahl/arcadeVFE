@@ -44,7 +44,7 @@ To install arcadeVFE 1.2.1, follow these four steps:
 3. At the end of the install, accept the option to launch **arcadeVFE**.
 4. In the **Initial Setup Dialog** that follows, enter ATC's rom folder in the bottom field, then press **Apply**.<br/>
 
-<img width="400" alt="Initial Setup" src="https://github.com/user-attachments/assets/28486fa3-69cc-426b-ae39-931cc7f74f11" /><br/>
+<img width="400" alt="Initial Setup" src="https://github.com/user-attachments/assets/c92d3381-34c2-49f5-b34d-38c6d9fe18c5" /><br/>
 
 Before pressing **Close** to complete the installation, you may wish to press the **Audit ROMs...** button to perform a quick validation of your rom collection. You may also want to click on **Config Tools...** to do a `*.cfg` file backup.
 
@@ -81,7 +81,8 @@ Use **arcadeVFE** to quickly install the correct roms into **Arcade Time Capsule
 **Copy the ROMS:**
 1. Run arcadeVFE and go to the **Initial Setup** dialog using the button at the bottom of the **Settings** screen.<br/>
 
-<img width="400" alt="Initial Setup - copy roms" src="https://github.com/user-attachments/assets/0845117b-60b8-4249-b49a-1b03ba3e3000" /><br/>
+<img width="400" alt="Initial Setup - copy roms" src="https://github.com/user-attachments/assets/05058c40-aef1-44a4-925d-8141ac80b9da" /><br/>
+
 
 3. Ensure the **ROM folder to monitor** field contains a path to the (empty) ATC roms folder on your PC.
 
