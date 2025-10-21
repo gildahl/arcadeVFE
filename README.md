@@ -102,11 +102,33 @@ Use **arcadeVFE** to quickly install the correct roms into **Arcade Time Capsule
 Log
 ===
 See the `log.txt` file in the `\Log` subfolder if needed for troubleshooting. This log is overwritten at the start of every run. Two beeps will be sounded whenever an error is written to the file. When reporting any issues, be sure to include the most recent log with your description of the problem. You may report errors on the Discord.
-
 <!--
-GameInfo and High Score Support
-===============================
-**arcadeVFE** supports display of detailed Game Information that, when enabled, is available while in-game by viewing the desktop by simply accessing the desktop viewport on your headset. Pages on this screen may be changed by clicking on the pages using your motion controller, using mapped controller buttons, or using the arrow keys on your keyboard.
+GameInfo
+========
+**arcadeVFE** supports display of detailed Game Information that, when enabled, is available while in-game by viewing the desktop by simply accessing the desktop viewport on your headset. Pages on this screen may be changed by clicking on the pages using your motion controller, using mapped controller buttons, or using the arrow keys on your keyboard.<br/>
+
+<img width="900" alt="GameInfo" src="https://github.com/user-attachments/assets/95714c3d-6ec2-47fd-9b52-2e0b974b17e3" /><br/>
+
+In addition to general game information, the GameInfo screen also shows high score information for the game of three different types.
+1. The leaderboard for the machine in the arcade for supported machines. If you entered your initials into the **Initial Setup** dialog, then any scores with your intitials will also be highlighted in yellow. Note that only some machines support this feature. When they do, a grid such as shown in the above screenshot will be displayed showing the current list of high scores on that machine.
+2. The game's official high score (if such data is available). This data comes from data on the Classic Arcade Gaming site and from the game's [`gameinfo.dat`](https://mameinfo.mameworld.info/) entry.
+3. The **MARQUEE Scorecard** high score entered for this game. See next section.
+
+MARQUEE Scorecard Entry
+========================
+A common practice in many arcades is to tape a small placard on a game's marquee with the name and score of the local record-holder on that machine. You can simulate this in **arcadeVFE** by using its **MARQUEE Scorecard** high score entry screen.  By entering your initials and score into this screen, it will be permanently saved until the record is next broken, and will be viewable in the GameInfo screen. An example of this is shown in the screenshot in the GameInfo section above. A **MARQUEE** high score may be entered for any game in the arcade.
+
+There are two ways to use the **MARQUEE Scorecard** feature: Either by selecting a game in the **Settings** dialog and then pressing the **Enter High Score** button at the bottom of the screen, or from within the game. In general, it is preferrable to do this from within the game since when you do it this way, **arcadeVFE** will also take a watermarked screenshot of the high score to make data entry easier and to certify your high score.  The following provides instructions for both methods.
+
+### Entering a High Score from the Settings dialog
+When pressing the **Enter High Score** button from within the **Settings** dialog, you will be presented with the screen below for the currently selected game in the **Choose ROM** list. To use this screen simply navigate using either the arrow keys on your keyboard, or a joystick, or by clicking on the areas surrounding the on-screen monitor. Once you have entered your initials and a high score, keep moving the cursor to the right until it lands on the **Register** button. Either click on this button, or press down to complete the registration.  If you register a score of zero, it will erase the MARQUEE High Score for that game. You may cancel high score entry at any time by pressing Esc or by not entering any score and then selecting the cancel button. You can verify that the score was recorded by pressing the **Preview GameInfo** button and observing that the 'MARQUEE HIGH SCORE` table is present.
+
+<img width="900" alt="High Score Entry - Settings" src="https://github.com/user-attachments/assets/f8cea8b0-5b31-44a6-a3fd-874a83ad3071" /><br/>
+
+### Entering a High Score from within a game
+After achieving a high score on any machine in the arcade, wait until that score (and preferrably your initials/name as well) is displayed on the arcade machine's screen, move your head in to look at it fairly closely, and then press the **Snap/Reset** button to take a snapshot of it. The **Snap/Reset** button is either the spacebar, or any controller button to which you have assigned the scorecard **Snap/Reset** action.
+
+Once you have taken the snapshot, access your headset's desktop portal to view the **MARQUEE Scorecard** entry screen. This screen will look similar to the one available fromt the **Settings** dialog, but will have images on either side of it. The image on the right is the snapshot you just took, and the image on the left (if present) will be the previous high score's snapshot. Using the image on the right as a reference, enter the high score into the fields just as described above for the **Settings** screen. You may use the keyboard, joystick, or perhaps most conveniently, your motion controller (when using a motion controller, click on the areas just outside the "monitor" to move the cursor right, left, up, and down).  Once you activate the **Register** button by either clicking on it or pressing down, the GameInfo screen will be automatically reloaded so that you can view your entered score. Also, if you go back a page (by either clicking on the left side of the screen with your motion controller or using a mapped key), you will see the screenshot that you just took, along with a watermark on it showing your initials, the score, and a date/time stamp of when the score was recorded.
 -->
 
 General Configuration (Settings dialog)
@@ -255,11 +277,7 @@ Once you've done this, close and restart arcadeVFE if it was running, then check
 In addition to this documentation file, the **Settings** screen implements tooltips on all controls to explain their operation. If you no longer need the tooltips, you can turn them off by unchecking the **Show Tooltips** checkbox.
 
 ### Use GameInfo Overlay
-This feature will display a screen showing detailed game information, including pictures, associated with the game currently running in the arcade. This information may be easily viewed while you are in VR by using your favorite desktop viewport (third party, or one provided with your headset). The text information comes from the `mameinfo.dat` and `history.xml` files in the `\GameInfo` folder. This overlay will automatically unload when the arcade is closed (which is why this feature is only available when the **Monitor only when the arcade is running** setting is configured).<br/>
-
-<img width="900" alt="GameInfo" src="https://github.com/user-attachments/assets/95714c3d-6ec2-47fd-9b52-2e0b974b17e3" /><br/>
-
-To navigate through the **GameInfo** screens, you will want to assign at least the `Right` action in the game controller button configuration (and optionally, the `Left`, `Start`, and `Exit` options), using the **GameInfo navigation** radio switch at the top of the screen. If you would like custom pictures to be displayed along with the text information, you may create additional folders within the `..\GameInfo\Assets` subfolder of **arcadeVFE**, and fill them with `*.jpg` or `*.png` files having root names that are the same as the roms you would like to associate them with. Examples are provided in the `..\GameInfo\Assets\cabinets` folder along with a few others. Feel free to add additional folders as you like.<br/>
+Checking this option turns on the in-game GameInfo display. Uncheck this if you do not want to use the GameInfo feature, or prefer to see the game's normal 2D desktop viewer.
 
 #### Font Size
 Sets the font size used in the **GameInfo** screen. This can be used to optimize text size based on the resolution of your VR headset. If you revise the font size, you may preview it by pressing the **Preview GameInfo...** button.
