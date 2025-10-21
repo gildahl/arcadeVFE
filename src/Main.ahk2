@@ -488,11 +488,6 @@ CreateDefaultActionList()
 		mConfig["Keyboard"]["Space"]["1"] := mInfo	
 
 		mInfo := mInfo.Clone()
-		mInfo["command_line"] := "Scorecard: {Select}"
-		mConfig["Keyboard"]["Enter"] := Map()
-		mConfig["Keyboard"]["Enter"]["1"] := mInfo
-
-		mInfo := mInfo.Clone()
 		mInfo["command_line"] := "Scorecard: {Up}"
 		mConfig["Keyboard"]["Up"] := Map()
 		mConfig["Keyboard"]["Up"]["1"] := mInfo	
