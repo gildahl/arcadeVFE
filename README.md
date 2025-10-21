@@ -226,7 +226,7 @@ User Preferences
 ================
 These options allow the user to make adjustments to certain features.
 
-<img width="400" alt="User Preferences" src="https://github.com/user-attachments/assets/fe488cbf-5da3-44be-ab47-995e2ed712af" /><br/>
+<img width="500" alt="User Preferences" src="https://github.com/user-attachments/assets/fe488cbf-5da3-44be-ab47-995e2ed712af" /><br/>
 
 ### Monitor only when the arcade is running
 This is a recommended setting for most use cases (and required for the **Run RawAccel** and **Use GameInfo Overlay** options). Turning this off is mainly intended for testing and can cause side-effects in other applications. Note that you will need to exit and restart **arcadeVFE** if you change this setting.
