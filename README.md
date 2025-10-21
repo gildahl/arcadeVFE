@@ -126,9 +126,14 @@ When pressing the **Enter High Score** button from within the **Settings** dialo
 <img width="900" alt="High Score Entry - Settings" src="https://github.com/user-attachments/assets/f8cea8b0-5b31-44a6-a3fd-874a83ad3071" /><br/>
 
 ### Entering a High Score from within a game
-After achieving a high score on any machine in the arcade, wait until that score (and preferrably your initials/name as well) is displayed on the arcade machine's screen, move your head in to look at it fairly closely, and then press the **Snap/Reset** button to take a snapshot of it. The **Snap/Reset** button is either the spacebar, or any controller button to which you have assigned the scorecard **Snap/Reset** action.
+After achieving a high score on any machine in the arcade, wait until that score (and preferrably your initials/name as well) is displayed on the arcade machine's screen, move your head in to look at it fairly closely, and then press the **Snap/Reset** button to take a snapshot of it (you should hear a camera shutter sound). The **Snap/Reset** button is either the spacebar, or any controller button to which you have assigned the scorecard **Snap/Reset** action. If you think you need to take another picture, press the **Snap/Reset** button a second time to reset (you'll hear a "reset" sound), then once you have a new opportunity, press the button again to take another snapshot.
 
 Once you have taken the snapshot, access your headset's desktop portal to view the **MARQUEE Scorecard** entry screen. This screen will look similar to the one available fromt the **Settings** dialog, but will have images on either side of it. The image on the right is the snapshot you just took, and the image on the left (if present) will be the previous high score's snapshot. Using the image on the right as a reference, enter the high score into the fields just as described above for the **Settings** screen. You may use the keyboard, joystick, or perhaps most conveniently, your motion controller (when using a motion controller, click on the areas just outside the "monitor" to move the cursor right, left, up, and down).  Once you activate the **Register** button by either clicking on it or pressing down, the GameInfo screen will be automatically reloaded so that you can view your entered score. Also, if you go back a page (by either clicking on the left side of the screen with your motion controller or using a mapped key), you will see the screenshot that you just took, along with a watermark on it showing your initials, the score, and a date/time stamp of when the score was recorded.
+
+<img width="900" alt="High Score Entry" src="https://github.com/user-attachments/assets/73cfeda3-0078-4916-bc2e-2974e04240e6" /><br/>
+
+> [!TIP]
+> If you still need to take another snapshot, simply close the desktop viewer, press the **Snap/Reset** button to reset, wait until a new opportunity presents itself, then press the **Snap/Reset** button again to take another picture, and try again.
 -->
 
 General Configuration (Settings dialog)
