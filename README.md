@@ -11,7 +11,7 @@ To this end, **arcadeVFE** includes these features:
 
 * Ability to automatically execute one or more commands upon startup of any game in the arcade. This can be used to call command line applications like **Virtual Controller** or other programmable game controller software to create game-specific custom configurations, reorient a ServoStik, etc. This makes possible the ability to do anything from tweaking the button layout of a gamepad or fightstick on a per-game basis to building an advanced composite control panel that adjusts to every game in the virtual arcade, just like the more advanced panels used in many conventional multicade arcade machines.
 * A detailed game information overlay that can be viewed in VR using one's favorite desktop portal. This information comes from the included files, [`history.xml`](https://www.arcade-history.com/index.php?page=download) and [`gameinfo.dat`](https://mameinfo.mameworld.info/), and can also include pictures of your choice--for example, flyers, pcbs, or pictures of real cab control panels (which can be very handy as a reference in the Candy Cab rooms of ATC).
-* (1.2.2) Integrated high score support. Ability to view the high score leaderboard for supported games in the GameInfo screen, and to both enter and view "Marquee" style high scores for **all** games in the arcade using an independent high score entry system.
+<!--* (1.2.2) Integrated high score support. Ability to view the high score leaderboard for supported games in the GameInfo screen, and to both enter and view "Marquee" style high scores for **all** games in the arcade using an independent high score entry system.-->
 * An arcade machine location directory and editor to more easily locate your favorite machines in the virtual arcade.
 * A rom copy feature that can simplify installation of the correct roms into **Arcade Time Capsule**.
 * A rom audit feature that can help determine whether your rom set is suitable for **Arcade Time Capsule**.
@@ -102,6 +102,12 @@ Use **arcadeVFE** to quickly install the correct roms into **Arcade Time Capsule
 Log
 ===
 See the `log.txt` file in the `\Log` subfolder if needed for troubleshooting. This log is overwritten at the start of every run. Two beeps will be sounded whenever an error is written to the file. When reporting any issues, be sure to include the most recent log with your description of the problem. You may report errors on the Discord.
+
+<!--
+GameInfo and High Score Support
+===============================
+**arcadeVFE** supports display of detailed Game Information that, when enabled, is available while in-game by viewing the desktop by simply accessing the desktop viewport on your headset. Pages on this screen may be changed by clicking on the pages using your motion controller, using mapped controller buttons, or using the arrow keys on your keyboard.
+-->
 
 General Configuration (Settings dialog)
 =======================================
