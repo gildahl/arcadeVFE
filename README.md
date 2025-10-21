@@ -269,10 +269,10 @@ Within the **Initial Setup** dialog there is a button called **File Tools...** t
 
 <img width="500" alt="File tools" src="https://github.com/user-attachments/assets/91080f03-24a8-469d-b042-914351f17a51" /><br/>
 
-###ROM Files (*.zip)
+### ROM Files (*.zip)
 Use the buttons in this group to backup, restore, [copy](#Copy-ROMs-to-ATC), and audit all ATC rom files.
 
-###TAB Menu Controller Files (*.cfg)
+### TAB Menu Controller Files (*.cfg)
 Whenever you change controller settings using the **MAME** `Tab` menu within games in ATC, these changes will be stored in `*.cfg` files inside ATC's `\Arcade Time Capsule\RetroVRArcade\Plugins\save\mame*` folders. The risk in making such changes is that as soon as you do so, your change is saved immediately, overwriting previous settings, which can sometimes take some effort to undo if you make a mistake--or sometimes you just want to make experimental changes without concern about reverting. To assist with this, within the **Initial Setup** dialog there is a button called **Config Tools...** that will permit you perform the following actions:
 
 1. **Backup**: This button backs-up all `*.cfg` files in ATC.
@@ -280,7 +280,7 @@ Whenever you change controller settings using the **MAME** `Tab` menu within gam
 3. **Delete**: This button deletes all `*.cfg` files in ATC. This has the effect of returning all games to their default settings (since ATC will regenerate them).
 4. **Patch**: This button patches all rotary games in ATC to provide the Positional Analog Inc and Dec settings with mappable values so that you can more easily configure joysticks like the GRS Ikari Warriors stick. It is recommended that you perform a backup before using this feature in case the changes aren't what you had in mind.<br/>
 
-###High Score Files (*.hi and *.nv)
+### High Score Files (*.hi and *.nv)
 ATC comes with a set of its own high scores. These are stored in *.hi files along with the NVRAM states stored in *.nv files. If you would like to make the arcade "your own" and reset all the machines to their original factory states so that you may conduct high score campaigns from "scratch", you can follow this procedure.
 
 1. **Backup**: Press Backup to backup all *.hi and *.nv files in ATC.
