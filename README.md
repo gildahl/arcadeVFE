@@ -63,7 +63,7 @@ Once you close the **Initial Setup** dialog, you will be taken directly to the *
 1. Select a game from the **Choose ROM** list on the top right. You should see its location in the arcade directly beneath. If you ever wish to edit these locations, check the **Edit** checkbox to enable the controls.
 2. With a game selected, press the **Preview GameInfo...** button at the bottom of the dialog. This will display game information that you can navigate through using the left and right arrow buttons. To Exit use the `Escape` key.
 
-<img width="700" alt="Settings" src="https://github.com/user-attachments/assets/201af3e8-5b01-4111-8631-dafe872d7500" /><br/>
+<img width="700" alt="Settings" src="https://github.com/user-attachments/assets/ce906973-9848-4f3a-b2ce-e4f0d250af4e" /><br/>
 
 After returning to the Settings screen, you may configure your controllers by following the instructions in the General Configuration section below.
 
