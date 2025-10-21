@@ -263,8 +263,16 @@ Sets the font size used in the **GameInfo** screen. This can be used to optimize
 #### Choose Monitor
 If you use mouse clicks as a fire button, these will not work if the **GameInfo** overlay is covering the emulator's screen. One way to address this is to move the overlay to another screen if you have one. To do this, just change the **Choose Monitor** setting to display the **GameInfo** overlay on a different monitor. See #2 in the [Limitations](#Limitations) section below for more information about this.
 
-Config Tools
+File Tools
 ============
+Within the **Initial Setup** dialog there is a button called **File Tools...** that will permit you to perform several file related backup, restore, and utility functions. Note that all backups are made to the `.\Arcade\Arcade Time Capsule *\Backup` folder.
+
+<img width="500" alt="File tools" src="https://github.com/user-attachments/assets/91080f03-24a8-469d-b042-914351f17a51" /><br/>
+
+###ROM Files (*.zip)
+Use the buttons in this group to backup, restore, [copy](#Copy-ROMs-to-ATC), and audit all ATC rom files.
+
+###TAB Menu Controller Files (*.cfg)
 Whenever you change controller settings using the **MAME** `Tab` menu within games in ATC, these changes will be stored in `*.cfg` files inside ATC's `\Arcade Time Capsule\RetroVRArcade\Plugins\save\mame*` folders. The risk in making such changes is that as soon as you do so, your change is saved immediately, overwriting previous settings, which can sometimes take some effort to undo if you make a mistake--or sometimes you just want to make experimental changes without concern about reverting. To assist with this, within the **Initial Setup** dialog there is a button called **Config Tools...** that will permit you perform the following actions:
 
 1. **Backup**: This button backs-up all `*.cfg` files in ATC.
@@ -272,7 +280,12 @@ Whenever you change controller settings using the **MAME** `Tab` menu within gam
 3. **Delete**: This button deletes all `*.cfg` files in ATC. This has the effect of returning all games to their default settings (since ATC will regenerate them).
 4. **Patch**: This button patches all rotary games in ATC to provide the Positional Analog Inc and Dec settings with mappable values so that you can more easily configure joysticks like the GRS Ikari Warriors stick. It is recommended that you perform a backup before using this feature in case the changes aren't what you had in mind.<br/>
 
-<img width="546" height="247" alt="Config Tools" src="https://github.com/user-attachments/assets/44713b1d-7c3c-487f-b134-4a6bd4a389a2" /><br/>
+###High Score Files (*.hi and *.nv)
+ATC comes with a set of its own high scores. These are stored in *.hi files along with the NVRAM states stored in *.nv files. If you would like to make the arcade "your own" and reset all the machines to their original factory states so that you may conduct high score campaigns from "scratch", you can follow this procedure.
+
+1. **Backup**: Press Backup to backup all *.hi and *.nv files in ATC.
+2. **Reset**: Press Reset to delete all *.hi and *.nv files in ATC. This will reset all machines in ATC to their original factory states. Note that this will remove all previously attained high scores, and will also make some machines (such as the Williams machines and Raiden Fighters series machines) go through their initialization processes again.
+3. **Restore**: Press this to restore all *.hi and *.nv files previously backed-up.
 
 vfe.ini Settings
 ================
