@@ -288,7 +288,7 @@ vfe.ini Settings
 ================
 Most of the settings stored in the `.\Config\vfe.ini` file are set in the user interface, so most users will never need to access or modify this file directly. However, there are a few settings that can only be changed in this file that some users may have an interest in.
 
-### [General Section
+### [General] Section
 1. `BeepOnProfileChange=` Set this to 1 to sound a beep whenever a command action happens. This can be useful as a debugging tool by asserting profile changes independent of the voice option.
 
 ### [GameInfo] Section
