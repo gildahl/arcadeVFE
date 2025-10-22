@@ -11,7 +11,7 @@ To this end, **arcadeVFE** includes these features:
 
 * Ability to automatically execute one or more commands upon startup of any game in the arcade. This can be used to call command line applications like **Virtual Controller** or other programmable game controller software to create game-specific custom configurations, reorient a ServoStik, etc. This makes possible the ability to do anything from tweaking the button layout of a gamepad or fightstick on a per-game basis to building an advanced composite control panel that adjusts to every game in the virtual arcade, just like the more advanced panels used in many conventional multicade arcade machines.
 * A detailed game information overlay that can be viewed in VR using one's favorite desktop portal. This information comes from the included files, [`history.xml`](https://www.arcade-history.com/index.php?page=download) and [`gameinfo.dat`](https://mameinfo.mameworld.info/), and can also include pictures of your choice--for example, flyers, pcbs, or pictures of real cab control panels (which can be very handy as a reference in the Candy Cab rooms of ATC).
-<!--* (1.2.2) Integrated high score support. Ability to view the high score leaderboard for supported games in the GameInfo screen, and to both enter and view "Marquee" style high scores for **all** games in the arcade using an independent high score entry system.-->
+<!-- * (1.2.2) Ability to view the high score leaderboard for supported games in the GameInfo screen; and also for a "Marquee" scorecard editor permitting entry of high scores for **all** games in the arcade.-->
 * An arcade machine location directory and editor to more easily locate your favorite machines in the virtual arcade.
 * A rom copy feature that can simplify installation of the correct roms into **Arcade Time Capsule**.
 * A rom audit feature that can help determine whether your rom set is suitable for **Arcade Time Capsule**.
@@ -105,11 +105,11 @@ See the `log.txt` file in the `\Log` subfolder if needed for troubleshooting. Th
 <!--
 GameInfo
 ========
-**arcadeVFE** supports display of detailed Game Information that, when enabled, is available while in-game by viewing the desktop by simply accessing the desktop viewport on your headset. Pages on this screen may be changed by clicking on the pages using your motion controller, using mapped controller buttons, or using the arrow keys on your keyboard.<br/>
+**arcadeVFE** supports display of detailed Game Information that may be viewed by simply accessing the desktop viewport on your headset. Pages on this screen may be changed by clicking on the pages using your motion controller, using mapped controller buttons, or using the left/right arrow keys on your keyboard.<br/>
 
 <img width="900" alt="GameInfo" src="https://github.com/user-attachments/assets/95714c3d-6ec2-47fd-9b52-2e0b974b17e3" /><br/>
 
-In addition to general game information, the GameInfo screen also shows high score information for the game of three different types.
+In addition to general game information, the GameInfo screen also shows up to three different kinds of high scores for the game.
 1. The leaderboard for the machine in the arcade for supported machines. If you entered your initials into the **Initial Setup** dialog, then any scores with your intitials will also be highlighted in yellow. Note that only some machines support this feature. When they do, a grid such as shown in the above screenshot will be displayed showing the current list of high scores on that machine.
 2. The game's official high score (if such data is available). This data comes from data on the Classic Arcade Gaming site and from the game's [`gameinfo.dat`](https://mameinfo.mameworld.info/) entry.
 3. The **MARQUEE Scorecard** high score entered for this game. See next section.
