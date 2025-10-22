@@ -168,12 +168,12 @@ To setup a manual action that will run upon a particular button or key press, Ch
 
 Next, configure a keypress or GameInfo navigation action, or use the **Profile** and **Command** fields below to configure one or more a command line actions that will execute when the button or key is pressed. Finally, press the **Assign** button to choose the actual button or key you want to assign to the action and add it to the **Actions List**.
 <!--
-When configuring key presses, here are some particularly useful ones for use with ATC.
+When configuring Keypress actions, here are some particularly useful ones for use with ATC.
 
 * `Tab` - enters a game's configuration menu.
 * `Enter` - performs a selection inside the game's configuration menu.
-* `KeypadPlus` - increases seated height in ATC.
-* `KeypadMinus - decreases seated height in ATC.
+* `NumpadAdd` - increases seated height in ATC.
+* `NumpadSub - decreases seated height in ATC.
 -->
 **Note**: It is possible to assign multiple actions to the same button or key press, in which case the actions will be invoked sequentially upon each press. See the [Sequence](#Sequence) section below for more information about how this works.
 
