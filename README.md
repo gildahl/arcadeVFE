@@ -55,7 +55,7 @@ Before pressing **Close** to complete the installation, you may wish to press th
 If you are new to ATC and have not yet installed any roms, you may wish to refer to the next section, [Copy ROMs to ATC](#Copy-ROMs-to-ATC) for a streamlined method of doing this.
 
 >[!NOTE]
-> * If you are currently running version 1.2.0 or 1.2.1, just install version 1.2.2 to the same folder and you will be automatically upgraded. 
+> * If you are already running version 1.2.0 or 1.2.1, just install version 1.2.2 to the same folder and you will be automatically upgraded. 
 > * If you are running version 1.1 or earlier, it is **strongly** recommended to install 1.2.2 into a new folder due to the use of a new installer, new defaults, and new plug-in architecture. 
 > * arcadeVFE has only been tested with ATC 3.6; however, if you wish to try it with other arcade software, you may chose the **Other** option in the **Initial Setup Dialog** under **Choose your arcade software**, though some features are disabled in this mode. There are also no guarantees on how well it will work, but feel free to report your findings.
 
