@@ -135,7 +135,7 @@ Once you have taken the snapshot, use your headset's desktop portal to view the 
 > [!TIP]
 > If you don't like the picture or made a mistake, even after you're done and want to do it over, simply close the desktop viewer, press the **Snap/Reset** button to reset, wait until the leaderboard reappears, then press the **Snap/Reset** button again to take another picture and re-enter your score.
 
-General Configuration (Settings dialog)
+Controller Configuration (Settings dialog)
 =======================================
 **arcadeVFE** offers two different modes of operation. The first is a **ROM Monitor** mode that can execute game-specific actions whenever a game using a **MAME** rom file is played. This mode can provide fully automated game controller configuration in **MAME** environments like **Arcade Time Capsule**. 
     
