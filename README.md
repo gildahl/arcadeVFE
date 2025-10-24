@@ -44,7 +44,7 @@ To install arcadeVFE 1.2.2, follow these four steps:
 1. Download the Windows installer from the [Releases](https://github.com/gildahl/arcadeVFE/releases/tag/v1.2.2.0) page.
 2. Run the installer and follow the prompts.
 3. At the end of the install, accept the option to launch **arcadeVFE**.
-4. In the **Initial Setup Dialog** that follows, enter ATC's rom folder in the bottom field, then press **Apply**.<br/>
+4. In the **Initial Setup Dialog** that follows, enter ATC's rom folder in the bottom field and your initials in the **Player Initials** field, then press **Apply**.<br/>
 
 <img width="400" alt="Initial Setup" src="https://github.com/user-attachments/assets/c92d3381-34c2-49f5-b34d-38c6d9fe18c5" /><br/>
 
