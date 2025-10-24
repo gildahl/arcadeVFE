@@ -10,7 +10,7 @@ Virtual Reality arcades based on **MAME** like **Arcade Time Capsule**, do not n
 To this end, **arcadeVFE** includes these features: 
 
 * Ability to automatically execute one or more commands upon startup of any game in the arcade. This can be used to call command line applications like **Virtual Controller** or other programmable game controller software to create game-specific custom configurations, reorient a ServoStik, etc. This makes possible the ability to do anything from tweaking the button layout of a gamepad or fightstick on a per-game basis to building an advanced composite control panel that adjusts to every game in the virtual arcade, just like the more advanced panels used in many conventional multicade arcade machines.
-* A detailed game information overlay that can be viewed in VR using one's favorite desktop portal. This information comes from the included files, [`history.xml`](https://www.arcade-history.com/index.php?page=download) and [`gameinfo.dat`](https://mameinfo.mameworld.info/), and can also include pictures of your choice--for example, flyers, pcbs, or pictures of real cab control panels (which can be very handy as a reference in the Candy Cab rooms of ATC).
+* A detailed game information overlay that can be viewed in VR using one's favorite desktop portal.
 * Ability to browse high score leaderboards for supported games, as well as a **MARQUEE Scorecard** high score editor permitting entry of high scores for **all** games in the arcade, along with screenshots of those scores.
 * File management tools allowing you to back-up and restore ATC rom files, controller configuration files and high score/nvram files, for recovery, resets, or experimentation.
 * An arcade machine location directory and editor to more easily locate your favorite machines in the virtual arcade.
@@ -105,7 +105,7 @@ See the `log.txt` file in the `\Log` subfolder if needed for troubleshooting. Th
 
 GameInfo
 ========
-**arcadeVFE** supports display of detailed Game Information that may be viewed by simply accessing the desktop viewport on your headset. Pages on this screen may be changed by clicking on the left or right side of the screen using your motion controller, using by using mapped controller buttons, or by using the left/right arrow keys on your keyboard.<br/>
+**arcadeVFE** supports display of detailed Game Information that may be viewed by simply accessing the desktop viewport on your headset. This information comes from the included files, [`history.xml`](https://www.arcade-history.com/index.php?page=download) and [`gameinfo.dat`](https://mameinfo.mameworld.info/), and can also include pictures of your choice--for example, flyers, pcbs, or pictures of real cab control panels (which can be very handy as a reference in the Candy Cab rooms of ATC). Pages on this screen may be changed by clicking on the left or right side of the screen using your motion controller, using by using mapped controller buttons, or by using the left/right arrow keys on your keyboard.<br/>
 
 <img width="900" alt="GameInfo" src="https://github.com/user-attachments/assets/95714c3d-6ec2-47fd-9b52-2e0b974b17e3" /><br/>
 
