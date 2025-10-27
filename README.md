@@ -10,7 +10,7 @@ To this end, **arcadeVFE** includes these features:
 
 * Ability to automatically execute one or more commands upon startup of any game in the arcade. This can be used to call command line applications like **Virtual Controller** or other programmable game controller software to create game-specific custom configurations, reorient a ServoStik, etc. This makes possible the ability to do anything from tweaking the button layout of a gamepad or fightstick on a per-game basis to building an advanced composite control panel that adjusts to every game in the virtual arcade, just like the more advanced panels used in many conventional multicade arcade machines.
 * A detailed game information overlay that can be viewed in VR using one's favorite desktop portal.
-* Ability to browse high score leaderboards for supported games, as well as a **MARQUEE Scorecard** high score editor permitting entry of high scores for **all** games in the arcade, along with screenshots of those scores.
+* Ability to browse high score leaderboards for supported games, as well as a **MARQUEE Scorecard** high score editor permitting entry of high scores for **all** games in the arcade, along with taking screenshots of those scores.
 * File management tools allowing you to back-up and restore ATC rom files, controller configuration files and high score/nvram files, for recovery, resets, or experimentation.
 * An arcade machine location directory and editor to more easily locate your favorite machines in the virtual arcade.
 * A rom copy feature that can simplify installation of the correct roms into **Arcade Time Capsule**.
