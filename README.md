@@ -16,7 +16,7 @@ To this end, **arcadeVFE** includes these features:
 * A rom copy feature that can simplify installation of the correct roms into **Arcade Time Capsule**.
 * A rom audit feature that can help determine whether your rom set is suitable for **Arcade Time Capsule**.
 * Manual execution of command line actions whenever a particular keyboard key or game controller button is pressed.
-* Mapping of controller buttons to keyboard keys in order to, for example, better facilitate access to the **MAME** tab configuration menus while in VR.
+* Mapping of controller buttons to keyboard keys in order to, for example, better facilitate access to the **MAME** tab configuration menus, or player height adjustment while in VR.
 * Voice notification of game control layout changes.
 * Automatically run **RawAccel** if you need it.
 
