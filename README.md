@@ -15,7 +15,6 @@ To this end, **arcadeVFE** includes these features:
 * An arcade machine location directory and editor to more easily locate your favorite machines in the virtual arcade.
 * A rom copy feature that can simplify installation of the correct roms into **Arcade Time Capsule**.
 * A rom audit feature that can help determine whether your rom set is suitable for **Arcade Time Capsule**.
-* A `*.cfg` controller configuration file backup/restore/delete/patch tool for **Arcade Time Capsule**.
 * Manual execution of command line actions whenever a particular keyboard key or game controller button is pressed.
 * Mapping of controller buttons to keyboard keys in order to, for example, better facilitate access to the **MAME** tab configuration menus while in VR.
 * Voice notification of game control layout changes.
