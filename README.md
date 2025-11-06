@@ -292,7 +292,7 @@ Checking this option turns on the in-game GameInfo display. Uncheck this if you 
 Sets the font size used in the **GameInfo** screen. This can be used to optimize text size based on the resolution of your VR headset. If you revise the font size, you may preview it by pressing the **Preview GameInfo...** button.
 
 #### Choose Monitor
-This should remain set to 1 for ordinary use. It is recommended to only set this to another monitor if previewing GameInfo from the Settings screen since you may lose the ability to change pages via mouse/motion controller if not set to monitor 1.
+This should remain set to 1 for ordinary use. It is recommended to only change this temporarily for preview purposes since you may lose the ability to change pages via mouse/motion controller if not set to monitor 1.
 
 File Tools
 ============
