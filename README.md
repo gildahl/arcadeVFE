@@ -316,7 +316,7 @@ ATC comes with a set of its own high scores. These are stored in *.hi files alon
 
 1. **Backup**: Press Backup to backup all *.hi and *.nv files in ATC.
 2. **Reset**: Press Reset to delete all *.hi and *.nv files in ATC. This will reset all machines in ATC to their original factory states. Note that this will remove all previously attained high scores, and will also make some machines (such as the Williams machines and Raiden Fighters series machines) go through their initialization processes again.
-3. **Restore**: Press this to restore all *.hi and *.nv files previously backed-up.
+3. **Restore**: Press this in the event that you would like to restore all *.hi and *.nv files previously backed-up.
 
 vfe.ini Settings
 ================
