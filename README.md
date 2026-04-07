@@ -338,8 +338,8 @@ Most of the settings stored in the `.\Config\vfe.ini` file are set in the user i
 
 _Note that if you change any of these settings, you must fully exit and then restart arcadeVFE in order for them to become effective._
 
-Limitations
-===========
+Bugs and Limitations
+====================
 Because this software is not code-integrated with the host emulator, but relies on external interop techniques, there are a few limitations that should be noted. These may rarely be noticed, but they are good to be aware of.
 
 1. **arcadeVFE** can only tell when a new game is loaded, but not when it is exited. Therefore, it can only surmise that you have exited a game when it detects that you have started a new and different game. Consequently, if you exit a game and re-enter the SAME game, **arcadeVFE** will not know that you did this. This should not affect practical operation since whatever state was loaded when you originally started the game will still be in effect. However, **arcadeVFE** will not be able to provide feedback (such as a beep or voice notification) when restarting the game. Only upon starting a new game.
@@ -347,3 +347,5 @@ Because this software is not code-integrated with the host emulator, but relies 
 2. **arcadeVFE** pauses operation while the **Settings** screen is displayed. Therefore, if you open your arcade software while the **Setting** screen is open, **arcadeVFE** will not perform any monitoring. If this happens, close both your arcade software and **arcadeVFE**, then restart.
 
 3. **arcadeVFE** does not actively monitor for new game controllers while running. So be sure that any game controller(s) you intend to use with it are plugged in before you start the software. If you turn-on/plug-in a controller while the software is running, the controller will not be recognized until you restart the software.
+
+4. **arcadeVFE**, as of version 1.2.2, has a bug that will prevent access to the **Settings** if there are no game controllers connected to the PC. If you run into this issue, connect at least one controller and then try again. 
