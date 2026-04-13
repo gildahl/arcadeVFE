@@ -1,25 +1,24 @@
-# arcadeVFE 1.2.1
-### The Virtual Arcade Front End
-<img width="128" height="128" alt="furry_elephant_vr_arcade_128x128" src="https://github.com/user-attachments/assets/9e708a1a-9422-46ff-91c3-864eef4868a9" />
-By David Dahlstrom
+# arcadeVFE 1.2.2
+### The Virtual Arcade Front End for ATC
+<img width="200" height="200" alt="furry_elephant_vr_arcade_128x128" src="https://github.com/user-attachments/assets/9e708a1a-9422-46ff-91c3-864eef4868a9" />
 
 Summary
 =======
-Virtual Reality arcades based on **MAME** such as **Arcade Time Capsule**, do not need conventional front-ends since players walk the floor of the virtual arcade, choosing games just as in real life. So there's no need for game selection menus, pictures and videos of gameplay, or background ambiance sounds since that's already right in front of the player. However, there are still a few important game controller, rom management, and information features common in front-ends that could still be of benefit to VR arcade players--if they could be made to work. This is the gap that **arcadeVFE** seeks to fill.
+Virtual Reality arcades based on **MAME** like **Arcade Time Capsule**, do not need conventional front-ends since players walk the floor of the virtual arcade, choosing games just as in real life. So there's no need for game selection menus, pictures and videos of gameplay, or background ambiance sounds since that's already right in front of the player. However, there are still a few important game controller, rom management, and information features common in front-ends that could still be of benefit to VR arcade players--if they could be made to work. This is the gap that **arcadeVFE** seeks to fill.
 
 To this end, **arcadeVFE** includes these features: 
 
-* Ability to automatically execute one or more commands upon startup of any game in the arcade. This can be used to call command line applications like **Virtual Controller** or other programmable game controller software to create game-specific custom configurations, reorient a ServoStik, etc. This makes possible the ability to do anything from tweaking the button layout of a gamepad or fightstick on a per-game basis to building an advanced composite control panel that adjusts to every game in the virtual arcade, just like the more advanced panels used in many conventional multicade arcade machines.
-* A detailed game information overlay that can be viewed in VR using one's favorite desktop portal. This information comes from the included files, [`history.xml`](https://www.arcade-history.com/index.php?page=download) and [`gameinfo.dat`](https://mameinfo.mameworld.info/), and can also include pictures of your choice--for example, flyers, pcbs, or pictures of real cab control panels (which can be very handy as a reference in the Candy Cab rooms of ATC).
-<!--* (1.2.2) Integrated high score support. Ability to view the high score leaderboard for supported games in the GameInfo screen, and to both enter and view "Marquee" style high scores for **all** games in the arcade using an independent high score entry system.-->
+* Ability to automatically execute one or more commands upon startup of any game in the arcade. This can be used to call command line applications like [**Virtual Controller**](https://sourceforge.net/projects/vjoy-controller/) or other programmable game controller software to create game-specific custom configurations, reorient a [ServoStik](https://www.ultimarc.com/arcade-controls/joysticks/servostik/), etc. This makes possible the ability to do anything from tweaking the button layout of a gamepad or fightstick on a per-game basis to building an [advanced composite control panel](https://docs.google.com/document/d/1_UpA_Fa-1jQdQMLDDSFTut15gjGnhjljFkd_raw9Ox4/edit?tab=t.0) that adjusts to every game in the virtual arcade, just like the more advanced panels used in many conventional multicade arcade machines.
+* A detailed [game information overlay](#GameInfo) that can be viewed in VR using one's favorite desktop portal.
+* Ability to browse high score leaderboards for supported games, as well as a [**MARQUEE Scorecard**](#MARQUEE-Scorecard-Entry) high score editor permitting entry of high scores for **all** games in the arcade, along with taking screenshots of those scores.
+* File management tools allowing you to back-up and restore ATC rom files, controller configuration files and high score/nvram files, for recovery, resets, or experimentation.
 * An arcade machine location directory and editor to more easily locate your favorite machines in the virtual arcade.
 * A rom copy feature that can simplify installation of the correct roms into **Arcade Time Capsule**.
 * A rom audit feature that can help determine whether your rom set is suitable for **Arcade Time Capsule**.
-* A `*.cfg` controller configuration file backup/restore/delete/patch tool for **Arcade Time Capsule**.
 * Manual execution of command line actions whenever a particular keyboard key or game controller button is pressed.
-* Mapping of controller buttons to keyboard keys in order to, for example, better facilitate access to the **MAME** tab configuration menus while in VR.
+* Mapping of controller buttons to keyboard keys in order to, for example, better facilitate access to the **MAME** tab configuration menus, or player height adjustment while in VR.
 * Voice notification of game control layout changes.
-* Automatically run **RawAccel** if you need it.
+* Automatically run [**RawAccel**](https://github.com/RawAccelOfficial/rawaccel) if you need it.
 
 Resources
 =========
@@ -39,11 +38,11 @@ Tested Software
 
 Installation
 ============
-To install arcadeVFE 1.2.1, follow these four steps:
-1. Download the Windows installer from the [Releases](https://github.com/gildahl/arcadeVFE/releases/tag/v1.2.1.0) page.
+To install arcadeVFE 1.2.2, follow these four steps:
+1. Download the Windows installer from the [Releases](https://github.com/gildahl/arcadeVFE/releases/tag/v1.2.2.0) page.
 2. Run the installer and follow the prompts.
 3. At the end of the install, accept the option to launch **arcadeVFE**.
-4. In the **Initial Setup Dialog** that follows, enter ATC's rom folder in the bottom field, then press **Apply**.<br/>
+4. In the **Initial Setup Dialog** that follows, enter ATC's rom folder in the bottom field and your initials in the **Player Initials** field, then press **Apply**.<br/>
 
 <img width="400" alt="Initial Setup" src="https://github.com/user-attachments/assets/c92d3381-34c2-49f5-b34d-38c6d9fe18c5" /><br/>
 
@@ -54,8 +53,8 @@ Before pressing **Close** to complete the installation, you may wish to press th
 If you are new to ATC and have not yet installed any roms, you may wish to refer to the next section, [Copy ROMs to ATC](#Copy-ROMs-to-ATC) for a streamlined method of doing this.
 
 >[!NOTE]
-> * If you are currently running version 1.2.0, just install version 1.2.1 to the same folder and you will be automatically upgraded. 
-> * If you are running version 1.1 or earlier, it is **strongly** recommended to install 1.2.1 into a new folder due to the use of a new installer, new defaults, and new plug-in architecture. 
+> * If you are already running version 1.2.0 or 1.2.1, just install version 1.2.2 to the same folder and you will be automatically upgraded. 
+> * If you are running version 1.1 or earlier, it is **strongly** recommended to install 1.2.2 into a new folder due to the use of a new installer, new defaults, and new plug-in architecture. 
 > * arcadeVFE has only been tested with ATC 3.6; however, if you wish to try it with other arcade software, you may chose the **Other** option in the **Initial Setup Dialog** under **Choose your arcade software**, though some features are disabled in this mode. There are also no guarantees on how well it will work, but feel free to report your findings.
 
 Quick Tour
@@ -86,52 +85,55 @@ Use **arcadeVFE** to quickly install the correct roms into **Arcade Time Capsule
 
 <img width="400" alt="Initial Setup - copy roms" src="https://github.com/user-attachments/assets/05058c40-aef1-44a4-925d-8141ac80b9da" /><br/>
 
-
-3. Ensure the **ROM folder to monitor** field contains a path to the (empty) ATC roms folder on your PC.
+2. Ensure the **ROM folder to monitor** field contains a path to the (empty) ATC roms folder on your PC.
 
 > [!TIP]
 >  _If you press the **Audit ROMs...** button now, while the folder is still empty, you can get a list of all roms required by ATC and their **MAME** versions._
-4. Press the **Copy Roms...** button.<br/>
+3. Press the **Copy Roms...** button.<br/>
 
 <img width="200" height="165" alt="Copy Roms" src="https://github.com/user-attachments/assets/f18ad5f6-8d6b-4573-8d55-2adb496d7a57" /><br/>
 
-5. Choose `2010` as the **ROM version**, and press the **Browse...** button. Browse to the folder containing your 2010 roms, select it, and perform the copy operation when prompted. 
-6. Choose `2014` as the **ROM version**, and press the **Browse...** button. Browse to the folder containing your 2014 roms, select it, and perform the copy operation when prompted.
-7. Finally, close the **Copy Roms** dialog and press the **Audit Roms** button on the **Initial Setup** dialog to confirm that your rom set is good.
+4. Choose `2010` as the **ROM version**, and press the **Browse...** button. Browse to the folder containing your 2010 roms, select it, and perform the copy operation when prompted. 
+5. Choose `2014` as the **ROM version**, and press the **Browse...** button. Browse to the folder containing your 2014 roms, select it, and perform the copy operation when prompted.
+6. Finally, close the **Copy Roms** dialog and press the **Audit Roms** button on the **Initial Setup** dialog to confirm that your rom set is good.
 
 Log
 ===
 See the `log.txt` file in the `\Log` subfolder if needed for troubleshooting. This log is overwritten at the start of every run. Two beeps will be sounded whenever an error is written to the file. When reporting any issues, be sure to include the most recent log with your description of the problem. You may report errors on the Discord.
-<!--
+
 GameInfo
 ========
-**arcadeVFE** supports display of detailed Game Information that, when enabled, is available while in-game by viewing the desktop by simply accessing the desktop viewport on your headset. Pages on this screen may be changed by clicking on the pages using your motion controller, using mapped controller buttons, or using the arrow keys on your keyboard.<br/>
+**arcadeVFE** supports display of detailed Game Information that may be viewed by simply accessing the desktop viewport on your headset. This information comes from the included files, [`history.xml`](https://www.arcade-history.com/index.php?page=download) and [`gameinfo.dat`](https://mameinfo.mameworld.info/), and can also include pictures of your choice--for example, flyers, pcbs, or pictures of real cab control panels (which can be very handy as a reference in the Candy Cab rooms of ATC). Pages on this screen may be changed by clicking on the left or right side of the screen using your motion controller, using by using mapped controller buttons, or by using the left/right arrow keys on your keyboard.<br/>
 
 <img width="900" alt="GameInfo" src="https://github.com/user-attachments/assets/95714c3d-6ec2-47fd-9b52-2e0b974b17e3" /><br/>
 
-In addition to general game information, the GameInfo screen also shows high score information for the game of three different types.
-1. The leaderboard for the machine in the arcade for supported machines. If you entered your initials into the **Initial Setup** dialog, then any scores with your intitials will also be highlighted in yellow. Note that only some machines support this feature. When they do, a grid such as shown in the above screenshot will be displayed showing the current list of high scores on that machine.
-2. The game's official high score (if such data is available). This data comes from data on the Classic Arcade Gaming site and from the game's [`gameinfo.dat`](https://mameinfo.mameworld.info/) entry.
-3. The **MARQUEE Scorecard** high score entered for this game. See next section.
+In addition to general game information and pictures (which you may customize), the GameInfo screen also shows up to three different kinds of high scores for the game.
+1. The leaderboard for the machine if it is supported by the MAME high score plug-in and the Hi2txt reader (if you entered your initials into the **Initial Setup** dialog, then scores with your intitials will also be highlighted).
+2. The game's official record high score (if such data is available). These scores come from data on the Classic Arcade Gaming site and from the game's [`gameinfo.dat`](https://mameinfo.mameworld.info/) entry.
+3. Any **MARQUEE Scorecard** high score that was entered for the game. See next section.
 
 MARQUEE Scorecard Entry
 ========================
-A common practice in many arcades is to tape a small placard on a game's marquee with the name and score of the local record-holder on that machine. You can simulate this in **arcadeVFE** by using its **MARQUEE Scorecard** high score entry screen.  By entering your initials and score into this screen, it will be permanently saved until the record is next broken, and will be viewable in the GameInfo screen. An example of this is shown in the screenshot in the GameInfo section above. A **MARQUEE** high score may be entered for any game in the arcade.
+A common practice in many arcades is to tape a small placard on a game's marquee with the name and score of the local record-holder on that machine. You can simulate this in **arcadeVFE** by using the **MARQUEE Scorecard** high score entry screen. By entering your initials and score into this screen, it will be permanently saved until a new record high score is entered. An example of this is shown in the screenshot above in the GameInfo section. A **MARQUEE Scorecard** high score may be entered for __any__ game in the arcade.
 
-There are two ways to use the **MARQUEE Scorecard** feature: Either by selecting a game in the **Settings** dialog and then pressing the **Enter High Score** button at the bottom of the screen, or from within the game. In general, it is preferrable to do this from within the game since when you do it this way, **arcadeVFE** will also take a watermarked screenshot of the high score to make data entry easier and to certify your high score.  The following provides instructions for both methods.
+There are two ways to access the **MARQUEE Scorecard** feature. The first method is by selecting a game in the **Settings** dialog and then pressing the **Enter High Score** button at the bottom of the screen, and the second method is from within the arcade. In general, it is preferrable to do this from within the arcade since when you do it this way, **arcadeVFE** will also take a watermarked screenshot of the high score to make data entry easier and to effectively certify your high score.
 
 ### Entering a High Score from the Settings dialog
-When pressing the **Enter High Score** button from within the **Settings** dialog, you will be presented with the screen below for the currently selected game in the **Choose ROM** list. To use this screen simply navigate using either the arrow keys on your keyboard, or a joystick, or by clicking on the areas surrounding the on-screen monitor. Once you have entered your initials and a high score, keep moving the cursor to the right until it lands on the **Register** button. Either click on this button, or press down to complete the registration.  If you register a score of zero, it will erase the MARQUEE High Score for that game. You may cancel high score entry at any time by pressing Esc or by not entering any score and then selecting the cancel button. You can verify that the score was recorded by pressing the **Preview GameInfo** button and observing that the 'MARQUEE HIGH SCORE` table is present.
+When pressing the **Enter High Score** button from within the **Settings** dialog, you will be presented with the screen below. To navigate, use either the arrow keys on your keyboard, or a joystick, or click in the areas surrounding the on-screen monitor with your mouse. Once you have entered your initials and a high score, keep moving the cursor to the right until it lands on the **Register** button. Either click on this button, or press down to complete the registration.  If you register a score of zero, it will erase the MARQUEE High Score for that game. You may cancel high score entry at any time by pressing `Esc` or by not entering any score and then selecting the **Cancel** button. After exiting, you can cerify that the score was recorded by pressing the **Preview GameInfo** button and observing that the `MARQUEE HIGH SCORE` table is present and updated.
 
 <img width="900" alt="High Score Entry - Settings" src="https://github.com/user-attachments/assets/f8cea8b0-5b31-44a6-a3fd-874a83ad3071" /><br/>
 
-### Entering a High Score from within a game
-After achieving a high score on any machine in the arcade, wait until that score (and preferrably your initials/name as well) is displayed on the arcade machine's screen, move your head in to look at it fairly closely, and then press the **Snap/Reset** button to take a snapshot of it. The **Snap/Reset** button is either the spacebar, or any controller button to which you have assigned the scorecard **Snap/Reset** action.
+### Entering a High Score from within the arcade
+After achieving a high score on any machine in the arcade, wait until the leaderboard (or at least the score in games without leaderboards) is displayed on the arcade machine's screen, then move your head in to look at it fairly closely and press the **Snap/Reset** button to take a snapshot of it (you should hear a camera shutter sound). The **Snap/Reset** button is either the spacebar, or any controller button to which you have assigned the scorecard **Snap/Reset** navigation action. If you need to take another picture, press the **Snap/Reset** button a second time to reset (you'll hear a "reset" sound), then once you have a new opportunity to view the leaderboard, press the button again to take a replacement snapshot. You can do this as many times as you need to.
 
-Once you have taken the snapshot, access your headset's desktop portal to view the **MARQUEE Scorecard** entry screen. This screen will look similar to the one available fromt the **Settings** dialog, but will have images on either side of it. The image on the right is the snapshot you just took, and the image on the left (if present) will be the previous high score's snapshot. Using the image on the right as a reference, enter the high score into the fields just as described above for the **Settings** screen. You may use the keyboard, joystick, or perhaps most conveniently, your motion controller (when using a motion controller, click on the areas just outside the "monitor" to move the cursor right, left, up, and down).  Once you activate the **Register** button by either clicking on it or pressing down, the GameInfo screen will be automatically reloaded so that you can view your entered score. Also, if you go back a page (by either clicking on the left side of the screen with your motion controller or using a mapped key), you will see the screenshot that you just took, along with a watermark on it showing your initials, the score, and a date/time stamp of when the score was recorded.
--->
+Once you have taken the snapshot, use your headset's desktop portal to view the **MARQUEE Scorecard** entry screen. This screen will look similar to the one available from the **Settings** dialog, but will have images on either side of it. The image on the right is the snapshot you just took showing your high score, and the image on the left will be the previous high score's snapshot (if there was one). Using the image on the right as a reference, manually enter your initials and score into the fields on the screen. You may use the keyboard, any joystick, or your motion controller (when using a motion controller, click on the areas just outside the "monitor" to move the cursor right, left, up, and down). Once you activate the **Register** button by either clicking on it or pressing down on any controller, the **GameInfo** screen will be automatically reloaded so that you can view your entered score. Also, if you go back a page (by either clicking on the left side of the screen with your motion controller or using a mapped `back` key), you will be able to see the screenshot that you just took, along with a "watermark" overlay showing your initials, the score, and a date/time stamp indicating when the score was recorded.
 
-General Configuration (Settings dialog)
+<img width="900" alt="High Score Entry" src="https://github.com/user-attachments/assets/821ea0eb-50d1-4da6-89c8-e4821c3f3240" /><br/>
+
+> [!TIP]
+> If you don't like the picture or made a mistake, even after you're done and want to do it over, simply close the desktop viewer, press the **Snap/Reset** button to reset, wait until the leaderboard reappears, then press the **Snap/Reset** button again to take another picture and re-enter your score.
+
+Controller Configuration (Settings dialog)
 =======================================
 **arcadeVFE** offers two different modes of operation. The first is a **ROM Monitor** mode that can execute game-specific actions whenever a game using a **MAME** rom file is played. This mode can provide fully automated game controller configuration in **MAME** environments like **Arcade Time Capsule**. 
     
@@ -161,6 +163,13 @@ To setup a manual action that will run upon a particular button or key press, Ch
 <img width="300" height="131" alt="Controller mode" src="https://github.com/user-attachments/assets/d7dc9011-4d00-4bd1-a305-815f93e4dfa7" /><br/>
 
 Next, configure a keypress or GameInfo navigation action, or use the **Profile** and **Command** fields below to configure one or more a command line actions that will execute when the button or key is pressed. Finally, press the **Assign** button to choose the actual button or key you want to assign to the action and add it to the **Actions List**.
+
+When configuring Keypress actions, here are some particularly useful ones for use with ATC.
+
+* `Tab` - enters a game's configuration menu.
+* `Enter` - performs a selection inside the game's configuration menu.
+* `NumpadAdd` - increases seated height in ATC.
+* `NumpadSub` - decreases seated height in ATC.
 
 **Note**: It is possible to assign multiple actions to the same button or key press, in which case the actions will be invoked sequentially upon each press. See the [Sequence](#Sequence) section below for more information about how this works.
 
@@ -283,7 +292,7 @@ Checking this option turns on the in-game GameInfo display. Uncheck this if you 
 Sets the font size used in the **GameInfo** screen. This can be used to optimize text size based on the resolution of your VR headset. If you revise the font size, you may preview it by pressing the **Preview GameInfo...** button.
 
 #### Choose Monitor
-If you use mouse clicks as a fire button, these will not work if the **GameInfo** overlay is covering the emulator's screen. One way to address this is to move the overlay to another screen if you have one. To do this, just change the **Choose Monitor** setting to display the **GameInfo** overlay on a different monitor. See #2 in the [Limitations](#Limitations) section below for more information about this.
+This should remain set to 1 for ordinary use. It is recommended to only change this temporarily for preview purposes from the **Settings** screen since you may lose the ability to change pages via mouse/motion controller if not set to monitor 1.
 
 File Tools
 ============
@@ -307,7 +316,7 @@ ATC comes with a set of its own high scores. These are stored in *.hi files alon
 
 1. **Backup**: Press Backup to backup all *.hi and *.nv files in ATC.
 2. **Reset**: Press Reset to delete all *.hi and *.nv files in ATC. This will reset all machines in ATC to their original factory states. Note that this will remove all previously attained high scores, and will also make some machines (such as the Williams machines and Raiden Fighters series machines) go through their initialization processes again.
-3. **Restore**: Press this to restore all *.hi and *.nv files previously backed-up.
+3. **Restore**: Press this in the event that you would like to restore all *.hi and *.nv files previously backed-up.
 
 vfe.ini Settings
 ================
@@ -321,16 +330,22 @@ Most of the settings stored in the `.\Config\vfe.ini` file are set in the user i
 2. `HideCursor=`: To hide the mouse cursor when displaying the **GameInfo** screen, you may change this value from 0 to 1.
 3. `SettingsExitKey=`, `SettingsRightKey=`, and `SettingsLeftKey=`: These may be used to change the keys that are used for navigation in the **GameInfo** screen when it is accessed via the **Preview GameInfo...** button in the **Settings** dialog. Note that this does not change the keys/buttons that are used during gameplay as those are set as **Actions** in the **Actions List**.
 
+### [Scorecard] Section
+1. `UseWatermark=` 1 or 0. If you would prefer your screenshots to not have a watermark, set this to 0.
+2. `WatermarkSize=` This is the font size of the watermark.
+3. `WatermarkPercentFromTop=` Default is 80 which places the watermark in the lower region of the image. Reducing this number will raise this location higher.
+4. `MaxMarqueeTableRows=` By default this is 1. So only the highest score entered is displayed. Increasing this will enable previous high scores to be displayed as well.
+
 _Note that if you change any of these settings, you must fully exit and then restart arcadeVFE in order for them to become effective._
 
-Limitations
-===========
+Bugs and Limitations
+====================
 Because this software is not code-integrated with the host emulator, but relies on external interop techniques, there are a few limitations that should be noted. These may rarely be noticed, but they are good to be aware of.
 
 1. **arcadeVFE** can only tell when a new game is loaded, but not when it is exited. Therefore, it can only surmise that you have exited a game when it detects that you have started a new and different game. Consequently, if you exit a game and re-enter the SAME game, **arcadeVFE** will not know that you did this. This should not affect practical operation since whatever state was loaded when you originally started the game will still be in effect. However, **arcadeVFE** will not be able to provide feedback (such as a beep or voice notification) when restarting the game. Only upon starting a new game.
 
-2. The **GameInfo** window that **arcadeVFE** overlays on top of the virtual arcade desktop display is specifically designed to not take the focus. However, as an overlay it still has the effect of preventing mouse clicks from passing through to the application (whether or not you are actually viewing it). The consequence is that if you use the mouse button as a fire button in some games, it may not work while using the **GameInfo** feature. The solution to this is to either keep the **GameInfo** feature turned off, or ensure that you map a (non-mouse) game controller button as your fire button. Another solution, if you have two or more monitors, is to simply move **GameInfo** to another monitor by using the **Monitor** option in **User Preferences**. This will prevent the overlay from blocking ATC while displayed and should allow the mouse to work as expected.   
+2. **arcadeVFE** pauses operation while the **Settings** screen is displayed. Therefore, if you open your arcade software while the **Setting** screen is open, **arcadeVFE** will not perform any monitoring. If this happens, close both your arcade software and **arcadeVFE**, then restart.
 
-3. **arcadeVFE** pauses operation while the **Settings** screen is displayed. Therefore, if you open your arcade software while the **Setting** screen is open, **arcadeVFE** will not perform any monitoring. If this happens, close both your arcade software and **arcadeVFE**, then restart.
+3. **arcadeVFE** does not actively monitor for new game controllers while running. So be sure that any game controller(s) you intend to use with it are plugged in before you start the software. If you turn-on/plug-in a controller while the software is running, the controller will not be recognized until you restart the software.
 
-4. **arcadeVFE** does not actively monitor for new game controllers while running. So be sure that any game controller(s) you intend to use with it are plugged in before you start the software. If you turn-on/plug-in a controller while the software is running, the controller will not be recognized until you restart the software.
+4. **arcadeVFE**, as of version 1.2.2, has a bug that will prevent access to the **Settings** if there are no game controllers connected to the PC. If you run into this issue, connect at least one controller and then try again. 
