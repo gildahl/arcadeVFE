@@ -1,7 +1,7 @@
 /*****************************************************************************
  * @description arcadeVFE - The Virtual Arcade Front End
  * @file Main.ahk2
- * @author © 2025 David G. Dahlstrom
+ * @author © 2026 David G. Dahlstrom
   ****************************************************************************/
 
 /******************************************************************************
@@ -15,9 +15,9 @@
 /***********************************************************************
 * Compiler directives
 ************************************************************************/
-global CodeVersion := "1.2.2.0"
+global CodeVersion := "1.2.2.1"
 ;@Ahk2Exe-Let version = %A_PriorLine~U)^(.+"){1}(.+)".*$~$2%
-;@Ahk2Exe-SetCopyright © 2025 David G. Dahlstrom
+;@Ahk2Exe-SetCopyright © 2026 David G. Dahlstrom
 ;@Ahk2Exe-SetProductName arcadeVFE
 ;@Ahk2Exe-SetDescription arcadeVFE
 ;@Ahk2Exe-SetProductVersion %U_version%
@@ -678,7 +678,7 @@ StartRomWatcher()
 	
 	if (attrib)
 	{
-		g_oLog.LogLine("INFO: StartRomWatcher. ROM Folder set to: `"" g_sROMMonitorFolder ".`n")
+		g_oLog.LogLine("INFO: StartRomWatcher. ROM Folder set to: `"" g_sROMMonitorFolder "`".`n")
 
 		;Ensure all rom files have a last-accessed date/time of a week ago. This is to address
 		;a Windows deficiency in which the last-access date/time of files is not updated if the file

@@ -1,3 +1,7 @@
+arcadeVFE v.1.2.2.1
+* Improved error reporting when no game controllers are detected.
+* Fixed incorrect rom count being reported by the copy roms function.
+
 arcadeVFE v.1.2.2
 * Added high scores (via *.hi files) to GameInfo for supported games.
 * Added "Marquee" High Score editor supporting all games.

@@ -1,7 +1,7 @@
 /******************************************************************************
  * @description Settings screen for arcadeVFE
  * @file Settings.ahk2
- * @author © 2025 David G. Dahlstrom
+ * @author © 2026 David G. Dahlstrom
  ******************************************************************************/
 
 /******************************************************************************
@@ -690,6 +690,15 @@ class Settings
 
 			gcDevices.Add(g_aDevices)
 			gcDevices.Value := 1
+		}
+		else 
+		{
+			if (IsSet(guiSplash))
+				guiSplash.Destroy
+
+			MsgBox("ERROR: arcadeVFE requires at least one game controller`nto be connected to the PC.`nPlease connect a controller and restart the application.", "Controller not found", 16)
+			g_oLog.LogLine("ERROR: arcadeVFE requires at least one game controller to be connected to the PC. Exiting.`n")
+			ExitApp -1
 		}
 	}
 
@@ -2170,7 +2179,15 @@ class Settings
 		Settings.ClearTable(true)
 		Settings.ReadActionList()
 
-		gcDevices.Value := 1
+		try {
+			gcDevices.Value := 1
+		}
+		catch {
+			MsgBox("ERROR: arcadeVFE requires at least one game controller`nto be connected to the PC.`nPlease connect a controller and restart the application.", "Controller not found", 16)
+			g_oLog.LogLine("ERROR: arcadeVFE requires at least one game controller to be connected to the PC. Exiting.`n")
+			ExitApp -1
+		}
+
 		gcAnnunciationEdit.Text := ""
 		gcProfileEdit.Text := ""
 		gcProfileEdit_2.Text := ""

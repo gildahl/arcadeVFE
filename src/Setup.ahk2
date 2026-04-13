@@ -1,7 +1,7 @@
 /******************************************************************************
  * @description Initial Setup screen for arcadeVFE
  * @file Setup.ahk2
- * @author © 2025 David G. Dahlstrom
+ * @author © 2026 David G. Dahlstrom
  ******************************************************************************/
 
 /******************************************************************************
@@ -935,7 +935,7 @@ class Setup
             return
 		
         result := "Yes"
-        result := MsgBox("Begin copy of " gcRomVersionDropDown.Text " roms from folder:`n   " sFolder "`n`nTo folder:`n   " gcROMMonitorFolderEdit.Text "`n`nDuplicate files will be overwritten. Are you sure you would like to proceed?", "Begin Copy", 36 " Owner" guiCopyRoms.Hwnd)
+        result := MsgBox("Begin copy of " gcRomVersionDropDown.Text " rom and chd files from folder:`n   " sFolder "`n`nTo folder:`n   " gcROMMonitorFolderEdit.Text "`n`nDuplicate files will be overwritten. Are you sure you would like to proceed?", "Begin Copy", 36 " Owner" guiCopyRoms.Hwnd)
 
         if (result == "Yes")
         {
@@ -954,14 +954,20 @@ class Setup
                 oProgress.Value := A_Index / g_oArcadeRomList.Count * 100 ;increment progress bar
 
                 ;copy the rom
-                if (mInfo["MAMEVersion"] == gcRomVersionDropDown.Text)
-                    try FileCopy(sFolder "\" sRom ".zip", gcROMMonitorFolderEdit.Text, 1)
+                if (mInfo["MAMEVersion"] == gcRomVersionDropDown.Text) {
+                    try {
+                        FileCopy(sFolder "\" sRom ".zip", gcROMMonitorFolderEdit.Text, 1)
+                        iFilesCopied++
+                    }
+                }
 
                 ;copy folder (accompanying chd folder, for example)
-                if (mInfo["HasFolder"] == "1" && mInfo["MAMEVersion"] == gcRomVersionDropDown.Text)
-                    try DirCopy(sFolder "\" sRom, gcROMMonitorFolderEdit.Text "\" sRom, 1)
-
-                iFilesCopied++
+                if (mInfo["HasFolder"] == "1" && mInfo["MAMEVersion"] == gcRomVersionDropDown.Text) {
+                    try {
+                        DirCopy(sFolder "\" sRom, gcROMMonitorFolderEdit.Text "\" sRom, 1)
+                        iFilesCopied++
+                    }
+                }                
             }
 
             ;Reset all the rom access timestamps since they were just touched.
@@ -971,9 +977,9 @@ class Setup
             oProgress.Value := 0
 
             if (iFilesCopied > 0)
-                MsgBox("Successfully copied " iFilesCopied " rom files.", "Copy Completed", 64 " Owner" guiCopyRoms.Hwnd)
+                MsgBox("Successfully copied " iFilesCopied " files.", "Copy Completed", 64 " Owner" guiCopyRoms.Hwnd)
             else
-                MsgBox("There were rom files found to copy.", "Copy Unsuccessful", 16 " Owner" guiCopyRoms.Hwnd)
+                MsgBox("There were no files found to copy.", "Copy Unsuccessful", 16 " Owner" guiCopyRoms.Hwnd)
         }
 
         return
