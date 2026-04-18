@@ -296,7 +296,7 @@ This should remain set to 1 for ordinary use. It is recommended to only change t
 
 File Tools
 ============
-Within the **Initial Setup** dialog there is a button called **File Tools...** that will permit you to perform several file related backup, restore, and utility functions. Note that all backups are made to the `.\Arcade\Arcade Time Capsule *\Backup` folder.
+Within the **Initial Setup** dialog there is a button called **File Tools...** that will permit you to perform several file related backup, restore, and utility functions. Note that all backups are made to the `.\Arcade\Arcade Time Capsule *\Backup` folder. Also note that the VFE file toos are designed to work only with _non-merged_ rom sets.
 
 <img width="500" alt="File tools" src="https://github.com/user-attachments/assets/91080f03-24a8-469d-b042-914351f17a51" /><br/>
 
