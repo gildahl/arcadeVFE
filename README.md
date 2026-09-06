@@ -25,6 +25,7 @@ Resources
 * [GitHub:](https://github.com/gildahl/Background-Game-Profile-Switcher) - documentation and source code.
 * [Discord:](https://discord.gg/yQ7THG6d2u) - provide comments and report issues. 
 * [ATC "Monster" Control Panel Guide:](https://docs.google.com/document/d/1_UpA_Fa-1jQdQMLDDSFTut15gjGnhjljFkd_raw9Ox4/edit?tab=t.0) - build the ultimate ATC control panel.
+* [Introducing arcadeVFE:](https://www.youtube.com/watch?v=h7ZmdLwhX-E) - A video introducing arcadeVFE's main features.
 
 Tested Software
 ===============
@@ -296,7 +297,7 @@ This should remain set to 1 for ordinary use. It is recommended to only change t
 
 File Tools
 ============
-Within the **Initial Setup** dialog there is a button called **File Tools...** that will permit you to perform several file related backup, restore, and utility functions. Note that all backups are made to the `.\Arcade\Arcade Time Capsule *\Backup` folder.
+Within the **Initial Setup** dialog there is a button called **File Tools...** that will permit you to perform several file related backup, restore, and utility functions. Note that all backups are made to the `.\Arcade\Arcade Time Capsule *\Backup` folder. Also note that the VFE file toos are designed to work only with _non-merged_ rom sets.
 
 <img width="500" alt="File tools" src="https://github.com/user-attachments/assets/91080f03-24a8-469d-b042-914351f17a51" /><br/>
 
