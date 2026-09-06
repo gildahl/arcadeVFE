@@ -100,7 +100,7 @@ Use **arcadeVFE** to quickly install the correct roms into **Arcade Time Capsule
 
 Log
 ===
-See the `log.txt` file in the `\Log` subfolder if needed for troubleshooting. This log is overwritten at the start of every run. Two beeps will be sounded whenever an error is written to the file. When reporting any issues, be sure to include the most recent log with your description of the problem. You may report errors on the Discord.
+See the `log.txt` file in the `\Log` subfolder if needed for troubleshooting. This log is overwritten at the start of every run. Two beeps will be sounded whenever an error is written to the file. When reporting any issues, be sure to include the most recent log with your description of the problem. You may report errors on the Discord or in the Discussions area of this GitHub project page.
 
 GameInfo
 ========
