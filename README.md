@@ -349,4 +349,4 @@ Because this software is not code-integrated with the host emulator, but relies 
 
 3. **arcadeVFE** does not actively monitor for new game controllers while running. So be sure that any game controller(s) you intend to use with it are plugged in before you start the software. If you turn-on/plug-in a controller while the software is running, the controller will not be recognized until you restart the software.
 
-4. **arcadeVFE**, as of version 1.2.2, has a bug that will prevent access to the **Settings** if there are no game controllers connected to the PC. If you run into this issue, connect at least one controller and then try again. 
+4. **arcadeVFE**, versions up through 1.2.2, have a bug that will prevent access to the **Settings** if there are no game controllers connected to the PC. If you run into this issue, connect at least one controller and then try again. Update: Version 1.2.2.1 will now report a proper error when this occurs.
