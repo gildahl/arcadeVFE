@@ -79,7 +79,7 @@ class TrayMenu
 
 		guiAbout := Gui("-MaximizeBox -MinimizeBox", sAboutTitle) 
 		guiAbout.AddPicture("x" 10 " y" 0 " h" 90 " w" 90, g_sVFEImageFile)
-		guiAbout.AddText("x" 110 " y" 10, "arcadeVFE`nThe Virtual Arcade Front End`nVersion " CodeVersion "`n`n© 2025 David G. Dahlstrom")
+		guiAbout.AddText("x" 110 " y" 10, "arcadeVFE`nThe Virtual Arcade Front End`nVersion " CodeVersion "`n`n© 2026 David G. Dahlstrom")
 		gcAboutExitButton := guiAbout.AddButton("Default W" 50, "OK")
 		gcAboutExitButton.OnEvent("Click", About_Close)
 
